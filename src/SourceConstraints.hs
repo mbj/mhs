@@ -1,6 +1,6 @@
 {-# LANGUAGE RankNTypes #-}
 
-module SourceConstraints (plugin) where
+module SourceConstraints (plugin, warnings) where
 
 import Bag (emptyBag, unitBag, unionBags, unionManyBags)
 import Control.Applicative (Alternative(empty), Applicative(pure))

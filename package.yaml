@@ -15,6 +15,10 @@ dependencies:
 - ghc        == 8.6.1
 - syb        == 0.7
 
+extra-source-files:
+- test/MissingDerivingStrategy.hs
+- test/UnorderedIE.hs
+
 ghc-options:
 - -Wall
 - -Wcompat
@@ -53,9 +57,18 @@ tests:
     main:          HLint.hs
     source-dirs:   test
     other-modules: []
+    dependencies:
+    - hlint   == 2.1.10
+  hspec:
+    main:          Spec.hs
+    source-dirs:   test
+    other-modules: []
     ghc-options:
     - -rtsopts
     - -threaded
     - -with-rtsopts=-N
     dependencies:
-    - hlint == 2.1.10
+    - ghc-paths          == 0.1.0.9
+    - heredoc            == 0.2.0.0
+    - hspec              == 2.5.5
+    - source-constraints
