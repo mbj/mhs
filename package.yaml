@@ -1,0 +1,49 @@
+name:        source-constraints
+version:     0.0.0.1
+synopsis:    Source constraints GHC plugin
+homepage:    https://github.com/schirp-dso/source-constraints#readme
+author:      Markus Schirp
+maintainer:  mbj@schirp-dso.com
+copyright:   2018 Markus Schirp
+category:    CodeQuality
+github:      schirp-dso/source-constraints
+
+dependencies:
+- base       == 4.12.0.0
+- bytestring == 0.10.8.2
+- filepath   == 1.4.2.1
+- ghc        == 8.6.1
+- syb        == 0.7
+
+ghc-options:
+- -Wall
+- -Wcompat
+- -Werror
+- -Widentities
+- -Wimplicit-prelude
+- -Wincomplete-record-updates
+- -Wincomplete-uni-patterns
+- -Wmissing-exported-signatures
+- -Wmissing-import-lists
+- -Wmissing-local-signatures
+- -Wmonomorphism-restriction
+
+default-extensions:
+- DerivingStrategies
+- DeriveAnyClass
+- DeriveGeneric
+- DuplicateRecordFields
+- GeneralizedNewtypeDeriving
+- InstanceSigs
+- MultiParamTypeClasses
+- NoImplicitPrelude
+- OverloadedStrings
+- RecordWildCards
+- ScopedTypeVariables
+- Strict
+
+library:
+  source-dirs:
+  - src
+  exposed-modules:
+  - SourceConstraints
