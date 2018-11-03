@@ -81,7 +81,7 @@ runSourceConstraints :: [CommandLineOption]
 runSourceConstraints _options ModSummary{ms_location = ModLocation{..}} parsedModule = do
   dynFlags <- getDynFlags
 
-  when (allowLocation ml_hs_file) $ do
+  when (allowLocation ml_hs_file) $
     liftIO
       . printOrThrowWarnings dynFlags
       $ warnings dynFlags parsedModule
@@ -116,7 +116,7 @@ locatedWarnings dynFlags (L sourceSpan node) =
         neverQualify
 
 unlocatedWarning :: Data a => DynFlags -> a -> Maybe SDoc
-unlocatedWarning dynFlags = mkQ empty requireDerivingStrategy `extQ` (sortedIEs dynFlags)
+unlocatedWarning dynFlags = mkQ empty requireDerivingStrategy `extQ` sortedIEs dynFlags
 
 requireDerivingStrategy :: HsDerivingClause GhcPs -> Maybe SDoc
 requireDerivingStrategy HsDerivingClause{deriv_clause_strategy = Nothing}
