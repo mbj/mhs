@@ -1,2 +1,4 @@
 /.stack-work
 /source-constraints.cabal
+/test/*.hi
+/test/*.o
