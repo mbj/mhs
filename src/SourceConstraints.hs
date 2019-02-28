@@ -15,14 +15,13 @@ import Data.Function (($), (.), on)
 import Data.Functor ((<$>))
 import Data.Generics.Aliases (ext2Q, extQ, mkQ)
 import Data.Generics.Text (gshow)
-import Data.List (intercalate, sortBy)
+import Data.List (intercalate, sort, sortBy)
 import Data.Maybe (Maybe(Just, Nothing), fromJust, maybe)
 import Data.Ord (Ord(compare))
 import Data.Semigroup ((<>))
 import Data.String (String)
 import DynFlags (DynFlags, getDynFlags)
 import ErrUtils (WarningMessages, mkWarnMsg)
-import HsDecls (HsDerivingClause(HsDerivingClause, deriv_clause_strategy))
 import HsExtension (GhcPs)
 import Module(ModLocation(ModLocation, ml_hs_file))
 import SrcLoc (GenLocated(L), unLoc)
@@ -65,6 +64,14 @@ import HscTypes
   , Hsc
   , ModSummary(ModSummary, ms_location)
   , printOrThrowWarnings
+  )
+
+import HsDecls
+  ( HsDerivingClause
+    ( HsDerivingClause
+    , deriv_clause_strategy
+    )
+  , LHsDerivingClause
   )
 
 plugin :: Plugin
@@ -116,7 +123,10 @@ locatedWarnings dynFlags (L sourceSpan node) =
         neverQualify
 
 unlocatedWarning :: Data a => DynFlags -> a -> Maybe SDoc
-unlocatedWarning dynFlags = mkQ empty requireDerivingStrategy `extQ` sortedIEs dynFlags
+unlocatedWarning dynFlags =
+  mkQ empty requireDerivingStrategy
+    `extQ` sortedIEs dynFlags
+    `extQ` sortedMultipleDeriving dynFlags
 
 requireDerivingStrategy :: HsDerivingClause GhcPs -> Maybe SDoc
 requireDerivingStrategy HsDerivingClause{deriv_clause_strategy = Nothing}
@@ -124,13 +134,26 @@ requireDerivingStrategy HsDerivingClause{deriv_clause_strategy = Nothing}
 requireDerivingStrategy _
   = empty
 
+sortedMultipleDeriving :: DynFlags -> [LHsDerivingClause GhcPs] -> Maybe SDoc
+sortedMultipleDeriving dynFlags clauses =
+  if rendered /= expected
+     then pure $ text . message $ intercalate ", " expected
+     else empty
+
+  where
+    message :: String -> String
+    message example = "Unsorted multiple deriving expected: " <> example
+
+    rendered = render dynFlags <$> clauses
+    expected = sort rendered
+
 data IEClass = Module String | Type String | Operator String | Function String
   deriving stock (Eq, Ord)
 
 sortedIEs :: DynFlags -> [LIE GhcPs] -> Maybe SDoc
 sortedIEs dynFlags ies =
   if ies /= expected
-    then pure . text . message $ intercalate ", " (render <$> expected)
+    then pure . text . message $ intercalate ", " (render dynFlags <$> expected)
     else empty
   where
     message :: String -> String
@@ -145,20 +168,20 @@ sortedIEs dynFlags ies =
 
     ieClass :: IE GhcPs -> IEClass
     ieClass (IEVar _xIE wrappedName) =
-      classify . render $ unLoc wrappedName
+      classify . render dynFlags $ unLoc wrappedName
     ieClass (IEThingAbs _xIE wrappedName) =
-      Type . render $ unLoc wrappedName
+      Type . render dynFlags $ unLoc wrappedName
     ieClass (IEThingAll _xIE wrappedName) =
-      Type . render $ unLoc wrappedName
+      Type . render dynFlags $ unLoc wrappedName
     ieClass (IEThingWith _xIE wrappedName _ieWildcard _ieWith _ieFieldLabels) =
-      Type . render $ unLoc wrappedName
+      Type . render dynFlags $ unLoc wrappedName
     ieClass (IEModuleContents _xIE moduleName) =
-      Module . render $ unLoc moduleName
+      Module . render dynFlags $ unLoc moduleName
     ieClass ie = error $ "Unsupported: " <> gshow ie
 
-    render :: Outputable a => a -> String
-    render outputable =
-      renderWithStyle
-        dynFlags
-        (ppr outputable)
-        (defaultUserStyle dynFlags)
+render :: Outputable a => DynFlags -> a -> String
+render dynFlags outputable =
+  renderWithStyle
+    dynFlags
+    (ppr outputable)
+    (defaultUserStyle dynFlags)
