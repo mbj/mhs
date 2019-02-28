@@ -71,6 +71,12 @@ main = hspec .
            |3 | import Prelude (tail, head, Integer, (+))
            |  |                ^^^^^^^^^^^^^^^^^^^^^^^^^^|]]
 
+    expectWarnings
+      "test/UnorderedMultipleDeriving.hs"
+      [[str|Unsorted multiple deriving expected: deriving newtype Eq, deriving stock Show
+           |   |
+           |10 |   deriving stock Show
+           |   |   ^^^^^^^^^^^^^^^^^^^...|]]
   where
     expectWarnings file messages = do
       actual <- getWarnings file
