@@ -142,7 +142,7 @@ sortedMultipleDeriving dynFlags clauses =
 
   where
     message :: String -> String
-    message example = "Unsorted multiple deriving expected: " <> example
+    message example = "Unsorted multiple deriving, expected: " <> example
 
     rendered = render dynFlags <$> clauses
     expected = sort rendered
@@ -157,7 +157,7 @@ sortedIEs dynFlags ies =
     else empty
   where
     message :: String -> String
-    message example = "Unsorted import/export expected: (" <> example <> ")"
+    message example = "Unsorted import/export, expected: (" <> example <> ")"
 
     expected :: [LIE GhcPs]
     expected = sortBy (compare `on` ieClass . unLoc) ies

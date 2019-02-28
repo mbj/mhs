@@ -66,14 +66,14 @@ main = hspec .
 
     expectWarnings
       "test/UnorderedIE.hs"
-      [[str|Unsorted import/export expected: (Integer, (+), head, tail)
+      [[str|Unsorted import/export, expected: (Integer, (+), head, tail)
            |  |
            |3 | import Prelude (tail, head, Integer, (+))
            |  |                ^^^^^^^^^^^^^^^^^^^^^^^^^^|]]
 
     expectWarnings
       "test/UnorderedMultipleDeriving.hs"
-      [[str|Unsorted multiple deriving expected: deriving newtype Eq, deriving stock Show
+      [[str|Unsorted multiple deriving, expected: deriving newtype Eq, deriving stock Show
            |   |
            |10 |   deriving stock Show
            |   |   ^^^^^^^^^^^^^^^^^^^...|]]
