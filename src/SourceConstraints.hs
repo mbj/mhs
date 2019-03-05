@@ -126,6 +126,7 @@ unlocatedWarning :: Data a => DynFlags -> a -> Maybe SDoc
 unlocatedWarning dynFlags =
   mkQ empty requireDerivingStrategy
     `extQ` sortedIEs dynFlags
+    `extQ` sortedIEThingWith dynFlags
     `extQ` sortedMultipleDeriving dynFlags
 
 requireDerivingStrategy :: HsDerivingClause GhcPs -> Maybe SDoc
@@ -178,6 +179,20 @@ sortedIEs dynFlags ies =
     ieClass (IEModuleContents _xIE moduleName) =
       Module . render dynFlags $ unLoc moduleName
     ieClass ie = error $ "Unsupported: " <> gshow ie
+
+sortedIEThingWith :: DynFlags -> IE GhcPs -> Maybe SDoc
+sortedIEThingWith dynFlags (IEThingWith _xIE _wrappedName _ieWildcard ieWith _ieFieldLabels) =
+  if rendered /= expected
+     then pure $ text . message $ intercalate ", " expected
+     else empty
+  where
+    message :: String -> String
+    message example = "Unsorted import/export item with list, expected: (" <> example <> ")"
+
+    rendered = render dynFlags <$> ieWith
+    expected = sort rendered
+
+sortedIEThingWith _ _ = empty
 
 render :: Outputable a => DynFlags -> a -> String
 render dynFlags outputable =
