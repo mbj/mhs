@@ -70,6 +70,12 @@ main = hspec .
            |  |
            |3 | import Prelude (tail, head, Integer, (+))
            |  |                ^^^^^^^^^^^^^^^^^^^^^^^^^^|]]
+    expectWarnings
+      "test/UnorderedIEThingWith.hs"
+      [[str|Unsorted import/export item with list, expected: ((+), (-))
+           |  |
+           |3 | import GHC.Num (Num((-), (+)))
+           |  |                 ^^^^^^^^^^^^^|]]
 
     expectWarnings
       "test/UnorderedMultipleDeriving.hs"
