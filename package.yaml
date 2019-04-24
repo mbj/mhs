@@ -17,7 +17,10 @@ dependencies:
 
 extra-source-files:
 - test/MissingDerivingStrategy.hs
-- test/UnorderedIE.hs
+- test/UnsortedIE.hs
+- test/UnsortedIEThingWith.hs
+- test/UnsortedImportStatement.hs
+- test/UnsortedMultipleDeriving.hs
 
 ghc-options:
 - -Wall

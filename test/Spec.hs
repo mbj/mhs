@@ -16,7 +16,7 @@ import Data.Semigroup (Semigroup((<>)))
 import Data.String (String)
 import GHC.Paths (libdir)
 import HscMain (hscParse)
-import HscTypes (mgModSummaries, msHsFilePath)
+import HscTypes (hpm_module, mgModSummaries, msHsFilePath)
 import Outputable (($+$), defaultUserStyle, panic, renderWithStyle)
 import SourceConstraints (warnings)
 import System.IO (IO)
@@ -65,24 +65,31 @@ main = hspec .
            |  |                ^^^^^^^^^^^|]]
 
     expectWarnings
-      "test/UnorderedIE.hs"
+      "test/UnsortedIE.hs"
       [[str|Unsorted import/export, expected: (Integer, (+), head, tail)
            |  |
-           |3 | import Prelude (tail, head, Integer, (+))
+           |4 | import Prelude (tail, head, Integer, (+))
            |  |                ^^^^^^^^^^^^^^^^^^^^^^^^^^|]]
     expectWarnings
-      "test/UnorderedIEThingWith.hs"
+      "test/UnsortedIEThingWith.hs"
       [[str|Unsorted import/export item with list, expected: ((+), (-))
            |  |
            |3 | import GHC.Num (Num((-), (+)))
            |  |                 ^^^^^^^^^^^^^|]]
 
     expectWarnings
-      "test/UnorderedMultipleDeriving.hs"
+      "test/UnsortedMultipleDeriving.hs"
       [[str|Unsorted multiple deriving, expected: deriving newtype Eq, deriving stock Show
            |   |
            |10 |   deriving stock Show
            |   |   ^^^^^^^^^^^^^^^^^^^...|]]
+
+    expectWarnings
+      "test/UnsortedImportStatement.hs"
+      [[str|Unsorted import statement, expected: import Data.Bool
+           |  |
+           |3 | import Data.Char
+           |  | ^^^^^^^^^^^^^^^^|]]
   where
     expectWarnings file messages = do
       actual <- getWarnings file
@@ -109,7 +116,7 @@ getWarnings file = runGhc (pure libdir) $ do
       dynFlags     <- getDynFlags
       parsedModule <- liftIO $ hscParse env moduleSummary
 
-      mapM (render dynFlags) $ bagToList (warnings dynFlags parsedModule)
+      mapM (render dynFlags) . bagToList . warnings dynFlags $ hpm_module parsedModule
 
     setupDynFlags :: GhcMonad m => m ()
     setupDynFlags = do
