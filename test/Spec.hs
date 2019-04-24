@@ -68,7 +68,7 @@ main = hspec .
       "test/UnorderedIE.hs"
       [[str|Unsorted import/export, expected: (Integer, (+), head, tail)
            |  |
-           |3 | import Prelude (tail, head, Integer, (+))
+           |4 | import Prelude (tail, head, Integer, (+))
            |  |                ^^^^^^^^^^^^^^^^^^^^^^^^^^|]]
     expectWarnings
       "test/UnorderedIEThingWith.hs"

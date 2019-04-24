@@ -22,13 +22,14 @@ import Data.Semigroup ((<>))
 import Data.String (String)
 import DynFlags (DynFlags, getDynFlags)
 import ErrUtils (WarningMessages, mkWarnMsg)
+import HsDecls
+  ( HsDerivingClause
+    ( HsDerivingClause
+    , deriv_clause_strategy
+    )
+  , LHsDerivingClause
+  )
 import HsExtension (GhcPs)
-import Module(ModLocation(ModLocation, ml_hs_file))
-import SrcLoc (GenLocated(L), unLoc)
-import System.FilePath.Posix (splitPath)
-
-import Prelude(error)
-
 import HsSyn
   ( IE
     ( IEModuleContents
@@ -39,7 +40,13 @@ import HsSyn
     )
   , LIE
   )
-
+import HscTypes
+  ( HsParsedModule(HsParsedModule, hpm_module)
+  , Hsc
+  , ModSummary(ModSummary, ms_location)
+  , printOrThrowWarnings
+  )
+import Module(ModLocation(ModLocation, ml_hs_file))
 import Outputable
   ( Outputable
   , SDoc
@@ -49,7 +56,6 @@ import Outputable
   , renderWithStyle
   , text
   )
-
 import Plugins
   ( CommandLineOption
   , Plugin
@@ -58,21 +64,9 @@ import Plugins
   , pluginRecompile
   , purePlugin
   )
-
-import HscTypes
-  ( HsParsedModule(HsParsedModule, hpm_module)
-  , Hsc
-  , ModSummary(ModSummary, ms_location)
-  , printOrThrowWarnings
-  )
-
-import HsDecls
-  ( HsDerivingClause
-    ( HsDerivingClause
-    , deriv_clause_strategy
-    )
-  , LHsDerivingClause
-  )
+import Prelude(error)
+import SrcLoc (GenLocated(L), unLoc)
+import System.FilePath.Posix (splitPath)
 
 plugin :: Plugin
 plugin =
@@ -125,8 +119,8 @@ locatedWarnings dynFlags (L sourceSpan node) =
 unlocatedWarning :: Data a => DynFlags -> a -> Maybe SDoc
 unlocatedWarning dynFlags =
   mkQ empty requireDerivingStrategy
-    `extQ` sortedIEs dynFlags
     `extQ` sortedIEThingWith dynFlags
+    `extQ` sortedIEs dynFlags
     `extQ` sortedMultipleDeriving dynFlags
 
 requireDerivingStrategy :: HsDerivingClause GhcPs -> Maybe SDoc
