@@ -83,6 +83,13 @@ main = hspec .
            |   |
            |10 |   deriving stock Show
            |   |   ^^^^^^^^^^^^^^^^^^^...|]]
+
+    expectWarnings
+      "test/UnsortedImportStatement.hs"
+      [[str|Unsorted import statement, expected: import Data.Bool
+           |  |
+           |3 | import Data.Char
+           |  | ^^^^^^^^^^^^^^^^|]]
   where
     expectWarnings file messages = do
       actual <- getWarnings file

@@ -2,7 +2,7 @@
 
 module SourceConstraints (plugin, warnings) where
 
-import Bag (emptyBag, unitBag, unionBags, unionManyBags)
+import Bag (emptyBag, unitBag, unionManyBags)
 import Control.Applicative (Alternative(empty), Applicative(pure))
 import Control.Monad (when)
 import Control.Monad.IO.Class (MonadIO(liftIO))
@@ -10,18 +10,18 @@ import Data.Bool (Bool(False), not)
 import Data.Char (isUpper)
 import Data.Data (Data, Typeable, cast, gmapQ)
 import Data.Eq (Eq((/=)))
-import Data.Foldable (Foldable(elem))
+import Data.Foldable (Foldable(elem), find)
 import Data.Function (($), (.), on)
 import Data.Functor ((<$>))
 import Data.Generics.Aliases (ext2Q, extQ, mkQ)
 import Data.Generics.Text (gshow)
-import Data.List (intercalate, sort, sortBy)
+import Data.List (intercalate, sort, sortBy, zip3)
 import Data.Maybe (Maybe(Nothing), fromJust, maybe)
 import Data.Ord (Ord(compare))
 import Data.Semigroup ((<>))
 import Data.String (String)
 import DynFlags (DynFlags, getDynFlags)
-import ErrUtils (WarningMessages, mkWarnMsg)
+import ErrUtils (ErrMsg, WarningMessages, mkWarnMsg)
 import HsDecls
   ( HsDerivingClause
     ( HsDerivingClause
@@ -37,6 +37,10 @@ import HsSyn
     , IEThingAll
     , IEThingWith
     , IEVar
+    )
+  , HsModule
+    ( HsModule
+    , hsmodImports
     )
   , LIE
   )
@@ -65,7 +69,7 @@ import Plugins
   , purePlugin
   )
 import Prelude(error)
-import SrcLoc (GenLocated(L), unLoc)
+import SrcLoc (GenLocated(L), Located, getLoc, unLoc)
 import System.FilePath.Posix (splitPath)
 
 plugin :: Plugin
@@ -98,9 +102,11 @@ warnings
   -> GenLocated a b
   -> WarningMessages
 warnings dynFlags (L sourceSpan node) =
-  unionBags
-    (maybe emptyBag mkWarning $ unlocatedWarning dynFlags node)
-    (descend node)
+  unionManyBags
+    [ maybe emptyBag mkWarning $ unlocatedWarning dynFlags node
+    , maybe emptyBag unitBag   $ locatedWarning dynFlags node
+    , descend node
+    ]
   where
     mkWarning =
       unitBag . mkWarnMsg
@@ -112,6 +118,12 @@ warnings dynFlags (L sourceSpan node) =
     descend =
       unionManyBags . gmapQ
         (descend `ext2Q` warnings dynFlags)
+
+locatedWarning :: Data a => DynFlags -> a -> Maybe ErrMsg
+locatedWarning dynFlags = mkQ empty sortedImportStatement
+  where
+    sortedImportStatement :: HsModule GhcPs -> Maybe ErrMsg
+    sortedImportStatement HsModule{..} = sortedLocated "import statement" dynFlags hsmodImports
 
 unlocatedWarning :: Data a => DynFlags -> a -> Maybe SDoc
 unlocatedWarning dynFlags =
@@ -191,3 +203,30 @@ render dynFlags outputable =
     dynFlags
     (ppr outputable)
     (defaultUserStyle dynFlags)
+
+sortedLocated
+  :: forall a . Outputable a
+  => String
+  -> DynFlags
+  -> [Located a]
+  -> Maybe ErrMsg
+sortedLocated name dynFlags nodes = mkWarning <$> violation
+  where
+    mkWarning :: (String, String, Located a) -> ErrMsg
+    mkWarning (_rendered, expected, node) =
+      mkWarnMsg
+        dynFlags
+        (getLoc node)
+        neverQualify
+        (text $ "Unsorted " <> name <> ", expected: " <> expected)
+
+    violation = find testViolation candidates
+
+    testViolation :: (String, String, Located a) -> Bool
+    testViolation (rendered, expected, _node) = rendered /= expected
+
+    candidates :: [(String, String, Located a)]
+    candidates =
+      let rendered = render dynFlags <$> nodes
+      in
+        zip3 rendered (sort rendered) nodes
