@@ -41,7 +41,7 @@ import HsSyn
   , LIE
   )
 import HscTypes
-  ( HsParsedModule(HsParsedModule, hpm_module)
+  ( HsParsedModule(hpm_module)
   , Hsc
   , ModSummary(ModSummary, ms_location)
   , printOrThrowWarnings
@@ -85,35 +85,33 @@ runSourceConstraints _options ModSummary{ms_location = ModLocation{..}} parsedMo
   when (allowLocation ml_hs_file) $
     liftIO
       . printOrThrowWarnings dynFlags
-      $ warnings dynFlags parsedModule
+      $ warnings dynFlags (hpm_module parsedModule)
 
   pure parsedModule
   where
     allowLocation = maybe False (not . elem ".stack-work/" . splitPath)
 
-warnings :: DynFlags -> HsParsedModule -> WarningMessages
-warnings dynFlags HsParsedModule{..} = locatedWarnings dynFlags hpm_module
-
-findWarnings :: Data a => DynFlags -> a -> WarningMessages
-findWarnings dynFlags =
-  unionManyBags . gmapQ
-    (findWarnings dynFlags `ext2Q` locatedWarnings dynFlags)
-
--- | Find warnings directly underneath a located node
-locatedWarnings :: (Data b, Typeable a)
-                => DynFlags
-                -> GenLocated a b
-                -> WarningMessages
-locatedWarnings dynFlags (L sourceSpan node) =
+-- | Find warnings for node
+warnings
+  :: (Data a, Data b, Typeable a)
+  => DynFlags
+  -> GenLocated a b
+  -> WarningMessages
+warnings dynFlags (L sourceSpan node) =
   unionBags
     (maybe emptyBag mkWarning $ unlocatedWarning dynFlags node)
-    (findWarnings dynFlags node)
+    (descend node)
   where
     mkWarning =
       unitBag . mkWarnMsg
         dynFlags
         (fromJust $ cast sourceSpan)
         neverQualify
+
+    descend :: Data a => a -> WarningMessages
+    descend =
+      unionManyBags . gmapQ
+        (descend `ext2Q` warnings dynFlags)
 
 unlocatedWarning :: Data a => DynFlags -> a -> Maybe SDoc
 unlocatedWarning dynFlags =

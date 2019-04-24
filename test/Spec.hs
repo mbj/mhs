@@ -16,7 +16,7 @@ import Data.Semigroup (Semigroup((<>)))
 import Data.String (String)
 import GHC.Paths (libdir)
 import HscMain (hscParse)
-import HscTypes (mgModSummaries, msHsFilePath)
+import HscTypes (hpm_module, mgModSummaries, msHsFilePath)
 import Outputable (($+$), defaultUserStyle, panic, renderWithStyle)
 import SourceConstraints (warnings)
 import System.IO (IO)
@@ -109,7 +109,7 @@ getWarnings file = runGhc (pure libdir) $ do
       dynFlags     <- getDynFlags
       parsedModule <- liftIO $ hscParse env moduleSummary
 
-      mapM (render dynFlags) $ bagToList (warnings dynFlags parsedModule)
+      mapM (render dynFlags) . bagToList . warnings dynFlags $ hpm_module parsedModule
 
     setupDynFlags :: GhcMonad m => m ()
     setupDynFlags = do
