@@ -16,7 +16,7 @@ import Data.Functor ((<$>))
 import Data.Generics.Aliases (ext2Q, extQ, mkQ)
 import Data.Generics.Text (gshow)
 import Data.List (intercalate, sort, sortBy)
-import Data.Maybe (Maybe(Just, Nothing), fromJust, maybe)
+import Data.Maybe (Maybe(Nothing), fromJust, maybe)
 import Data.Ord (Ord(compare))
 import Data.Semigroup ((<>))
 import Data.String (String)
@@ -89,8 +89,7 @@ runSourceConstraints _options ModSummary{ms_location = ModLocation{..}} parsedMo
 
   pure parsedModule
   where
-    allowLocation (Just path) = not $ elem ".stack-work/" $ splitPath path
-    allowLocation Nothing     = False
+    allowLocation = maybe False (not . elem ".stack-work/" . splitPath)
 
 warnings :: DynFlags -> HsParsedModule -> WarningMessages
 warnings dynFlags HsParsedModule{..} = locatedWarnings dynFlags hpm_module
