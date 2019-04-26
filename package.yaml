@@ -36,13 +36,8 @@ ghc-options:
 - -Wmonomorphism-restriction
 
 default-extensions:
-- DeriveAnyClass
-- DeriveGeneric
 - DerivingStrategies
-- DuplicateRecordFields
 - GeneralizedNewtypeDeriving
-- InstanceSigs
-- MultiParamTypeClasses
 - NoImplicitPrelude
 - OverloadedStrings
 - RecordWildCards
