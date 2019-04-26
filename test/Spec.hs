@@ -16,8 +16,10 @@ import Data.String
 import GHC.Paths
 import HscMain
 import HscTypes
+import Module
 import Outputable hiding ((<>), empty)
 import SourceConstraints
+import SourceConstraints.LocalModule
 import System.IO
 import Test.Hspec
 import Text.Heredoc
@@ -88,6 +90,13 @@ main = hspec $ do
          |  |
          |3 | import Data.Char
          |  | ^^^^^^^^^^^^^^^^|]]
+
+  expectWarnings
+    "test/LocalModuleExplicitImport.hs"
+    [[str|Present import list for local module
+         |  |
+         |3 | import Data.Word (Word32)
+         |  |                  ^^^^^^^^|]]
   where
     expectWarnings file messages =
       it ("returns expected warnings from: " <> file) $ do
@@ -114,6 +123,8 @@ getWarnings file = runGhc (pure libdir) $ do
       env          <- getSession
       dynFlags     <- getDynFlags
       parsedModule <- liftIO $ hscParse env moduleSummary
+
+      let localModules = [LocalModule $ mkModuleName "Data.Word"]
 
       mapM (render dynFlags) . bagToList . warnings Context{..} $ hpm_module parsedModule
 

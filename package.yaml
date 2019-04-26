@@ -9,13 +9,16 @@ category:    CodeQuality
 github:      schirp-dso/source-constraints
 
 dependencies:
+- attoparsec == 0.13.2.2
 - base       == 4.12.0.0
 - bytestring == 0.10.8.2
 - filepath   == 1.4.2.1
 - ghc        == 8.6.4
 - syb        == 0.7
+- text       == 1.2.3.1
 
 extra-source-files:
+- test/LocalModuleExplicitImport.hs
 - test/MissingDerivingStrategy.hs
 - test/UnsortedIE.hs
 - test/UnsortedIEThingWith.hs
@@ -49,6 +52,7 @@ library:
   - src
   exposed-modules:
   - SourceConstraints
+  - SourceConstraints.LocalModule
 
 tests:
   hlint:
