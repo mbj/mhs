@@ -65,23 +65,23 @@ main = hspec $ do
 
   expectWarnings
     "test/UnsortedIE.hs"
-    [[str|Unsorted import/export, expected: (Integer, (+), head, tail)
+    [[str|Unsorted import/export declaration, expected: Integer
          |  |
          |4 | import Prelude (tail, head, Integer, (+))
-         |  |                ^^^^^^^^^^^^^^^^^^^^^^^^^^|]]
+         |  |                 ^^^^|]]
   expectWarnings
     "test/UnsortedIEThingWith.hs"
-    [[str|Unsorted import/export item with list, expected: ((+), (-))
+    [[str|Unsorted import/export item with list, expected: (+)
          |  |
          |3 | import GHC.Num (Num((-), (+)))
-         |  |                 ^^^^^^^^^^^^^|]]
+         |  |                     ^^^|]]
 
   expectWarnings
     "test/UnsortedMultipleDeriving.hs"
-    [[str|Unsorted multiple deriving, expected: deriving newtype Eq, deriving stock Show
+    [[str|Unsorted deriving clauses, expected: deriving newtype Eq
          |   |
          |10 |   deriving stock Show
-         |   |   ^^^^^^^^^^^^^^^^^^^...|]]
+         |   |   ^^^^^^^^^^^^^^^^^^^|]]
 
   expectWarnings
     "test/UnsortedImportStatement.hs"

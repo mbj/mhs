@@ -2,7 +2,7 @@
 
 module SourceConstraints (Context(..), plugin, warnings) where
 
-import Bag (emptyBag, unitBag, unionManyBags)
+import Bag (emptyBag, listToBag, unitBag, unionManyBags)
 import Control.Applicative (Alternative(empty), Applicative(pure))
 import Control.Monad (when)
 import Control.Monad.IO.Class (MonadIO(liftIO))
@@ -13,10 +13,10 @@ import Data.Eq (Eq((/=)))
 import Data.Foldable (Foldable(elem), find)
 import Data.Function (($), (.), on)
 import Data.Functor ((<$>))
-import Data.Generics.Aliases (ext2Q, extQ, mkQ)
+import Data.Generics.Aliases (ext2Q, mkQ)
 import Data.Generics.Text (gshow)
-import Data.List (intercalate, sort, sortBy, zip)
-import Data.Maybe (Maybe(Nothing), fromJust, maybe)
+import Data.List (sortBy, zip)
+import Data.Maybe (Maybe(Nothing), catMaybes, fromJust, maybe)
 import Data.Ord (Ord(compare))
 import Data.Semigroup ((<>))
 import Data.String (String)
@@ -109,7 +109,7 @@ warnings
 warnings context@Context{..} (L sourceSpan node) =
   unionManyBags
     [ maybe emptyBag mkWarning $ unlocatedWarning context node
-    , maybe emptyBag unitBag   $ locatedWarning context node
+    , locatedWarnings context node
     , descend node
     ]
   where
@@ -124,8 +124,16 @@ warnings context@Context{..} (L sourceSpan node) =
       unionManyBags . gmapQ
         (descend `ext2Q` warnings context)
 
-locatedWarning :: Data a => Context -> a -> Maybe ErrMsg
-locatedWarning context = mkQ empty sortedImportStatement
+data IEClass = Module String | Type String | Operator String | Function String
+  deriving stock (Eq, Ord)
+
+locatedWarnings :: Data a => Context -> a -> WarningMessages
+locatedWarnings context node = listToBag $ catMaybes
+  [ mkQ empty sortedImportStatement  node
+  , mkQ empty sortedIEThingWith      node
+  , mkQ empty sortedIEs              node
+  , mkQ empty sortedMultipleDeriving node
+  ]
   where
     sortedImportStatement :: HsModule GhcPs -> Maybe ErrMsg
     sortedImportStatement HsModule{..} =
@@ -135,46 +143,29 @@ locatedWarning context = mkQ empty sortedImportStatement
         (render context)
         hsmodImports
 
-unlocatedWarning :: Data a => Context -> a -> Maybe SDoc
-unlocatedWarning context =
-  mkQ empty requireDerivingStrategy
-    `extQ` sortedIEThingWith context
-    `extQ` sortedIEs context
-    `extQ` sortedMultipleDeriving context
+    sortedMultipleDeriving :: [LHsDerivingClause GhcPs] -> Maybe ErrMsg
+    sortedMultipleDeriving =
+      sortedLocated
+        "deriving clauses"
+        context
+        (render context)
 
-requireDerivingStrategy :: HsDerivingClause GhcPs -> Maybe SDoc
-requireDerivingStrategy = \case
-  HsDerivingClause{deriv_clause_strategy = Nothing} ->
-    pure $ text "Missing deriving strategy"
-  _ -> empty
+    sortedIEs :: [LIE GhcPs] -> Maybe ErrMsg
+    sortedIEs =
+      sortedLocated
+        "import/export declaration"
+        context
+        ieClass
 
-sortedMultipleDeriving :: Context -> [LHsDerivingClause GhcPs] -> Maybe SDoc
-sortedMultipleDeriving context clauses =
-  if rendered /= expected
-     then pure $ text . message $ intercalate ", " expected
-     else empty
-
-  where
-    message :: String -> String
-    message example = "Unsorted multiple deriving, expected: " <> example
-
-    rendered = render context <$> clauses
-    expected = sort rendered
-
-data IEClass = Module String | Type String | Operator String | Function String
-  deriving stock (Eq, Ord)
-
-sortedIEs :: Context -> [LIE GhcPs] -> Maybe SDoc
-sortedIEs context ies =
-  if ies /= expected
-    then pure . text . message $ intercalate ", " (render context <$> expected)
-    else empty
-  where
-    message :: String -> String
-    message example = "Unsorted import/export, expected: (" <> example <> ")"
-
-    expected :: [LIE GhcPs]
-    expected = sortBy (compare `on` ieClass . unLoc) ies
+    sortedIEThingWith :: IE GhcPs -> Maybe ErrMsg
+    sortedIEThingWith = \case
+      (IEThingWith _xIE _name _ieWildcard ieWith _ieFieldLabels) ->
+        sortedLocated
+          "import/export item with list"
+          context
+          (render context)
+          ieWith
+      _ -> empty
 
     classify str@('(':_) = Function str
     classify str@(x:_)   = if isUpper x then Type str else Function str
@@ -193,18 +184,13 @@ sortedIEs context ies =
     mkClass :: Outputable b => (String -> IEClass) -> GenLocated a b -> IEClass
     mkClass constructor name = constructor . render context $ unLoc name
 
-sortedIEThingWith :: Context -> IE GhcPs -> Maybe SDoc
-sortedIEThingWith context = \case
-  (IEThingWith _xIE _wrappedName _ieWildcard ieWith _ieFieldLabels) ->
-    if rendered /= expected
-       then pure $ text . message $ intercalate ", " expected
-       else empty
-    where
-      message :: String -> String
-      message example = "Unsorted import/export item with list, expected: (" <> example <> ")"
+unlocatedWarning :: Data a => Context -> a -> Maybe SDoc
+unlocatedWarning _context = mkQ empty requireDerivingStrategy
 
-      rendered = render context <$> ieWith
-      expected = sort rendered
+requireDerivingStrategy :: HsDerivingClause GhcPs -> Maybe SDoc
+requireDerivingStrategy = \case
+  HsDerivingClause{deriv_clause_strategy = Nothing} ->
+    pure $ text "Missing deriving strategy"
   _ -> empty
 
 render :: Outputable a => Context -> a -> String
@@ -230,11 +216,7 @@ sortedLocated name context@Context{..} ordering nodes =
         dynFlags
         (getLoc actualNode)
         neverQualify
-        (text $ message expectedNode)
-
-    message :: Located a -> String
-    message expected =
-        "Unsorted " <> name <> ", expected: " <> render context expected
+        (text $ "Unsorted " <> name <> ", expected: " <> render context expectedNode)
 
     isViolation :: ((Located a, b), (Located a, b)) -> Bool
     isViolation ((_actualNode, item), (_expectedNode, expected)) =
