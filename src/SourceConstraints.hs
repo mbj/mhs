@@ -172,18 +172,16 @@ sortedIEs dynFlags ies =
 
     ieClass :: IE GhcPs -> IEClass
     ieClass = \case
-      (IEVar _xIE wrappedName) ->
-        classify . render dynFlags $ unLoc wrappedName
-      (IEThingAbs _xIE wrappedName) ->
-        Type . render dynFlags $ unLoc wrappedName
-      (IEThingAll _xIE wrappedName) ->
-        Type . render dynFlags $ unLoc wrappedName
-      (IEThingWith _xIE wrappedName _ieWildcard _ieWith _ieFieldLabels) ->
-        Type . render dynFlags $ unLoc wrappedName
-      (IEModuleContents _xIE moduleName) ->
-        Module . render dynFlags $ unLoc moduleName
-      ie ->
-        error $ "Unsupported: " <> gshow ie
+      (IEVar _xIE name)            -> mkClass classify name
+      (IEThingAbs _xIE name)       -> mkClass Type name
+      (IEThingAll _xIE name)       -> mkClass Type name
+      (IEModuleContents _xIE name) -> mkClass Module name
+      (IEThingWith _xIE name _ieWildcard _ieWith _ieFieldLabels) ->
+        mkClass Type name
+      ie -> error $ "Unsupported: " <> gshow ie
+
+    mkClass :: Outputable b => (String -> IEClass) -> GenLocated a b -> IEClass
+    mkClass constructor name = constructor . render dynFlags $ unLoc name
 
 sortedIEThingWith :: DynFlags -> IE GhcPs -> Maybe SDoc
 sortedIEThingWith dynFlags = \case
