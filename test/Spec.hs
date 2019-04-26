@@ -3,25 +3,24 @@
 module Main (main) where
 
 import Bag
-import Control.Applicative (Alternative(empty), Applicative(pure))
-import Control.Monad (mapM, unless)
-import Control.Monad.IO.Class (MonadIO(liftIO))
-import Data.Bool (Bool(True))
-import Data.Eq (Eq((==)))
-import Data.Foldable (find)
-import Data.Function (($), (.))
-import Data.Functor (void)
-import Data.Maybe (fromMaybe)
-import Data.Semigroup (Semigroup((<>)))
-import Data.String (String)
+import Control.Applicative
+import Control.Monad
+import Control.Monad.IO.Class
+import Data.Bool
+import Data.Eq
+import Data.Foldable
+import Data.Function
+import Data.Maybe
+import Data.Semigroup
+import Data.String
 import GHC.Paths
 import HscMain
 import HscTypes
 import Outputable hiding ((<>), empty)
-import SourceConstraints (Context(Context, dynFlags), warnings)
-import System.IO (IO)
-import Test.Hspec (hspec, it, shouldBe)
-import Text.Heredoc (str)
+import SourceConstraints
+import System.IO
+import Test.Hspec
+import Text.Heredoc
 
 import DynFlags
   ( DynFlags(packageFlags)

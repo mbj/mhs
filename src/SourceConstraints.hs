@@ -2,25 +2,24 @@
 
 module SourceConstraints (Context(..), plugin, warnings) where
 
-import Bag (emptyBag, listToBag, unitBag, unionManyBags)
-import Control.Applicative (Alternative(empty), Applicative(pure))
-import Control.Monad (when)
-import Control.Monad.IO.Class (MonadIO(liftIO))
-import Data.Bool (Bool(False), not)
-import Data.Char (isUpper)
-import Data.Data (Data, Typeable, cast, gmapQ)
-import Data.Eq (Eq((/=)))
-import Data.Foldable (Foldable(elem), find)
-import Data.Function (($), (.), on)
-import Data.Functor ((<$>))
-import Data.Generics.Aliases (ext2Q, mkQ)
-import Data.Generics.Text (gshow)
-import Data.List (sortBy, zip)
-import Data.Maybe (Maybe(Nothing), catMaybes, fromJust, maybe)
-import Data.Ord (Ord(compare))
-import Data.Semigroup ((<>))
+import Bag
+import Control.Applicative
+import Control.Monad
+import Control.Monad.IO.Class
+import Data.Bool
+import Data.Char
+import Data.Data
+import Data.Eq
+import Data.Foldable
+import Data.Function
+import Data.Generics.Aliases
+import Data.Generics.Text
+import Data.List
+import Data.Maybe
+import Data.Ord
+import Data.Semigroup
 import Data.String (String)
-import Data.Tuple (snd)
+import Data.Tuple
 import DynFlags
 import ErrUtils
 import HsDecls
@@ -32,7 +31,7 @@ import Outputable hiding ((<>), empty)
 import Plugins
 import Prelude(error)
 import SrcLoc
-import System.FilePath.Posix (splitPath)
+import System.FilePath.Posix
 
 newtype Context = Context
   { dynFlags :: DynFlags
@@ -59,7 +58,7 @@ runSourceConstraints _options ModSummary{ms_location = ModLocation{..}} parsedMo
 
   pure parsedModule
   where
-    allowLocation = maybe False (not . elem ".stack-work/" . splitPath)
+    allowLocation = maybe False (notElem ".stack-work/" . splitPath)
 
 -- | Find warnings for node
 warnings
