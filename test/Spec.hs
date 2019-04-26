@@ -18,7 +18,7 @@ import GHC.Paths (libdir)
 import HscMain (hscParse)
 import HscTypes (hpm_module, mgModSummaries, msHsFilePath)
 import Outputable (($+$), defaultUserStyle, panic, renderWithStyle)
-import SourceConstraints (warnings)
+import SourceConstraints (Context(Context, dynFlags), warnings)
 import System.IO (IO)
 import Test.Hspec (hspec, it, shouldBe)
 import Text.Heredoc (str)
@@ -116,7 +116,7 @@ getWarnings file = runGhc (pure libdir) $ do
       dynFlags     <- getDynFlags
       parsedModule <- liftIO $ hscParse env moduleSummary
 
-      mapM (render dynFlags) . bagToList . warnings dynFlags $ hpm_module parsedModule
+      mapM (render dynFlags) . bagToList . warnings Context{..} $ hpm_module parsedModule
 
     setupDynFlags :: GhcMonad m => m ()
     setupDynFlags = do
