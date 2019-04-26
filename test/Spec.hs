@@ -55,45 +55,45 @@ import GHC
   )
 
 main :: IO ()
-main = hspec .
-  it "returns expected warnings" $ do
-    expectWarnings
-      "test/MissingDerivingStrategy.hs"
-      [[str|Missing deriving strategy
-           |  |
-           |7 | data Foo = Foo deriving Eq
-           |  |                ^^^^^^^^^^^|]]
+main = hspec $ do
+  expectWarnings
+    "test/MissingDerivingStrategy.hs"
+    [[str|Missing deriving strategy
+         |  |
+         |7 | data Foo = Foo deriving Eq
+         |  |                ^^^^^^^^^^^|]]
 
-    expectWarnings
-      "test/UnsortedIE.hs"
-      [[str|Unsorted import/export, expected: (Integer, (+), head, tail)
-           |  |
-           |4 | import Prelude (tail, head, Integer, (+))
-           |  |                ^^^^^^^^^^^^^^^^^^^^^^^^^^|]]
-    expectWarnings
-      "test/UnsortedIEThingWith.hs"
-      [[str|Unsorted import/export item with list, expected: ((+), (-))
-           |  |
-           |3 | import GHC.Num (Num((-), (+)))
-           |  |                 ^^^^^^^^^^^^^|]]
+  expectWarnings
+    "test/UnsortedIE.hs"
+    [[str|Unsorted import/export, expected: (Integer, (+), head, tail)
+         |  |
+         |4 | import Prelude (tail, head, Integer, (+))
+         |  |                ^^^^^^^^^^^^^^^^^^^^^^^^^^|]]
+  expectWarnings
+    "test/UnsortedIEThingWith.hs"
+    [[str|Unsorted import/export item with list, expected: ((+), (-))
+         |  |
+         |3 | import GHC.Num (Num((-), (+)))
+         |  |                 ^^^^^^^^^^^^^|]]
 
-    expectWarnings
-      "test/UnsortedMultipleDeriving.hs"
-      [[str|Unsorted multiple deriving, expected: deriving newtype Eq, deriving stock Show
-           |   |
-           |10 |   deriving stock Show
-           |   |   ^^^^^^^^^^^^^^^^^^^...|]]
+  expectWarnings
+    "test/UnsortedMultipleDeriving.hs"
+    [[str|Unsorted multiple deriving, expected: deriving newtype Eq, deriving stock Show
+         |   |
+         |10 |   deriving stock Show
+         |   |   ^^^^^^^^^^^^^^^^^^^...|]]
 
-    expectWarnings
-      "test/UnsortedImportStatement.hs"
-      [[str|Unsorted import statement, expected: import Data.Bool
-           |  |
-           |3 | import Data.Char
-           |  | ^^^^^^^^^^^^^^^^|]]
+  expectWarnings
+    "test/UnsortedImportStatement.hs"
+    [[str|Unsorted import statement, expected: import Data.Bool
+         |  |
+         |3 | import Data.Char
+         |  | ^^^^^^^^^^^^^^^^|]]
   where
-    expectWarnings file messages = do
-      actual <- getWarnings file
-      actual `shouldBe` messages
+    expectWarnings file messages =
+      it ("returns expected warnings from: " <> file) $ do
+        actual <- getWarnings file
+        actual `shouldBe` messages
 
 getWarnings :: String -> IO [String]
 getWarnings file = runGhc (pure libdir) $ do
