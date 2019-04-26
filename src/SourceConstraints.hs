@@ -15,11 +15,12 @@ import Data.Function (($), (.), on)
 import Data.Functor ((<$>))
 import Data.Generics.Aliases (ext2Q, extQ, mkQ)
 import Data.Generics.Text (gshow)
-import Data.List (intercalate, sort, sortBy, zip3)
+import Data.List (intercalate, sort, sortBy, zip)
 import Data.Maybe (Maybe(Nothing), fromJust, maybe)
 import Data.Ord (Ord(compare))
 import Data.Semigroup ((<>))
 import Data.String (String)
+import Data.Tuple (snd)
 import DynFlags (DynFlags, getDynFlags)
 import ErrUtils (ErrMsg, WarningMessages, mkWarnMsg)
 import HsDecls
@@ -127,7 +128,12 @@ locatedWarning :: Data a => Context -> a -> Maybe ErrMsg
 locatedWarning context = mkQ empty sortedImportStatement
   where
     sortedImportStatement :: HsModule GhcPs -> Maybe ErrMsg
-    sortedImportStatement HsModule{..} = sortedLocated "import statement" context hsmodImports
+    sortedImportStatement HsModule{..} =
+      sortedLocated
+        "import statement"
+        context
+        (render context)
+        hsmodImports
 
 unlocatedWarning :: Data a => Context -> a -> Maybe SDoc
 unlocatedWarning context =
@@ -209,28 +215,34 @@ render Context{..} outputable =
     (defaultUserStyle dynFlags)
 
 sortedLocated
-  :: forall a . Outputable a
+  :: forall a b . (Eq b, Ord b, Outputable a)
   => String
   -> Context
+  -> (a -> b)
   -> [Located a]
   -> Maybe ErrMsg
-sortedLocated name context@Context{..} nodes = mkWarning <$> violation
+sortedLocated name context@Context{..} ordering nodes =
+  mkWarning <$> find isViolation candidates
   where
-    mkWarning :: (String, String, Located a) -> ErrMsg
-    mkWarning (_rendered, expected, node) =
+    mkWarning :: ((Located a, b), (Located a, b)) -> ErrMsg
+    mkWarning ((actualNode, _item), (expectedNode, _expected)) =
       mkWarnMsg
         dynFlags
-        (getLoc node)
+        (getLoc actualNode)
         neverQualify
-        (text $ "Unsorted " <> name <> ", expected: " <> expected)
+        (text $ message expectedNode)
 
-    violation = find testViolation candidates
+    message :: Located a -> String
+    message expected =
+        "Unsorted " <> name <> ", expected: " <> render context expected
 
-    testViolation :: (String, String, Located a) -> Bool
-    testViolation (rendered, expected, _node) = rendered /= expected
+    isViolation :: ((Located a, b), (Located a, b)) -> Bool
+    isViolation ((_actualNode, item), (_expectedNode, expected)) =
+      item /= expected
 
-    candidates :: [(String, String, Located a)]
+    candidates :: [((Located a, b), (Located a, b))]
     candidates =
-      let rendered = render context <$> nodes
+      let items    = (\node -> (node, ordering $ unLoc node)) <$> nodes
+          expected = sortBy (compare `on` snd) items
       in
-        zip3 rendered (sort rendered) nodes
+        zip items expected
