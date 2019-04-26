@@ -31,7 +31,6 @@ ghc-options:
 - -Wincomplete-record-updates
 - -Wincomplete-uni-patterns
 - -Wmissing-exported-signatures
-- -Wmissing-import-lists
 - -Wmissing-local-signatures
 - -Wmonomorphism-restriction
 

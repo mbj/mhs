@@ -2,7 +2,7 @@
 
 module Main (main) where
 
-import Bag (bagToList)
+import Bag
 import Control.Applicative (Alternative(empty), Applicative(pure))
 import Control.Monad (mapM, unless)
 import Control.Monad.IO.Class (MonadIO(liftIO))
@@ -14,10 +14,10 @@ import Data.Functor (void)
 import Data.Maybe (fromMaybe)
 import Data.Semigroup (Semigroup((<>)))
 import Data.String (String)
-import GHC.Paths (libdir)
-import HscMain (hscParse)
-import HscTypes (hpm_module, mgModSummaries, msHsFilePath)
-import Outputable (($+$), defaultUserStyle, panic, renderWithStyle)
+import GHC.Paths
+import HscMain
+import HscTypes
+import Outputable hiding ((<>), empty)
 import SourceConstraints (Context(Context, dynFlags), warnings)
 import System.IO (IO)
 import Test.Hspec (hspec, it, shouldBe)

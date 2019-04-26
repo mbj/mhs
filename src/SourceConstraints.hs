@@ -21,56 +21,17 @@ import Data.Ord (Ord(compare))
 import Data.Semigroup ((<>))
 import Data.String (String)
 import Data.Tuple (snd)
-import DynFlags (DynFlags, getDynFlags)
-import ErrUtils (ErrMsg, WarningMessages, mkWarnMsg)
+import DynFlags
+import ErrUtils
 import HsDecls
-  ( HsDerivingClause
-    ( HsDerivingClause
-    , deriv_clause_strategy
-    )
-  , LHsDerivingClause
-  )
-import HsExtension (GhcPs)
+import HsExtension
 import HsSyn
-  ( IE
-    ( IEModuleContents
-    , IEThingAbs
-    , IEThingAll
-    , IEThingWith
-    , IEVar
-    )
-  , HsModule
-    ( HsModule
-    , hsmodImports
-    )
-  , LIE
-  )
 import HscTypes
-  ( HsParsedModule(hpm_module)
-  , Hsc
-  , ModSummary(ModSummary, ms_location)
-  , printOrThrowWarnings
-  )
-import Module(ModLocation(ModLocation, ml_hs_file))
-import Outputable
-  ( Outputable
-  , SDoc
-  , defaultUserStyle
-  , neverQualify
-  , ppr
-  , renderWithStyle
-  , text
-  )
+import Module hiding (Module)
+import Outputable hiding ((<>), empty)
 import Plugins
-  ( CommandLineOption
-  , Plugin
-  , defaultPlugin
-  , parsedResultAction
-  , pluginRecompile
-  , purePlugin
-  )
 import Prelude(error)
-import SrcLoc (GenLocated(L), Located, getLoc, unLoc)
+import SrcLoc
 import System.FilePath.Posix (splitPath)
 
 newtype Context = Context
