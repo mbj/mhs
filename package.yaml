@@ -36,9 +36,9 @@ ghc-options:
 - -Wmonomorphism-restriction
 
 default-extensions:
-- DerivingStrategies
 - DeriveAnyClass
 - DeriveGeneric
+- DerivingStrategies
 - DuplicateRecordFields
 - GeneralizedNewtypeDeriving
 - InstanceSigs
