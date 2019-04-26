@@ -133,10 +133,10 @@ unlocatedWarning dynFlags =
     `extQ` sortedMultipleDeriving dynFlags
 
 requireDerivingStrategy :: HsDerivingClause GhcPs -> Maybe SDoc
-requireDerivingStrategy HsDerivingClause{deriv_clause_strategy = Nothing}
-  = pure $ text "Missing deriving strategy"
-requireDerivingStrategy _
-  = empty
+requireDerivingStrategy = \case
+  HsDerivingClause{deriv_clause_strategy = Nothing} ->
+    pure $ text "Missing deriving strategy"
+  _ -> empty
 
 sortedMultipleDeriving :: DynFlags -> [LHsDerivingClause GhcPs] -> Maybe SDoc
 sortedMultipleDeriving dynFlags clauses =
@@ -171,31 +171,33 @@ sortedIEs dynFlags ies =
     classify []          = error "Parser error"
 
     ieClass :: IE GhcPs -> IEClass
-    ieClass (IEVar _xIE wrappedName) =
-      classify . render dynFlags $ unLoc wrappedName
-    ieClass (IEThingAbs _xIE wrappedName) =
-      Type . render dynFlags $ unLoc wrappedName
-    ieClass (IEThingAll _xIE wrappedName) =
-      Type . render dynFlags $ unLoc wrappedName
-    ieClass (IEThingWith _xIE wrappedName _ieWildcard _ieWith _ieFieldLabels) =
-      Type . render dynFlags $ unLoc wrappedName
-    ieClass (IEModuleContents _xIE moduleName) =
-      Module . render dynFlags $ unLoc moduleName
-    ieClass ie = error $ "Unsupported: " <> gshow ie
+    ieClass = \case
+      (IEVar _xIE wrappedName) ->
+        classify . render dynFlags $ unLoc wrappedName
+      (IEThingAbs _xIE wrappedName) ->
+        Type . render dynFlags $ unLoc wrappedName
+      (IEThingAll _xIE wrappedName) ->
+        Type . render dynFlags $ unLoc wrappedName
+      (IEThingWith _xIE wrappedName _ieWildcard _ieWith _ieFieldLabels) ->
+        Type . render dynFlags $ unLoc wrappedName
+      (IEModuleContents _xIE moduleName) ->
+        Module . render dynFlags $ unLoc moduleName
+      ie ->
+        error $ "Unsupported: " <> gshow ie
 
 sortedIEThingWith :: DynFlags -> IE GhcPs -> Maybe SDoc
-sortedIEThingWith dynFlags (IEThingWith _xIE _wrappedName _ieWildcard ieWith _ieFieldLabels) =
-  if rendered /= expected
-     then pure $ text . message $ intercalate ", " expected
-     else empty
-  where
-    message :: String -> String
-    message example = "Unsorted import/export item with list, expected: (" <> example <> ")"
+sortedIEThingWith dynFlags = \case
+  (IEThingWith _xIE _wrappedName _ieWildcard ieWith _ieFieldLabels) ->
+    if rendered /= expected
+       then pure $ text . message $ intercalate ", " expected
+       else empty
+    where
+      message :: String -> String
+      message example = "Unsorted import/export item with list, expected: (" <> example <> ")"
 
-    rendered = render dynFlags <$> ieWith
-    expected = sort rendered
-
-sortedIEThingWith _ _ = empty
+      rendered = render dynFlags <$> ieWith
+      expected = sort rendered
+  _ -> empty
 
 render :: Outputable a => DynFlags -> a -> String
 render dynFlags outputable =
