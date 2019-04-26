@@ -2,26 +2,27 @@
 
 module Main (main) where
 
-import Bag (bagToList)
-import Control.Applicative (Alternative(empty), Applicative(pure))
-import Control.Monad (mapM, unless)
-import Control.Monad.IO.Class (MonadIO(liftIO))
-import Data.Bool (Bool(True))
-import Data.Eq (Eq((==)))
-import Data.Foldable (find)
-import Data.Function (($), (.))
-import Data.Functor (void)
-import Data.Maybe (fromMaybe)
-import Data.Semigroup (Semigroup((<>)))
-import Data.String (String)
-import GHC.Paths (libdir)
-import HscMain (hscParse)
-import HscTypes (hpm_module, mgModSummaries, msHsFilePath)
-import Outputable (($+$), defaultUserStyle, panic, renderWithStyle)
-import SourceConstraints (Context(Context, dynFlags), warnings)
-import System.IO (IO)
-import Test.Hspec (hspec, it, shouldBe)
-import Text.Heredoc (str)
+import Bag
+import Control.Applicative
+import Control.Monad
+import Control.Monad.IO.Class
+import Data.Bool
+import Data.Eq
+import Data.Foldable
+import Data.Function
+import Data.Maybe
+import Data.Semigroup
+import Data.String
+import GHC.Paths
+import HscMain
+import HscTypes
+import Module
+import Outputable hiding ((<>), empty)
+import SourceConstraints
+import SourceConstraints.LocalModule
+import System.IO
+import Test.Hspec
+import Text.Heredoc
 
 import DynFlags
   ( DynFlags(packageFlags)
@@ -89,6 +90,13 @@ main = hspec $ do
          |  |
          |3 | import Data.Char
          |  | ^^^^^^^^^^^^^^^^|]]
+
+  expectWarnings
+    "test/LocalModuleExplicitImport.hs"
+    [[str|Present import list for local module
+         |  |
+         |3 | import Data.Word (Word32)
+         |  |                  ^^^^^^^^|]]
   where
     expectWarnings file messages =
       it ("returns expected warnings from: " <> file) $ do
@@ -115,6 +123,8 @@ getWarnings file = runGhc (pure libdir) $ do
       env          <- getSession
       dynFlags     <- getDynFlags
       parsedModule <- liftIO $ hscParse env moduleSummary
+
+      let localModules = [LocalModule $ mkModuleName "Data.Word"]
 
       mapM (render dynFlags) . bagToList . warnings Context{..} $ hpm_module parsedModule
 

@@ -2,79 +2,44 @@
 
 module SourceConstraints (Context(..), plugin, warnings) where
 
-import Bag (emptyBag, listToBag, unitBag, unionManyBags)
-import Control.Applicative (Alternative(empty), Applicative(pure))
-import Control.Monad (when)
-import Control.Monad.IO.Class (MonadIO(liftIO))
-import Data.Bool (Bool(False), not)
-import Data.Char (isUpper)
-import Data.Data (Data, Typeable, cast, gmapQ)
-import Data.Eq (Eq((/=)))
-import Data.Foldable (Foldable(elem), find)
-import Data.Function (($), (.), on)
-import Data.Functor ((<$>))
-import Data.Generics.Aliases (ext2Q, mkQ)
-import Data.Generics.Text (gshow)
-import Data.List (sortBy, zip)
-import Data.Maybe (Maybe(Nothing), catMaybes, fromJust, maybe)
-import Data.Ord (Ord(compare))
-import Data.Semigroup ((<>))
+import Bag
+import Control.Applicative
+import Control.Monad
+import Control.Monad.IO.Class
+import Data.Attoparsec.Text
+import Data.Bool
+import Data.Char
+import Data.Data
+import Data.Either
+import Data.Eq
+import Data.Foldable
+import Data.Function
+import Data.Generics.Aliases
+import Data.Generics.Text
+import Data.List
+import Data.Maybe
+import Data.Ord
+import Data.Semigroup
 import Data.String (String)
-import Data.Tuple (snd)
-import DynFlags (DynFlags, getDynFlags)
-import ErrUtils (ErrMsg, WarningMessages, mkWarnMsg)
+import Data.Text (Text, pack)
+import Data.Tuple
+import DynFlags
+import ErrUtils
 import HsDecls
-  ( HsDerivingClause
-    ( HsDerivingClause
-    , deriv_clause_strategy
-    )
-  , LHsDerivingClause
-  )
-import HsExtension (GhcPs)
+import HsExtension
 import HsSyn
-  ( IE
-    ( IEModuleContents
-    , IEThingAbs
-    , IEThingAll
-    , IEThingWith
-    , IEVar
-    )
-  , HsModule
-    ( HsModule
-    , hsmodImports
-    )
-  , LIE
-  )
 import HscTypes
-  ( HsParsedModule(hpm_module)
-  , Hsc
-  , ModSummary(ModSummary, ms_location)
-  , printOrThrowWarnings
-  )
-import Module(ModLocation(ModLocation, ml_hs_file))
-import Outputable
-  ( Outputable
-  , SDoc
-  , defaultUserStyle
-  , neverQualify
-  , ppr
-  , renderWithStyle
-  , text
-  )
+import Module hiding (Module)
+import Outputable hiding ((<>), empty)
 import Plugins
-  ( CommandLineOption
-  , Plugin
-  , defaultPlugin
-  , parsedResultAction
-  , pluginRecompile
-  , purePlugin
-  )
 import Prelude(error)
-import SrcLoc (GenLocated(L), Located, getLoc, unLoc)
-import System.FilePath.Posix (splitPath)
+import SrcLoc
+import System.FilePath.Posix
+import SourceConstraints.LocalModule
 
-newtype Context = Context
-  { dynFlags :: DynFlags
+data Context = Context
+  { dynFlags     :: DynFlags
+  , localModules :: [LocalModule]
   }
 
 plugin :: Plugin
@@ -88,17 +53,19 @@ runSourceConstraints :: [CommandLineOption]
                      -> ModSummary
                      -> HsParsedModule
                      -> Hsc HsParsedModule
-runSourceConstraints _options ModSummary{ms_location = ModLocation{..}} parsedModule = do
-  dynFlags <- getDynFlags
-
+runSourceConstraints options ModSummary{ms_location = ModLocation{..}} parsedModule = do
+  dynFlags     <- getDynFlags
+  localModules <- mapM parseLocalModule (pack <$> options)
   when (allowLocation ml_hs_file) $
     liftIO
       . printOrThrowWarnings dynFlags
       $ warnings Context{..} (hpm_module parsedModule)
-
   pure parsedModule
   where
-    allowLocation = maybe False (not . elem ".stack-work/" . splitPath)
+    allowLocation = maybe False (notElem ".stack-work/" . splitPath)
+
+    parseLocalModule :: Text -> Hsc LocalModule
+    parseLocalModule = either fail pure . parseOnly localModuleParser
 
 -- | Find warnings for node
 warnings
@@ -128,13 +95,48 @@ data IEClass = Module String | Type String | Operator String | Function String
   deriving stock (Eq, Ord)
 
 locatedWarnings :: Data a => Context -> a -> WarningMessages
-locatedWarnings context node = listToBag $ catMaybes
-  [ mkQ empty sortedImportStatement  node
-  , mkQ empty sortedIEThingWith      node
-  , mkQ empty sortedIEs              node
-  , mkQ empty sortedMultipleDeriving node
-  ]
+locatedWarnings context@Context{..} node =
+  singleWarnings `unionBags` mkQ emptyBag absentImportDeclList node
   where
+    singleWarnings = listToBag $ catMaybes
+      [ mkQ empty sortedImportStatement  node
+      , mkQ empty sortedIEThingWith      node
+      , mkQ empty sortedIEs              node
+      , mkQ empty sortedMultipleDeriving node
+      ]
+
+    absentImportDeclList :: HsModule GhcPs -> WarningMessages
+    absentImportDeclList HsModule{..} =
+      listToBag $ catMaybes (absentList <$> candidates)
+      where
+        absentList :: LImportDecl GhcPs -> Maybe ErrMsg
+        absentList = \case
+          (L _loc ImportDecl { ideclHiding = Just (False, L loc list) }) ->
+            testList loc list
+          _  -> empty
+
+        testList :: SrcSpan -> [LIE GhcPs] -> Maybe ErrMsg
+        testList srcSpan = \case
+          [] -> empty
+          _  -> pure $ notEmpty srcSpan
+
+        notEmpty :: SrcSpan -> ErrMsg
+        notEmpty src =
+          mkWarnMsg
+            dynFlags
+            src
+            neverQualify
+            (text "Present import list for local module")
+
+        candidates :: [LImportDecl GhcPs]
+        candidates = filter isCandidate hsmodImports
+
+        isCandidate :: LImportDecl GhcPs -> Bool
+        isCandidate = \case
+          (L _ ImportDecl{ideclName = L _ moduleName}) ->
+            any (`isLocalModule` moduleName) localModules
+          _ -> False
+
     sortedImportStatement :: HsModule GhcPs -> Maybe ErrMsg
     sortedImportStatement HsModule{..} =
       sortedLocated
