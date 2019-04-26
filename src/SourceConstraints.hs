@@ -1,8 +1,8 @@
 {-# LANGUAGE RankNTypes #-}
 
-module SourceConstraints (plugin, warnings) where
+module SourceConstraints (Context(..), plugin, warnings) where
 
-import Bag (emptyBag, unitBag, unionManyBags)
+import Bag (emptyBag, listToBag, unitBag, unionManyBags)
 import Control.Applicative (Alternative(empty), Applicative(pure))
 import Control.Monad (when)
 import Control.Monad.IO.Class (MonadIO(liftIO))
@@ -13,13 +13,14 @@ import Data.Eq (Eq((/=)))
 import Data.Foldable (Foldable(elem), find)
 import Data.Function (($), (.), on)
 import Data.Functor ((<$>))
-import Data.Generics.Aliases (ext2Q, extQ, mkQ)
+import Data.Generics.Aliases (ext2Q, mkQ)
 import Data.Generics.Text (gshow)
-import Data.List (intercalate, sort, sortBy, zip3)
-import Data.Maybe (Maybe(Nothing), fromJust, maybe)
+import Data.List (sortBy, zip)
+import Data.Maybe (Maybe(Nothing), catMaybes, fromJust, maybe)
 import Data.Ord (Ord(compare))
 import Data.Semigroup ((<>))
 import Data.String (String)
+import Data.Tuple (snd)
 import DynFlags (DynFlags, getDynFlags)
 import ErrUtils (ErrMsg, WarningMessages, mkWarnMsg)
 import HsDecls
@@ -72,6 +73,10 @@ import Prelude(error)
 import SrcLoc (GenLocated(L), Located, getLoc, unLoc)
 import System.FilePath.Posix (splitPath)
 
+newtype Context = Context
+  { dynFlags :: DynFlags
+  }
+
 plugin :: Plugin
 plugin =
   defaultPlugin
@@ -89,7 +94,7 @@ runSourceConstraints _options ModSummary{ms_location = ModLocation{..}} parsedMo
   when (allowLocation ml_hs_file) $
     liftIO
       . printOrThrowWarnings dynFlags
-      $ warnings dynFlags (hpm_module parsedModule)
+      $ warnings Context{..} (hpm_module parsedModule)
 
   pure parsedModule
   where
@@ -98,13 +103,13 @@ runSourceConstraints _options ModSummary{ms_location = ModLocation{..}} parsedMo
 -- | Find warnings for node
 warnings
   :: (Data a, Data b, Typeable a)
-  => DynFlags
+  => Context
   -> GenLocated a b
   -> WarningMessages
-warnings dynFlags (L sourceSpan node) =
+warnings context@Context{..} (L sourceSpan node) =
   unionManyBags
-    [ maybe emptyBag mkWarning $ unlocatedWarning dynFlags node
-    , maybe emptyBag unitBag   $ locatedWarning dynFlags node
+    [ maybe emptyBag mkWarning $ unlocatedWarning context node
+    , locatedWarnings context node
     , descend node
     ]
   where
@@ -117,116 +122,109 @@ warnings dynFlags (L sourceSpan node) =
     descend :: Data a => a -> WarningMessages
     descend =
       unionManyBags . gmapQ
-        (descend `ext2Q` warnings dynFlags)
-
-locatedWarning :: Data a => DynFlags -> a -> Maybe ErrMsg
-locatedWarning dynFlags = mkQ empty sortedImportStatement
-  where
-    sortedImportStatement :: HsModule GhcPs -> Maybe ErrMsg
-    sortedImportStatement HsModule{..} = sortedLocated "import statement" dynFlags hsmodImports
-
-unlocatedWarning :: Data a => DynFlags -> a -> Maybe SDoc
-unlocatedWarning dynFlags =
-  mkQ empty requireDerivingStrategy
-    `extQ` sortedIEThingWith dynFlags
-    `extQ` sortedIEs dynFlags
-    `extQ` sortedMultipleDeriving dynFlags
-
-requireDerivingStrategy :: HsDerivingClause GhcPs -> Maybe SDoc
-requireDerivingStrategy HsDerivingClause{deriv_clause_strategy = Nothing}
-  = pure $ text "Missing deriving strategy"
-requireDerivingStrategy _
-  = empty
-
-sortedMultipleDeriving :: DynFlags -> [LHsDerivingClause GhcPs] -> Maybe SDoc
-sortedMultipleDeriving dynFlags clauses =
-  if rendered /= expected
-     then pure $ text . message $ intercalate ", " expected
-     else empty
-
-  where
-    message :: String -> String
-    message example = "Unsorted multiple deriving, expected: " <> example
-
-    rendered = render dynFlags <$> clauses
-    expected = sort rendered
+        (descend `ext2Q` warnings context)
 
 data IEClass = Module String | Type String | Operator String | Function String
   deriving stock (Eq, Ord)
 
-sortedIEs :: DynFlags -> [LIE GhcPs] -> Maybe SDoc
-sortedIEs dynFlags ies =
-  if ies /= expected
-    then pure . text . message $ intercalate ", " (render dynFlags <$> expected)
-    else empty
+locatedWarnings :: Data a => Context -> a -> WarningMessages
+locatedWarnings context node = listToBag $ catMaybes
+  [ mkQ empty sortedImportStatement  node
+  , mkQ empty sortedIEThingWith      node
+  , mkQ empty sortedIEs              node
+  , mkQ empty sortedMultipleDeriving node
+  ]
   where
-    message :: String -> String
-    message example = "Unsorted import/export, expected: (" <> example <> ")"
+    sortedImportStatement :: HsModule GhcPs -> Maybe ErrMsg
+    sortedImportStatement HsModule{..} =
+      sortedLocated
+        "import statement"
+        context
+        (render context)
+        hsmodImports
 
-    expected :: [LIE GhcPs]
-    expected = sortBy (compare `on` ieClass . unLoc) ies
+    sortedMultipleDeriving :: [LHsDerivingClause GhcPs] -> Maybe ErrMsg
+    sortedMultipleDeriving =
+      sortedLocated
+        "deriving clauses"
+        context
+        (render context)
+
+    sortedIEs :: [LIE GhcPs] -> Maybe ErrMsg
+    sortedIEs =
+      sortedLocated
+        "import/export declaration"
+        context
+        ieClass
+
+    sortedIEThingWith :: IE GhcPs -> Maybe ErrMsg
+    sortedIEThingWith = \case
+      (IEThingWith _xIE _name _ieWildcard ieWith _ieFieldLabels) ->
+        sortedLocated
+          "import/export item with list"
+          context
+          (render context)
+          ieWith
+      _ -> empty
 
     classify str@('(':_) = Function str
     classify str@(x:_)   = if isUpper x then Type str else Function str
     classify []          = error "Parser error"
 
     ieClass :: IE GhcPs -> IEClass
-    ieClass (IEVar _xIE wrappedName) =
-      classify . render dynFlags $ unLoc wrappedName
-    ieClass (IEThingAbs _xIE wrappedName) =
-      Type . render dynFlags $ unLoc wrappedName
-    ieClass (IEThingAll _xIE wrappedName) =
-      Type . render dynFlags $ unLoc wrappedName
-    ieClass (IEThingWith _xIE wrappedName _ieWildcard _ieWith _ieFieldLabels) =
-      Type . render dynFlags $ unLoc wrappedName
-    ieClass (IEModuleContents _xIE moduleName) =
-      Module . render dynFlags $ unLoc moduleName
-    ieClass ie = error $ "Unsupported: " <> gshow ie
+    ieClass = \case
+      (IEVar _xIE name)            -> mkClass classify name
+      (IEThingAbs _xIE name)       -> mkClass Type name
+      (IEThingAll _xIE name)       -> mkClass Type name
+      (IEModuleContents _xIE name) -> mkClass Module name
+      (IEThingWith _xIE name _ieWildcard _ieWith _ieFieldLabels) ->
+        mkClass Type name
+      ie -> error $ "Unsupported: " <> gshow ie
 
-sortedIEThingWith :: DynFlags -> IE GhcPs -> Maybe SDoc
-sortedIEThingWith dynFlags (IEThingWith _xIE _wrappedName _ieWildcard ieWith _ieFieldLabels) =
-  if rendered /= expected
-     then pure $ text . message $ intercalate ", " expected
-     else empty
-  where
-    message :: String -> String
-    message example = "Unsorted import/export item with list, expected: (" <> example <> ")"
+    mkClass :: Outputable b => (String -> IEClass) -> GenLocated a b -> IEClass
+    mkClass constructor name = constructor . render context $ unLoc name
 
-    rendered = render dynFlags <$> ieWith
-    expected = sort rendered
+unlocatedWarning :: Data a => Context -> a -> Maybe SDoc
+unlocatedWarning _context = mkQ empty requireDerivingStrategy
 
-sortedIEThingWith _ _ = empty
+requireDerivingStrategy :: HsDerivingClause GhcPs -> Maybe SDoc
+requireDerivingStrategy = \case
+  HsDerivingClause{deriv_clause_strategy = Nothing} ->
+    pure $ text "Missing deriving strategy"
+  _ -> empty
 
-render :: Outputable a => DynFlags -> a -> String
-render dynFlags outputable =
+render :: Outputable a => Context -> a -> String
+render Context{..} outputable =
   renderWithStyle
     dynFlags
     (ppr outputable)
     (defaultUserStyle dynFlags)
 
 sortedLocated
-  :: forall a . Outputable a
+  :: forall a b . (Eq b, Ord b, Outputable a)
   => String
-  -> DynFlags
+  -> Context
+  -> (a -> b)
   -> [Located a]
   -> Maybe ErrMsg
-sortedLocated name dynFlags nodes = mkWarning <$> violation
+sortedLocated name context@Context{..} ordering nodes =
+  mkWarning <$> find isViolation candidates
   where
-    mkWarning :: (String, String, Located a) -> ErrMsg
-    mkWarning (_rendered, expected, node) =
+    mkWarning :: ((Located a, b), (Located a, b)) -> ErrMsg
+    mkWarning ((actualNode, _item), (expectedNode, _expected)) =
       mkWarnMsg
         dynFlags
-        (getLoc node)
+        (getLoc actualNode)
         neverQualify
-        (text $ "Unsorted " <> name <> ", expected: " <> expected)
+        (text $ "Unsorted " <> name <> ", expected: " <> render context expectedNode)
 
-    violation = find testViolation candidates
+    isViolation :: ((Located a, b), (Located a, b)) -> Bool
+    isViolation ((_actualNode, item), (_expectedNode, expected)) =
+      item /= expected
 
-    testViolation :: (String, String, Located a) -> Bool
-    testViolation (rendered, expected, _node) = rendered /= expected
-
-    candidates :: [(String, String, Located a)]
+    candidates :: [((Located a, b), (Located a, b))]
     candidates =
-      let rendered = render dynFlags <$> nodes
+      let items    = (\node -> (node, ordering $ unLoc node)) <$> nodes
+          expected = sortBy (compare `on` snd) items
       in
-        zip3 rendered (sort rendered) nodes
+        zip items expected

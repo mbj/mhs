@@ -37,12 +37,8 @@ ghc-options:
 
 default-extensions:
 - DerivingStrategies
-- DeriveAnyClass
-- DeriveGeneric
-- DuplicateRecordFields
 - GeneralizedNewtypeDeriving
-- InstanceSigs
-- MultiParamTypeClasses
+- LambdaCase
 - NoImplicitPrelude
 - OverloadedStrings
 - RecordWildCards
