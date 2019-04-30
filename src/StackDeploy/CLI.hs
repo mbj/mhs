@@ -1,4 +1,4 @@
-module StackDeploy.CLI (parserInfo) where
+module StackDeploy.CLI (nameParser, parserInfo) where
 
 import Control.Applicative (many)
 import Control.Exception.Base (AssertionFailed(AssertionFailed))
@@ -82,9 +82,6 @@ parserInfo templateProvider instanceSpecProvider = wrapHelper commands
       <> mkCommand "update" (update <$> nameParser <*> many parameterParser)
       <> mkCommand "wait"   (wait <$> nameParser <*> tokenParser)
       <> mkCommand "watch"  (watch <$> nameParser)
-
-    nameParser :: Parser Name
-    nameParser = Name <$> argument str (metavar "NAME")
 
     tokenParser :: Parser Token
     tokenParser = Token <$> argument str (metavar "TOKEN")
@@ -196,3 +193,6 @@ getExistingStackId name = maybe throwNoStack pure =<< getStackId name
       . AssertionFailed
       . convertText
       $ "No stack " <> toText name <> " found to update"
+
+nameParser :: Parser Name
+nameParser = Name <$> argument str (metavar "NAME")
