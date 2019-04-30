@@ -68,6 +68,7 @@ library:
   - StackDeploy.CLI
   - StackDeploy.Stack
   - StackDeploy.Types
+  - StackDeploy.Wait
 
 tests:
   hlint:
