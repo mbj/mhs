@@ -1,4 +1,4 @@
-module StackDeploy.CLI (parserInfo) where
+module StackDeploy.CLI (nameParser, parserInfo) where
 
 import Control.Applicative (many)
 import Control.Exception.Base (AssertionFailed(AssertionFailed))
@@ -44,6 +44,7 @@ import Options.Applicative
   , str
   )
 import StackDeploy.AWS
+import StackDeploy.Events
 import StackDeploy.IO
 import StackDeploy.Prelude
 import StackDeploy.Stack
@@ -80,9 +81,7 @@ parserInfo templateProvider instanceSpecProvider = wrapHelper commands
       <> mkCommand "token"  (pure printNewToken)
       <> mkCommand "update" (update <$> nameParser <*> many parameterParser)
       <> mkCommand "wait"   (wait <$> nameParser <*> tokenParser)
-
-    nameParser :: Parser Name
-    nameParser = Name <$> argument str (metavar "NAME")
+      <> mkCommand "watch"  (watch <$> nameParser)
 
     tokenParser :: Parser Token
     tokenParser = Token <$> argument str (metavar "TOKEN")
@@ -102,17 +101,10 @@ parserInfo templateProvider instanceSpecProvider = wrapHelper commands
     update :: Name -> [Parameter] -> m ExitCode
     update name params = do
       spec     <- instanceSpecProvider name params
-      stackId  <- maybe throwNoStack pure =<< getStackId name
+      stackId  <- getExistingStackId name
       template <- templateProvider name
 
       exitCode =<< perform (OpUpdate stackId spec template)
-      where
-        throwNoStack :: m a
-        throwNoStack
-          = throwM
-          . AssertionFailed
-          . convertText
-          $ "No stack " <> toText name <> " found to update"
 
     sync :: Name -> [Parameter] -> m ExitCode
     sync name params = do
@@ -140,6 +132,12 @@ parserInfo templateProvider instanceSpecProvider = wrapHelper commands
       success
       where
         req = describeStackEvents & dseStackName .~ pure (toText name)
+
+    watch :: Name -> m ExitCode
+    watch name = do
+      stackId <- getExistingStackId name
+      void $ pollEvents (defaultPoll stackId) printEvent
+      success
 
     waitForOperation :: Token -> Id -> m ExitCode
     waitForOperation token stackId =
@@ -182,3 +180,19 @@ parameterReader = eitherReader (Text.parseOnly parser . convertText)
         & pParameterValue .~ pure value
 
     allowChar char = isDigit char || isAlpha char
+
+getExistingStackId
+  :: forall m r . (AWSConstraint r m, MonadAWS m)
+  => Name
+  -> m Id
+getExistingStackId name = maybe throwNoStack pure =<< getStackId name
+  where
+    throwNoStack :: m a
+    throwNoStack
+      = throwM
+      . AssertionFailed
+      . convertText
+      $ "No stack " <> toText name <> " found to update"
+
+nameParser :: Parser Name
+nameParser = Name <$> argument str (metavar "NAME")
