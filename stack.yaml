@@ -1,9 +1,9 @@
 build:
   haddock: false
-resolver: lts-13.20
+resolver: lts-13.21
 extra-deps:
 - stratosphere-0.36.0
-- commit: 781a184897e4b82113bb76bcd68d2f909293ba5a
+- commit: 2ef85432baaf0c7ef3c0809a802ed10ff6f48212
   git: https://github.com/schirp-dso/source-constraints
 - commit: 33aa6b71309793829b534fb29f6532d71c32b106
   git: https://github.com/mbj/amazonka
