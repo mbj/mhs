@@ -9,12 +9,6 @@ import Data.Set (Set)
 import Data.String (String)
 import Network.AWS (MonadAWS)
 import Network.AWS.CloudFormation.Types
-  ( ResourceStatus(..)
-  , StackEvent
-  , seClientRequestToken
-  , seResourceStatus
-  , seResourceType
-  )
 import StackDeploy.Events
 import StackDeploy.Prelude
 import StackDeploy.Types

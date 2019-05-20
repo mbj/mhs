@@ -12,37 +12,11 @@ import Data.Conduit ((.|), runConduit)
 import Data.Conduit.Combinators (mapM_)
 import Data.String (String)
 import Data.Text.Encoding (decodeUtf8)
-import Network.AWS (MonadAWS)
+import Network.AWS (MonadAWS, send)
+import Network.AWS.CloudFormation.CancelUpdateStack
 import Network.AWS.CloudFormation.DescribeStackEvents
-  ( describeStackEvents
-  , dseStackName
-  , dsersStackEvents
-  )
 import Network.AWS.CloudFormation.Types
-  ( Parameter
-  , pParameterKey
-  , pParameterValue
-  , parameter
-  )
-import Options.Applicative
-  ( CommandFields
-  , Mod
-  , Parser
-  , ParserInfo
-  , ReadM
-  , argument
-  , command
-  , eitherReader
-  , help
-  , helper
-  , hsubparser
-  , idm
-  , info
-  , long
-  , metavar
-  , option
-  , str
-  )
+import Options.Applicative hiding (value)
 import StackDeploy.AWS
 import StackDeploy.Events
 import StackDeploy.IO
@@ -72,7 +46,8 @@ parserInfo templateProvider instanceSpecProvider = wrapHelper commands
   where
     commands :: Parser (m ExitCode)
     commands = hsubparser
-      $  mkCommand "create" (create <$> nameParser <*> many parameterParser)
+      $  mkCommand "cancel" (cancel <$> nameParser)
+      <> mkCommand "create" (create <$> nameParser <*> many parameterParser)
       <> mkCommand "delete" (delete <$> nameParser)
       <> mkCommand "events" (events <$> nameParser)
       <> mkCommand "list"   (pure list)
@@ -91,6 +66,11 @@ parserInfo templateProvider instanceSpecProvider = wrapHelper commands
 
     wrapHelper :: Parser b -> ParserInfo b
     wrapHelper parser = info (helper <*> parser) idm
+
+    cancel :: Name -> m ExitCode
+    cancel name = do
+      void . send . cancelUpdateStack $ toText name
+      success
 
     create :: Name -> [Parameter] -> m ExitCode
     create name params = do

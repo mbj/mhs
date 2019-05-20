@@ -22,55 +22,11 @@ import Data.Text (unwords)
 import Data.Text.Encoding (decodeUtf8)
 import Data.Time.Format (defaultTimeLocale, formatTime)
 import Network.AWS
-  ( Error(ServiceError)
-  , ErrorCode(ErrorCode)
-  , ErrorMessage(ErrorMessage)
-  , MonadAWS
-  , Rs
-  , ServiceError(..)
-  , liftAWS
-  , send
-  )
 import Network.AWS.CloudFormation.CreateStack
-  ( CreateStack
-  , createStack
-  , csCapabilities
-  , csClientRequestToken
-  , csParameters
-  , csTemplateBody
-  , csrsStackId
-  )
 import Network.AWS.CloudFormation.DeleteStack
-  ( deleteStack
-  , dsClientRequestToken
-  )
 import Network.AWS.CloudFormation.DescribeStacks
-  ( DescribeStacks
-  , dStackName
-  , describeStacks
-  , dsrsStacks
-  )
 import Network.AWS.CloudFormation.Types
-  ( Capability
-  , Parameter
-  , Stack
-  , StackEvent
-  , sStackId
-  , sStackName
-  , seLogicalResourceId
-  , sePhysicalResourceId
-  , seResourceStatus
-  , seResourceStatusReason
-  , seResourceType
-  , seTimestamp
-  )
 import Network.AWS.CloudFormation.UpdateStack
-  ( updateStack
-  , usCapabilities
-  , usClientRequestToken
-  , usParameters
-  , usTemplateBody
-  )
 import StackDeploy.AWS
 import StackDeploy.IO
 import StackDeploy.Prelude
