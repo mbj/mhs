@@ -14,35 +14,8 @@ import Data.String (String)
 import Data.Text.Encoding (decodeUtf8)
 import Network.AWS (MonadAWS)
 import Network.AWS.CloudFormation.DescribeStackEvents
-  ( describeStackEvents
-  , dseStackName
-  , dsersStackEvents
-  )
 import Network.AWS.CloudFormation.Types
-  ( Parameter
-  , pParameterKey
-  , pParameterValue
-  , parameter
-  )
-import Options.Applicative
-  ( CommandFields
-  , Mod
-  , Parser
-  , ParserInfo
-  , ReadM
-  , argument
-  , command
-  , eitherReader
-  , help
-  , helper
-  , hsubparser
-  , idm
-  , info
-  , long
-  , metavar
-  , option
-  , str
-  )
+import Options.Applicative hiding (value)
 import StackDeploy.AWS
 import StackDeploy.Events
 import StackDeploy.IO

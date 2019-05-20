@@ -13,10 +13,6 @@ import Data.Function (on)
 import Data.List (reverse)
 import Network.AWS (MonadAWS)
 import Network.AWS.CloudFormation.DescribeStackEvents
-  ( describeStackEvents
-  , dseStackName
-  , dsersStackEvents
-  )
 import Network.AWS.CloudFormation.Types (StackEvent, seEventId)
 import StackDeploy.AWS
 import StackDeploy.Prelude
