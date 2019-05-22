@@ -17,6 +17,11 @@ import Control.Monad as Exports
   , void
   )
 
+import Control.Monad.Fail as Exports
+  ( MonadFail
+  , fail
+  )
+
 import Control.Monad.IO.Class as Exports
   ( MonadIO
   , liftIO
