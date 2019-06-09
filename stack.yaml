@@ -1,6 +1,6 @@
 build:
   haddock: false
-resolver: lts-13.21
+resolver: lts-13.25
 extra-deps:
 - stratosphere-0.36.0
 - commit: 2ef85432baaf0c7ef3c0809a802ed10ff6f48212
