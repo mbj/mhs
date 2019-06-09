@@ -22,9 +22,10 @@ import StackDeploy.Events
 import StackDeploy.IO
 import StackDeploy.Prelude
 import StackDeploy.Stack
+import StackDeploy.Template
 import StackDeploy.Types
 import StackDeploy.Wait
-import Stratosphere (Template, encodeTemplate)
+import Stratosphere (Template)
 import System.Exit (ExitCode(..))
 
 import qualified Data.Attoparsec.Text as Text
