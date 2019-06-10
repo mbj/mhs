@@ -30,9 +30,10 @@ import Network.AWS.CloudFormation.UpdateStack
 import StackDeploy.AWS
 import StackDeploy.IO
 import StackDeploy.Prelude
+import StackDeploy.Template
 import StackDeploy.Types
 import StackDeploy.Wait
-import Stratosphere (Template, encodeTemplate)
+import Stratosphere (Template)
 
 data OperationFields a = OperationFields
   { tokenField        :: Lens' a (Maybe Text)
