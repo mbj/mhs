@@ -1,11 +1,11 @@
 build:
   haddock: false
-resolver: lts-13.21
+resolver: lts-13.25
 extra-deps:
 - stratosphere-0.36.0
 - commit: 781a184897e4b82113bb76bcd68d2f909293ba5a
   git: https://github.com/schirp-dso/source-constraints
-- commit: 590519a21a87ad1b714c55f4af6180b94334c8ea
+- commit: 52e86347ff83f32054ca340858f0451e63a41761
   git: https://github.com/mbj/stack-deploy
 - commit: 33aa6b71309793829b534fb29f6532d71c32b106
   git: https://github.com/mbj/amazonka
