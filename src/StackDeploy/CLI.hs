@@ -154,6 +154,7 @@ parameterReader = eitherReader (Text.parseOnly parser . convertText)
       key <- convertText <$> Text.many1 (Text.satisfy allowChar)
       void $ Text.char ':'
       value <- convertText <$> Text.many1 (Text.satisfy allowChar)
+      void Text.endOfInput
 
       pure
         $ parameter
