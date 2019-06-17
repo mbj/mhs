@@ -161,7 +161,9 @@ parameterReader = eitherReader (Text.parseOnly parser . convertText)
         & pParameterKey .~ pure key
         & pParameterValue .~ pure value
 
-    allowChar char = isDigit char || isAlpha char
+    allowChar = \case
+      '-'  -> True
+      char -> isDigit char || isAlpha char
 
 getExistingStackId
   :: forall m r . (AWSConstraint r m, MonadAWS m)
