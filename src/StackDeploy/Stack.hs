@@ -39,6 +39,7 @@ data OperationFields a = OperationFields
   { tokenField        :: Lens' a (Maybe Text)
   , capabilitiesField :: Lens' a [Capability]
   , parametersField   :: Lens' a [Parameter]
+  , roleARNField      :: Lens' a (Maybe Text)
   , templateBodyField :: Lens' a (Maybe Text)
   }
 
@@ -83,6 +84,7 @@ perform = \case
         operationFields = OperationFields
           { capabilitiesField = csCapabilities
           , parametersField   = csParameters
+          , roleARNField      = csRoleARN
           , templateBodyField = csTemplateBody
           , tokenField        = csClientRequestToken
           }
@@ -134,6 +136,7 @@ perform = \case
         operationFields = OperationFields
           { capabilitiesField = usCapabilities
           , parametersField   = usParameters
+          , roleARNField      = usRoleARN
           , templateBodyField = usTemplateBody
           , tokenField        = usClientRequestToken
           }
@@ -238,6 +241,7 @@ configureStack
 configureStack template OperationFields{..} InstanceSpec{..} token
   = set     capabilitiesField capabilities
   . set     parametersField   parameters
+  . set     roleARNField      (toText <$> roleARN)
   . setText templateBodyField templateBody
   . setText tokenField        token
   where

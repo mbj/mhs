@@ -18,6 +18,10 @@ newtype Name = Name Text
   deriving newtype ToText
   deriving stock   Eq
 
+newtype RoleARN = RoleARN Text
+  deriving newtype ToText
+  deriving stock   Eq
+
 data Operation
   = OpCreate Name InstanceSpec Template
   | OpDelete Id
@@ -27,6 +31,7 @@ data InstanceSpec = InstanceSpec
   { capabilities :: [Capability]
   , parameters   :: [Parameter]
   , prepareSync  :: forall m r . (AWSConstraint r m, MonadAWS m) => m ()
+  , roleARN      :: Maybe RoleARN
   }
 
 data RemoteOperation = RemoteOperation
