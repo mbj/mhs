@@ -1,4 +1,4 @@
-module MPrelude (module Exports) where
+module MPrelude (module Exports, identity) where
 
 import Control.Applicative as Exports
   ( Alternative
@@ -91,3 +91,6 @@ import Text.Show as Exports
   ( Show
   , show
   )
+
+identity :: a -> a
+identity value = value
