@@ -19,6 +19,7 @@ dependencies:
 - containers              == 0.6.0.1
 - exceptions              == 0.10.2
 - lens                    == 4.17.1
+- mprelude                == 0.0.0.1
 - optparse-applicative    == 0.14.3.0
 - random                  == 1.1
 - source-constraints      == 0.0.0.1
