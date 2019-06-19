@@ -4,6 +4,8 @@ resolver: lts-13.26
 extra-deps:
 - stratosphere-0.36.0
 - commit: 0eb2334866d0d7af0aa148b2ac0d0095531ed946
+  git: https://github.com/mbj/mprelude
+- commit: 0eb2334866d0d7af0aa148b2ac0d0095531ed946
   git: https://github.com/schirp-dso/source-constraints
 - commit: 52e86347ff83f32054ca340858f0451e63a41761
   git: https://github.com/mbj/stack-deploy

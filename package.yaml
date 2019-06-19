@@ -17,6 +17,7 @@ dependencies:
 - exceptions         == 0.10.2
 - filepath           == 1.4.2.1
 - http-types         == 0.12.3
+- mprelude           == 0.0.0.1
 - source-constraints == 0.0.0.1
 - tar                == 0.5.1.0
 - template-haskell   == 2.14.0.0
