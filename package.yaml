@@ -8,10 +8,10 @@ copyright:   2019 Markus Schirp
 github:      mbj/stack-deploy
 
 dependencies:
+- aeson-pretty            == 0.8.7
 - amazonka                == 1.6.1
 - amazonka-cloudformation == 1.6.1
 - amazonka-core           == 1.6.1
-- aeson-pretty            == 0.8.7
 - attoparsec              == 0.13.2.2
 - base                    == 4.12.0.0
 - bytestring              == 0.10.8.2
@@ -19,6 +19,7 @@ dependencies:
 - containers              == 0.6.0.1
 - exceptions              == 0.10.2
 - lens                    == 4.17.1
+- mprelude                == 0.0.0.1
 - optparse-applicative    == 0.14.3.0
 - random                  == 1.1
 - source-constraints      == 0.0.0.1
