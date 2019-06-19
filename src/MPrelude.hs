@@ -58,7 +58,7 @@ import Data.Functor as Exports
   )
 
 import Data.Maybe as Exports
-  ( Maybe
+  ( Maybe(Just)
   , fromMaybe
   , listToMaybe
   , maybe
