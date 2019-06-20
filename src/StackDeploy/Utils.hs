@@ -26,8 +26,8 @@ getAtt name item = GetAtt (itemName item) name
 getAttArn :: Resource -> Val Text
 getAttArn = getAtt "Arn"
 
-s3publicAccessBlockConfiguration :: S3BucketPublicAccessBlockConfiguration
-s3publicAccessBlockConfiguration
+s3BucketBlockPublicAccess :: S3BucketPublicAccessBlockConfiguration
+s3BucketBlockPublicAccess
   = s3BucketPublicAccessBlockConfiguration
   & sbpabcBlockPublicAcls       ?~ Literal True
   & sbpabcBlockPublicPolicy     ?~ Literal True
