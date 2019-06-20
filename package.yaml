@@ -73,8 +73,10 @@ library:
   - StackDeploy.CLI
   - StackDeploy.Stack
   - StackDeploy.Template
+  - StackDeploy.Template.Code
   - StackDeploy.Types
   - StackDeploy.Wait
+  - StackDeploy.Utils
 
 tests:
   hlint:
