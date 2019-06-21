@@ -1,5 +1,6 @@
 module StackDeploy.Stack
   ( finalMessage
+  , getOutput
   , getStack
   , getStackId
   , perform
@@ -25,7 +26,7 @@ import Network.AWS
 import Network.AWS.CloudFormation.CreateStack
 import Network.AWS.CloudFormation.DeleteStack
 import Network.AWS.CloudFormation.DescribeStacks
-import Network.AWS.CloudFormation.Types
+import Network.AWS.CloudFormation.Types hiding (stack)
 import Network.AWS.CloudFormation.UpdateStack
 import StackDeploy.AWS
 import StackDeploy.IO
@@ -34,6 +35,8 @@ import StackDeploy.Template
 import StackDeploy.Types
 import StackDeploy.Wait
 import Stratosphere (Template)
+
+import qualified Data.Foldable as Foldable
 
 data OperationFields a = OperationFields
   { tokenField        :: Lens' a (Maybe Text)
@@ -254,3 +257,20 @@ finalMessage :: RemoteOperationResult -> Text
 finalMessage = \case
   RemoteOperationFailure -> "failure"
   RemoteOperationSuccess -> "succcess"
+
+getOutput :: forall m . MonadAWS m => Name -> Text -> m Text
+getOutput name key = do
+  stack <- maybe
+    (failStack "not found")
+    pure
+    =<< getStack name
+
+  maybe
+    (failStack $ "Output " <> convertText key <> " missing")
+    (maybe (failStack $ "Output " <> convertText key <> " has no value") pure . view oOutputValue)
+    (Foldable.find ((==) (pure key) . view oOutputKey) (view sOutputs stack))
+
+  where
+    failStack :: Text -> m a
+    failStack message
+      = liftIO . fail . convertText $ "Stack: " <> convertText name <> " " <> message
