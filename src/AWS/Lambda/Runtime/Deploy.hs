@@ -133,6 +133,7 @@ getFunctionTarget Config{..} = do
         , "build"
         , "--copy-bins"
         , "--flag", convertText packageName <> ":static"
+        , "--interleaved-output"
         , "--system-ghc"
         , convertText packageName <> ":" <> convertText targetName
         ]
