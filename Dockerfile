@@ -27,7 +27,7 @@ RUN apk add                       \
   --no-cache                      \
   --                              \
   cache-s3=0.1.5-r0               \
-  curl=7.64.0-r1                  \
+  curl=7.64.0-r2                  \
   ghc=8.6.5-r0                    \
   git=2.20.1-r0                   \
   ncurses-dev=6.1_p20190105-r0    \
