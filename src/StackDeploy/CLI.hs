@@ -2,14 +2,13 @@ module StackDeploy.CLI (nameParser, parserInfo) where
 
 import Control.Applicative (many)
 import Control.Exception.Base (AssertionFailed(AssertionFailed))
-import Control.Lens ((&), (.~))
-import Control.Monad ((<=<))
+import Control.Lens ((&), (.~), view)
+import Control.Monad ((<=<), mapM_)
 import Control.Monad.Catch (throwM)
 import Control.Monad.Trans.AWS (AWSConstraint)
 import Data.ByteString.Lazy (toStrict)
 import Data.Char (isAlpha, isDigit)
 import Data.Conduit ((.|), runConduit)
-import Data.Conduit.Combinators (mapM_)
 import Data.String (String)
 import Data.Text.Encoding (decodeUtf8)
 import Network.AWS (MonadAWS, send)
@@ -28,7 +27,9 @@ import StackDeploy.Wait
 import Stratosphere (Template)
 import System.Exit (ExitCode(..))
 
-import qualified Data.Attoparsec.Text as Text
+import qualified Data.Attoparsec.Text     as Text
+import qualified Data.Conduit.Combinators as Conduit
+import qualified Data.Text.IO             as Text
 
 type InstanceSpecProvider
   =  forall m r . (AWSConstraint r m, MonadAWS m)
@@ -47,17 +48,18 @@ parserInfo templateProvider instanceSpecProvider = wrapHelper commands
   where
     commands :: Parser (m ExitCode)
     commands = hsubparser
-      $  mkCommand "cancel" (cancel <$> nameParser)
-      <> mkCommand "create" (create <$> nameParser <*> many parameterParser)
-      <> mkCommand "delete" (delete <$> nameParser)
-      <> mkCommand "events" (events <$> nameParser)
-      <> mkCommand "list"   (pure list)
-      <> mkCommand "render" (render <$> nameParser)
-      <> mkCommand "sync"   (sync <$> nameParser <*> many parameterParser)
-      <> mkCommand "token"  (pure printNewToken)
-      <> mkCommand "update" (update <$> nameParser <*> many parameterParser)
-      <> mkCommand "wait"   (wait <$> nameParser <*> tokenParser)
-      <> mkCommand "watch"  (watch <$> nameParser)
+      $  mkCommand "cancel"  (cancel <$> nameParser)
+      <> mkCommand "create"  (create <$> nameParser <*> many parameterParser)
+      <> mkCommand "delete"  (delete <$> nameParser)
+      <> mkCommand "events"  (events <$> nameParser)
+      <> mkCommand "list"    (pure list)
+      <> mkCommand "outputs" (outputs <$> nameParser)
+      <> mkCommand "render"  (render <$> nameParser)
+      <> mkCommand "sync"    (sync <$> nameParser <*> many parameterParser)
+      <> mkCommand "token"   (pure printNewToken)
+      <> mkCommand "update"  (update <$> nameParser <*> many parameterParser)
+      <> mkCommand "wait"    (wait <$> nameParser <*> tokenParser)
+      <> mkCommand "watch"   (watch <$> nameParser)
 
     tokenParser :: Parser Token
     tokenParser = Token <$> argument str (metavar "TOKEN")
@@ -99,17 +101,25 @@ parserInfo templateProvider instanceSpecProvider = wrapHelper commands
     wait :: Name -> Token -> m ExitCode
     wait name token = maybe success (waitForOperation token) =<< getStackId name
 
+    outputs :: Name -> m ExitCode
+    outputs name = do
+      mapM_ printOutput =<< (view sOutputs <$> getExistingStack name)
+      success
+      where
+        printOutput :: Output -> m ()
+        printOutput = liftIO . Text.putStrLn . convertText . show
+
     delete :: Name -> m ExitCode
     delete = maybe success (exitCode <=< perform . OpDelete) <=< getStackId
 
     list :: m ExitCode
     list = do
-      runConduit $ stackNames .| mapM_ say
+      runConduit $ stackNames .| Conduit.mapM_ say
       success
 
     events :: Name -> m ExitCode
     events name = do
-      runConduit $ listResource req dsersStackEvents .| mapM_ printEvent
+      runConduit $ listResource req dsersStackEvents .| Conduit.mapM_ printEvent
       success
       where
         req = describeStackEvents & dseStackName .~ pure (toText name)

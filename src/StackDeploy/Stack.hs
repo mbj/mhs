@@ -1,7 +1,7 @@
 module StackDeploy.Stack
   ( finalMessage
+  , getExistingStack
   , getOutput
-  , getStack
   , getStackId
   , perform
   , printEvent
@@ -204,14 +204,27 @@ getStackId = getId <=< getStack
       (pure . Id)
       (view sStackId value)
 
-getStack :: forall m . MonadAWS m => Name -> m (Maybe Stack)
-getStack name = catchIf isNotFoundError doRequest (const $ pure empty)
+getExistingStack :: forall m . MonadAWS m => Name -> m Stack
+getExistingStack name = maybe failMissingRequested pure =<< doRequest
   where
     doRequest :: m (Maybe Stack)
     doRequest = liftAWS . runConduit
       $  listResource describeSpecificStack dsrsStacks
       .| find ((toText name ==) . view sStackName)
 
+    failMissingRequested :: m a
+    failMissingRequested
+      = throwM
+      . AssertionFailed
+      $ "Successful request to stack " <> convertText name <> " did not return the stack"
+
+    describeSpecificStack :: DescribeStacks
+    describeSpecificStack = set dStackName (pure $ toText name) describeStacks
+
+getStack :: forall m . MonadAWS m => Name -> m (Maybe Stack)
+getStack name =
+  catchIf isNotFoundError (pure <$> getExistingStack name) (const $ pure empty)
+  where
     isNotFoundError
       ( ServiceError
         ServiceError'
@@ -226,9 +239,6 @@ getStack name = catchIf isNotFoundError doRequest (const $ pure empty)
     expectedMessage :: ErrorMessage
     expectedMessage =
       ErrorMessage $ "Stack with id " <> toText name <> " does not exist"
-
-    describeSpecificStack :: DescribeStacks
-    describeSpecificStack = set dStackName (pure $ toText name) describeStacks
 
 stackNames :: (AWSConstraint r m, MonadAWS m) => ConduitT () Name m ()
 stackNames =
