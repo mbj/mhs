@@ -62,3 +62,7 @@ assumeRole service = HashMap.fromList
       ]
     )
   ]
+
+dependencies :: [Resource] -> Resource -> Resource
+dependencies deps res =
+  res & resourceDependsOn ?~ (itemName <$> deps)
