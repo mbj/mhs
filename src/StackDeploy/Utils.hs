@@ -9,16 +9,16 @@ import qualified Data.HashMap.Strict as HashMap
 import qualified Data.Vector         as Vector
 
 mkName :: Val Text -> Val Text
-mkName name = Join "-" [stackName, name]
+mkName name = Join "-" [awsStackName, name]
 
-accountId :: Val Text
-accountId = Ref "AWS::AccountId"
+awsAccountId :: Val Text
+awsAccountId = Ref "AWS::AccountId"
 
-region :: Val Text
-region = Ref "AWS::Region"
+awsRegion :: Val Text
+awsRegion = Ref "AWS::Region"
 
-stackName :: Val Text
-stackName = Ref "AWS::StackName"
+awsStackName :: Val Text
+awsStackName = Ref "AWS::StackName"
 
 getAtt :: Text -> Resource -> Val Text
 getAtt name item = GetAtt (itemName item) name
