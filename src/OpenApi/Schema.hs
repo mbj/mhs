@@ -3,8 +3,8 @@ module OpenApi.Schema where
 import Data.Map.Strict (Map)
 import Data.String (String)
 import Data.Tuple (snd, uncurry)
-import GHC.Generics
-import Numeric.Natural
+import GHC.Generics (Generic)
+import Numeric.Natural (Natural)
 import OpenApi.JSON
 import OpenApi.Prelude
 import Prelude (undefined)

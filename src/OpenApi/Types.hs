@@ -1,7 +1,7 @@
 module OpenApi.Types where
 
 import Data.Map (Map)
-import GHC.Generics
+import GHC.Generics (Generic)
 import OpenApi.JSON
 import OpenApi.Prelude
 
