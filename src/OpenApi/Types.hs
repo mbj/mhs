@@ -1,6 +1,5 @@
 module OpenApi.Types where
 
-import Data.Aeson.Types (FromJSON, FromJSONKey)
 import Data.Map (Map)
 import GHC.Generics
 import OpenApi.JSON
@@ -16,15 +15,15 @@ data Operation = Operation
   , operationId :: OperationId
   , parameters  :: Maybe [Parameter]
   }
-  deriving anyclass FromJSON
+  deriving anyclass JSON.FromJSON
   deriving stock    (Generic, Show)
 
 newtype OperationDescription = OperationDescription Text
-  deriving newtype FromJSON
+  deriving newtype JSON.FromJSON
   deriving stock   Show
 
 newtype OperationId = OperationId Text
-  deriving newtype FromJSON
+  deriving newtype JSON.FromJSON
   deriving stock   Show
 
 data Parameter = Parameter
@@ -36,17 +35,17 @@ data Parameter = Parameter
   }
   deriving stock (Generic, Show)
 
-instance FromJSON Parameter where
+instance JSON.FromJSON Parameter where
   parseJSON = parseRenamed $ Map.singleton "location" "in"
 
 newtype ParameterDescription = ParameterDescription Text
-  deriving newtype FromJSON
+  deriving newtype JSON.FromJSON
   deriving stock   Show
 
 data ParameterLocation = Cookie | Header | Path | Query
   deriving stock (GHC.Bounded, GHC.Enum, Show)
 
-instance FromJSON ParameterLocation where
+instance JSON.FromJSON ParameterLocation where
   parseJSON = parseJSONFixed "ParameterLocation" JSON.withText $ \case
     Cookie -> "cookie"
     Header -> "header"
@@ -54,37 +53,37 @@ instance FromJSON ParameterLocation where
     Query  -> "query"
 
 newtype ParameterName = ParameterName Text
-  deriving newtype FromJSON
+  deriving newtype JSON.FromJSON
   deriving stock   Show
 
 data ParameterStyle = DeepObject | Form | Simple
   deriving stock (GHC.Bounded, GHC.Enum, Show)
 
-instance FromJSON ParameterStyle where
+instance JSON.FromJSON ParameterStyle where
   parseJSON = parseJSONFixed "ParameterStyle" JSON.withText $ \case
     DeepObject -> "deepObject"
     Form       -> "form"
     Simple     -> "simple"
 
 newtype PathName = PathName Text
-  deriving newtype (Eq, FromJSONKey, Ord)
+  deriving newtype (Eq, JSON.FromJSONKey, Ord)
   deriving stock   Show
 
 newtype SecuritySchemeName = SecuritySchemeName Text
-  deriving newtype (Eq, FromJSONKey, Ord)
+  deriving newtype (Eq, JSON.FromJSONKey, Ord)
   deriving stock   Show
 
 data SecuritySchemeType = HTTP
   deriving stock (GHC.Bounded, GHC.Enum, Show)
 
-instance FromJSON SecuritySchemeType where
+instance JSON.FromJSON SecuritySchemeType where
   parseJSON = parseJSONFixed "SecuritySchemeType" JSON.withText $ \case
     HTTP -> "http"
 
 data SecuritySchemeScheme = Basic | Bearer
   deriving stock (GHC.Bounded, GHC.Enum, Show)
 
-instance FromJSON SecuritySchemeScheme where
+instance JSON.FromJSON SecuritySchemeScheme where
   parseJSON = parseJSONFixed "SecuritySchemeScheme" JSON.withText $ \case
     Basic  -> "basic"
     Bearer -> "bearer"
@@ -95,14 +94,14 @@ data SecurityScheme = SecurityScheme
   }
   deriving stock (Generic, Show)
 
-instance FromJSON SecurityScheme where
+instance JSON.FromJSON SecurityScheme where
   parseJSON = parseRenamed $ Map.singleton "type'" "type"
 
 data Components = Components
   { schemas         :: Map Schema.Name Schema.SchemaObject
   , securitySchemes :: Map SecuritySchemeName SecurityScheme
   }
-  deriving anyclass FromJSON
+  deriving anyclass JSON.FromJSON
   deriving stock    (Generic, Show)
 
 data PathItem = PathItem
@@ -114,12 +113,12 @@ data PathItem = PathItem
   , put     :: Maybe Operation
   , patch   :: Maybe Operation
   }
-  deriving anyclass FromJSON
+  deriving anyclass JSON.FromJSON
   deriving stock    (Generic, Show)
 
 data Specification = Specification
   { components :: Components
   , paths      :: Map PathName PathItem
   }
-  deriving anyclass FromJSON
+  deriving anyclass JSON.FromJSON
   deriving stock    (Generic, Show)
