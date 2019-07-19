@@ -3,7 +3,7 @@ build:
 resolver: lts-13.26
 extra-deps:
 - stratosphere-0.38.0
-- commit: 0eb2334866d0d7af0aa148b2ac0d0095531ed946
+- commit: c64f467f455f0632eeeb1efa81fa9739985136ad
   git: https://github.com/schirp-dso/source-constraints
 - commit: 9ceec78602ed85de1a4b9e402b5aad680a1f6a98
   git: https://github.com/mbj/mprelude
