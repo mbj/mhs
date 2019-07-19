@@ -3,11 +3,11 @@ build:
 resolver: lts-13.26
 extra-deps:
 - stratosphere-0.36.0
-- commit: 0eb2334866d0d7af0aa148b2ac0d0095531ed946
+- commit: 792cda1dc3e51253264aa76eb984b932d428c683
   git: https://github.com/mbj/mprelude
-- commit: 0eb2334866d0d7af0aa148b2ac0d0095531ed946
+- commit: c64f467f455f0632eeeb1efa81fa9739985136ad
   git: https://github.com/schirp-dso/source-constraints
-- commit: 52e86347ff83f32054ca340858f0451e63a41761
+- commit: 012c382b2c83c9f734328e04b3e21ae7a6388f1f
   git: https://github.com/mbj/stack-deploy
 - commit: 33aa6b71309793829b534fb29f6532d71c32b106
   git: https://github.com/mbj/amazonka
