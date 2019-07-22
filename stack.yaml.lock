@@ -26,12 +26,12 @@ packages:
     version: 0.0.0.1
     git: https://github.com/mbj/mprelude
     pantry-tree:
-      size: 313
-      sha256: c674454a76a83b3b818d46e38e7117c6173061598b45ccccf21328c04693d091
-    commit: 9ceec78602ed85de1a4b9e402b5aad680a1f6a98
+      size: 368
+      sha256: e9a87046c7b161180f85d5be82f49d3ee0e50fe20cf07ee62b83a86b459d44d9
+    commit: 792cda1dc3e51253264aa76eb984b932d428c683
   original:
     git: https://github.com/mbj/mprelude
-    commit: 9ceec78602ed85de1a4b9e402b5aad680a1f6a98
+    commit: 792cda1dc3e51253264aa76eb984b932d428c683
 snapshots:
 - completed:
     size: 499889
