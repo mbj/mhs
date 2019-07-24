@@ -63,7 +63,7 @@ instance JSON.FromJSON ParameterStyle where
     Form       -> "form"
     Simple     -> "simple"
 
-newtype PathName = PathName Text
+newtype Template = Template Text
   deriving newtype (Eq, JSON.FromJSONKey, Ord)
   deriving stock   Show
 
