@@ -1,4 +1,4 @@
-resolver: lts-13.28
+resolver: lts-13.29
 extra-deps:
-- commit: c64f467f455f0632eeeb1efa81fa9739985136ad
+- commit: 008e5ce4a6660e2f35924b019272803206e01cb2
   git: https://github.com/schirp-dso/source-constraints
