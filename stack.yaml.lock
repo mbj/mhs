@@ -48,11 +48,11 @@ packages:
     git: https://github.com/mbj/stack-deploy
     pantry-tree:
       size: 1027
-      sha256: cc67595855ddb5ce8972bd8b01be514d0314a4fd7f955f25729589bfbbaea592
-    commit: 012c382b2c83c9f734328e04b3e21ae7a6388f1f
+      sha256: 1288a5e4502076c8d2321595b33a4a5db03d6681a101ed0a652cd4a86760f429
+    commit: 80d96ec1e9d4fca6f75c58f2c8d70d021890700c
   original:
     git: https://github.com/mbj/stack-deploy
-    commit: 012c382b2c83c9f734328e04b3e21ae7a6388f1f
+    commit: 80d96ec1e9d4fca6f75c58f2c8d70d021890700c
 - completed:
     subdir: amazonka-cloudformation
     cabal-file:
