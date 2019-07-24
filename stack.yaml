@@ -1,15 +1,15 @@
 build:
   haddock: false
-resolver: lts-13.28
+resolver: lts-13.29
 extra-deps:
-- stratosphere-0.36.0
-- commit: 792cda1dc3e51253264aa76eb984b932d428c683
-  git: https://github.com/mbj/mprelude
-- commit: c64f467f455f0632eeeb1efa81fa9739985136ad
-  git: https://github.com/schirp-dso/source-constraints
-- commit: 012c382b2c83c9f734328e04b3e21ae7a6388f1f
-  git: https://github.com/mbj/stack-deploy
-- commit: 33aa6b71309793829b534fb29f6532d71c32b106
-  git: https://github.com/mbj/amazonka
+- stratosphere-0.38.0
+- git: https://github.com/mbj/mprelude
+  commit: 5708d9ce9b417362e0c79cbd7b48d892e7f7f32a
+- git: https://github.com/schirp-dso/source-constraints
+  commit: 008e5ce4a6660e2f35924b019272803206e01cb2
+- git: https://github.com/mbj/stack-deploy
+  commit: 80d96ec1e9d4fca6f75c58f2c8d70d021890700c
+- git: https://github.com/mbj/amazonka
+  commit: 33aa6b71309793829b534fb29f6532d71c32b106
   subdirs:
   - amazonka-cloudformation

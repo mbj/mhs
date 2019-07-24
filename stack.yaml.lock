@@ -5,12 +5,12 @@
 
 packages:
 - completed:
-    hackage: stratosphere-0.36.0@sha256:041249193af278820d514ca993919e78fdef08240ef23a40ea30ead9ad4d3092,86745
+    hackage: stratosphere-0.38.0@sha256:259e5a784d08e6a5252f7585d453922850739745abdd3dd269d89e4306af2362,91441
     pantry-tree:
-      size: 144527
-      sha256: 1eeb51ca8f3549f07dd1eb642de1aa97e4551cc78a9f1ce7db0b00512d2c1da6
+      size: 152226
+      sha256: a33dc3c25e9eecef61195c2299a59660afb8fc43313dfb8e335ff2df1b1c2ac0
   original:
-    hackage: stratosphere-0.36.0
+    hackage: stratosphere-0.38.0
 - completed:
     cabal-file:
       size: 2328
@@ -20,11 +20,11 @@ packages:
     git: https://github.com/mbj/mprelude
     pantry-tree:
       size: 368
-      sha256: e9a87046c7b161180f85d5be82f49d3ee0e50fe20cf07ee62b83a86b459d44d9
-    commit: 792cda1dc3e51253264aa76eb984b932d428c683
+      sha256: 392b5032a86e17560474ee34d7f1cf7b044cb8ac01114b75cc99ad41b5d6f624
+    commit: 5708d9ce9b417362e0c79cbd7b48d892e7f7f32a
   original:
     git: https://github.com/mbj/mprelude
-    commit: 792cda1dc3e51253264aa76eb984b932d428c683
+    commit: 5708d9ce9b417362e0c79cbd7b48d892e7f7f32a
 - completed:
     cabal-file:
       size: 3161
@@ -34,11 +34,11 @@ packages:
     git: https://github.com/schirp-dso/source-constraints
     pantry-tree:
       size: 914
-      sha256: 0720f9efebe01a5b7bc8e26e091fd26149015e8038d7c076d76d14fff6a1bb2f
-    commit: c64f467f455f0632eeeb1efa81fa9739985136ad
+      sha256: bbbf2645210c101715bafff85de9cf6ce16dfebf6ca5f189ed2a8c5124878e22
+    commit: 008e5ce4a6660e2f35924b019272803206e01cb2
   original:
     git: https://github.com/schirp-dso/source-constraints
-    commit: c64f467f455f0632eeeb1efa81fa9739985136ad
+    commit: 008e5ce4a6660e2f35924b019272803206e01cb2
 - completed:
     cabal-file:
       size: 3656
@@ -48,11 +48,11 @@ packages:
     git: https://github.com/mbj/stack-deploy
     pantry-tree:
       size: 1027
-      sha256: cc67595855ddb5ce8972bd8b01be514d0314a4fd7f955f25729589bfbbaea592
-    commit: 012c382b2c83c9f734328e04b3e21ae7a6388f1f
+      sha256: 1288a5e4502076c8d2321595b33a4a5db03d6681a101ed0a652cd4a86760f429
+    commit: 80d96ec1e9d4fca6f75c58f2c8d70d021890700c
   original:
     git: https://github.com/mbj/stack-deploy
-    commit: 012c382b2c83c9f734328e04b3e21ae7a6388f1f
+    commit: 80d96ec1e9d4fca6f75c58f2c8d70d021890700c
 - completed:
     subdir: amazonka-cloudformation
     cabal-file:
@@ -72,6 +72,6 @@ packages:
 snapshots:
 - completed:
     size: 500539
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/13/28.yaml
-    sha256: cdde1bfb38fdee21c6acb73d506e78f7e12e0a73892adbbbe56374ebef4d3adf
-  original: lts-13.28
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/13/29.yaml
+    sha256: 006398c5e92d1d64737b7e98ae4d63987c36808814504d1451f56ebd98093f75
+  original: lts-13.29
