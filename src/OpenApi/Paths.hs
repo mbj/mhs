@@ -1,12 +1,18 @@
 module OpenApi.Paths where
 
+import Control.Applicative ((*>), (<*))
+import Data.Foldable (any)
+import Data.Functor (($>))
 import GHC.Generics (Generic)
 import OpenApi.JSON
 import OpenApi.Prelude
 
-import qualified Data.Aeson      as JSON
-import qualified Data.Map.Strict as Map
-import qualified GHC.Enum        as GHC
+import qualified Data.Aeson           as JSON
+import qualified Data.Aeson.Types     as JSON
+import qualified Data.Attoparsec.Text as Text
+import qualified Data.Char            as Char
+import qualified Data.Map.Strict      as Map
+import qualified GHC.Enum             as GHC
 
 data Operation = Operation
   { description :: OperationDescription
@@ -63,9 +69,49 @@ instance JSON.FromJSON ParameterStyle where
     Form       -> "form"
     Simple     -> "simple"
 
-newtype Template = Template Text
-  deriving newtype (Eq, JSON.FromJSONKey, Ord)
+data Segment = Static Text | Dynamic Text
+  deriving stock (Eq, Ord, Show)
+
+newtype Template = Template [Segment]
+  deriving newtype (Eq, Ord)
   deriving stock   Show
+
+instance JSON.FromJSON Template where
+  parseJSON = JSON.withText "path item" parseTemplateText
+
+instance JSON.FromJSONKey Template where
+   fromJSONKey = JSON.FromJSONKeyTextParser parseTemplateText
+
+parseTemplateText :: Text -> JSON.Parser Template
+parseTemplateText input =
+  either
+    (const . fail $ "invalid template path: " <> show input)
+    pure
+    $ Text.parseOnly parser input
+  where
+    parser :: Text.Parser Template
+    parser = do
+      separator
+
+      root <|> do
+        firstSegment  <- anySegment
+        otherSegments <- Text.many' (separator *> anySegment)
+
+        void Text.endOfInput
+
+        pure . Template $ firstSegment:otherSegments
+
+    root :: Text.Parser Template
+    root = Text.endOfInput $> Template empty
+
+    anySegment :: Text.Parser Segment
+    anySegment = dynamicSegment <|> (Static <$> segmentName)
+
+    dynamicSegment   = skip '{' *> (Dynamic <$> segmentName) <* skip '}'
+    segmentChar char = any ($ char) [Char.isDigit, Char.isLower, Char.isUpper, (== '_')]
+    segmentName      = Text.takeWhile1 segmentChar
+    separator        = skip '/'
+    skip             = void . Text.char
 
 data Item = Item
   { delete  :: Maybe Operation
