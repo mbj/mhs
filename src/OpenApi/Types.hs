@@ -48,7 +48,7 @@ data Components = Components
 
 data Specification = Specification
   { components :: Components
-  , paths      :: Map Paths.PathName Paths.PathItem
+  , paths      :: Map Paths.PathName Paths.Item
   }
   deriving anyclass JSON.FromJSON
   deriving stock    (Generic, Show)

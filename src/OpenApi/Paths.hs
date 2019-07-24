@@ -67,7 +67,7 @@ newtype PathName = PathName Text
   deriving newtype (Eq, JSON.FromJSONKey, Ord)
   deriving stock   Show
 
-data PathItem = PathItem
+data Item = Item
   { delete  :: Maybe Operation
   , get     :: Maybe Operation
   , head    :: Maybe Operation
