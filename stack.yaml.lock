@@ -13,11 +13,11 @@ packages:
     git: https://github.com/schirp-dso/source-constraints
     pantry-tree:
       size: 914
-      sha256: 0720f9efebe01a5b7bc8e26e091fd26149015e8038d7c076d76d14fff6a1bb2f
-    commit: c64f467f455f0632eeeb1efa81fa9739985136ad
+      sha256: bbbf2645210c101715bafff85de9cf6ce16dfebf6ca5f189ed2a8c5124878e22
+    commit: 008e5ce4a6660e2f35924b019272803206e01cb2
   original:
     git: https://github.com/schirp-dso/source-constraints
-    commit: c64f467f455f0632eeeb1efa81fa9739985136ad
+    commit: 008e5ce4a6660e2f35924b019272803206e01cb2
 snapshots:
 - completed:
     size: 500539
