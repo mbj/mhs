@@ -6,7 +6,7 @@ extra-deps:
 - git: https://github.com/mbj/mprelude
   commit: 792cda1dc3e51253264aa76eb984b932d428c683
 - git: https://github.com/schirp-dso/source-constraints
-  commit: c64f467f455f0632eeeb1efa81fa9739985136ad
+  commit: 008e5ce4a6660e2f35924b019272803206e01cb2
 - git: https://github.com/mbj/stack-deploy
   commit: 012c382b2c83c9f734328e04b3e21ae7a6388f1f
 - git: https://github.com/mbj/amazonka
