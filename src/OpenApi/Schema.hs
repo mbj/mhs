@@ -1,11 +1,10 @@
 module OpenApi.Schema where
 
-import Data.Aeson.Types (FromJSON, FromJSONKey, ToJSON, ToJSONKey)
 import Data.Map.Strict (Map)
 import Data.String (String)
 import Data.Tuple (snd, uncurry)
-import GHC.Generics
-import Numeric.Natural
+import GHC.Generics (Generic)
+import Numeric.Natural (Natural)
 import OpenApi.JSON
 import OpenApi.Prelude
 import Prelude (undefined)
@@ -22,74 +21,90 @@ data AdditionalProperties
   | AdditionalPropertiesSchema Schema
   deriving stock Show
 
-instance FromJSON AdditionalProperties where
+instance JSON.FromJSON AdditionalProperties where
   parseJSON = \case
     value@(JSON.Object _) -> AdditionalPropertiesSchema <$> JSON.parseJSON value
     (JSON.Bool bool)      -> pure $ AdditionalPropertiesBool bool
     value                 -> JSON.typeMismatch "Object or Bool" value
 
-instance ToJSON AdditionalProperties where
+instance JSON.ToJSON AdditionalProperties where
   toJSON = \case
     AdditionalPropertiesBool bool     -> JSON.toJSON bool
     AdditionalPropertiesSchema schema -> JSON.toJSON schema
 
 newtype MaxLength = MaxLength Natural
-  deriving newtype (FromJSON, ToJSON)
+  deriving newtype (JSON.FromJSON, JSON.ToJSON)
   deriving stock   Show
 
 newtype MaxProperties = MaxProperties Natural
-  deriving newtype (FromJSON, ToJSON)
+  deriving newtype (JSON.FromJSON, JSON.ToJSON)
   deriving stock   Show
 
 newtype MinLength = MinLength Natural
-  deriving newtype (FromJSON, ToJSON)
+  deriving newtype (JSON.FromJSON, JSON.ToJSON)
   deriving stock   Show
 
 newtype MinProperties = MinProperties Natural
-  deriving newtype (FromJSON, ToJSON)
+  deriving newtype (JSON.FromJSON, JSON.ToJSON)
   deriving stock   Show
 
 data Properties = Properties (Map PropertyName Schema) | EmptyProperties
   deriving stock Show
 
-instance FromJSON Properties where
+instance JSON.FromJSON Properties where
   parseJSON = JSON.withObject "properties" $ \map ->
     if HashMap.null map
       then pure EmptyProperties
       else Properties <$> JSON.parseJSON (JSON.Object map)
 
-instance ToJSON Properties where
+instance JSON.ToJSON Properties where
   toJSON = \case
     EmptyProperties -> JSON.object empty
     Properties map  -> JSON.toJSON map
 
 newtype PropertyName = PropertyName Text
-  deriving newtype (Eq, FromJSON, FromJSONKey, Ord, ToJSON, ToJSONKey, ToText)
+  deriving newtype
+    ( Eq
+    , JSON.FromJSON
+    , JSON.FromJSONKey
+    , JSON.ToJSON
+    , JSON.ToJSONKey
+    , Ord
+    , ToText
+    )
   deriving stock   Show
 
 newtype MultipleOf = MultipleOf Natural
-  deriving newtype (FromJSON, ToJSON)
+  deriving newtype (JSON.FromJSON, JSON.ToJSON)
   deriving stock   Show
 
 newtype ResourceId = ResourceId Text
-  deriving newtype (FromJSON, ToJSON)
+  deriving newtype (JSON.FromJSON, JSON.ToJSON)
   deriving stock   Show
 
 newtype Name = Name Text
-  deriving newtype (Eq, FromJSONKey, Ord, ToJSON, ToJSONKey, ToText)
+  deriving newtype
+    ( Eq
+    , JSON.FromJSON
+    , JSON.FromJSONKey
+    , JSON.ToJSON
+    , JSON.ToJSONKey
+    , Ord
+    , ToText
+    )
   deriving stock   Show
 
 newtype Pattern = Pattern Text
-  deriving newtype (FromJSON, ToJSON, ToText)
+  deriving newtype (JSON.FromJSON, JSON.ToJSON, ToText)
   deriving stock   Show
 
 data Schema = Content SchemaObject | Reference Name
   deriving stock Show
 
-instance FromJSON Schema where
+instance JSON.FromJSON Schema where
   parseJSON = parseRefSum Name Content Reference "#/components/schemas/" "Schema"
 
-instance ToJSON Schema where
+instance JSON.ToJSON Schema where
   toJSON = \case
     Content schemaObject ->
       JSON.toJSON schemaObject
@@ -133,10 +148,10 @@ schemaObjectRenames = Map.fromList
   , ("xResourceId",       "x-resourceId")
   ]
 
-instance FromJSON SchemaObject where
+instance JSON.FromJSON SchemaObject where
   parseJSON = parseRenamed schemaObjectRenames
 
-instance ToJSON SchemaObject where
+instance JSON.ToJSON SchemaObject where
   toJSON = generateRenamed schemaObjectRenames
 
 toJSONSchema :: SchemaObject -> JSON.Object
@@ -165,11 +180,11 @@ toJSONSchema schemaObject = case JSON.toJSON schemaObject of
     collapsePair text value = (text, collapse value)
 
 newtype Description = Description Text
-  deriving newtype (FromJSON, ToJSON, ToText)
+  deriving newtype (JSON.FromJSON, JSON.ToJSON, ToText)
   deriving stock   Show
 
 newtype Title = Title Text
-  deriving newtype (FromJSON, ToJSON)
+  deriving newtype (JSON.FromJSON, JSON.ToJSON)
   deriving stock   Show
 
 data Type = Array | Boolean | Integer | Number | Object | String
@@ -184,14 +199,14 @@ instance ToText Type where
     Object  -> "object"
     String  -> "string"
 
-instance FromJSON Type where
+instance JSON.FromJSON Type where
   parseJSON = parseJSONFixed "Type" JSON.withText toText
 
-instance ToJSON Type where
+instance JSON.ToJSON Type where
   toJSON = JSON.toJSON . toText
 
 newtype Enum = Enum [JSON.Value]
-  deriving newtype (FromJSON, ToJSON)
+  deriving newtype (JSON.FromJSON, JSON.ToJSON)
   deriving stock Show
 
 data Format = UnixTime
@@ -201,8 +216,8 @@ instance ToText Format where
   toText = \case
     UnixTime -> "unix-time"
 
-instance FromJSON Format where
+instance JSON.FromJSON Format where
   parseJSON = parseJSONFixed "Format" JSON.withText toText
 
-instance ToJSON Format where
+instance JSON.ToJSON Format where
   toJSON = JSON.toJSON . toText
