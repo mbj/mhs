@@ -1,10 +1,12 @@
 module OpenApi
-  ( module OpenApi.Types
+  ( module OpenApi.Description
+  , module OpenApi.Types
   , loadSpecFile
   )
 where
 
 import Data.ByteString.Lazy (ByteString)
+import OpenApi.Description
 import OpenApi.Prelude
 import OpenApi.Types
 import System.FilePath (FilePath)

@@ -12,7 +12,7 @@ import qualified OpenApi.Paths   as Paths
 import qualified OpenApi.Schema  as Schema
 
 newtype SecuritySchemeName = SecuritySchemeName Text
-  deriving newtype (Eq, JSON.FromJSONKey, Ord)
+  deriving newtype (Eq, JSON.FromJSONKey, Ord, ToText)
   deriving stock   Show
 
 data SecuritySchemeType = HTTP

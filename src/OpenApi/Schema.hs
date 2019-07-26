@@ -5,6 +5,7 @@ import Data.String (String)
 import Data.Tuple (snd, uncurry)
 import GHC.Generics (Generic)
 import Numeric.Natural (Natural)
+import OpenApi.Description
 import OpenApi.JSON
 import OpenApi.Prelude
 import Prelude (undefined)
@@ -79,7 +80,7 @@ newtype MultipleOf = MultipleOf Natural
   deriving stock   Show
 
 newtype ResourceId = ResourceId Text
-  deriving newtype (JSON.FromJSON, JSON.ToJSON)
+  deriving newtype (JSON.FromJSON, JSON.ToJSON, ToText)
   deriving stock   Show
 
 newtype Name = Name Text
@@ -117,7 +118,7 @@ data SchemaObject = SchemaObject
   , anyOf                :: Maybe [Schema]
   , default'             :: Maybe JSON.Value
   , deprecated           :: Maybe Bool
-  , description          :: Maybe Description
+  , description          :: Maybe (Description SchemaObject)
   , enum                 :: Maybe Enum
   , exclusiveMaximum     :: Maybe Bool
   , exclusiveMinimum     :: Maybe Bool
@@ -138,6 +139,9 @@ data SchemaObject = SchemaObject
   , xResourceId          :: Maybe ResourceId
   }
   deriving stock (Generic, Show)
+
+instance HasDescription SchemaObject where
+  getDescription = description
 
 schemaObjectRenames :: Map String String
 schemaObjectRenames = Map.fromList
@@ -179,12 +183,8 @@ toJSONSchema schemaObject = case JSON.toJSON schemaObject of
     collapsePair :: Text -> JSON.Value -> JSON.Pair
     collapsePair text value = (text, collapse value)
 
-newtype Description = Description Text
-  deriving newtype (JSON.FromJSON, JSON.ToJSON, ToText)
-  deriving stock   Show
-
 newtype Title = Title Text
-  deriving newtype (JSON.FromJSON, JSON.ToJSON)
+  deriving newtype (JSON.FromJSON, JSON.ToJSON, ToText)
   deriving stock   Show
 
 data Type = Array | Boolean | Integer | Number | Object | String
