@@ -140,6 +140,9 @@ data SchemaObject = SchemaObject
   }
   deriving stock (Generic, Show)
 
+instance HasDescription SchemaObject where
+  getDescription = description
+
 schemaObjectRenames :: Map String String
 schemaObjectRenames = Map.fromList
   [ ("default'",          "default")

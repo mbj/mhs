@@ -23,6 +23,9 @@ data Operation = Operation
   deriving anyclass JSON.FromJSON
   deriving stock    (Generic, Show)
 
+instance HasDescription Operation where
+  getDescription = description
+
 newtype OperationId = OperationId Text
   deriving newtype (JSON.FromJSON, ToText)
   deriving stock   Show
@@ -35,6 +38,9 @@ data Parameter = Parameter
   , style       :: ParameterStyle
   }
   deriving stock (Generic, Show)
+
+instance HasDescription Parameter where
+  getDescription = description
 
 instance JSON.FromJSON Parameter where
   parseJSON = parseRenamed $ Map.singleton "location" "in"
