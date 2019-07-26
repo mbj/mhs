@@ -4,6 +4,7 @@ import Control.Applicative ((*>), (<*))
 import Data.Foldable (any)
 import Data.Functor (($>))
 import GHC.Generics (Generic)
+import OpenApi.Description
 import OpenApi.JSON
 import OpenApi.Prelude
 
@@ -15,23 +16,19 @@ import qualified Data.Map.Strict      as Map
 import qualified GHC.Enum             as GHC
 
 data Operation = Operation
-  { description :: Maybe OperationDescription
+  { description :: Maybe (Description Operation)
   , operationId :: OperationId
   , parameters  :: Maybe [Parameter]
   }
   deriving anyclass JSON.FromJSON
   deriving stock    (Generic, Show)
 
-newtype OperationDescription = OperationDescription Text
-  deriving newtype (JSON.FromJSON, ToText)
-  deriving stock   Show
-
 newtype OperationId = OperationId Text
   deriving newtype (JSON.FromJSON, ToText)
   deriving stock   Show
 
 data Parameter = Parameter
-  { description :: Maybe ParameterDescription
+  { description :: Maybe (Description Parameter)
   , location    :: ParameterLocation
   , name        :: ParameterName
   , required    :: Bool
@@ -41,10 +38,6 @@ data Parameter = Parameter
 
 instance JSON.FromJSON Parameter where
   parseJSON = parseRenamed $ Map.singleton "location" "in"
-
-newtype ParameterDescription = ParameterDescription Text
-  deriving newtype (JSON.FromJSON, ToText)
-  deriving stock   Show
 
 data ParameterLocation = Cookie | Header | Path | Query
   deriving stock (GHC.Bounded, GHC.Enum, Show)

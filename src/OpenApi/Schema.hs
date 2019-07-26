@@ -5,6 +5,7 @@ import Data.String (String)
 import Data.Tuple (snd, uncurry)
 import GHC.Generics (Generic)
 import Numeric.Natural (Natural)
+import OpenApi.Description
 import OpenApi.JSON
 import OpenApi.Prelude
 import Prelude (undefined)
@@ -117,7 +118,7 @@ data SchemaObject = SchemaObject
   , anyOf                :: Maybe [Schema]
   , default'             :: Maybe JSON.Value
   , deprecated           :: Maybe Bool
-  , description          :: Maybe Description
+  , description          :: Maybe (Description SchemaObject)
   , enum                 :: Maybe Enum
   , exclusiveMaximum     :: Maybe Bool
   , exclusiveMinimum     :: Maybe Bool
@@ -178,10 +179,6 @@ toJSONSchema schemaObject = case JSON.toJSON schemaObject of
 
     collapsePair :: Text -> JSON.Value -> JSON.Pair
     collapsePair text value = (text, collapse value)
-
-newtype Description = Description Text
-  deriving newtype (JSON.FromJSON, JSON.ToJSON, ToText)
-  deriving stock   Show
 
 newtype Title = Title Text
   deriving newtype (JSON.FromJSON, JSON.ToJSON, ToText)
