@@ -23,11 +23,11 @@ data Operation = Operation
   deriving stock    (Generic, Show)
 
 newtype OperationDescription = OperationDescription Text
-  deriving newtype JSON.FromJSON
+  deriving newtype (JSON.FromJSON, ToText)
   deriving stock   Show
 
 newtype OperationId = OperationId Text
-  deriving newtype JSON.FromJSON
+  deriving newtype (JSON.FromJSON, ToText)
   deriving stock   Show
 
 data Parameter = Parameter
@@ -43,7 +43,7 @@ instance JSON.FromJSON Parameter where
   parseJSON = parseRenamed $ Map.singleton "location" "in"
 
 newtype ParameterDescription = ParameterDescription Text
-  deriving newtype JSON.FromJSON
+  deriving newtype (JSON.FromJSON, ToText)
   deriving stock   Show
 
 data ParameterLocation = Cookie | Header | Path | Query
@@ -57,7 +57,7 @@ instance JSON.FromJSON ParameterLocation where
     Query  -> "query"
 
 newtype ParameterName = ParameterName Text
-  deriving newtype JSON.FromJSON
+  deriving newtype (JSON.FromJSON, ToText)
   deriving stock   Show
 
 data ParameterStyle = DeepObject | Form | Simple

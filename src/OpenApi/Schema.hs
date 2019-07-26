@@ -79,7 +79,7 @@ newtype MultipleOf = MultipleOf Natural
   deriving stock   Show
 
 newtype ResourceId = ResourceId Text
-  deriving newtype (JSON.FromJSON, JSON.ToJSON)
+  deriving newtype (JSON.FromJSON, JSON.ToJSON, ToText)
   deriving stock   Show
 
 newtype Name = Name Text
@@ -184,7 +184,7 @@ newtype Description = Description Text
   deriving stock   Show
 
 newtype Title = Title Text
-  deriving newtype (JSON.FromJSON, JSON.ToJSON)
+  deriving newtype (JSON.FromJSON, JSON.ToJSON, ToText)
   deriving stock   Show
 
 data Type = Array | Boolean | Integer | Number | Object | String
