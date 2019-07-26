@@ -15,7 +15,7 @@ import qualified Data.Map.Strict      as Map
 import qualified GHC.Enum             as GHC
 
 data Operation = Operation
-  { description :: OperationDescription
+  { description :: Maybe OperationDescription
   , operationId :: OperationId
   , parameters  :: Maybe [Parameter]
   }
