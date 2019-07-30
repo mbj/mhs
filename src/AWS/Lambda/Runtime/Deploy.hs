@@ -123,6 +123,7 @@ getFunctionTarget Config{..} = do
         [ "run"
         , "--mount", "type=bind,source=" <> hostProjectPath <> ",destination=" <> buildProjectPath
         , "--mount", "type=bind,source=" <> hostStackPath   <> ",destination=" <> buildStackPath
+        , "--net", "host"
         , "--rm"
         , "--stop-timeout", "0"
         , "--tty"
