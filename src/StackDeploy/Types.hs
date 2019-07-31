@@ -29,6 +29,7 @@ data Operation
 
 data InstanceSpec = InstanceSpec
   { capabilities :: [Capability]
+  , onSuccess    :: forall m r . (AWSConstraint r m, MonadAWS m) => m ()
   , parameters   :: [Parameter]
   , prepareSync  :: forall m r . (AWSConstraint r m, MonadAWS m) => m ()
   , roleARN      :: Maybe RoleARN
