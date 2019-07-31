@@ -51,9 +51,14 @@ perform
   => Operation
   -> m RemoteOperationResult
 perform = \case
-  (OpCreate name instanceSpec template)    -> create name instanceSpec template
-  (OpDelete stackId)                       -> runStackId stackId delete
-  (OpUpdate stackId instanceSpec template) -> runStackId stackId (update instanceSpec template)
+  (OpCreate name instanceSpec template) ->
+    successCallback instanceSpec =<<
+      create name instanceSpec template
+  (OpDelete stackId) ->
+    runStackId stackId delete
+  (OpUpdate stackId instanceSpec template) ->
+    successCallback instanceSpec =<<
+      runStackId stackId (update instanceSpec template)
   where
     runStackId
       :: Id
@@ -146,6 +151,14 @@ perform = \case
 
     waitFor :: RemoteOperation -> m RemoteOperationResult
     waitFor remoteOperation = waitForAccept remoteOperation printEvent
+
+    successCallback
+      :: InstanceSpec
+      -> RemoteOperationResult
+      -> m RemoteOperationResult
+    successCallback InstanceSpec{..} result = case result of
+      RemoteOperationSuccess -> onSuccess >> pure result
+      _                      -> pure result
 
 printEvent :: forall m . MonadIO m => StackEvent -> m ()
 printEvent event = do
