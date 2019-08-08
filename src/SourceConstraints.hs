@@ -62,7 +62,7 @@ runSourceConstraints options ModSummary{ms_location = ModLocation{..}} parsedMod
       $ warnings Context{..} (hpm_module parsedModule)
   pure parsedModule
   where
-    allowLocation = maybe False (notElem ".stack-work/" . splitPath)
+    allowLocation = maybe False (notElem "autogen/" . splitPath)
 
     parseLocalModule :: Text -> Hsc LocalModule
     parseLocalModule = either fail pure . parseOnly localModuleParser
