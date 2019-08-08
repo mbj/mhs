@@ -30,7 +30,6 @@ import Network.AWS.S3.HeadObject
 import Network.AWS.S3.PutObject
 import Network.AWS.S3.Types
 import Network.HTTP.Types (Status(..))
-import System.Directory (getCurrentDirectory, getHomeDirectory)
 import System.Exit (ExitCode(ExitSuccess))
 import System.FilePath (FilePath, (</>))
 import System.Posix.Files
@@ -38,6 +37,7 @@ import System.Posix.Types
 import System.Process.Typed
 
 import qualified AWS.Lambda.Runtime.TH as TH
+import qualified System.Directory      as Directory
 
 newtype ExecutablePath = ExecutablePath FilePath
   deriving newtype ToText
@@ -103,8 +103,8 @@ getFunctionTarget Config{..} = do
 
     targetBuild :: m ()
     targetBuild = do
-      hostProjectPath <- liftIO getCurrentDirectory
-      hostHomePath    <- liftIO getHomeDirectory
+      hostProjectPath <- liftIO Directory.getCurrentDirectory
+      hostHomePath    <- liftIO Directory.getHomeDirectory
 
       let
         buildHomePath :: FilePath
@@ -117,7 +117,9 @@ getFunctionTarget Config{..} = do
         buildStackPath = buildHomePath </> ".stack"
 
         hostStackPath :: FilePath
-        hostStackPath = hostHomePath </> ".stack"
+        hostStackPath = hostHomePath </> ".stack-lambda-runtime"
+
+      liftIO $ Directory.createDirectoryIfMissing False hostStackPath
 
       runProcess_ $ proc "podman"
         [ "run"
@@ -136,6 +138,7 @@ getFunctionTarget Config{..} = do
         , "--flag", convertText packageName <> ":static"
         , "--interleaved-output"
         , "--system-ghc"
+        , "--work-dir", ".stack-work-lambda-runtime"
         , convertText packageName <> ":" <> convertText targetName
         ]
 
