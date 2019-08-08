@@ -31,7 +31,7 @@ RUN apk add                       \
   ghc=8.6.5-r0                    \
   git=2.20.1-r0                   \
   make=4.2.1-r2                   \
-  musl-dev=1.1.20-r4              \
+  musl-dev=1.1.20-r5              \
   ncurses-dev=6.1_p20190105-r0    \
   ncurses-static=6.1_p20190105-r0 \
   stack=1.9.3-r0                  \
