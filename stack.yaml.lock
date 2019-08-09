@@ -6,18 +6,18 @@
 packages:
 - completed:
     cabal-file:
-      size: 3161
-      sha256: 27686d6937738c748cbd601df14ce9ce2f8ebbc7a2719a4149e797bccf430b2d
+      size: 3338
+      sha256: 010238a2f12f32219cbfbd7212e93bbd563a55fa296f919b6a064b9c4a1b9387
     name: source-constraints
     version: 0.0.0.1
     git: https://github.com/schirp-dso/source-constraints
     pantry-tree:
       size: 914
-      sha256: bbbf2645210c101715bafff85de9cf6ce16dfebf6ca5f189ed2a8c5124878e22
-    commit: 008e5ce4a6660e2f35924b019272803206e01cb2
+      sha256: 985afb0f7d3a4af281e97045023e44f8b6b1a9cdc6faa9c4e5edb4dbd1e52fe5
+    commit: 1dc085107022055fca0aece8f63eb8fd73e9c1ec
   original:
     git: https://github.com/schirp-dso/source-constraints
-    commit: 008e5ce4a6660e2f35924b019272803206e01cb2
+    commit: 1dc085107022055fca0aece8f63eb8fd73e9c1ec
 snapshots:
 - completed:
     size: 500539
