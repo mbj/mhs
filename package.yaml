@@ -57,4 +57,4 @@ tests:
     - -threaded
     - -with-rtsopts=-N
     dependencies:
-    - hlint == 2.1.11
+    - hlint == 2.1.26
