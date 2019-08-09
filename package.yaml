@@ -60,7 +60,7 @@ tests:
     source-dirs:   test
     other-modules: []
     dependencies:
-    - hlint == 2.1.11
+    - hlint == 2.1.26
   hspec:
     main:          Spec.hs
     source-dirs:   test
@@ -72,5 +72,5 @@ tests:
     dependencies:
     - ghc-paths          == 0.1.0.9
     - heredoc            == 0.2.0.0
-    - hspec              == 2.6.1
+    - hspec              == 2.7.1
     - source-constraints
