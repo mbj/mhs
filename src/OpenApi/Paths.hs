@@ -21,13 +21,13 @@ data Operation = Operation
   , parameters  :: Maybe [Parameter]
   }
   deriving anyclass JSON.FromJSON
-  deriving stock    (Generic, Show)
+  deriving stock    (Eq, Generic, Show)
 
 instance HasDescription Operation where
   getDescription = description
 
 newtype OperationId = OperationId Text
-  deriving newtype (JSON.FromJSON, ToText)
+  deriving newtype (Eq, JSON.FromJSON, ToText)
   deriving stock   Show
 
 data Parameter = Parameter
@@ -37,7 +37,7 @@ data Parameter = Parameter
   , required    :: Bool
   , style       :: ParameterStyle
   }
-  deriving stock (Generic, Show)
+  deriving stock (Eq, Generic, Show)
 
 instance HasDescription Parameter where
   getDescription = description
@@ -46,7 +46,7 @@ instance JSON.FromJSON Parameter where
   parseJSON = parseRenamed $ Map.singleton "location" "in"
 
 data ParameterLocation = Cookie | Header | Path | Query
-  deriving stock (GHC.Bounded, GHC.Enum, Show)
+  deriving stock (Eq, GHC.Bounded, GHC.Enum, Show)
 
 instance JSON.FromJSON ParameterLocation where
   parseJSON = parseJSONFixed "ParameterLocation" JSON.withText $ \case
@@ -56,11 +56,11 @@ instance JSON.FromJSON ParameterLocation where
     Query  -> "query"
 
 newtype ParameterName = ParameterName Text
-  deriving newtype (JSON.FromJSON, ToText)
+  deriving newtype (Eq, JSON.FromJSON, ToText)
   deriving stock   Show
 
 data ParameterStyle = DeepObject | Form | Simple
-  deriving stock (GHC.Bounded, GHC.Enum, Show)
+  deriving stock (Eq, GHC.Bounded, GHC.Enum, Show)
 
 instance JSON.FromJSON ParameterStyle where
   parseJSON = parseJSONFixed "ParameterStyle" JSON.withText $ \case
@@ -122,4 +122,4 @@ data Item = Item
   , patch   :: Maybe Operation
   }
   deriving anyclass JSON.FromJSON
-  deriving stock    (Generic, Show)
+  deriving stock    (Eq, Generic, Show)
