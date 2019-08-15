@@ -27,8 +27,8 @@ instance HasDescription Operation where
   getDescription = description
 
 newtype OperationId = OperationId Text
-  deriving newtype (Eq, JSON.FromJSON, ToText)
-  deriving stock   Show
+  deriving newtype (JSON.FromJSON, ToText)
+  deriving stock   (Eq, Show)
 
 data Parameter = Parameter
   { description :: Maybe (Description Parameter)
@@ -56,8 +56,8 @@ instance JSON.FromJSON ParameterLocation where
     Query  -> "query"
 
 newtype ParameterName = ParameterName Text
-  deriving newtype (Eq, JSON.FromJSON, ToText)
-  deriving stock   Show
+  deriving newtype (JSON.FromJSON, ToText)
+  deriving stock   (Eq, Show)
 
 data ParameterStyle = DeepObject | Form | Simple
   deriving stock (Eq, GHC.Bounded, GHC.Enum, Show)
@@ -72,8 +72,7 @@ data Segment = Static Text | Dynamic Text
   deriving stock (Eq, Ord, Show)
 
 newtype Template = Template [Segment]
-  deriving newtype (Eq, Ord)
-  deriving stock   Show
+  deriving stock (Eq, Ord, Show)
 
 instance JSON.FromJSON Template where
   parseJSON = JSON.withText "path item" parseTemplateText
