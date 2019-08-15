@@ -57,7 +57,7 @@ instance JSON.FromJSON ParameterLocation where
 
 newtype ParameterName = ParameterName Text
   deriving newtype (JSON.FromJSON, ToText)
-  deriving stock   (Eq, Show)
+  deriving stock   (Eq, Ord, Show)
 
 data ParameterStyle = DeepObject | Form | Simple
   deriving stock (Eq, GHC.Bounded, GHC.Enum, Show)
@@ -68,7 +68,7 @@ instance JSON.FromJSON ParameterStyle where
     Form       -> "form"
     Simple     -> "simple"
 
-data Segment = Static Text | Dynamic Text
+data Segment = Static Text | Dynamic ParameterName
   deriving stock (Eq, Ord, Show)
 
 newtype Template = Template [Segment]
@@ -105,7 +105,7 @@ parseTemplateText input =
     anySegment :: Text.Parser Segment
     anySegment = dynamicSegment <|> (Static <$> segmentName)
 
-    dynamicSegment   = skip '{' *> (Dynamic <$> segmentName) <* skip '}'
+    dynamicSegment   = skip '{' *> (Dynamic . ParameterName <$> segmentName) <* skip '}'
     segmentChar char = any ($ char) [Char.isDigit, Char.isLower, Char.isUpper, (== '_')]
     segmentName      = Text.takeWhile1 segmentChar
     separator        = skip '/'
