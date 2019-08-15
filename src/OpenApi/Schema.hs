@@ -73,7 +73,7 @@ newtype PropertyName = PropertyName Text
     , Ord
     , ToText
     )
-  deriving stock   Show
+  deriving stock Show
 
 newtype MultipleOf = MultipleOf Natural
   deriving newtype (JSON.FromJSON, JSON.ToJSON)
@@ -93,7 +93,7 @@ newtype Name = Name Text
     , Ord
     , ToText
     )
-  deriving stock   Show
+  deriving stock Show
 
 newtype Pattern = Pattern Text
   deriving newtype (JSON.FromJSON, JSON.ToJSON, ToText)
@@ -207,7 +207,7 @@ instance JSON.ToJSON Type where
 
 newtype Enum = Enum [JSON.Value]
   deriving newtype (JSON.FromJSON, JSON.ToJSON)
-  deriving stock Show
+  deriving stock   Show
 
 data Format = UnixTime
   deriving stock (GHC.Bounded, GHC.Enum, Show)
