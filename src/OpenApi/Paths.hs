@@ -72,8 +72,7 @@ data Segment = Static Text | Dynamic Text
   deriving stock (Eq, Ord, Show)
 
 newtype Template = Template [Segment]
-  deriving newtype Ord
-  deriving stock   (Eq, Show)
+  deriving stock (Eq, Ord, Show)
 
 instance JSON.FromJSON Template where
   parseJSON = JSON.withText "path item" parseTemplateText

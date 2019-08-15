@@ -69,10 +69,9 @@ newtype PropertyName = PropertyName Text
     , JSON.FromJSONKey
     , JSON.ToJSON
     , JSON.ToJSONKey
-    , Ord
     , ToText
     )
-  deriving stock (Eq, Show)
+  deriving stock (Eq, Ord, Show)
 
 newtype MultipleOf = MultipleOf Natural
   deriving newtype (JSON.FromJSON, JSON.ToJSON)
@@ -88,10 +87,9 @@ newtype Name = Name Text
     , JSON.FromJSONKey
     , JSON.ToJSON
     , JSON.ToJSONKey
-    , Ord
     , ToText
     )
-  deriving stock (Eq, Show)
+  deriving stock (Eq, Ord, Show)
 
 newtype Pattern = Pattern Text
   deriving newtype (JSON.FromJSON, JSON.ToJSON, ToText)
