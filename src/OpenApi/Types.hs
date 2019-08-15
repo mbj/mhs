@@ -16,14 +16,14 @@ newtype SecuritySchemeName = SecuritySchemeName Text
   deriving stock   Show
 
 data SecuritySchemeType = HTTP
-  deriving stock (GHC.Bounded, GHC.Enum, Show)
+  deriving stock (Eq, GHC.Bounded, GHC.Enum, Show)
 
 instance JSON.FromJSON SecuritySchemeType where
   parseJSON = parseJSONFixed "SecuritySchemeType" JSON.withText $ \case
     HTTP -> "http"
 
 data SecuritySchemeScheme = Basic | Bearer
-  deriving stock (GHC.Bounded, GHC.Enum, Show)
+  deriving stock (Eq, GHC.Bounded, GHC.Enum, Show)
 
 instance JSON.FromJSON SecuritySchemeScheme where
   parseJSON = parseJSONFixed "SecuritySchemeScheme" JSON.withText $ \case
@@ -34,7 +34,7 @@ data SecurityScheme = SecurityScheme
   { scheme :: SecuritySchemeScheme
   , type'  :: SecuritySchemeType
   }
-  deriving stock (Generic, Show)
+  deriving stock (Eq, Generic, Show)
 
 instance JSON.FromJSON SecurityScheme where
   parseJSON = parseRenamed $ Map.singleton "type'" "type"
@@ -44,11 +44,11 @@ data Components = Components
   , securitySchemes :: Map SecuritySchemeName SecurityScheme
   }
   deriving anyclass JSON.FromJSON
-  deriving stock    (Generic, Show)
+  deriving stock    (Eq, Generic, Show)
 
 data Specification = Specification
   { components :: Components
   , paths      :: Map Paths.Template Paths.Item
   }
   deriving anyclass JSON.FromJSON
-  deriving stock    (Generic, Show)
+  deriving stock    (Eq, Generic, Show)

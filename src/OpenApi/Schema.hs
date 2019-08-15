@@ -20,7 +20,7 @@ import qualified GHC.Enum            as GHC
 data AdditionalProperties
   = AdditionalPropertiesBool Bool
   | AdditionalPropertiesSchema Schema
-  deriving stock Show
+  deriving stock (Eq, Show)
 
 instance JSON.FromJSON AdditionalProperties where
   parseJSON = \case
@@ -34,23 +34,23 @@ instance JSON.ToJSON AdditionalProperties where
     AdditionalPropertiesSchema schema -> JSON.toJSON schema
 
 newtype MaxLength = MaxLength Natural
-  deriving newtype (JSON.FromJSON, JSON.ToJSON)
+  deriving newtype (Eq, JSON.FromJSON, JSON.ToJSON)
   deriving stock   Show
 
 newtype MaxProperties = MaxProperties Natural
-  deriving newtype (JSON.FromJSON, JSON.ToJSON)
+  deriving newtype (Eq, JSON.FromJSON, JSON.ToJSON)
   deriving stock   Show
 
 newtype MinLength = MinLength Natural
-  deriving newtype (JSON.FromJSON, JSON.ToJSON)
+  deriving newtype (Eq, JSON.FromJSON, JSON.ToJSON)
   deriving stock   Show
 
 newtype MinProperties = MinProperties Natural
-  deriving newtype (JSON.FromJSON, JSON.ToJSON)
+  deriving newtype (Eq, JSON.FromJSON, JSON.ToJSON)
   deriving stock   Show
 
 data Properties = Properties (Map PropertyName Schema) | EmptyProperties
-  deriving stock Show
+  deriving stock (Eq, Show)
 
 instance JSON.FromJSON Properties where
   parseJSON = JSON.withObject "properties" $ \map ->
@@ -73,14 +73,14 @@ newtype PropertyName = PropertyName Text
     , Ord
     , ToText
     )
-  deriving stock   Show
+  deriving stock Show
 
 newtype MultipleOf = MultipleOf Natural
-  deriving newtype (JSON.FromJSON, JSON.ToJSON)
+  deriving newtype (Eq, JSON.FromJSON, JSON.ToJSON)
   deriving stock   Show
 
 newtype ResourceId = ResourceId Text
-  deriving newtype (JSON.FromJSON, JSON.ToJSON, ToText)
+  deriving newtype (Eq, JSON.FromJSON, JSON.ToJSON, ToText)
   deriving stock   Show
 
 newtype Name = Name Text
@@ -93,14 +93,14 @@ newtype Name = Name Text
     , Ord
     , ToText
     )
-  deriving stock   Show
+  deriving stock Show
 
 newtype Pattern = Pattern Text
-  deriving newtype (JSON.FromJSON, JSON.ToJSON, ToText)
+  deriving newtype (Eq, JSON.FromJSON, JSON.ToJSON, ToText)
   deriving stock   Show
 
 data Schema = Content SchemaObject | Reference Name
-  deriving stock Show
+  deriving stock (Eq, Show)
 
 instance JSON.FromJSON Schema where
   parseJSON = parseRefSum Name Content Reference "#/components/schemas/" "Schema"
@@ -138,7 +138,7 @@ data SchemaObject = SchemaObject
   , xExpandableFields    :: Maybe [PropertyName]
   , xResourceId          :: Maybe ResourceId
   }
-  deriving stock (Generic, Show)
+  deriving stock (Eq, Generic, Show)
 
 instance HasDescription SchemaObject where
   getDescription = description
@@ -184,11 +184,11 @@ toJSONSchema schemaObject = case JSON.toJSON schemaObject of
     collapsePair text value = (text, collapse value)
 
 newtype Title = Title Text
-  deriving newtype (JSON.FromJSON, JSON.ToJSON, ToText)
+  deriving newtype (Eq, JSON.FromJSON, JSON.ToJSON, ToText)
   deriving stock   Show
 
 data Type = Array | Boolean | Integer | Number | Object | String
-  deriving stock (GHC.Bounded, GHC.Enum, Show)
+  deriving stock (Eq, GHC.Bounded, GHC.Enum, Show)
 
 instance ToText Type where
   toText = \case
@@ -206,11 +206,11 @@ instance JSON.ToJSON Type where
   toJSON = JSON.toJSON . toText
 
 newtype Enum = Enum [JSON.Value]
-  deriving newtype (JSON.FromJSON, JSON.ToJSON)
-  deriving stock Show
+  deriving newtype (Eq, JSON.FromJSON, JSON.ToJSON)
+  deriving stock   Show
 
 data Format = UnixTime
-  deriving stock (GHC.Bounded, GHC.Enum, Show)
+  deriving stock (Eq, GHC.Bounded, GHC.Enum, Show)
 
 instance ToText Format where
   toText = \case
