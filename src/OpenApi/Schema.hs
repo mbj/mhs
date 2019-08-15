@@ -34,20 +34,20 @@ instance JSON.ToJSON AdditionalProperties where
     AdditionalPropertiesSchema schema -> JSON.toJSON schema
 
 newtype MaxLength = MaxLength Natural
-  deriving newtype (Eq, JSON.FromJSON, JSON.ToJSON)
-  deriving stock   Show
+  deriving newtype (JSON.FromJSON, JSON.ToJSON)
+  deriving stock   (Eq, Show)
 
 newtype MaxProperties = MaxProperties Natural
-  deriving newtype (Eq, JSON.FromJSON, JSON.ToJSON)
-  deriving stock   Show
+  deriving newtype (JSON.FromJSON, JSON.ToJSON)
+  deriving stock   (Eq, Show)
 
 newtype MinLength = MinLength Natural
-  deriving newtype (Eq, JSON.FromJSON, JSON.ToJSON)
-  deriving stock   Show
+  deriving newtype (JSON.FromJSON, JSON.ToJSON)
+  deriving stock   (Eq, Show)
 
 newtype MinProperties = MinProperties Natural
-  deriving newtype (Eq, JSON.FromJSON, JSON.ToJSON)
-  deriving stock   Show
+  deriving newtype (JSON.FromJSON, JSON.ToJSON)
+  deriving stock   (Eq, Show)
 
 data Properties = Properties (Map PropertyName Schema) | EmptyProperties
   deriving stock (Eq, Show)
@@ -65,39 +65,37 @@ instance JSON.ToJSON Properties where
 
 newtype PropertyName = PropertyName Text
   deriving newtype
-    ( Eq
-    , JSON.FromJSON
+    ( JSON.FromJSON
     , JSON.FromJSONKey
     , JSON.ToJSON
     , JSON.ToJSONKey
     , Ord
     , ToText
     )
-  deriving stock Show
+  deriving stock (Eq, Show)
 
 newtype MultipleOf = MultipleOf Natural
-  deriving newtype (Eq, JSON.FromJSON, JSON.ToJSON)
-  deriving stock   Show
+  deriving newtype (JSON.FromJSON, JSON.ToJSON)
+  deriving stock   (Eq, Show)
 
 newtype ResourceId = ResourceId Text
-  deriving newtype (Eq, JSON.FromJSON, JSON.ToJSON, ToText)
-  deriving stock   Show
+  deriving newtype (JSON.FromJSON, JSON.ToJSON, ToText)
+  deriving stock   (Eq, Show)
 
 newtype Name = Name Text
   deriving newtype
-    ( Eq
-    , JSON.FromJSON
+    ( JSON.FromJSON
     , JSON.FromJSONKey
     , JSON.ToJSON
     , JSON.ToJSONKey
     , Ord
     , ToText
     )
-  deriving stock Show
+  deriving stock (Eq, Show)
 
 newtype Pattern = Pattern Text
-  deriving newtype (Eq, JSON.FromJSON, JSON.ToJSON, ToText)
-  deriving stock   Show
+  deriving newtype (JSON.FromJSON, JSON.ToJSON, ToText)
+  deriving stock   (Eq, Show)
 
 data Schema = Content SchemaObject | Reference Name
   deriving stock (Eq, Show)
@@ -184,8 +182,8 @@ toJSONSchema schemaObject = case JSON.toJSON schemaObject of
     collapsePair text value = (text, collapse value)
 
 newtype Title = Title Text
-  deriving newtype (Eq, JSON.FromJSON, JSON.ToJSON, ToText)
-  deriving stock   Show
+  deriving newtype (JSON.FromJSON, JSON.ToJSON, ToText)
+  deriving stock   (Eq, Show)
 
 data Type = Array | Boolean | Integer | Number | Object | String
   deriving stock (Eq, GHC.Bounded, GHC.Enum, Show)
@@ -206,8 +204,8 @@ instance JSON.ToJSON Type where
   toJSON = JSON.toJSON . toText
 
 newtype Enum = Enum [JSON.Value]
-  deriving newtype (Eq, JSON.FromJSON, JSON.ToJSON)
-  deriving stock   Show
+  deriving newtype (JSON.FromJSON, JSON.ToJSON)
+  deriving stock   (Eq, Show)
 
 data Format = UnixTime
   deriving stock (Eq, GHC.Bounded, GHC.Enum, Show)
