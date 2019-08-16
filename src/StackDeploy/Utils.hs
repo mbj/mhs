@@ -4,9 +4,11 @@ import StackDeploy.Prelude
 import Stratosphere
 import Stratosphere.Helpers
 
-import qualified Data.Aeson          as JSON
-import qualified Data.HashMap.Strict as HashMap
-import qualified Data.Vector         as Vector
+import qualified Data.Aeson                       as JSON
+import qualified Data.Foldable                    as Foldable
+import qualified Data.HashMap.Strict              as HashMap
+import qualified Data.Vector                      as Vector
+import qualified Network.AWS.CloudFormation.Types as CF
 
 mkName :: Val Text -> Val Text
 mkName name = Join "-" [awsStackName, name]
@@ -66,3 +68,29 @@ assumeRole service = HashMap.fromList
 dependencies :: [Resource] -> Resource -> Resource
 dependencies deps res =
   res & resourceDependsOn ?~ (itemName <$> deps)
+
+fetchOutput
+  :: forall m . MonadFail m
+  => CF.Stack
+  -> Stratosphere.Output
+  -> m Text
+fetchOutput stack soutput =
+  maybe
+    (failOutputKey "missing")
+    (maybe (failOutputKey "has no value") pure . view CF.oOutputValue)
+    $ Foldable.find
+      ((==) (pure key) . view CF.oOutputKey)
+      (view CF.sOutputs stack)
+  where
+    key = view Stratosphere.outputName soutput
+
+    failOutputKey :: Text -> m a
+    failOutputKey message
+      = failStack
+      $ "Output " <> convertText key <> " " <> message
+
+    failStack :: Text -> m a
+    failStack message
+      = fail
+      . convertText
+      $ "Stack: " <> view CF.sStackName stack <> " " <> message
