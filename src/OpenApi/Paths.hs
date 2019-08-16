@@ -119,6 +119,7 @@ data Parameter = Parameter
   , location    :: ParameterLocation
   , name        :: ParameterName
   , required    :: Bool
+  , schema      :: Schema
   , style       :: ParameterStyle
   }
   deriving stock (Eq, Generic, Show)
