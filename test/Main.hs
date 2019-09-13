@@ -1,3 +1,7 @@
+{-# LANGUAGE TypeApplications #-}
+
+import Data.HashMap.Strict (HashMap)
+import Data.Maybe (catMaybes)
 import Data.String (String)
 import MPrelude
 import System.IO (IO)
@@ -6,6 +10,7 @@ import Test.Tasty.HUnit
 
 import qualified Data.Aeson                as JSON
 import qualified Data.Aeson.Types          as JSON
+import qualified Data.HashMap.Strict       as HashMap
 import qualified Data.Map.Strict           as Map
 import qualified Network.HTTP.Types.Status as HTTP
 import qualified OpenApi.Paths             as Paths
@@ -37,7 +42,7 @@ parseTemplate
     static = Paths.Static
 
     rejected :: [TestTree]
-    rejected = mkRejected <$>
+    rejected = mkRejected' <$>
       [ ""
       , "foo"
       , "//"
@@ -49,18 +54,12 @@ parseTemplate
       , "{}"
       ]
 
-    mkAccepted :: (Text, Paths.Template) -> TestTree
-    mkAccepted (input, expected)
-      = testCase (convertText ("accepts: " <> show input))
-      $ pure expected @=? parseJSON input
-
-    mkRejected :: Text -> TestTree
-    mkRejected input
-      = testCase (convertText ("rejects: " <> show input))
-      $ Left ("Error in $: invalid template path: " <> show input) @=? parseJSON input
-
-    parseJSON :: Text -> Either String Paths.Template
-    parseJSON = JSON.parseEither JSON.parseJSON . JSON.String
+    mkRejected' :: Text -> TestTree
+    mkRejected' input =
+      mkRejected
+        (JSON.parseJSON @Paths.Template)
+        "Error in $: invalid template path:"
+        (JSON.toJSON input, convertText $ show input)
 
 parseResponses :: TestTree
   = testGroup "OpenAPI.Path.Responses parsing"
@@ -90,7 +89,7 @@ parseResponses :: TestTree
         [ ("200", JSON.object [("content", JSON.object empty)]) ]
 
     rejected :: [TestTree]
-    rejected = mkRejected <$>
+    rejected = mkRejected (JSON.parseJSON @Paths.Responses) "Error in $:" <$>
       [ ("", "expected responses, encountered String")
       , (JSON.object [("", JSON.object empty)], "Invalid status code pattern: \"\"")
       , (JSON.object [("-1", JSON.object empty)], "Invalid status code pattern: \"-1\"")
@@ -100,18 +99,48 @@ parseResponses :: TestTree
       , (JSON.object [("foo", JSON.object empty)], "Invalid status code pattern: \"foo\"")
       ]
 
-    mkAccepted :: (JSON.Value, Paths.Responses) -> TestTree
-    mkAccepted (input, expected)
-      = testCase (convertText ("accepts: " <> show input))
-      $ pure expected @=? parseJSON input
-
-    mkRejected :: (JSON.Value, Text) -> TestTree
-    mkRejected (input, expectedMessage)
-      = testCase (convertText ("rejects: " <> show input))
-      $ Left ("Error in $: " <> convertText expectedMessage) @=? parseJSON input
-
-    parseJSON :: JSON.Value -> Either String Paths.Responses
-    parseJSON = JSON.parseEither JSON.parseJSON
-
 main :: IO ()
 main = defaultMain suite
+
+mkAccepted
+  :: forall a . (Eq a, JSON.FromJSON a, JSON.ToJSON a, Show a)
+  => (JSON.Value, a)
+  -> TestTree
+mkAccepted (input, expected) = do
+  let actual :: Either String a = JSON.parseEither JSON.parseJSON input
+
+  testGroup ("for: " <> show input)
+    [ testCase "parse expected" $ pure expected @=? actual
+    , testCase "round trip" $ either
+      (const $ assertBool "parse failure" True)
+      (assertEqual "" input . normalize . JSON.toJSON)
+      actual
+    ]
+  where
+    normalize :: JSON.Value -> JSON.Value
+    normalize = \case
+      JSON.Array array ->
+        JSON.Array $ normalize <$> array
+      JSON.Object properties ->
+        JSON.Object $ normalizeAttributes properties
+      other -> other
+
+    normalizeAttributes :: HashMap Text JSON.Value -> HashMap Text JSON.Value
+    normalizeAttributes map
+      = HashMap.fromList . catMaybes $ normalizePair <$> HashMap.toList map
+
+    normalizePair :: (Text, JSON.Value) -> Maybe (Text, JSON.Value)
+    normalizePair (key, value) =
+      if value == JSON.Null
+         then empty
+         else pure (key, normalize value)
+
+mkRejected
+  :: (Eq a, Show a)
+  => (JSON.Value -> JSON.Parser a)
+  -> Text
+  -> (JSON.Value, Text)
+  -> TestTree
+mkRejected parseJSON prefix (input, message)
+  = testCase (convertText $ "rejects: " <> show input)
+  $ Left (convertText $ prefix <> " " <> message) @=? JSON.parseEither parseJSON input
