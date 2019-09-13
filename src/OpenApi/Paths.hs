@@ -1,3 +1,5 @@
+{-# LANGUAGE TupleSections #-}
+
 module OpenApi.Paths where
 
 import Control.Applicative ((*>), (<*))
@@ -5,6 +7,8 @@ import Data.Aeson ((.:?))
 import Data.Foldable (any)
 import Data.Functor (($>))
 import Data.Map.Strict (Map)
+import Data.Maybe (catMaybes)
+import Data.String (String)
 import Data.Traversable (traverse)
 import Data.Tuple (uncurry)
 import GHC.Generics (Generic)
@@ -20,6 +24,7 @@ import qualified Data.Attoparsec.Text      as Text
 import qualified Data.Char                 as Char
 import qualified Data.HashMap.Strict       as HashMap
 import qualified Data.Map.Strict           as Map
+import qualified Data.Text                 as Text
 import qualified GHC.Enum                  as GHC
 import qualified Network.HTTP.Types.Status as HTTP
 
@@ -31,14 +36,14 @@ data Operation = Operation
   , requestBody :: Maybe RequestBody
   , responses   :: Responses
   }
-  deriving anyclass JSON.FromJSON
+  deriving anyclass (JSON.FromJSON, JSON.ToJSON)
   deriving stock    (Eq, Generic, Show)
 
 instance HasDescription Operation where
   getDescription = description
 
 newtype OperationId = OperationId Text
-  deriving newtype (JSON.FromJSON, ToText)
+  deriving newtype (JSON.FromJSON, JSON.ToJSON, ToText)
   deriving stock   (Eq, Show)
 
 data Responses = Responses
@@ -75,23 +80,38 @@ instance JSON.FromJSON Responses where
         maybe (fail "Invalid status code") (pure . ResponseStatusExact)
           =<< (mkStatus <$> Text.decimal) <* Text.endOfInput
 
+instance JSON.ToJSON Responses where
+  toJSON Responses{..} = JSON.Object . HashMap.fromList $ catMaybes pairs
+    where
+      pairs :: [Maybe (Text, JSON.Value)]
+      pairs
+        = (("default",) . JSON.toJSON <$> default')
+        : (pure <$> responsePairs)
+
+      responsePairs :: [(Text, JSON.Value)]
+      responsePairs = uncurry mkPattern <$> Map.toList patterns
+
+      mkPattern :: ResponseStatusPattern -> Response -> (Text, JSON.Value)
+      mkPattern (ResponseStatusExact httpStatus) =
+        (convertText . show $ HTTP.statusCode httpStatus,) . JSON.toJSON
+
 data Response = Response
   { content     :: Map MediaTypeQuery MediaType
   , description :: Maybe (Description Response)
   , headers     :: Maybe (Map Text ResponseHeader)
   }
-  deriving anyclass JSON.FromJSON
+  deriving anyclass (JSON.FromJSON, JSON.ToJSON)
   deriving stock    (Eq, Generic, Show)
 
 data ResponseHeader = ResponseHeader
   { description :: Maybe (Description ResponseHeader)
   , name        :: HeaderName
   }
-  deriving anyclass JSON.FromJSON
+  deriving anyclass (JSON.FromJSON, JSON.ToJSON)
   deriving stock    (Eq, Generic, Show)
 
 newtype HeaderName = HeaderName Text
-  deriving newtype (JSON.FromJSON, ToText)
+  deriving newtype (JSON.FromJSON, JSON.ToJSON, ToText)
   deriving stock   (Eq, Show)
 
 newtype ResponseStatusPattern = ResponseStatusExact HTTP.Status
@@ -102,16 +122,16 @@ data RequestBody = RequestBody
   , description :: Maybe (Description RequestBody)
   , required    :: Maybe Bool
   }
-  deriving anyclass JSON.FromJSON
+  deriving anyclass (JSON.FromJSON, JSON.ToJSON)
   deriving stock   (Eq, Generic, Show)
 
 newtype MediaTypeQuery = MediaTypeQuery Text
-  deriving newtype (JSON.FromJSON, JSON.FromJSONKey, ToText)
+  deriving newtype (JSON.FromJSON, JSON.FromJSONKey, JSON.ToJSON, JSON.ToJSONKey, ToText)
   deriving stock   (Eq, Ord, Show)
 
 newtype MediaType = MediaType
   { schema :: Schema }
-  deriving anyclass JSON.FromJSON
+  deriving anyclass (JSON.FromJSON, JSON.ToJSON)
   deriving stock    (Eq, Generic, Show)
 
 data Parameter = Parameter
@@ -127,34 +147,57 @@ data Parameter = Parameter
 instance HasDescription Parameter where
   getDescription = description
 
+parameterRenames :: Map String String
+parameterRenames = Map.singleton "location" "in"
+
 instance JSON.FromJSON Parameter where
-  parseJSON = parseRenamed $ Map.singleton "location" "in"
+  parseJSON = parseRenamed parameterRenames
+
+instance JSON.ToJSON Parameter where
+  toJSON = generateRenamed parameterRenames
 
 data ParameterLocation = Cookie | Header | Path | Query
   deriving stock (Eq, GHC.Bounded, GHC.Enum, Show)
 
 instance JSON.FromJSON ParameterLocation where
-  parseJSON = parseJSONFixed "ParameterLocation" JSON.withText $ \case
+  parseJSON = parseJSONFixed "ParameterLocation" JSON.withText toText
+
+instance JSON.ToJSON ParameterLocation where
+  toJSON = JSON.toJSON . toText
+
+instance ToText ParameterLocation where
+  toText = \case
     Cookie -> "cookie"
     Header -> "header"
     Path   -> "path"
     Query  -> "query"
 
 newtype ParameterName = ParameterName Text
-  deriving newtype (JSON.FromJSON, ToText)
+  deriving newtype (JSON.FromJSON, JSON.ToJSON, ToText)
   deriving stock   (Eq, Ord, Show)
 
 data ParameterStyle = DeepObject | Form | Simple
   deriving stock (Eq, GHC.Bounded, GHC.Enum, Show)
 
 instance JSON.FromJSON ParameterStyle where
-  parseJSON = parseJSONFixed "ParameterStyle" JSON.withText $ \case
+  parseJSON = parseJSONFixed "ParameterStyle" JSON.withText toText
+
+instance JSON.ToJSON ParameterStyle where
+  toJSON = JSON.toJSON . toText
+
+instance ToText ParameterStyle where
+  toText = \case
     DeepObject -> "deepObject"
     Form       -> "form"
     Simple     -> "simple"
 
 data Segment = Static Text | Dynamic ParameterName
   deriving stock (Eq, Ord, Show)
+
+instance ToText Segment where
+  toText = \case
+    Dynamic parameterName -> "{" <> convertText parameterName <> "}"
+    Static text -> text
 
 newtype Template = Template [Segment]
   deriving stock (Eq, Ord, Show)
@@ -164,6 +207,10 @@ instance JSON.FromJSON Template where
 
 instance JSON.FromJSONKey Template where
    fromJSONKey = JSON.FromJSONKeyTextParser parseTemplateText
+
+instance JSON.ToJSON Template where
+  toJSON (Template segments)
+    = JSON.toJSON . ("/" <>) . Text.intercalate "/" $ toText <$> segments
 
 parseTemplateText :: Text -> JSON.Parser Template
 parseTemplateText input =

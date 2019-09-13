@@ -1,5 +1,8 @@
 {-# LANGUAGE TypeApplications #-}
 
+import Data.HashMap.Strict (HashMap)
+import Data.Maybe (catMaybes)
+import Data.String (String)
 import MPrelude
 import System.IO (IO)
 import Test.Tasty
@@ -7,6 +10,7 @@ import Test.Tasty.HUnit
 
 import qualified Data.Aeson                as JSON
 import qualified Data.Aeson.Types          as JSON
+import qualified Data.HashMap.Strict       as HashMap
 import qualified Data.Map.Strict           as Map
 import qualified Network.HTTP.Types.Status as HTTP
 import qualified OpenApi.Paths             as Paths
@@ -99,12 +103,37 @@ main :: IO ()
 main = defaultMain suite
 
 mkAccepted
-  :: (Eq a, JSON.FromJSON a, Show a)
+  :: forall a . (Eq a, JSON.FromJSON a, JSON.ToJSON a, Show a)
   => (JSON.Value, a)
   -> TestTree
-mkAccepted (input, expected)
-  = testCase (convertText $ "accepts: " <> show input)
-  $ pure expected @=? JSON.parseEither JSON.parseJSON input
+mkAccepted (input, expected) = do
+  let actual :: Either String a = JSON.parseEither JSON.parseJSON input
+
+  testGroup ("for: " <> show input)
+    [ testCase "parse expected" $ pure expected @=? actual
+    , testCase "round trip" $ either
+      (const $ assertBool "parse failure" True)
+      (assertEqual "" input . normalize . JSON.toJSON)
+      actual
+    ]
+  where
+    normalize :: JSON.Value -> JSON.Value
+    normalize = \case
+      JSON.Array array ->
+        JSON.Array $ normalize <$> array
+      JSON.Object properties ->
+        JSON.Object $ normalizeAttributes properties
+      other -> other
+
+    normalizeAttributes :: HashMap Text JSON.Value -> HashMap Text JSON.Value
+    normalizeAttributes map
+      = HashMap.fromList . catMaybes $ normalizePair <$> HashMap.toList map
+
+    normalizePair :: (Text, JSON.Value) -> Maybe (Text, JSON.Value)
+    normalizePair (key, value) =
+      if value == JSON.Null
+         then empty
+         else pure (key, normalize value)
 
 mkRejected
   :: (Eq a, Show a)
