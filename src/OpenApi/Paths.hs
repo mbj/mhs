@@ -103,12 +103,18 @@ data Response = Response
   deriving anyclass (JSON.FromJSON, JSON.ToJSON)
   deriving stock    (Eq, Generic, Show)
 
+instance HasDescription Response where
+  getDescription = description
+
 data ResponseHeader = ResponseHeader
   { description :: Maybe (Description ResponseHeader)
   , name        :: HeaderName
   }
   deriving anyclass (JSON.FromJSON, JSON.ToJSON)
   deriving stock    (Eq, Generic, Show)
+
+instance HasDescription ResponseHeader where
+  getDescription = description
 
 newtype HeaderName = HeaderName Text
   deriving newtype (JSON.FromJSON, JSON.ToJSON, ToText)
@@ -124,6 +130,9 @@ data RequestBody = RequestBody
   }
   deriving anyclass (JSON.FromJSON, JSON.ToJSON)
   deriving stock   (Eq, Generic, Show)
+
+instance HasDescription RequestBody where
+  getDescription = description
 
 newtype MediaTypeQuery = MediaTypeQuery Text
   deriving newtype (JSON.FromJSON, JSON.FromJSONKey, JSON.ToJSON, JSON.ToJSONKey, ToText)
