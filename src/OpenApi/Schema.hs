@@ -49,19 +49,9 @@ newtype MinProperties = MinProperties Natural
   deriving newtype (JSON.FromJSON, JSON.ToJSON)
   deriving stock   (Eq, Show)
 
-data Properties = Properties (Map PropertyName Schema) | EmptyProperties
-  deriving stock (Eq, Show)
-
-instance JSON.FromJSON Properties where
-  parseJSON = JSON.withObject "properties" $ \map ->
-    if HashMap.null map
-      then pure EmptyProperties
-      else Properties <$> JSON.parseJSON (JSON.Object map)
-
-instance JSON.ToJSON Properties where
-  toJSON = \case
-    EmptyProperties -> JSON.object empty
-    Properties map  -> JSON.toJSON map
+data Properties = Properties (Map PropertyName Schema)
+  deriving anyclass (JSON.FromJSON, JSON.ToJSON)
+  deriving stock    (Eq, Generic, Show)
 
 newtype PropertyName = PropertyName Text
   deriving newtype
