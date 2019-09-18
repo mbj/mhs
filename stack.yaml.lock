@@ -5,12 +5,12 @@
 
 packages:
 - completed:
-    hackage: stratosphere-0.38.0@sha256:259e5a784d08e6a5252f7585d453922850739745abdd3dd269d89e4306af2362,91441
+    hackage: stratosphere-0.42.0@sha256:745944b92e107cc2663e0e443ddd6455bf5371795eb1d4437af5d13d38ec18de,107989
     pantry-tree:
-      size: 152226
-      sha256: a33dc3c25e9eecef61195c2299a59660afb8fc43313dfb8e335ff2df1b1c2ac0
+      size: 180353
+      sha256: 435212246cb72215edf22e0b53c79e4f33c2fdc778817229acdf62b90280f04a
   original:
-    hackage: stratosphere-0.38.0
+    hackage: stratosphere-0.42.0
 - completed:
     cabal-file:
       size: 3161
