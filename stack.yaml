@@ -2,7 +2,6 @@ build:
   haddock: false
 resolver: lts-13.29
 extra-deps:
-- stratosphere-0.38.0
 - git: https://github.com/mbj/mprelude
   commit: 5708d9ce9b417362e0c79cbd7b48d892e7f7f32a
 - git: https://github.com/schirp-dso/source-constraints
