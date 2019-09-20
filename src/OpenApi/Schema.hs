@@ -49,7 +49,7 @@ newtype MinProperties = MinProperties Natural
   deriving newtype (JSON.FromJSON, JSON.ToJSON)
   deriving stock   (Eq, Show)
 
-data Properties = Properties (Map PropertyName Schema)
+newtype Properties = Properties (Map PropertyName Schema)
   deriving anyclass (JSON.FromJSON, JSON.ToJSON)
   deriving stock    (Eq, Generic, Show)
 
@@ -195,15 +195,20 @@ newtype Enum = Enum [JSON.Value]
   deriving newtype (JSON.FromJSON, JSON.ToJSON)
   deriving stock   (Eq, Show)
 
-data Format = UnixTime
-  deriving stock (Eq, GHC.Bounded, GHC.Enum, Show)
+data Format
+  = CustomFormat Text  -- Non standard formats, explicitly allowed by OAS.
+  | UnixTime
+  deriving stock (Eq, Show)
 
 instance ToText Format where
   toText = \case
-    UnixTime -> "unix-time"
+    CustomFormat format -> format
+    UnixTime            -> "unix-time"
 
 instance JSON.FromJSON Format where
-  parseJSON = parseJSONFixed "Format" JSON.withText toText
+  parseJSON = JSON.withText "format" $ \case
+    "unix-time" -> pure UnixTime
+    format      -> pure $ CustomFormat format
 
 instance JSON.ToJSON Format where
   toJSON = JSON.toJSON . toText
