@@ -14,9 +14,25 @@ import qualified Data.HashMap.Strict       as HashMap
 import qualified Data.Map.Strict           as Map
 import qualified Network.HTTP.Types.Status as HTTP
 import qualified OpenApi.Paths             as Paths
+import qualified OpenApi.Schema            as Schema
 
 suite :: TestTree
-suite = testGroup "Test Suite" [parseResponses, parseTemplate]
+suite = testGroup "Test Suite" [parseFormat, parseResponses, parseTemplate]
+
+parseFormat :: TestTree
+parseFormat
+  = testGroup "OpenAPI.Path.Format parsing"
+  $ accepted <> rejected
+  where
+    accepted :: [TestTree]
+    accepted = mkAccepted <$>
+      [ ("decimal",   Schema.CustomFormat "decimal")
+      , ("unix-time", Schema.UnixTime)
+      ]
+
+    rejected :: [TestTree]
+    rejected = mkRejected (JSON.parseJSON @Schema.Format) "Error in $:" <$>
+      [(JSON.object empty, "expected format, encountered Object")]
 
 parseTemplate :: TestTree
 parseTemplate
