@@ -16,8 +16,7 @@ import Control.Monad (unless)
 import Control.Monad.Catch (catchIf)
 import Control.Monad.Trans.AWS (AWSConstraint)
 import Data.Bits (shiftL)
-import Data.ByteString (ByteString, readFile)
-import Data.ByteString.Lazy (fromStrict)
+import Data.ByteString (ByteString)
 import Data.Foldable (foldr')
 import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import GHC.Real (fromIntegral, toInteger)
@@ -28,6 +27,8 @@ import System.Posix.Types
 import System.Process.Typed
 
 import qualified AWS.Lambda.Runtime.TH     as TH
+import qualified Data.ByteString           as ByteString
+import qualified Data.ByteString.Lazy      as ByteString (fromStrict)
 import qualified Data.Text.IO              as Text
 import qualified Network.AWS               as AWS
 import qualified Network.AWS.Data.Body     as AWS
@@ -73,7 +74,7 @@ getFunctionTarget Config{..} = do
   imageBuild
   targetBuild
 
-  bootstrap <- liftIO (readFile $ convertText executablePath)
+  bootstrap <- liftIO (ByteString.readFile $ convertText executablePath)
 
   let
     object        = AWS.toHashed . fromArchive $ functionArchive bootstrap
@@ -146,7 +147,7 @@ getFunctionTarget Config{..} = do
         "lambda-build-" <> (decodeUtf8 . AWS.sha256Base16 $ AWS.toHashed dockerfile)
 
 #ifndef __HLINT__
-    dockerfile = fromStrict $ encodeUtf8 $$(TH.readFile "Dockerfile")
+    dockerfile = ByteString.fromStrict $ encodeUtf8 $$(TH.readFile "Dockerfile")
 #endif
 
 functionArchive :: ByteString -> Archive
@@ -155,7 +156,7 @@ functionArchive bootstrap = addEntryToArchive bootstrapEntry emptyArchive
     bootstrapEntry =
       setMode
         bootstrapFileMode
-        (toEntry "bootstrap" 0 $ fromStrict bootstrap)
+        (toEntry "bootstrap" 0 $ ByteString.fromStrict bootstrap)
 
     bootstrapFileMode =
       foldr'
