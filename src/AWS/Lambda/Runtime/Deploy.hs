@@ -22,7 +22,6 @@ import Data.Foldable (foldr')
 import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import Data.Text.IO (putStrLn)
 import GHC.Real (fromIntegral, toInteger)
-import Network.HTTP.Types (Status(..))
 import System.Exit (ExitCode(ExitSuccess))
 import System.FilePath (FilePath, (</>))
 import System.Posix.Files
@@ -35,6 +34,7 @@ import qualified Network.AWS.Data.Body     as AWS
 import qualified Network.AWS.S3.HeadObject as S3
 import qualified Network.AWS.S3.PutObject  as S3
 import qualified Network.AWS.S3.Types      as S3
+import qualified Network.HTTP.Types        as HTTP
 import qualified System.Directory          as Directory
 
 newtype ExecutablePath = ExecutablePath FilePath
@@ -191,7 +191,7 @@ testObjectExists bucketName objectKey =
     isNotFoundError
       ( AWS.ServiceError
         AWS.ServiceError'
-        { _serviceStatus = Status { statusCode = 404 } }
+        { _serviceStatus = HTTP.Status { HTTP.statusCode = 404 } }
       )
       = True
 
