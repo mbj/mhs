@@ -22,11 +22,6 @@ import Data.Foldable (foldr')
 import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import Data.Text.IO (putStrLn)
 import GHC.Real (fromIntegral, toInteger)
-import Network.AWS
-import Network.AWS.Data.Body
-import Network.AWS.S3.HeadObject
-import Network.AWS.S3.PutObject
-import Network.AWS.S3.Types
 import Network.HTTP.Types (Status(..))
 import System.Exit (ExitCode(ExitSuccess))
 import System.FilePath (FilePath, (</>))
@@ -34,8 +29,13 @@ import System.Posix.Files
 import System.Posix.Types
 import System.Process.Typed
 
-import qualified AWS.Lambda.Runtime.TH as TH
-import qualified System.Directory      as Directory
+import qualified AWS.Lambda.Runtime.TH     as TH
+import qualified Network.AWS               as AWS
+import qualified Network.AWS.Data.Body     as AWS
+import qualified Network.AWS.S3.HeadObject as S3
+import qualified Network.AWS.S3.PutObject  as S3
+import qualified Network.AWS.S3.Types      as S3
+import qualified System.Directory          as Directory
 
 newtype ExecutablePath = ExecutablePath FilePath
   deriving newtype ToText
@@ -50,21 +50,21 @@ newtype TargetName = TargetName Text
   deriving newtype ToText
 
 data Config = Config
-  { bucketName     :: BucketName
+  { bucketName     :: S3.BucketName
   , executablePath :: ExecutablePath
   , packageName    :: PackageName
   , targetName     :: TargetName
   }
 
 data TargetObject = TargetObject
-  { bucketName    :: BucketName
+  { bucketName    :: S3.BucketName
   , message       :: Text
-  , object        :: HashedBody
-  , objectKey     :: ObjectKey
+  , object        :: AWS.HashedBody
+  , objectKey     :: S3.ObjectKey
   , objectKeyText :: Text
   }
 
-syncTarget :: (AWSConstraint r m, MonadAWS m) => TargetObject -> m ()
+syncTarget :: (AWSConstraint r m, AWS.MonadAWS m) => TargetObject -> m ()
 syncTarget TargetObject{..} =
   putIfAbsent bucketName objectKey object (liftIO $ putStrLn message)
 
@@ -76,9 +76,9 @@ getFunctionTarget Config{..} = do
   bootstrap <- liftIO (readFile $ convertText executablePath)
 
   let
-    object        = toHashed . fromArchive $ functionArchive bootstrap
-    objectKeyText = decodeUtf8 (sha256Base16 object) <> ".zip"
-    objectKey     = ObjectKey objectKeyText
+    object        = AWS.toHashed . fromArchive $ functionArchive bootstrap
+    objectKeyText = decodeUtf8 (AWS.sha256Base16 object) <> ".zip"
+    objectKey     = S3.ObjectKey objectKeyText
 
   pure TargetObject
     { message = "Uploading new lambda function: " <> objectKeyText
@@ -143,7 +143,7 @@ getFunctionTarget Config{..} = do
     imageName :: ImageName
     imageName =
       ImageName $
-        "lambda-build-" <> (decodeUtf8 . sha256Base16 $ toHashed dockerfile)
+        "lambda-build-" <> (decodeUtf8 . AWS.sha256Base16 $ AWS.toHashed dockerfile)
 
 #ifndef __HLINT__
     dockerfile = fromStrict $ encodeUtf8 $$(TH.readFile "Dockerfile")
@@ -179,18 +179,18 @@ testImageExists imageName = checkExit <$> runProcess process
       _           -> False
 
 testObjectExists
-  :: (AWSConstraint r m, MonadAWS m)
-  => BucketName
-  -> ObjectKey
+  :: (AWSConstraint r m, AWS.MonadAWS m)
+  => S3.BucketName
+  -> S3.ObjectKey
   -> m Bool
 testObjectExists bucketName objectKey =
   catchIf isNotFoundError
-    ((void . send $ headObject bucketName objectKey) >> pure True)
+    ((void . AWS.send $ S3.headObject bucketName objectKey) >> pure True)
     (const $ pure False)
   where
     isNotFoundError
-      ( ServiceError
-        ServiceError'
+      ( AWS.ServiceError
+        AWS.ServiceError'
         { _serviceStatus = Status { statusCode = 404 } }
       )
       = True
@@ -198,10 +198,10 @@ testObjectExists bucketName objectKey =
     isNotFoundError _ = False
 
 putIfAbsent
-  :: (AWSConstraint r m, MonadAWS m)
-  => BucketName
-  -> ObjectKey
-  -> HashedBody
+  :: (AWSConstraint r m, AWS.MonadAWS m)
+  => S3.BucketName
+  -> S3.ObjectKey
+  -> AWS.HashedBody
   -> m ()
   -> m ()
 putIfAbsent bucketName objectKey object callback = do
@@ -209,4 +209,4 @@ putIfAbsent bucketName objectKey object callback = do
 
   unless exists $ do
     callback
-    void . send $ putObject bucketName objectKey (Hashed object)
+    void . AWS.send $ S3.putObject bucketName objectKey (AWS.Hashed object)
