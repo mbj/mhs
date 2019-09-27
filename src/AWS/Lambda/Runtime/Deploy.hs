@@ -23,7 +23,6 @@ import System.Exit (ExitCode(ExitSuccess))
 import System.FilePath (FilePath, (</>))
 import System.Posix.Files
 import System.Posix.Types
-import System.Process.Typed
 
 import qualified AWS.Lambda.Runtime.TH     as TH
 import qualified Codec.Archive.Zip         as Zip
@@ -37,6 +36,7 @@ import qualified Network.AWS.S3.PutObject  as S3
 import qualified Network.AWS.S3.Types      as S3
 import qualified Network.HTTP.Types        as HTTP
 import qualified System.Directory          as Directory
+import qualified System.Process.Typed      as Process
 
 newtype ExecutablePath = ExecutablePath FilePath
   deriving newtype ToText
@@ -92,9 +92,9 @@ getFunctionTarget Config{..} = do
       exists <- testImageExists imageName
 
       unless exists $
-        runProcess_
-          . setStdin (byteStringInput dockerfile)
-          $ proc "podman"
+        Process.runProcess_
+          . Process.setStdin (Process.byteStringInput dockerfile)
+          $ Process.proc "podman"
             [ "build"
             , "--tag", convertText imageName
             , "--file", "-"
@@ -120,7 +120,7 @@ getFunctionTarget Config{..} = do
 
       liftIO $ Directory.createDirectoryIfMissing False hostStackPath
 
-      runProcess_ $ proc "podman"
+      Process.runProcess_ $ Process.proc "podman"
         [ "run"
         , "--mount", "type=bind,source=" <> hostProjectPath <> ",destination=" <> buildProjectPath
         , "--mount", "type=bind,source=" <> hostStackPath   <> ",destination=" <> buildStackPath
@@ -171,9 +171,9 @@ setMode newMode entry = entry
   }
 
 testImageExists :: MonadIO m => ImageName -> m Bool
-testImageExists imageName = checkExit <$> runProcess process
+testImageExists imageName = checkExit <$> Process.runProcess process
   where
-    process = proc "podman" ["image", "exists", "--", convertText imageName]
+    process = Process.proc "podman" ["image", "exists", "--", convertText imageName]
 
     checkExit = \case
       ExitSuccess -> True
