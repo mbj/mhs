@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wwarn #-}
-
 module AWS.Lambda.Runtime.Deploy
   ( Config(..)
   , ExecutablePath(..)
