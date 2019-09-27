@@ -20,7 +20,6 @@ import Data.ByteString (ByteString, readFile)
 import Data.ByteString.Lazy (fromStrict)
 import Data.Foldable (foldr')
 import Data.Text.Encoding (decodeUtf8, encodeUtf8)
-import Data.Text.IO (putStrLn)
 import GHC.Real (fromIntegral, toInteger)
 import System.Exit (ExitCode(ExitSuccess))
 import System.FilePath (FilePath, (</>))
@@ -29,6 +28,7 @@ import System.Posix.Types
 import System.Process.Typed
 
 import qualified AWS.Lambda.Runtime.TH     as TH
+import qualified Data.Text.IO              as Text
 import qualified Network.AWS               as AWS
 import qualified Network.AWS.Data.Body     as AWS
 import qualified Network.AWS.S3.HeadObject as S3
@@ -66,7 +66,7 @@ data TargetObject = TargetObject
 
 syncTarget :: (AWSConstraint r m, AWS.MonadAWS m) => TargetObject -> m ()
 syncTarget TargetObject{..} =
-  putIfAbsent bucketName objectKey object (liftIO $ putStrLn message)
+  putIfAbsent bucketName objectKey object (liftIO $ Text.putStrLn message)
 
 getFunctionTarget :: forall m . MonadIO m => Config -> m TargetObject
 getFunctionTarget Config{..} = do
