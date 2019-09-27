@@ -11,7 +11,6 @@ module AWS.Lambda.Runtime.Deploy
 where
 
 import AWS.Lambda.Runtime.Prelude
-import Codec.Archive.Zip
 import Control.Monad (unless)
 import Control.Monad.Catch (catchIf)
 import Control.Monad.Trans.AWS (AWSConstraint)
@@ -27,6 +26,7 @@ import System.Posix.Types
 import System.Process.Typed
 
 import qualified AWS.Lambda.Runtime.TH     as TH
+import qualified Codec.Archive.Zip         as Zip
 import qualified Data.ByteString           as ByteString
 import qualified Data.ByteString.Lazy      as ByteString (fromStrict)
 import qualified Data.Text.IO              as Text
@@ -77,7 +77,7 @@ getFunctionTarget Config{..} = do
   bootstrap <- liftIO (ByteString.readFile $ convertText executablePath)
 
   let
-    object        = AWS.toHashed . fromArchive $ functionArchive bootstrap
+    object        = AWS.toHashed . Zip.fromArchive $ functionArchive bootstrap
     objectKeyText = decodeUtf8 (AWS.sha256Base16 object) <> ".zip"
     objectKey     = S3.ObjectKey objectKeyText
 
@@ -150,13 +150,13 @@ getFunctionTarget Config{..} = do
     dockerfile = ByteString.fromStrict $ encodeUtf8 $$(TH.readFile "Dockerfile")
 #endif
 
-functionArchive :: ByteString -> Archive
-functionArchive bootstrap = addEntryToArchive bootstrapEntry emptyArchive
+functionArchive :: ByteString -> Zip.Archive
+functionArchive bootstrap = Zip.addEntryToArchive bootstrapEntry Zip.emptyArchive
   where
     bootstrapEntry =
       setMode
         bootstrapFileMode
-        (toEntry "bootstrap" 0 $ ByteString.fromStrict bootstrap)
+        (Zip.toEntry "bootstrap" 0 $ ByteString.fromStrict bootstrap)
 
     bootstrapFileMode =
       foldr'
@@ -164,10 +164,10 @@ functionArchive bootstrap = addEntryToArchive bootstrapEntry emptyArchive
         regularFileMode
         ([otherExecuteMode, otherReadMode] :: [FileMode])
 
-setMode :: FileMode -> Entry -> Entry
+setMode :: FileMode -> Zip.Entry -> Zip.Entry
 setMode newMode entry = entry
-  { eExternalFileAttributes = fromIntegral (shiftL (toInteger newMode) 16)
-  , eVersionMadeBy          = 0x0300  -- UNIX file attributes
+  { Zip.eExternalFileAttributes = fromIntegral (shiftL (toInteger newMode) 16)
+  , Zip.eVersionMadeBy          = 0x0300  -- UNIX file attributes
   }
 
 testImageExists :: MonadIO m => ImageName -> m Bool
