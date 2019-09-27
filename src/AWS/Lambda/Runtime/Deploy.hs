@@ -21,7 +21,7 @@ import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import GHC.Real (fromIntegral, toInteger)
 import System.Exit (ExitCode(ExitSuccess))
 import System.FilePath (FilePath, (</>))
-import System.Posix.Types
+import System.Posix.Types (FileMode)
 
 import qualified AWS.Lambda.Runtime.TH     as TH
 import qualified Codec.Archive.Zip         as Zip
