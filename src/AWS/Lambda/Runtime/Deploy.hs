@@ -21,7 +21,6 @@ import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import GHC.Real (fromIntegral, toInteger)
 import System.Exit (ExitCode(ExitSuccess))
 import System.FilePath (FilePath, (</>))
-import System.Posix.Files
 import System.Posix.Types
 
 import qualified AWS.Lambda.Runtime.TH     as TH
@@ -36,6 +35,7 @@ import qualified Network.AWS.S3.PutObject  as S3
 import qualified Network.AWS.S3.Types      as S3
 import qualified Network.HTTP.Types        as HTTP
 import qualified System.Directory          as Directory
+import qualified System.Posix.Files        as File
 import qualified System.Process.Typed      as Process
 
 newtype ExecutablePath = ExecutablePath FilePath
@@ -160,9 +160,9 @@ functionArchive bootstrap = Zip.addEntryToArchive bootstrapEntry Zip.emptyArchiv
 
     bootstrapFileMode =
       foldr'
-        unionFileModes
-        regularFileMode
-        ([otherExecuteMode, otherReadMode] :: [FileMode])
+        File.unionFileModes
+        File.regularFileMode
+        ([File.otherExecuteMode, File.otherReadMode] :: [FileMode])
 
 setMode :: FileMode -> Zip.Entry -> Zip.Entry
 setMode newMode entry = entry
