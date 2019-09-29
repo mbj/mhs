@@ -1,11 +1,11 @@
 module StackDeploy.Types where
 
-import Data.ByteString.Builder (toLazyByteString, word32HexFixed)
-import Data.ByteString.Lazy (toStrict)
 import Data.Word (Word32)
 import StackDeploy.AWS
 import StackDeploy.Prelude
 
+import qualified Data.ByteString.Builder          as BS
+import qualified Data.ByteString.Lazy             as LBS
 import qualified Data.Text.Encoding               as Text
 import qualified Network.AWS.CloudFormation.Types as CF
 import qualified Stratosphere
@@ -54,11 +54,11 @@ verb = \case
 newToken :: forall m . MonadIO m => m Token
 newToken = Token . text <$> bytes
   where
-    text (wordA, wordB, wordC) = Text.decodeUtf8 . toStrict . toLazyByteString
+    text (wordA, wordB, wordC) = Text.decodeUtf8 . LBS.toStrict . BS.toLazyByteString
       $  "stack-deploy-"
-      <> word32HexFixed wordA
-      <> word32HexFixed wordB
-      <> word32HexFixed wordC
+      <> BS.word32HexFixed wordA
+      <> BS.word32HexFixed wordB
+      <> BS.word32HexFixed wordC
 
     bytes = (,,) <$> randomWord <*> randomWord <*> randomWord
 

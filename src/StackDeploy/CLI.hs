@@ -5,7 +5,6 @@ import Control.Exception.Base (AssertionFailed(AssertionFailed))
 import Control.Lens ((&), (.~), view)
 import Control.Monad ((<=<), mapM_)
 import Control.Monad.Catch (throwM)
-import Data.ByteString.Lazy (toStrict)
 import Data.Char (isAlpha, isDigit)
 import Data.Conduit ((.|), runConduit)
 import Data.String (String)
@@ -21,6 +20,7 @@ import StackDeploy.Wait
 import System.Exit (ExitCode(..))
 
 import qualified Data.Attoparsec.Text                           as Text
+import qualified Data.ByteString.Lazy                           as LBS
 import qualified Data.Conduit.Combinators                       as Conduit
 import qualified Data.Text.Encoding                             as Text
 import qualified Data.Text.IO                                   as Text
@@ -141,7 +141,7 @@ parserInfo templateProvider instanceSpecProvider = wrapHelper commands
     render :: Name -> m ExitCode
     render name = do
       template <- templateProvider name
-      say . Text.decodeUtf8 . toStrict $ encodeTemplate template
+      say . Text.decodeUtf8 . LBS.toStrict $ encodeTemplate template
       success
 
     success :: m ExitCode

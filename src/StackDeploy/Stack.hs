@@ -13,7 +13,6 @@ import Control.Exception.Base (AssertionFailed(AssertionFailed))
 import Control.Lens (Lens', set, view)
 import Control.Monad ((<=<))
 import Control.Monad.Catch (catchIf, throwM)
-import Data.ByteString.Lazy (toStrict)
 import Data.Conduit (ConduitT, (.|), runConduit)
 import Data.Conduit.Combinators (find, map)
 import Data.Maybe (Maybe(Just), fromMaybe)
@@ -27,6 +26,7 @@ import StackDeploy.Template
 import StackDeploy.Types
 import StackDeploy.Wait
 
+import qualified Data.ByteString.Lazy                      as LBS
 import qualified Data.Foldable                             as Foldable
 import qualified Data.Text                                 as Text
 import qualified Data.Text.Encoding                        as Text
@@ -271,7 +271,7 @@ configureStack template OperationFields{..} InstanceSpec{..} token
   . setText templateBodyField templateBody
   . setText tokenField        token
   where
-    templateBody = Text.decodeUtf8 . toStrict $ encodeTemplate template
+    templateBody = Text.decodeUtf8 . LBS.toStrict $ encodeTemplate template
 
 setText :: (Applicative f, ToText b) => Lens' a (f Text) -> b -> a -> a
 setText field value = set field (pure $ toText value)
