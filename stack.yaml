@@ -1,8 +1,8 @@
-resolver: lts-13.29
+resolver: lts-14.7
 extra-deps:
-- commit: 008e5ce4a6660e2f35924b019272803206e01cb2
+- commit: 3eea6c0c3c4c66c39e1b68a5a27e74554395699d
   git: https://github.com/schirp-dso/source-constraints
-- commit: 5708d9ce9b417362e0c79cbd7b48d892e7f7f32a
+- commit: 6c2d455b341b323fd857809729092e442ae4dcd1
   git: https://github.com/mbj/mprelude
 packages:
 - .
