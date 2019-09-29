@@ -5,11 +5,11 @@ import Data.ByteString.Lazy (toStrict)
 import Data.Word (Word32)
 import StackDeploy.AWS
 import StackDeploy.Prelude
-import System.Random (randomIO)
 
 import qualified Data.Text.Encoding               as Text
 import qualified Network.AWS.CloudFormation.Types as CF
 import qualified Stratosphere
+import qualified System.Random                    as Random
 
 newtype Id = Id Text
   deriving newtype ToText
@@ -63,4 +63,4 @@ newToken = Token . text <$> bytes
     bytes = (,,) <$> randomWord <*> randomWord <*> randomWord
 
     randomWord :: m Word32
-    randomWord = liftIO randomIO
+    randomWord = liftIO Random.randomIO
