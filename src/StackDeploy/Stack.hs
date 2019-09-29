@@ -31,12 +31,12 @@ import StackDeploy.Prelude
 import StackDeploy.Template
 import StackDeploy.Types
 import StackDeploy.Wait
-import Stratosphere (Template)
 
 import qualified Data.Foldable      as Foldable
 import qualified Data.Text          as Text
 import qualified Data.Text.Encoding as Text
 import qualified Network.AWS        as AWS
+import qualified Stratosphere
 
 data OperationFields a = OperationFields
   { tokenField        :: Lens' a (Maybe Text)
@@ -68,7 +68,7 @@ perform = \case
       token <- newToken
       action RemoteOperation{..}
 
-    create :: Name -> InstanceSpec -> Template -> m RemoteOperationResult
+    create :: Name -> InstanceSpec -> Stratosphere.Template -> m RemoteOperationResult
     create name instanceSpec@InstanceSpec{..} template = do
       void prepareSync
       token   <- newToken
@@ -110,7 +110,7 @@ perform = \case
 
     update
       :: InstanceSpec
-      -> Template
+      -> Stratosphere.Template
       -> RemoteOperation
       -> m RemoteOperationResult
     update
@@ -258,7 +258,7 @@ stackNames =
   listResource describeStacks dsrsStacks .| map (Name . view sStackName)
 
 configureStack
-  :: Template
+  :: Stratosphere.Template
   -> OperationFields a
   -> InstanceSpec
   -> Token

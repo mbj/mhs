@@ -6,10 +6,10 @@ import Data.Word (Word32)
 import Network.AWS.CloudFormation.Types (Capability, Parameter)
 import StackDeploy.AWS
 import StackDeploy.Prelude
-import Stratosphere (Template)
 import System.Random (randomIO)
 
 import qualified Data.Text.Encoding as Text
+import qualified Stratosphere
 
 newtype Id = Id Text
   deriving newtype ToText
@@ -23,9 +23,9 @@ newtype RoleARN = RoleARN Text
   deriving stock   Eq
 
 data Operation
-  = OpCreate Name InstanceSpec Template
+  = OpCreate Name InstanceSpec Stratosphere.Template
   | OpDelete Id
-  | OpUpdate Id InstanceSpec Template
+  | OpUpdate Id InstanceSpec Stratosphere.Template
 
 data InstanceSpec = InstanceSpec
   { capabilities :: [Capability]

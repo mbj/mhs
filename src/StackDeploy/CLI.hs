@@ -21,7 +21,6 @@ import StackDeploy.Stack
 import StackDeploy.Template
 import StackDeploy.Types
 import StackDeploy.Wait
-import Stratosphere (Template)
 import System.Exit (ExitCode(..))
 
 import qualified Data.Attoparsec.Text     as Text
@@ -29,6 +28,7 @@ import qualified Data.Conduit.Combinators as Conduit
 import qualified Data.Text.Encoding       as Text
 import qualified Data.Text.IO             as Text
 import qualified Network.AWS              as AWS
+import qualified Stratosphere
 
 type InstanceSpecProvider
   =  forall m r . (AWSConstraint r m, MonadAWS m)
@@ -36,7 +36,7 @@ type InstanceSpecProvider
 
 type TemplateProvider
   =  forall m . MonadIO m
-  => (Name -> m Template)
+  => (Name -> m Stratosphere.Template)
 
 parserInfo
   :: forall m r . (AWSConstraint r m, MonadAWS m)
