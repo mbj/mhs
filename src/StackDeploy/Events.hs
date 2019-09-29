@@ -7,13 +7,13 @@ import Control.Monad.Catch (throwM)
 import Data.Conduit (ConduitT, (.|), await, runConduit, yield)
 import Data.Conduit.Combinators (find, iterM, takeWhile, yieldMany)
 import Data.Conduit.List (consume)
-import Data.Foldable (null)
 import Data.Function (on)
 import Data.List (reverse)
 import StackDeploy.AWS
 import StackDeploy.Prelude
 import StackDeploy.Types
 
+import qualified Data.Foldable                                  as Foldable
 import qualified Network.AWS.CloudFormation.DescribeStackEvents as CF
 import qualified Network.AWS.CloudFormation.Types               as CF
 
@@ -71,7 +71,7 @@ allEvents Poll{..} =
 
     getInitial = do
       events <- poll initialEvents
-      if null events
+      if Foldable.null events
         then delay >> getInitial
         else pure events
 
@@ -79,7 +79,7 @@ allEvents Poll{..} =
     go lastEvent = do
       delay
       events <- poll $ nextEvents lastEvent
-      if null events
+      if Foldable.null events
         then go lastEvent
         else maybe (pure ()) go (listToMaybe events)
 

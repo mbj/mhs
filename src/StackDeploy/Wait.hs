@@ -3,7 +3,6 @@ module StackDeploy.Wait (waitForAccept) where
 import Control.Exception.Base (AssertionFailed(AssertionFailed))
 import Control.Lens (view)
 import Control.Monad.Catch (throwM)
-import Data.Foldable (elem, toList)
 import Data.Set (Set)
 import Data.String (String)
 import StackDeploy.AWS
@@ -11,6 +10,7 @@ import StackDeploy.Events
 import StackDeploy.Prelude
 import StackDeploy.Types
 
+import qualified Data.Foldable                    as Foldable
 import qualified Network.AWS.CloudFormation.Types as CF
 
 -- | Wait for remote operation to end in a final status
@@ -63,7 +63,7 @@ isStackEvent allowedStatus event = isStackEventType && isExpectedResourceStatus
     resourceStatus = view CF.seResourceStatus event
 
     isExpectedResourceStatus =
-      resourceStatus `elem` (pure <$> toList allowedStatus)
+      resourceStatus `Foldable.elem` (pure <$> Foldable.toList allowedStatus)
 
     isStackEventType =
       view CF.seResourceType event == pure "AWS::CloudFormation::Stack"
