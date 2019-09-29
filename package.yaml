@@ -70,7 +70,7 @@ tests:
     - -threaded
     - -with-rtsopts=-N
     dependencies:
-    - ghc-paths          == 0.1.0.9
+    - ghc-paths          == 0.1.0.12
     - heredoc            == 0.2.0.0
     - hspec              == 2.7.1
     - source-constraints
