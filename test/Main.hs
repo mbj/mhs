@@ -32,7 +32,7 @@ parseFormat
 
     rejected :: [TestTree]
     rejected = mkRejected (JSON.parseJSON @Schema.Format) "Error in $:" <$>
-      [(JSON.object empty, "expected format, encountered Object")]
+      [(JSON.object empty, "parsing format failed, expected String, but encountered Object")]
 
 parseTemplate :: TestTree
 parseTemplate
@@ -106,7 +106,7 @@ parseResponses :: TestTree
 
     rejected :: [TestTree]
     rejected = mkRejected (JSON.parseJSON @Paths.Responses) "Error in $:" <$>
-      [ ("", "expected responses, encountered String")
+      [ ("", "parsing responses failed, expected Object, but encountered String")
       , (JSON.object [("", JSON.object empty)], "Invalid status code pattern: \"\"")
       , (JSON.object [("-1", JSON.object empty)], "Invalid status code pattern: \"-1\"")
       , (JSON.object [("0", JSON.object empty)], "Invalid status code pattern: \"0\"")
