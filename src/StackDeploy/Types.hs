@@ -1,12 +1,11 @@
 module StackDeploy.Types where
 
-import Control.Monad.Trans.AWS (AWSConstraint)
 import Data.ByteString.Builder (toLazyByteString, word32HexFixed)
 import Data.ByteString.Lazy (toStrict)
 import Data.Text.Encoding (decodeUtf8)
 import Data.Word (Word32)
-import Network.AWS (MonadAWS)
 import Network.AWS.CloudFormation.Types (Capability, Parameter)
+import StackDeploy.AWS
 import StackDeploy.Prelude
 import Stratosphere (Template)
 import System.Random (randomIO)

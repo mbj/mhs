@@ -5,13 +5,11 @@ import Control.Exception.Base (AssertionFailed(AssertionFailed))
 import Control.Lens ((&), (.~), view)
 import Control.Monad ((<=<), mapM_)
 import Control.Monad.Catch (throwM)
-import Control.Monad.Trans.AWS (AWSConstraint)
 import Data.ByteString.Lazy (toStrict)
 import Data.Char (isAlpha, isDigit)
 import Data.Conduit ((.|), runConduit)
 import Data.String (String)
 import Data.Text.Encoding (decodeUtf8)
-import Network.AWS (MonadAWS, send)
 import Network.AWS.CloudFormation.CancelUpdateStack
 import Network.AWS.CloudFormation.DescribeStackEvents
 import Network.AWS.CloudFormation.Types
@@ -30,6 +28,7 @@ import System.Exit (ExitCode(..))
 import qualified Data.Attoparsec.Text     as Text
 import qualified Data.Conduit.Combinators as Conduit
 import qualified Data.Text.IO             as Text
+import qualified Network.AWS              as AWS
 
 type InstanceSpecProvider
   =  forall m r . (AWSConstraint r m, MonadAWS m)
@@ -72,7 +71,7 @@ parserInfo templateProvider instanceSpecProvider = wrapHelper commands
 
     cancel :: Name -> m ExitCode
     cancel name = do
-      void . send . cancelUpdateStack $ toText name
+      void . AWS.send . cancelUpdateStack $ toText name
       success
 
     create :: Name -> [Parameter] -> m ExitCode

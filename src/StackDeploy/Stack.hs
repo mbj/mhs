@@ -13,7 +13,6 @@ import Control.Exception.Base (AssertionFailed(AssertionFailed))
 import Control.Lens (Lens', set, view)
 import Control.Monad ((<=<))
 import Control.Monad.Catch (catchIf, throwM)
-import Control.Monad.Trans.AWS (AWSConstraint)
 import Data.ByteString.Lazy (toStrict)
 import Data.Conduit (ConduitT, (.|), runConduit)
 import Data.Conduit.Combinators (find, map)
@@ -22,7 +21,6 @@ import Data.String (String)
 import Data.Text (unwords)
 import Data.Text.Encoding (decodeUtf8)
 import Data.Time.Format (defaultTimeLocale, formatTime)
-import Network.AWS
 import Network.AWS.CloudFormation.CreateStack
 import Network.AWS.CloudFormation.DeleteStack
 import Network.AWS.CloudFormation.DescribeStacks
@@ -37,6 +35,7 @@ import StackDeploy.Wait
 import Stratosphere (Template)
 
 import qualified Data.Foldable as Foldable
+import qualified Network.AWS   as AWS
 
 data OperationFields a = OperationFields
   { tokenField        :: Lens' a (Maybe Text)
@@ -75,16 +74,16 @@ perform = \case
       stackId <- getId =<< doCreate token
       waitFor RemoteOperation{..}
       where
-        getId :: Rs CreateStack -> m Id
+        getId :: AWS.Rs CreateStack -> m Id
         getId =
           maybe
             (throwM $ AssertionFailed "Remote stack without stack id")
             (pure . Id)
           . view csrsStackId
 
-        doCreate :: Token -> m (Rs CreateStack)
+        doCreate :: Token -> m (AWS.Rs CreateStack)
         doCreate token
-          = send
+          = AWS.send
           . configureStack template operationFields instanceSpec token
           . createStack
           $ toText name
@@ -104,7 +103,7 @@ perform = \case
         doDelete :: m ()
         doDelete
           = void
-          . send
+          . AWS.send
           . setText dsClientRequestToken token
           . deleteStack $ toText stackId
 
@@ -124,18 +123,18 @@ perform = \case
       where
         doUpdate :: m ()
         doUpdate = void
-          . send
+          . AWS.send
           . configureStack template operationFields instanceSpec token
           . updateStack
           $ toText stackId
 
         isNoUpdateError
-          ( ServiceError
-            ServiceError'
+          ( AWS.ServiceError
+            AWS.ServiceError'
             { _serviceCode =
-               ErrorCode "ValidationError"
+               AWS.ErrorCode "ValidationError"
             , _serviceMessage =
-              Just (ErrorMessage "No updates are to be performed.")
+              Just (AWS.ErrorMessage "No updates are to be performed.")
             }
           ) = True
 
@@ -221,7 +220,7 @@ getExistingStack :: forall m . MonadAWS m => Name -> m Stack
 getExistingStack name = maybe failMissingRequested pure =<< doRequest
   where
     doRequest :: m (Maybe Stack)
-    doRequest = liftAWS . runConduit
+    doRequest = AWS.liftAWS . runConduit
       $  listResource describeSpecificStack dsrsStacks
       .| find ((toText name ==) . view sStackName)
 
@@ -239,9 +238,9 @@ getStack name =
   catchIf isNotFoundError (pure <$> getExistingStack name) (const $ pure empty)
   where
     isNotFoundError
-      ( ServiceError
-        ServiceError'
-        { _serviceCode    = ErrorCode "ValidationError"
+      ( AWS.ServiceError
+        AWS.ServiceError'
+        { _serviceCode    = AWS.ErrorCode "ValidationError"
         , _serviceMessage = Just actualMessage
         }
       )
@@ -249,9 +248,9 @@ getStack name =
 
     isNotFoundError _ = False
 
-    expectedMessage :: ErrorMessage
+    expectedMessage :: AWS.ErrorMessage
     expectedMessage =
-      ErrorMessage $ "Stack with id " <> toText name <> " does not exist"
+      AWS.ErrorMessage $ "Stack with id " <> toText name <> " does not exist"
 
 stackNames :: (AWSConstraint r m, MonadAWS m) => ConduitT () Name m ()
 stackNames =

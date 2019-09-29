@@ -3,12 +3,11 @@ module StackDeploy.Wait (waitForAccept) where
 import Control.Exception.Base (AssertionFailed(AssertionFailed))
 import Control.Lens (view)
 import Control.Monad.Catch (throwM)
-import Control.Monad.Trans.AWS (AWSConstraint)
 import Data.Foldable (elem, toList)
 import Data.Set (Set)
 import Data.String (String)
-import Network.AWS (MonadAWS)
 import Network.AWS.CloudFormation.Types
+import StackDeploy.AWS
 import StackDeploy.Events
 import StackDeploy.Prelude
 import StackDeploy.Types
