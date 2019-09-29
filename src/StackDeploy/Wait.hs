@@ -6,11 +6,12 @@ import Control.Monad.Catch (throwM)
 import Data.Foldable (elem, toList)
 import Data.Set (Set)
 import Data.String (String)
-import Network.AWS.CloudFormation.Types
 import StackDeploy.AWS
 import StackDeploy.Events
 import StackDeploy.Prelude
 import StackDeploy.Types
+
+import qualified Network.AWS.CloudFormation.Types as CF
 
 -- | Wait for remote operation to end in a final status
 --
@@ -18,12 +19,12 @@ import StackDeploy.Types
 waitForAccept
   :: forall m r . (AWSConstraint r m, MonadAWS m)
   => RemoteOperation
-  -> (StackEvent -> m ())
+  -> (CF.StackEvent -> m ())
   -> m RemoteOperationResult
 waitForAccept RemoteOperation{..} action =
   classify =<< pollEvents pollConfig action
   where
-    classify :: Maybe StackEvent -> m RemoteOperationResult
+    classify :: Maybe CF.StackEvent -> m RemoteOperationResult
     classify = maybe
       (throwM $ AssertionFailed "No last event")
       assertPresentResourceStatus
@@ -32,7 +33,7 @@ waitForAccept RemoteOperation{..} action =
       maybe
         (throwM $ AssertionFailed "Last event has no resource status")
         remoteOperationResult
-        . view seResourceStatus
+        . view CF.seResourceStatus
 
     pollConfig = (defaultPoll stackId)
       { eventFilter    = isToken token
@@ -40,51 +41,51 @@ waitForAccept RemoteOperation{..} action =
       , stopCondition  = isStackEvent finalResourceStatus
       }
 
-    remoteOperationResult :: ResourceStatus -> m RemoteOperationResult
+    remoteOperationResult :: CF.ResourceStatus -> m RemoteOperationResult
     remoteOperationResult = \case
-      CreateComplete         -> pure RemoteOperationSuccess
-      CreateFailed           -> pure RemoteOperationFailure
-      DeleteComplete         -> pure RemoteOperationSuccess
-      DeleteFailed           -> pure RemoteOperationFailure
-      RollbackComplete       -> pure RemoteOperationFailure
-      RollbackFailed         -> pure RemoteOperationFailure
-      UpdateComplete         -> pure RemoteOperationSuccess
-      UpdateFailed           -> pure RemoteOperationFailure
-      UpdateRollbackComplete -> pure RemoteOperationFailure
-      status                 -> throwM . AssertionFailed $ message status
+      CF.CreateComplete         -> pure RemoteOperationSuccess
+      CF.CreateFailed           -> pure RemoteOperationFailure
+      CF.DeleteComplete         -> pure RemoteOperationSuccess
+      CF.DeleteFailed           -> pure RemoteOperationFailure
+      CF.RollbackComplete       -> pure RemoteOperationFailure
+      CF.RollbackFailed         -> pure RemoteOperationFailure
+      CF.UpdateComplete         -> pure RemoteOperationSuccess
+      CF.UpdateFailed           -> pure RemoteOperationFailure
+      CF.UpdateRollbackComplete -> pure RemoteOperationFailure
+      status                    -> throwM . AssertionFailed $ message status
       where
         message :: Show a => a -> String
         message = ("Last event has unexpected resource status: " <>) . show
 
-isStackEvent :: Set ResourceStatus -> StackEvent -> Bool
+isStackEvent :: Set CF.ResourceStatus -> CF.StackEvent -> Bool
 isStackEvent allowedStatus event = isStackEventType && isExpectedResourceStatus
   where
-    resourceStatus = view seResourceStatus event
+    resourceStatus = view CF.seResourceStatus event
 
     isExpectedResourceStatus =
       resourceStatus `elem` (pure <$> toList allowedStatus)
 
     isStackEventType =
-      view seResourceType event == pure "AWS::CloudFormation::Stack"
+      view CF.seResourceType event == pure "AWS::CloudFormation::Stack"
 
-finalResourceStatus :: Set ResourceStatus
+finalResourceStatus :: Set CF.ResourceStatus
 finalResourceStatus =
-  [ CreateComplete
-  , CreateFailed
-  , DeleteComplete
-  , DeleteFailed
-  , RollbackComplete
-  , UpdateComplete
-  , UpdateFailed
-  , UpdateRollbackComplete
+  [ CF.CreateComplete
+  , CF.CreateFailed
+  , CF.DeleteComplete
+  , CF.DeleteFailed
+  , CF.RollbackComplete
+  , CF.UpdateComplete
+  , CF.UpdateFailed
+  , CF.UpdateRollbackComplete
   ]
 
-initialResourceStatus :: Set ResourceStatus
+initialResourceStatus :: Set CF.ResourceStatus
 initialResourceStatus =
-  [ CreateInProgress
-  , DeleteInProgress
-  , UpdateInProgress
+  [ CF.CreateInProgress
+  , CF.DeleteInProgress
+  , CF.UpdateInProgress
   ]
 
-isToken :: Token -> StackEvent -> Bool
-isToken token event = pure (toText token) == view seClientRequestToken event
+isToken :: Token -> CF.StackEvent -> Bool
+isToken token event = pure (toText token) == view CF.seClientRequestToken event

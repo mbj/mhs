@@ -3,12 +3,12 @@ module StackDeploy.Types where
 import Data.ByteString.Builder (toLazyByteString, word32HexFixed)
 import Data.ByteString.Lazy (toStrict)
 import Data.Word (Word32)
-import Network.AWS.CloudFormation.Types (Capability, Parameter)
 import StackDeploy.AWS
 import StackDeploy.Prelude
 import System.Random (randomIO)
 
-import qualified Data.Text.Encoding as Text
+import qualified Data.Text.Encoding               as Text
+import qualified Network.AWS.CloudFormation.Types as CF
 import qualified Stratosphere
 
 newtype Id = Id Text
@@ -28,9 +28,9 @@ data Operation
   | OpUpdate Id InstanceSpec Stratosphere.Template
 
 data InstanceSpec = InstanceSpec
-  { capabilities :: [Capability]
+  { capabilities :: [CF.Capability]
   , onSuccess    :: forall m r . (AWSConstraint r m, MonadAWS m) => m ()
-  , parameters   :: [Parameter]
+  , parameters   :: [CF.Parameter]
   , prepareSync  :: forall m r . (AWSConstraint r m, MonadAWS m) => m ()
   , roleARN      :: Maybe RoleARN
   }

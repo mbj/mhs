@@ -10,18 +10,19 @@ import Data.Conduit.List (consume)
 import Data.Foldable (null)
 import Data.Function (on)
 import Data.List (reverse)
-import Network.AWS.CloudFormation.DescribeStackEvents
-import Network.AWS.CloudFormation.Types (StackEvent, seEventId)
 import StackDeploy.AWS
 import StackDeploy.Prelude
 import StackDeploy.Types
 
+import qualified Network.AWS.CloudFormation.DescribeStackEvents as CF
+import qualified Network.AWS.CloudFormation.Types               as CF
+
 data Poll = Poll
   { delay          :: forall m . MonadIO m => m ()
-  , eventFilter    :: StackEvent -> Bool
+  , eventFilter    :: CF.StackEvent -> Bool
   , stackId        :: Id
-  , startCondition :: StackEvent -> Bool
-  , stopCondition  :: StackEvent -> Bool
+  , startCondition :: CF.StackEvent -> Bool
+  , stopCondition  :: CF.StackEvent -> Bool
   }
 
 defaultPoll :: Id -> Poll
@@ -39,32 +40,32 @@ defaultPoll stackId = Poll
 pollEvents
   :: forall m r . (AWSConstraint r m, MonadAWS m)
   => Poll
-  -> (StackEvent -> m ())
-  -> m (Maybe StackEvent)
+  -> (CF.StackEvent -> m ())
+  -> m (Maybe CF.StackEvent)
 pollEvents poll@Poll{..} eventAction = runConduit events
   where
-    events :: ConduitT () b m (Maybe StackEvent)
+    events :: ConduitT () b m (Maybe CF.StackEvent)
     events = allEvents poll .| iterM eventAction .| find stopCondition
 
 -- | Conduit polling for new stack events
 allEvents
   :: forall m r . (AWSConstraint r m, MonadAWS m)
   => Poll
-  -> ConduitT () StackEvent m ()
+  -> ConduitT () CF.StackEvent m ()
 allEvents Poll{..} =
   go =<< getNext =<< getInitial
   where
-    getNext :: [StackEvent] -> ConduitT () StackEvent m StackEvent
+    getNext :: [CF.StackEvent] -> ConduitT () CF.StackEvent m CF.StackEvent
     getNext
       = maybe (throwM $ AssertionFailed "No start event") pure . listToMaybe
 
-    initialEvents :: ConduitT () StackEvent m ()
+    initialEvents :: ConduitT () CF.StackEvent m ()
     initialEvents
       =  stackEvents stackId
       .| takeWhile eventFilter
       .| takeUntilInclusive startCondition
 
-    nextEvents :: StackEvent -> ConduitT () StackEvent m ()
+    nextEvents :: CF.StackEvent -> ConduitT () CF.StackEvent m ()
     nextEvents lastEvent
       = stackEvents stackId .| takeWhile (not . isExpectedEvent lastEvent)
 
@@ -74,7 +75,7 @@ allEvents Poll{..} =
         then delay >> getInitial
         else pure events
 
-    go :: StackEvent -> ConduitT () StackEvent m ()
+    go :: CF.StackEvent -> ConduitT () CF.StackEvent m ()
     go lastEvent = do
       delay
       events <- poll $ nextEvents lastEvent
@@ -82,12 +83,12 @@ allEvents Poll{..} =
         then go lastEvent
         else maybe (pure ()) go (listToMaybe events)
 
-    isExpectedEvent :: StackEvent -> StackEvent -> Bool
-    isExpectedEvent = (==) `on` view seEventId
+    isExpectedEvent :: CF.StackEvent -> CF.StackEvent -> Bool
+    isExpectedEvent = (==) `on` view CF.seEventId
 
     poll
-      :: ConduitT () StackEvent m ()
-      -> ConduitT () StackEvent m [StackEvent]
+      :: ConduitT () CF.StackEvent m ()
+      -> ConduitT () CF.StackEvent m [CF.StackEvent]
     poll action = do
       events <- action .| consume
       yieldMany $ reverse events
@@ -96,10 +97,10 @@ allEvents Poll{..} =
 stackEvents
   :: forall m r . (AWSConstraint r m, MonadAWS m)
   => Id
-  -> ConduitT () StackEvent m ()
-stackEvents stackId = listResource req dsersStackEvents
+  -> ConduitT () CF.StackEvent m ()
+stackEvents stackId = listResource req CF.dsersStackEvents
   where
-    req = describeStackEvents & dseStackName .~ pure (toText stackId)
+    req = CF.describeStackEvents & CF.dseStackName .~ pure (toText stackId)
 
 -- | takeUntil but returns the first matching item instead of discarding it
 takeUntilInclusive :: forall a m . Monad m => (a -> Bool) -> ConduitT a a m ()

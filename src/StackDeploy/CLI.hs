@@ -9,9 +9,6 @@ import Data.ByteString.Lazy (toStrict)
 import Data.Char (isAlpha, isDigit)
 import Data.Conduit ((.|), runConduit)
 import Data.String (String)
-import Network.AWS.CloudFormation.CancelUpdateStack
-import Network.AWS.CloudFormation.DescribeStackEvents
-import Network.AWS.CloudFormation.Types
 import Options.Applicative hiding (value)
 import StackDeploy.AWS
 import StackDeploy.Events
@@ -23,16 +20,19 @@ import StackDeploy.Types
 import StackDeploy.Wait
 import System.Exit (ExitCode(..))
 
-import qualified Data.Attoparsec.Text     as Text
-import qualified Data.Conduit.Combinators as Conduit
-import qualified Data.Text.Encoding       as Text
-import qualified Data.Text.IO             as Text
-import qualified Network.AWS              as AWS
+import qualified Data.Attoparsec.Text                           as Text
+import qualified Data.Conduit.Combinators                       as Conduit
+import qualified Data.Text.Encoding                             as Text
+import qualified Data.Text.IO                                   as Text
+import qualified Network.AWS                                    as AWS
+import qualified Network.AWS.CloudFormation.CancelUpdateStack   as CF
+import qualified Network.AWS.CloudFormation.DescribeStackEvents as CF
+import qualified Network.AWS.CloudFormation.Types               as CF
 import qualified Stratosphere
 
 type InstanceSpecProvider
   =  forall m r . (AWSConstraint r m, MonadAWS m)
-  => (Name -> [Parameter] -> m InstanceSpec)
+  => (Name -> [CF.Parameter] -> m InstanceSpec)
 
 type TemplateProvider
   =  forall m . MonadIO m
@@ -71,16 +71,16 @@ parserInfo templateProvider instanceSpecProvider = wrapHelper commands
 
     cancel :: Name -> m ExitCode
     cancel name = do
-      void . AWS.send . cancelUpdateStack $ toText name
+      void . AWS.send . CF.cancelUpdateStack $ toText name
       success
 
-    create :: Name -> [Parameter] -> m ExitCode
+    create :: Name -> [CF.Parameter] -> m ExitCode
     create name params = do
       spec     <- instanceSpecProvider name params
       template <- templateProvider name
       exitCode =<< perform (OpCreate name spec template)
 
-    update :: Name -> [Parameter] -> m ExitCode
+    update :: Name -> [CF.Parameter] -> m ExitCode
     update name params = do
       spec     <- instanceSpecProvider name params
       stackId  <- getExistingStackId name
@@ -88,7 +88,7 @@ parserInfo templateProvider instanceSpecProvider = wrapHelper commands
 
       exitCode =<< perform (OpUpdate stackId spec template)
 
-    sync :: Name -> [Parameter] -> m ExitCode
+    sync :: Name -> [CF.Parameter] -> m ExitCode
     sync name params = do
       spec     <- instanceSpecProvider name params
       template <- templateProvider name
@@ -102,10 +102,10 @@ parserInfo templateProvider instanceSpecProvider = wrapHelper commands
 
     outputs :: Name -> m ExitCode
     outputs name = do
-      mapM_ printOutput =<< (view sOutputs <$> getExistingStack name)
+      mapM_ printOutput =<< (view CF.sOutputs <$> getExistingStack name)
       success
       where
-        printOutput :: Output -> m ()
+        printOutput :: CF.Output -> m ()
         printOutput = liftIO . Text.putStrLn . convertText . show
 
     delete :: Name -> m ExitCode
@@ -118,10 +118,10 @@ parserInfo templateProvider instanceSpecProvider = wrapHelper commands
 
     events :: Name -> m ExitCode
     events name = do
-      runConduit $ listResource req dsersStackEvents .| Conduit.mapM_ printEvent
+      runConduit $ listResource req CF.dsersStackEvents .| Conduit.mapM_ printEvent
       success
       where
-        req = describeStackEvents & dseStackName .~ pure (toText name)
+        req = CF.describeStackEvents & CF.dseStackName .~ pure (toText name)
 
     watch :: Name -> m ExitCode
     watch name = do
@@ -151,12 +151,12 @@ parserInfo templateProvider instanceSpecProvider = wrapHelper commands
       RemoteOperationSuccess -> success
       RemoteOperationFailure -> pure $ ExitFailure 1
 
-parameterParser :: Parser Parameter
+parameterParser :: Parser CF.Parameter
 parameterParser = option
   parameterReader
   (long "parameter" <> help "Set stack parameter")
 
-parameterReader :: ReadM Parameter
+parameterReader :: ReadM CF.Parameter
 parameterReader = eitherReader (Text.parseOnly parser . convertText)
   where
     parser = do
@@ -166,9 +166,9 @@ parameterReader = eitherReader (Text.parseOnly parser . convertText)
       void Text.endOfInput
 
       pure
-        $ parameter
-        & pParameterKey .~ pure key
-        & pParameterValue .~ pure value
+        $ CF.parameter
+        & CF.pParameterKey .~ pure key
+        & CF.pParameterValue .~ pure value
 
     allowChar = \case
       '-'  -> True
