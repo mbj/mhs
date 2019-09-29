@@ -11,37 +11,35 @@ where
 
 import Control.Exception.Base (AssertionFailed(AssertionFailed))
 import Control.Lens (Lens', set, view)
-import Control.Monad ((<=<))
 import Control.Monad.Catch (catchIf, throwM)
-import Control.Monad.Trans.AWS (AWSConstraint)
-import Data.ByteString.Lazy (toStrict)
 import Data.Conduit (ConduitT, (.|), runConduit)
 import Data.Conduit.Combinators (find, map)
-import Data.Maybe (Maybe(Just), fromMaybe)
 import Data.String (String)
-import Data.Text (unwords)
-import Data.Text.Encoding (decodeUtf8)
+import Data.Text (Text)
 import Data.Time.Format (defaultTimeLocale, formatTime)
-import Network.AWS
-import Network.AWS.CloudFormation.CreateStack
-import Network.AWS.CloudFormation.DeleteStack
-import Network.AWS.CloudFormation.DescribeStacks
-import Network.AWS.CloudFormation.Types hiding (stack)
-import Network.AWS.CloudFormation.UpdateStack
 import StackDeploy.AWS
 import StackDeploy.IO
 import StackDeploy.Prelude
 import StackDeploy.Template
 import StackDeploy.Types
 import StackDeploy.Wait
-import Stratosphere (Template)
 
-import qualified Data.Foldable as Foldable
+import qualified Data.ByteString.Lazy                      as LBS
+import qualified Data.Foldable                             as Foldable
+import qualified Data.Text                                 as Text
+import qualified Data.Text.Encoding                        as Text
+import qualified Network.AWS                               as AWS
+import qualified Network.AWS.CloudFormation.CreateStack    as CF
+import qualified Network.AWS.CloudFormation.DeleteStack    as CF
+import qualified Network.AWS.CloudFormation.DescribeStacks as CF
+import qualified Network.AWS.CloudFormation.Types          as CF
+import qualified Network.AWS.CloudFormation.UpdateStack    as CF
+import qualified Stratosphere
 
 data OperationFields a = OperationFields
   { tokenField        :: Lens' a (Maybe Text)
-  , capabilitiesField :: Lens' a [Capability]
-  , parametersField   :: Lens' a [Parameter]
+  , capabilitiesField :: Lens' a [CF.Capability]
+  , parametersField   :: Lens' a [CF.Parameter]
   , roleARNField      :: Lens' a (Maybe Text)
   , templateBodyField :: Lens' a (Maybe Text)
   }
@@ -68,33 +66,33 @@ perform = \case
       token <- newToken
       action RemoteOperation{..}
 
-    create :: Name -> InstanceSpec -> Template -> m RemoteOperationResult
+    create :: Name -> InstanceSpec -> Stratosphere.Template -> m RemoteOperationResult
     create name instanceSpec@InstanceSpec{..} template = do
       void prepareSync
       token   <- newToken
       stackId <- getId =<< doCreate token
       waitFor RemoteOperation{..}
       where
-        getId :: Rs CreateStack -> m Id
+        getId :: AWS.Rs CF.CreateStack -> m Id
         getId =
           maybe
             (throwM $ AssertionFailed "Remote stack without stack id")
             (pure . Id)
-          . view csrsStackId
+          . view CF.csrsStackId
 
-        doCreate :: Token -> m (Rs CreateStack)
+        doCreate :: Token -> m (AWS.Rs CF.CreateStack)
         doCreate token
-          = send
+          = AWS.send
           . configureStack template operationFields instanceSpec token
-          . createStack
+          . CF.createStack
           $ toText name
 
         operationFields = OperationFields
-          { capabilitiesField = csCapabilities
-          , parametersField   = csParameters
-          , roleARNField      = csRoleARN
-          , templateBodyField = csTemplateBody
-          , tokenField        = csClientRequestToken
+          { capabilitiesField = CF.csCapabilities
+          , parametersField   = CF.csParameters
+          , roleARNField      = CF.csRoleARN
+          , templateBodyField = CF.csTemplateBody
+          , tokenField        = CF.csClientRequestToken
           }
 
     delete :: RemoteOperation -> m RemoteOperationResult
@@ -104,13 +102,13 @@ perform = \case
         doDelete :: m ()
         doDelete
           = void
-          . send
-          . setText dsClientRequestToken token
-          . deleteStack $ toText stackId
+          . AWS.send
+          . setText CF.dsClientRequestToken token
+          . CF.deleteStack $ toText stackId
 
     update
       :: InstanceSpec
-      -> Template
+      -> Stratosphere.Template
       -> RemoteOperation
       -> m RemoteOperationResult
     update
@@ -124,29 +122,29 @@ perform = \case
       where
         doUpdate :: m ()
         doUpdate = void
-          . send
+          . AWS.send
           . configureStack template operationFields instanceSpec token
-          . updateStack
+          . CF.updateStack
           $ toText stackId
 
         isNoUpdateError
-          ( ServiceError
-            ServiceError'
+          ( AWS.ServiceError
+            AWS.ServiceError'
             { _serviceCode =
-               ErrorCode "ValidationError"
+               AWS.ErrorCode "ValidationError"
             , _serviceMessage =
-              Just (ErrorMessage "No updates are to be performed.")
+              Just (AWS.ErrorMessage "No updates are to be performed.")
             }
           ) = True
 
         isNoUpdateError _ = False
 
         operationFields = OperationFields
-          { capabilitiesField = usCapabilities
-          , parametersField   = usParameters
-          , roleARNField      = usRoleARN
-          , templateBodyField = usTemplateBody
-          , tokenField        = usClientRequestToken
+          { capabilitiesField = CF.usCapabilities
+          , parametersField   = CF.usParameters
+          , roleARNField      = CF.usRoleARN
+          , templateBodyField = CF.usTemplateBody
+          , tokenField        = CF.usClientRequestToken
           }
 
     waitFor :: RemoteOperation -> m RemoteOperationResult
@@ -160,38 +158,38 @@ perform = \case
       RemoteOperationSuccess -> onSuccess >> pure result
       _                      -> pure result
 
-printEvent :: forall m . MonadIO m => StackEvent -> m ()
+printEvent :: forall m . MonadIO m => CF.StackEvent -> m ()
 printEvent event = do
-  say $ unwords
+  say $ Text.unwords
     [ timestamp
     , physicalResourceId
     , logicalResourceId
     , resourceType
     , resourceStatus
     ]
-  sayReason $ view seResourceStatusReason event
+  sayReason $ view CF.seResourceStatusReason event
   where
     logicalResourceId =
       fromMaybe
         "[unknown-logical-resource-id]"
-        (view seLogicalResourceId event)
+        (view CF.seLogicalResourceId event)
 
     physicalResourceId =
       fromMaybe
         "[unknown-pysical-resource-id]"
-        (view sePhysicalResourceId event)
+        (view CF.sePhysicalResourceId event)
 
     resourceType =
       fromMaybe
         "[unknown-resource-type]"
-        (view seResourceType event)
+        (view CF.seResourceType event)
 
     resourceStatus :: Text
     resourceStatus =
       maybe
         "[unknown-resource-type]"
         (convertText . show)
-        (view seResourceStatus event)
+        (view CF.seResourceStatus event)
 
     timeFormat :: String
     timeFormat = "%Y-%m-%dT%H:%M:%S"
@@ -200,7 +198,7 @@ printEvent event = do
     timestamp
       = convertText
       . formatTime defaultTimeLocale timeFormat
-      $ view seTimestamp event
+      $ view CF.seTimestamp event
 
     sayReason :: Maybe Text -> m ()
     sayReason = maybe (pure ()) (say . ("- " <>))
@@ -208,22 +206,22 @@ printEvent event = do
 getStackId :: forall m . MonadAWS m => Name -> m (Maybe Id)
 getStackId = getId <=< getStack
   where
-    getId :: Maybe Stack -> m (Maybe Id)
+    getId :: Maybe CF.Stack -> m (Maybe Id)
     getId = maybe (pure empty) ((pure <$>) . remoteId)
 
-    remoteId :: Stack -> m Id
+    remoteId :: CF.Stack -> m Id
     remoteId value = maybe
       (throwM $ AssertionFailed "Remote stack without stack id")
       (pure . Id)
-      (view sStackId value)
+      (view CF.sStackId value)
 
-getExistingStack :: forall m . MonadAWS m => Name -> m Stack
+getExistingStack :: forall m . MonadAWS m => Name -> m CF.Stack
 getExistingStack name = maybe failMissingRequested pure =<< doRequest
   where
-    doRequest :: m (Maybe Stack)
-    doRequest = liftAWS . runConduit
-      $  listResource describeSpecificStack dsrsStacks
-      .| find ((toText name ==) . view sStackName)
+    doRequest :: m (Maybe CF.Stack)
+    doRequest = AWS.liftAWS . runConduit
+      $  listResource describeSpecificStack CF.dsrsStacks
+      .| find ((toText name ==) . view CF.sStackName)
 
     failMissingRequested :: m a
     failMissingRequested
@@ -231,17 +229,17 @@ getExistingStack name = maybe failMissingRequested pure =<< doRequest
       . AssertionFailed
       $ "Successful request to stack " <> convertText name <> " did not return the stack"
 
-    describeSpecificStack :: DescribeStacks
-    describeSpecificStack = set dStackName (pure $ toText name) describeStacks
+    describeSpecificStack :: CF.DescribeStacks
+    describeSpecificStack = set CF.dStackName (pure $ toText name) CF.describeStacks
 
-getStack :: forall m . MonadAWS m => Name -> m (Maybe Stack)
+getStack :: forall m . MonadAWS m => Name -> m (Maybe CF.Stack)
 getStack name =
   catchIf isNotFoundError (pure <$> getExistingStack name) (const $ pure empty)
   where
     isNotFoundError
-      ( ServiceError
-        ServiceError'
-        { _serviceCode    = ErrorCode "ValidationError"
+      ( AWS.ServiceError
+        AWS.ServiceError'
+        { _serviceCode    = AWS.ErrorCode "ValidationError"
         , _serviceMessage = Just actualMessage
         }
       )
@@ -249,16 +247,16 @@ getStack name =
 
     isNotFoundError _ = False
 
-    expectedMessage :: ErrorMessage
+    expectedMessage :: AWS.ErrorMessage
     expectedMessage =
-      ErrorMessage $ "Stack with id " <> toText name <> " does not exist"
+      AWS.ErrorMessage $ "Stack with id " <> toText name <> " does not exist"
 
 stackNames :: (AWSConstraint r m, MonadAWS m) => ConduitT () Name m ()
 stackNames =
-  listResource describeStacks dsrsStacks .| map (Name . view sStackName)
+  listResource CF.describeStacks CF.dsrsStacks .| map (Name . view CF.sStackName)
 
 configureStack
-  :: Template
+  :: Stratosphere.Template
   -> OperationFields a
   -> InstanceSpec
   -> Token
@@ -271,7 +269,7 @@ configureStack template OperationFields{..} InstanceSpec{..} token
   . setText templateBodyField templateBody
   . setText tokenField        token
   where
-    templateBody = decodeUtf8 . toStrict $ encodeTemplate template
+    templateBody = Text.decodeUtf8 . LBS.toStrict $ encodeTemplate template
 
 setText :: (Applicative f, ToText b) => Lens' a (f Text) -> b -> a -> a
 setText field value = set field (pure $ toText value)
@@ -290,8 +288,8 @@ getOutput name key = do
 
   maybe
     (failStack $ "Output " <> convertText key <> " missing")
-    (maybe (failStack $ "Output " <> convertText key <> " has no value") pure . view oOutputValue)
-    (Foldable.find ((==) (pure key) . view oOutputKey) (view sOutputs stack))
+    (maybe (failStack $ "Output " <> convertText key <> " has no value") pure . view CF.oOutputValue)
+    (Foldable.find ((==) (pure key) . view CF.oOutputKey) (view CF.sOutputs stack))
 
   where
     failStack :: Text -> m a

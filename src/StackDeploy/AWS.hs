@@ -1,4 +1,9 @@
-module StackDeploy.AWS (listResource) where
+module StackDeploy.AWS
+  ( AWSConstraint
+  , MonadAWS
+  , listResource
+  )
+where
 
 import Control.Lens (Lens', view)
 import Control.Monad.Trans.AWS (AWSConstraint)

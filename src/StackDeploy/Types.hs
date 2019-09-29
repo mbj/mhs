@@ -1,15 +1,15 @@
 module StackDeploy.Types where
 
-import Control.Monad.Trans.AWS (AWSConstraint)
-import Data.ByteString.Builder (toLazyByteString, word32HexFixed)
-import Data.ByteString.Lazy (toStrict)
-import Data.Text.Encoding (decodeUtf8)
 import Data.Word (Word32)
-import Network.AWS (MonadAWS)
-import Network.AWS.CloudFormation.Types (Capability, Parameter)
+import StackDeploy.AWS
 import StackDeploy.Prelude
-import Stratosphere (Template)
-import System.Random (randomIO)
+
+import qualified Data.ByteString.Builder          as BS
+import qualified Data.ByteString.Lazy             as LBS
+import qualified Data.Text.Encoding               as Text
+import qualified Network.AWS.CloudFormation.Types as CF
+import qualified Stratosphere
+import qualified System.Random                    as Random
 
 newtype Id = Id Text
   deriving newtype ToText
@@ -23,14 +23,14 @@ newtype RoleARN = RoleARN Text
   deriving stock   Eq
 
 data Operation
-  = OpCreate Name InstanceSpec Template
+  = OpCreate Name InstanceSpec Stratosphere.Template
   | OpDelete Id
-  | OpUpdate Id InstanceSpec Template
+  | OpUpdate Id InstanceSpec Stratosphere.Template
 
 data InstanceSpec = InstanceSpec
-  { capabilities :: [Capability]
+  { capabilities :: [CF.Capability]
   , onSuccess    :: forall m r . (AWSConstraint r m, MonadAWS m) => m ()
-  , parameters   :: [Parameter]
+  , parameters   :: [CF.Parameter]
   , prepareSync  :: forall m r . (AWSConstraint r m, MonadAWS m) => m ()
   , roleARN      :: Maybe RoleARN
   }
@@ -54,13 +54,13 @@ verb = \case
 newToken :: forall m . MonadIO m => m Token
 newToken = Token . text <$> bytes
   where
-    text (wordA, wordB, wordC) = decodeUtf8 . toStrict . toLazyByteString
+    text (wordA, wordB, wordC) = Text.decodeUtf8 . LBS.toStrict . BS.toLazyByteString
       $  "stack-deploy-"
-      <> word32HexFixed wordA
-      <> word32HexFixed wordB
-      <> word32HexFixed wordC
+      <> BS.word32HexFixed wordA
+      <> BS.word32HexFixed wordB
+      <> BS.word32HexFixed wordC
 
     bytes = (,,) <$> randomWord <*> randomWord <*> randomWord
 
     randomWord :: m Word32
-    randomWord = liftIO randomIO
+    randomWord = liftIO Random.randomIO
