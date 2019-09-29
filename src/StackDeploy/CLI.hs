@@ -163,7 +163,7 @@ parameterReader = eitherReader (Text.parseOnly parser . convertText)
     parser = do
       key <- convertText <$> Text.many1 (Text.satisfy allowChar)
       Text.skip (== ':')
-      value <- convertText <$> Text.many1 (Text.satisfy allowChar)
+      value <- convertText <$> Text.many1 Text.anyChar
       void Text.endOfInput
 
       pure
