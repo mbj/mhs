@@ -5,6 +5,41 @@
 
 packages:
 - completed:
+    hackage: amazonka-1.6.1@sha256:d863557379350ed6bbb91187abeb8c349a654f60b140d138710486f58ae7c476,3536
+    pantry-tree:
+      size: 992
+      sha256: 55747f9b56063ea1be73a962e1ce44528b9856e119e2d9f1238397b3112b6e70
+  original:
+    hackage: amazonka-1.6.1@sha256:d863557379350ed6bbb91187abeb8c349a654f60b140d138710486f58ae7c476,3536
+- completed:
+    hackage: amazonka-core-1.6.1@sha256:9bc59ce403c6eeba3b3eaf3f10e5f0b6a33b6edbbf8f6de0dd6f4c67b86fa698,5135
+    pantry-tree:
+      size: 3438
+      sha256: c13e643176308771491ec0e06390e269047bb1b28be4535992842f7426a95eb4
+  original:
+    hackage: amazonka-core-1.6.1@sha256:9bc59ce403c6eeba3b3eaf3f10e5f0b6a33b6edbbf8f6de0dd6f4c67b86fa698,5135
+- completed:
+    hackage: amazonka-s3-1.6.1@sha256:9d07240fca59ad5197fb614ce3051e701e4951e6d4625a2dab4a9c17a1900194,6317
+    pantry-tree:
+      size: 18385
+      sha256: 5cab233d241615764d9fd6927bc397f02887154450a9932c38c2e17ea86d79bc
+  original:
+    hackage: amazonka-s3-1.6.1@sha256:9d07240fca59ad5197fb614ce3051e701e4951e6d4625a2dab4a9c17a1900194,6317
+- completed:
+    cabal-file:
+      size: 3339
+      sha256: 6e9eac89be5297683a9335262424a7e68452bf53b22ca94ebc731476346e758f
+    name: source-constraints
+    version: 0.0.0.1
+    git: https://github.com/schirp-dso/source-constraints
+    pantry-tree:
+      size: 914
+      sha256: a74730d61617df24560945f00faf769e6b68cf216a6cd048f660c583c4ae9b8f
+    commit: 3eea6c0c3c4c66c39e1b68a5a27e74554395699d
+  original:
+    git: https://github.com/schirp-dso/source-constraints
+    commit: 3eea6c0c3c4c66c39e1b68a5a27e74554395699d
+- completed:
     cabal-file:
       size: 2328
       sha256: d0f169b9149e3b35fffad7892018955e1f6682bb2b50706b710329b18715e782
@@ -18,34 +53,6 @@ packages:
   original:
     git: https://github.com/mbj/mprelude
     commit: 5708d9ce9b417362e0c79cbd7b48d892e7f7f32a
-- completed:
-    cabal-file:
-      size: 3161
-      sha256: 27686d6937738c748cbd601df14ce9ce2f8ebbc7a2719a4149e797bccf430b2d
-    name: source-constraints
-    version: 0.0.0.1
-    git: https://github.com/schirp-dso/source-constraints
-    pantry-tree:
-      size: 914
-      sha256: bbbf2645210c101715bafff85de9cf6ce16dfebf6ca5f189ed2a8c5124878e22
-    commit: 008e5ce4a6660e2f35924b019272803206e01cb2
-  original:
-    git: https://github.com/schirp-dso/source-constraints
-    commit: 008e5ce4a6660e2f35924b019272803206e01cb2
-- completed:
-    cabal-file:
-      size: 3656
-      sha256: c361c0eabc8252c24cd6aded38a7f8bf1cebc9290e7539a2042cbd2af8f139a9
-    name: stack-deploy
-    version: 0.0.0.1
-    git: https://github.com/mbj/stack-deploy
-    pantry-tree:
-      size: 1027
-      sha256: 1288a5e4502076c8d2321595b33a4a5db03d6681a101ed0a652cd4a86760f429
-    commit: 80d96ec1e9d4fca6f75c58f2c8d70d021890700c
-  original:
-    git: https://github.com/mbj/stack-deploy
-    commit: 80d96ec1e9d4fca6f75c58f2c8d70d021890700c
 - completed:
     subdir: amazonka-cloudformation
     cabal-file:
@@ -64,7 +71,7 @@ packages:
     commit: 33aa6b71309793829b534fb29f6532d71c32b106
 snapshots:
 - completed:
-    size: 500539
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/13/29.yaml
-    sha256: 006398c5e92d1d64737b7e98ae4d63987c36808814504d1451f56ebd98093f75
-  original: lts-13.29
+    size: 523700
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/14/7.yaml
+    sha256: 8e3f3c894be74d71fa4bf085e0a8baae7e4d7622d07ea31a52736b80f8b9bb1a
+  original: lts-14.7
