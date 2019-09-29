@@ -9,7 +9,6 @@ import Data.ByteString.Lazy (toStrict)
 import Data.Char (isAlpha, isDigit)
 import Data.Conduit ((.|), runConduit)
 import Data.String (String)
-import Data.Text.Encoding (decodeUtf8)
 import Network.AWS.CloudFormation.CancelUpdateStack
 import Network.AWS.CloudFormation.DescribeStackEvents
 import Network.AWS.CloudFormation.Types
@@ -27,6 +26,7 @@ import System.Exit (ExitCode(..))
 
 import qualified Data.Attoparsec.Text     as Text
 import qualified Data.Conduit.Combinators as Conduit
+import qualified Data.Text.Encoding       as Text
 import qualified Data.Text.IO             as Text
 import qualified Network.AWS              as AWS
 
@@ -141,7 +141,7 @@ parserInfo templateProvider instanceSpecProvider = wrapHelper commands
     render :: Name -> m ExitCode
     render name = do
       template <- templateProvider name
-      say . decodeUtf8 . toStrict $ encodeTemplate template
+      say . Text.decodeUtf8 . toStrict $ encodeTemplate template
       success
 
     success :: m ExitCode

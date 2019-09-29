@@ -18,8 +18,7 @@ import Data.Conduit (ConduitT, (.|), runConduit)
 import Data.Conduit.Combinators (find, map)
 import Data.Maybe (Maybe(Just), fromMaybe)
 import Data.String (String)
-import Data.Text (unwords)
-import Data.Text.Encoding (decodeUtf8)
+import Data.Text (Text)
 import Data.Time.Format (defaultTimeLocale, formatTime)
 import Network.AWS.CloudFormation.CreateStack
 import Network.AWS.CloudFormation.DeleteStack
@@ -34,8 +33,10 @@ import StackDeploy.Types
 import StackDeploy.Wait
 import Stratosphere (Template)
 
-import qualified Data.Foldable as Foldable
-import qualified Network.AWS   as AWS
+import qualified Data.Foldable      as Foldable
+import qualified Data.Text          as Text
+import qualified Data.Text.Encoding as Text
+import qualified Network.AWS        as AWS
 
 data OperationFields a = OperationFields
   { tokenField        :: Lens' a (Maybe Text)
@@ -161,7 +162,7 @@ perform = \case
 
 printEvent :: forall m . MonadIO m => StackEvent -> m ()
 printEvent event = do
-  say $ unwords
+  say $ Text.unwords
     [ timestamp
     , physicalResourceId
     , logicalResourceId
@@ -270,7 +271,7 @@ configureStack template OperationFields{..} InstanceSpec{..} token
   . setText templateBodyField templateBody
   . setText tokenField        token
   where
-    templateBody = decodeUtf8 . toStrict $ encodeTemplate template
+    templateBody = Text.decodeUtf8 . toStrict $ encodeTemplate template
 
 setText :: (Applicative f, ToText b) => Lens' a (f Text) -> b -> a -> a
 setText field value = set field (pure $ toText value)
