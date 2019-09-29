@@ -8,12 +8,12 @@ import Data.Conduit (ConduitT, (.|), await, runConduit, yield)
 import Data.Conduit.Combinators (find, iterM, takeWhile, yieldMany)
 import Data.Conduit.List (consume)
 import Data.Function (on)
-import Data.List (reverse)
 import StackDeploy.AWS
 import StackDeploy.Prelude
 import StackDeploy.Types
 
 import qualified Data.Foldable                                  as Foldable
+import qualified Data.List                                      as List
 import qualified Network.AWS.CloudFormation.DescribeStackEvents as CF
 import qualified Network.AWS.CloudFormation.Types               as CF
 
@@ -91,7 +91,7 @@ allEvents Poll{..} =
       -> ConduitT () CF.StackEvent m [CF.StackEvent]
     poll action = do
       events <- action .| consume
-      yieldMany $ reverse events
+      yieldMany $ List.reverse events
       pure events
 
 stackEvents
