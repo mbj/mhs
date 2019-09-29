@@ -5,7 +5,6 @@ import Control.Exception.Base (AssertionFailed(AssertionFailed))
 import Control.Lens ((&), (.~), view)
 import Control.Monad ((<=<), mapM_)
 import Control.Monad.Catch (throwM)
-import Data.Char (isAlpha, isDigit)
 import Data.Conduit ((.|), runConduit)
 import Data.String (String)
 import Options.Applicative hiding (value)
@@ -21,6 +20,7 @@ import System.Exit (ExitCode(..))
 
 import qualified Data.Attoparsec.Text                           as Text
 import qualified Data.ByteString.Lazy                           as LBS
+import qualified Data.Char                                      as Char
 import qualified Data.Conduit.Combinators                       as Conduit
 import qualified Data.Text.Encoding                             as Text
 import qualified Data.Text.IO                                   as Text
@@ -172,7 +172,7 @@ parameterReader = eitherReader (Text.parseOnly parser . convertText)
 
     allowChar = \case
       '-'  -> True
-      char -> isDigit char || isAlpha char
+      char -> Char.isDigit char || Char.isAlpha char
 
 getExistingStackId
   :: forall m r . (AWSConstraint r m, MonadAWS m)
