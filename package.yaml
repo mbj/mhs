@@ -72,6 +72,9 @@ library:
   - src
   exposed-modules:
   - AWS.Lambda.Runtime.Deploy
+  - AWS.Lambda.Runtime.Podman
+  - AWS.Lambda.Runtime.S3
+  - AWS.Lambda.Runtime.Zip
 
 tests:
   hlint:
