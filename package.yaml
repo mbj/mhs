@@ -82,4 +82,4 @@ tests:
     source-dirs:   test
     other-modules: []
     dependencies:
-    - hlint == 2.1.11
+    - hlint == 2.1.26
