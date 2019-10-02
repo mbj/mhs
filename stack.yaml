@@ -1,0 +1,11 @@
+build:
+  haddock: false
+extra-deps:
+- ordered-containers-0.2.1
+- git: https://github.com/mbj/mprelude
+  commit: 6c2d455b341b323fd857809729092e442ae4dcd1
+- git: https://github.com/schirp-dso/source-constraints
+  commit: 3eea6c0c3c4c66c39e1b68a5a27e74554395699d
+packages:
+- .
+resolver: lts-14.7
