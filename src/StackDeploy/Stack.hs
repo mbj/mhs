@@ -1,6 +1,7 @@
 module StackDeploy.Stack
   ( finalMessage
   , getExistingStack
+  , getExistingStackId
   , getOutput
   , getStackId
   , perform
@@ -11,7 +12,7 @@ where
 
 import Control.Exception.Base (AssertionFailed(AssertionFailed))
 import Control.Lens (Lens', set, view)
-import Control.Monad.Catch (catchIf, throwM)
+import Control.Monad.Catch (MonadThrow, catchIf, throwM)
 import Data.Conduit (ConduitT, (.|), runConduit)
 import Data.Conduit.Combinators (find, map)
 import Data.String (String)
@@ -19,6 +20,7 @@ import Data.Text (Text)
 import Data.Time.Format (defaultTimeLocale, formatTime)
 import StackDeploy.AWS
 import StackDeploy.IO
+import StackDeploy.Parameters
 import StackDeploy.Prelude
 import StackDeploy.Template
 import StackDeploy.Types
@@ -70,16 +72,9 @@ perform = \case
     create name instanceSpec@InstanceSpec{..} template = do
       void prepareSync
       token   <- newToken
-      stackId <- getId =<< doCreate token
+      stackId <- accessStackId CF.csrsStackId =<< doCreate token
       waitFor RemoteOperation{..}
       where
-        getId :: AWS.Rs CF.CreateStack -> m Id
-        getId =
-          maybe
-            (throwM $ AssertionFailed "Remote stack without stack id")
-            (pure . Id)
-          . view CF.csrsStackId
-
         doCreate :: Token -> m (AWS.Rs CF.CreateStack)
         doCreate token
           = AWS.send
@@ -123,7 +118,7 @@ perform = \case
         doUpdate :: m ()
         doUpdate = void
           . AWS.send
-          . configureStack template operationFields instanceSpec token
+          . configureStack template operationFields effectiveInstanceSpec token
           . CF.updateStack
           $ toText stackId
 
@@ -136,8 +131,9 @@ perform = \case
               Just (AWS.ErrorMessage "No updates are to be performed.")
             }
           ) = True
-
         isNoUpdateError _ = False
+
+        effectiveInstanceSpec = addNoopParams instanceSpec template
 
         operationFields = OperationFields
           { capabilitiesField = CF.usCapabilities
@@ -203,35 +199,6 @@ printEvent event = do
     sayReason :: Maybe Text -> m ()
     sayReason = maybe (pure ()) (say . ("- " <>))
 
-getStackId :: forall m . MonadAWS m => Name -> m (Maybe Id)
-getStackId = getId <=< getStack
-  where
-    getId :: Maybe CF.Stack -> m (Maybe Id)
-    getId = maybe (pure empty) ((pure <$>) . remoteId)
-
-    remoteId :: CF.Stack -> m Id
-    remoteId value = maybe
-      (throwM $ AssertionFailed "Remote stack without stack id")
-      (pure . Id)
-      (view CF.sStackId value)
-
-getExistingStack :: forall m . MonadAWS m => Name -> m CF.Stack
-getExistingStack name = maybe failMissingRequested pure =<< doRequest
-  where
-    doRequest :: m (Maybe CF.Stack)
-    doRequest = AWS.liftAWS . runConduit
-      $  listResource describeSpecificStack CF.dsrsStacks
-      .| find ((toText name ==) . view CF.sStackName)
-
-    failMissingRequested :: m a
-    failMissingRequested
-      = throwM
-      . AssertionFailed
-      $ "Successful request to stack " <> convertText name <> " did not return the stack"
-
-    describeSpecificStack :: CF.DescribeStacks
-    describeSpecificStack = set CF.dStackName (pure $ toText name) CF.describeStacks
-
 getStack :: forall m . MonadAWS m => Name -> m (Maybe CF.Stack)
 getStack name =
   catchIf isNotFoundError (pure <$> getExistingStack name) (const $ pure empty)
@@ -250,6 +217,49 @@ getStack name =
     expectedMessage :: AWS.ErrorMessage
     expectedMessage =
       AWS.ErrorMessage $ "Stack with id " <> toText name <> " does not exist"
+
+getStackId :: forall m . MonadAWS m => Name -> m (Maybe Id)
+getStackId = getId <=< getStack
+  where
+    getId :: Maybe CF.Stack -> m (Maybe Id)
+    getId = maybe (pure empty) ((pure <$>) . idFromStack)
+
+getExistingStack :: forall m . MonadAWS m => Name -> m CF.Stack
+getExistingStack name = maybe failMissingRequested pure =<< doRequest
+  where
+    doRequest :: m (Maybe CF.Stack)
+    doRequest = AWS.liftAWS . runConduit
+      $  listResource describeSpecificStack CF.dsrsStacks
+      .| find ((toText name ==) . view CF.sStackName)
+
+    failMissingRequested :: m a
+    failMissingRequested
+      = throwM
+      . AssertionFailed
+      $ "Successful request to stack " <> convertText name <> " did not return the stack"
+
+    describeSpecificStack :: CF.DescribeStacks
+    describeSpecificStack = set CF.dStackName (pure $ toText name) CF.describeStacks
+
+getExistingStackId
+  :: forall m r . (AWSConstraint r m, MonadAWS m)
+  => Name
+  -> m Id
+getExistingStackId = idFromStack <=< getExistingStack
+
+getOutput :: forall m . MonadAWS m => Name -> Text -> m Text
+getOutput name key = do
+  stack <- getExistingStack name
+
+  maybe
+    (failStack $ "Output " <> convertText key <> " missing")
+    (maybe (failStack $ "Output " <> convertText key <> " has no value") pure . view CF.oOutputValue)
+    (Foldable.find ((==) (pure key) . view CF.oOutputKey) (view CF.sOutputs stack))
+
+  where
+    failStack :: Text -> m a
+    failStack message
+      = liftIO . fail . convertText $ "Stack: " <> convertText name <> " " <> message
 
 stackNames :: (AWSConstraint r m, MonadAWS m) => ConduitT () Name m ()
 stackNames =
@@ -279,19 +289,12 @@ finalMessage = \case
   RemoteOperationFailure -> "failure"
   RemoteOperationSuccess -> "succcess"
 
-getOutput :: forall m . MonadAWS m => Name -> Text -> m Text
-getOutput name key = do
-  stack <- maybe
-    (failStack "not found")
-    pure
-    =<< getStack name
+idFromStack :: MonadThrow m => CF.Stack -> m Id
+idFromStack = accessStackId CF.sStackId
 
-  maybe
-    (failStack $ "Output " <> convertText key <> " missing")
-    (maybe (failStack $ "Output " <> convertText key <> " has no value") pure . view CF.oOutputValue)
-    (Foldable.find ((==) (pure key) . view CF.oOutputKey) (view CF.sOutputs stack))
-
-  where
-    failStack :: Text -> m a
-    failStack message
-      = liftIO . fail . convertText $ "Stack: " <> convertText name <> " " <> message
+accessStackId :: MonadThrow m => Lens' a (Maybe Text) -> a -> m Id
+accessStackId lens
+  = maybe
+     (throwM $ AssertionFailed "Remote stack without stack id")
+     (pure . Id)
+  . view lens
