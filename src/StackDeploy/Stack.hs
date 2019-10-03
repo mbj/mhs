@@ -12,7 +12,7 @@ where
 
 import Control.Exception.Base (AssertionFailed(AssertionFailed))
 import Control.Lens (Lens', set, view)
-import Control.Monad.Catch (catchIf, throwM)
+import Control.Monad.Catch (MonadThrow, catchIf, throwM)
 import Data.Conduit (ConduitT, (.|), runConduit)
 import Data.Conduit.Combinators (find, map)
 import Data.String (String)
@@ -71,16 +71,9 @@ perform = \case
     create name instanceSpec@InstanceSpec{..} template = do
       void prepareSync
       token   <- newToken
-      stackId <- getId =<< doCreate token
+      stackId <- accessStackId CF.csrsStackId =<< doCreate token
       waitFor RemoteOperation{..}
       where
-        getId :: AWS.Rs CF.CreateStack -> m Id
-        getId =
-          maybe
-            (throwM $ AssertionFailed "Remote stack without stack id")
-            (pure . Id)
-          . view CF.csrsStackId
-
         doCreate :: Token -> m (AWS.Rs CF.CreateStack)
         doCreate token
           = AWS.send
@@ -204,17 +197,30 @@ printEvent event = do
     sayReason :: Maybe Text -> m ()
     sayReason = maybe (pure ()) (say . ("- " <>))
 
+getStack :: forall m . MonadAWS m => Name -> m (Maybe CF.Stack)
+getStack name =
+  catchIf isNotFoundError (pure <$> getExistingStack name) (const $ pure empty)
+  where
+    isNotFoundError
+      ( AWS.ServiceError
+        AWS.ServiceError'
+        { _serviceCode    = AWS.ErrorCode "ValidationError"
+        , _serviceMessage = Just actualMessage
+        }
+      )
+      = actualMessage == expectedMessage
+
+    isNotFoundError _ = False
+
+    expectedMessage :: AWS.ErrorMessage
+    expectedMessage =
+      AWS.ErrorMessage $ "Stack with id " <> toText name <> " does not exist"
+
 getStackId :: forall m . MonadAWS m => Name -> m (Maybe Id)
 getStackId = getId <=< getStack
   where
     getId :: Maybe CF.Stack -> m (Maybe Id)
-    getId = maybe (pure empty) ((pure <$>) . remoteId)
-
-    remoteId :: CF.Stack -> m Id
-    remoteId value = maybe
-      (throwM $ AssertionFailed "Remote stack without stack id")
-      (pure . Id)
-      (view CF.sStackId value)
+    getId = maybe (pure empty) ((pure <$>) . idFromStack)
 
 getExistingStack :: forall m . MonadAWS m => Name -> m CF.Stack
 getExistingStack name = maybe failMissingRequested pure =<< doRequest
@@ -237,33 +243,21 @@ getExistingStackId
   :: forall m r . (AWSConstraint r m, MonadAWS m)
   => Name
   -> m Id
-getExistingStackId name = maybe throwNoStack pure =<< getStackId name
+getExistingStackId = idFromStack <=< getExistingStack
+
+getOutput :: forall m . MonadAWS m => Name -> Text -> m Text
+getOutput name key = do
+  stack <- getExistingStack name
+
+  maybe
+    (failStack $ "Output " <> convertText key <> " missing")
+    (maybe (failStack $ "Output " <> convertText key <> " has no value") pure . view CF.oOutputValue)
+    (Foldable.find ((==) (pure key) . view CF.oOutputKey) (view CF.sOutputs stack))
+
   where
-    throwNoStack :: m a
-    throwNoStack
-      = throwM
-      . AssertionFailed
-      . convertText
-      $ "No stack " <> toText name <> " found to update"
-
-getStack :: forall m . MonadAWS m => Name -> m (Maybe CF.Stack)
-getStack name =
-  catchIf isNotFoundError (pure <$> getExistingStack name) (const $ pure empty)
-  where
-    isNotFoundError
-      ( AWS.ServiceError
-        AWS.ServiceError'
-        { _serviceCode    = AWS.ErrorCode "ValidationError"
-        , _serviceMessage = Just actualMessage
-        }
-      )
-      = actualMessage == expectedMessage
-
-    isNotFoundError _ = False
-
-    expectedMessage :: AWS.ErrorMessage
-    expectedMessage =
-      AWS.ErrorMessage $ "Stack with id " <> toText name <> " does not exist"
+    failStack :: Text -> m a
+    failStack message
+      = liftIO . fail . convertText $ "Stack: " <> convertText name <> " " <> message
 
 stackNames :: (AWSConstraint r m, MonadAWS m) => ConduitT () Name m ()
 stackNames =
@@ -293,19 +287,12 @@ finalMessage = \case
   RemoteOperationFailure -> "failure"
   RemoteOperationSuccess -> "succcess"
 
-getOutput :: forall m . MonadAWS m => Name -> Text -> m Text
-getOutput name key = do
-  stack <- maybe
-    (failStack "not found")
-    pure
-    =<< getStack name
+idFromStack :: MonadThrow m => CF.Stack -> m Id
+idFromStack = accessStackId CF.sStackId
 
-  maybe
-    (failStack $ "Output " <> convertText key <> " missing")
-    (maybe (failStack $ "Output " <> convertText key <> " has no value") pure . view CF.oOutputValue)
-    (Foldable.find ((==) (pure key) . view CF.oOutputKey) (view CF.sOutputs stack))
-
-  where
-    failStack :: Text -> m a
-    failStack message
-      = liftIO . fail . convertText $ "Stack: " <> convertText name <> " " <> message
+accessStackId :: MonadThrow m => Lens' a (Maybe Text) -> a -> m Id
+accessStackId lens
+  = maybe
+     (throwM $ AssertionFailed "Remote stack without stack id")
+     (pure . Id)
+  . view lens
