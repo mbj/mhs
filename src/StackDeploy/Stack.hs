@@ -20,6 +20,7 @@ import Data.Text (Text)
 import Data.Time.Format (defaultTimeLocale, formatTime)
 import StackDeploy.AWS
 import StackDeploy.IO
+import StackDeploy.Parameters
 import StackDeploy.Prelude
 import StackDeploy.Template
 import StackDeploy.Types
@@ -117,7 +118,7 @@ perform = \case
         doUpdate :: m ()
         doUpdate = void
           . AWS.send
-          . configureStack template operationFields instanceSpec token
+          . configureStack template operationFields effectiveInstanceSpec token
           . CF.updateStack
           $ toText stackId
 
@@ -130,8 +131,9 @@ perform = \case
               Just (AWS.ErrorMessage "No updates are to be performed.")
             }
           ) = True
-
         isNoUpdateError _ = False
+
+        effectiveInstanceSpec = addNoopParams instanceSpec template
 
         operationFields = OperationFields
           { capabilitiesField = CF.usCapabilities
