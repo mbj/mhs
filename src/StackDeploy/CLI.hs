@@ -1,10 +1,8 @@
 module StackDeploy.CLI (nameParser, parserInfo) where
 
 import Control.Applicative (many)
-import Control.Exception.Base (AssertionFailed(AssertionFailed))
 import Control.Lens ((&), (.~), view)
 import Control.Monad ((<=<), mapM_)
-import Control.Monad.Catch (throwM)
 import Data.Conduit ((.|), runConduit)
 import Data.String (String)
 import Options.Applicative hiding (value)
@@ -173,19 +171,6 @@ parameterReader = eitherReader (Text.parseOnly parser . convertText)
     allowChar = \case
       '-'  -> True
       char -> Char.isDigit char || Char.isAlpha char
-
-getExistingStackId
-  :: forall m r . (AWSConstraint r m, MonadAWS m)
-  => Name
-  -> m Id
-getExistingStackId name = maybe throwNoStack pure =<< getStackId name
-  where
-    throwNoStack :: m a
-    throwNoStack
-      = throwM
-      . AssertionFailed
-      . convertText
-      $ "No stack " <> toText name <> " found to update"
 
 nameParser :: Parser Name
 nameParser = Name <$> argument str (metavar "NAME")

@@ -1,6 +1,7 @@
 module StackDeploy.Stack
   ( finalMessage
   , getExistingStack
+  , getExistingStackId
   , getOutput
   , getStackId
   , perform
@@ -231,6 +232,19 @@ getExistingStack name = maybe failMissingRequested pure =<< doRequest
 
     describeSpecificStack :: CF.DescribeStacks
     describeSpecificStack = set CF.dStackName (pure $ toText name) CF.describeStacks
+
+getExistingStackId
+  :: forall m r . (AWSConstraint r m, MonadAWS m)
+  => Name
+  -> m Id
+getExistingStackId name = maybe throwNoStack pure =<< getStackId name
+  where
+    throwNoStack :: m a
+    throwNoStack
+      = throwM
+      . AssertionFailed
+      . convertText
+      $ "No stack " <> toText name <> " found to update"
 
 getStack :: forall m . MonadAWS m => Name -> m (Maybe CF.Stack)
 getStack name =
