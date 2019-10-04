@@ -12,7 +12,6 @@ where
 
 import Control.Exception.Base (AssertionFailed(AssertionFailed))
 import Control.Lens (Lens', set, view)
-import Control.Monad.Catch (MonadThrow, catchIf, throwM)
 import Data.Conduit (ConduitT, (.|), runConduit)
 import Data.Conduit.Combinators (find, map)
 import Data.String (String)

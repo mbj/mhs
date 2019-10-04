@@ -1,3 +1,4 @@
-module StackDeploy.Prelude (module MPrelude) where
+module StackDeploy.Prelude (module Exports) where
 
-import MPrelude
+import Control.Monad.Catch as Exports (MonadThrow, catchIf, throwM)
+import MPrelude            as Exports
