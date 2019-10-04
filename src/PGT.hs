@@ -34,7 +34,6 @@ import qualified Data.Text.Encoding         as Text
 import qualified System.Process.Typed       as Process
 import qualified Test.Hspec                 as Hspec
 import qualified Test.Hspec.Core.Formatters as Hspec
-import qualified Test.Hspec.Core.Spec       as Hspec
 import qualified Test.Hspec.Runner          as Hspec
 
 data Test = Test

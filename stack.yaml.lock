@@ -14,7 +14,7 @@ packages:
 - completed:
     cabal-file:
       size: 2328
-      sha256: 768e630bd84b57513e5cc687ff936a65532e4847f51fa800dc8b0729d81eb61a
+      sha256: 0f00ab2ddc80c76ccd6806ef87c5f488b779f8d995abf631899c372349a77bb4
     name: mprelude
     version: 0.0.0.1
     git: https://github.com/mbj/mprelude
@@ -28,7 +28,7 @@ packages:
 - completed:
     cabal-file:
       size: 3339
-      sha256: 7fe29b3c1b937bc113c494d0880a438d98782aee65d7e3589d932bcb9a7cafbb
+      sha256: 6e9eac89be5297683a9335262424a7e68452bf53b22ca94ebc731476346e758f
     name: source-constraints
     version: 0.0.0.1
     git: https://github.com/schirp-dso/source-constraints
