@@ -64,6 +64,7 @@ ghc-options:
 - -fplugin-opt=SourceConstraints:local:Pgt
 - -fplugin=SourceConstraints
 - -funbox-strict-fields
+- -optP-Wno-nonportable-include-path
 
 executables:
   pgt:
