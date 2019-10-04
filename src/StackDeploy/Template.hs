@@ -1,16 +1,46 @@
-module StackDeploy.Template (encodeTemplate) where
+module StackDeploy.Template
+  ( Name(..)
+  , Provider
+  , Template(..)
+  , encode
+  , get
+  , mk
+  ) where
 
 import Data.ByteString.Lazy (ByteString)
 import Data.Ord (compare)
+import StackDeploy.Prelude
 
 import qualified Data.Aeson.Encode.Pretty as Pretty
+import qualified StackDeploy.Provider     as Provider
 import qualified Stratosphere
 
+newtype Name = Name Text
+  deriving newtype ToText
+  deriving stock   Eq
+
+data Template = Template
+  { name         :: Name
+  , stratosphere :: Stratosphere.Template
+  }
+
+type Provider = Provider.Provider Template
+
 -- | Pretty print a template using aeson-pretty.
-encodeTemplate :: Stratosphere.Template -> ByteString
-encodeTemplate = Pretty.encodePretty' config
+encode :: Template -> ByteString
+encode = Pretty.encodePretty' config . stratosphere
   where
     config = Pretty.defConfig
       { Pretty.confIndent  = Pretty.Spaces 2
       , Pretty.confCompare = compare
       }
+
+get
+  :: forall m . (MonadIO m)
+  => Provider
+  -> Name
+  -> m Template
+get = Provider.get "template" name
+
+mk :: Name -> Stratosphere.Template -> Template
+mk = Template

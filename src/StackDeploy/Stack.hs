@@ -19,9 +19,8 @@ import Data.Text (Text)
 import Data.Time.Format (defaultTimeLocale, formatTime)
 import StackDeploy.AWS
 import StackDeploy.IO
-import StackDeploy.Parameters
+import StackDeploy.InstanceSpec (InstanceSpec(..))
 import StackDeploy.Prelude
-import StackDeploy.Template
 import StackDeploy.Types
 import StackDeploy.Wait
 
@@ -35,7 +34,9 @@ import qualified Network.AWS.CloudFormation.DeleteStack    as CF
 import qualified Network.AWS.CloudFormation.DescribeStacks as CF
 import qualified Network.AWS.CloudFormation.Types          as CF
 import qualified Network.AWS.CloudFormation.UpdateStack    as CF
-import qualified Stratosphere
+import qualified StackDeploy.InstanceSpec                  as InstanceSpec
+import qualified StackDeploy.Parameters                    as Parameters
+import qualified StackDeploy.Template                      as Template
 
 data OperationFields a = OperationFields
   { tokenField        :: Lens' a (Maybe Text)
@@ -50,14 +51,13 @@ perform
   => Operation
   -> m RemoteOperationResult
 perform = \case
-  (OpCreate name instanceSpec template) ->
-    successCallback instanceSpec =<<
-      create name instanceSpec template
+  (OpCreate instanceSpec) ->
+    successCallback instanceSpec =<< create instanceSpec
   (OpDelete stackId) ->
     runStackId stackId delete
-  (OpUpdate stackId instanceSpec template) ->
+  (OpUpdate stackId instanceSpec) ->
     successCallback instanceSpec =<<
-      runStackId stackId (update instanceSpec template)
+      runStackId stackId (update instanceSpec)
   where
     runStackId
       :: Id
@@ -67,8 +67,8 @@ perform = \case
       token <- newToken
       action RemoteOperation{..}
 
-    create :: Name -> InstanceSpec -> Stratosphere.Template -> m RemoteOperationResult
-    create name instanceSpec@InstanceSpec{..} template = do
+    create :: InstanceSpec -> m RemoteOperationResult
+    create instanceSpec@InstanceSpec{..} = do
       void prepareSync
       token   <- newToken
       stackId <- accessStackId CF.csrsStackId =<< doCreate token
@@ -77,7 +77,7 @@ perform = \case
         doCreate :: Token -> m (AWS.Rs CF.CreateStack)
         doCreate token
           = AWS.send
-          . configureStack template operationFields instanceSpec token
+          . configureStack operationFields instanceSpec token
           . CF.createStack
           $ toText name
 
@@ -102,12 +102,10 @@ perform = \case
 
     update
       :: InstanceSpec
-      -> Stratosphere.Template
       -> RemoteOperation
       -> m RemoteOperationResult
     update
       instanceSpec@InstanceSpec{..}
-      template
       remoteOperation@RemoteOperation{..} = do
         void prepareSync
         catchIf isNoUpdateError
@@ -117,7 +115,7 @@ perform = \case
         doUpdate :: m ()
         doUpdate = void
           . AWS.send
-          . configureStack template operationFields effectiveInstanceSpec token
+          . configureStack operationFields instanceSpec token
           . CF.updateStack
           $ toText stackId
 
@@ -131,8 +129,6 @@ perform = \case
             }
           ) = True
         isNoUpdateError _ = False
-
-        effectiveInstanceSpec = addNoopParams instanceSpec template
 
         operationFields = OperationFields
           { capabilitiesField = CF.usCapabilities
@@ -198,7 +194,7 @@ printEvent event = do
     sayReason :: Maybe Text -> m ()
     sayReason = maybe (pure ()) (say . ("- " <>))
 
-getStack :: forall m . MonadAWS m => Name -> m (Maybe CF.Stack)
+getStack :: forall m . MonadAWS m => InstanceSpec.Name -> m (Maybe CF.Stack)
 getStack name =
   catchIf isNotFoundError (pure <$> getExistingStack name) (const $ pure empty)
   where
@@ -217,13 +213,13 @@ getStack name =
     expectedMessage =
       AWS.ErrorMessage $ "Stack with id " <> toText name <> " does not exist"
 
-getStackId :: forall m . MonadAWS m => Name -> m (Maybe Id)
+getStackId :: forall m . MonadAWS m => InstanceSpec.Name -> m (Maybe Id)
 getStackId = getId <=< getStack
   where
     getId :: Maybe CF.Stack -> m (Maybe Id)
     getId = maybe (pure empty) ((pure <$>) . idFromStack)
 
-getExistingStack :: forall m . MonadAWS m => Name -> m CF.Stack
+getExistingStack :: forall m . MonadAWS m => InstanceSpec.Name -> m CF.Stack
 getExistingStack name = maybe failMissingRequested pure =<< doRequest
   where
     doRequest :: m (Maybe CF.Stack)
@@ -242,11 +238,11 @@ getExistingStack name = maybe failMissingRequested pure =<< doRequest
 
 getExistingStackId
   :: forall m r . (AWSConstraint r m, MonadAWS m)
-  => Name
+  => InstanceSpec.Name
   -> m Id
 getExistingStackId = idFromStack <=< getExistingStack
 
-getOutput :: forall m . MonadAWS m => Name -> Text -> m Text
+getOutput :: forall m . MonadAWS m => InstanceSpec.Name -> Text -> m Text
 getOutput name key = do
   stack <- getExistingStack name
 
@@ -260,25 +256,27 @@ getOutput name key = do
     failStack message
       = liftIO . fail . convertText $ "Stack: " <> convertText name <> " " <> message
 
-stackNames :: (AWSConstraint r m, MonadAWS m) => ConduitT () Name m ()
+stackNames :: (AWSConstraint r m, MonadAWS m) => ConduitT () InstanceSpec.Name m ()
 stackNames =
-  listResource CF.describeStacks CF.dsrsStacks .| map (Name . view CF.sStackName)
+  listResource CF.describeStacks CF.dsrsStacks .| map (InstanceSpec.Name . view CF.sStackName)
 
 configureStack
-  :: Stratosphere.Template
-  -> OperationFields a
+  :: OperationFields a
   -> InstanceSpec
   -> Token
   -> a
   -> a
-configureStack template OperationFields{..} InstanceSpec{..} token
+configureStack OperationFields{..} InstanceSpec{..} token
   = set     capabilitiesField capabilities
-  . set     parametersField   parameters
+  . set     parametersField   (Parameters.cfParameters parameters)
   . set     roleARNField      (toText <$> roleARN)
   . setText templateBodyField templateBody
   . setText tokenField        token
   where
-    templateBody = Text.decodeUtf8 . LBS.toStrict $ encodeTemplate template
+    templateBody
+      = Text.decodeUtf8
+      . LBS.toStrict
+      $ Template.encode template
 
 setText :: (Applicative f, ToText b) => Lens' a (f Text) -> b -> a -> a
 setText field value = set field (pure $ toText value)

@@ -1,40 +1,67 @@
-module StackDeploy.Parameters (addNoopParams) where
+module StackDeploy.Parameters
+  ( Parameters
+  , cfParameters
+  , empty
+  , expandTemplate
+  , fromList
+  , union
+  )
+where
 
 import Control.Lens ((&), (?~), view)
-import Data.Maybe (catMaybes)
+import Data.HashMap.Strict (HashMap)
 import Data.Set (Set)
-import Data.Text (Text)
-import StackDeploy.Prelude
-import StackDeploy.Types
+import StackDeploy.Prelude hiding (empty)
+import StackDeploy.Template
 
+import qualified Control.Applicative              as Alternative
 import qualified Data.Foldable                    as Foldable
+import qualified Data.HashMap.Strict              as HashMap
 import qualified Data.Set                         as Set
 import qualified Network.AWS.CloudFormation.Types as CF
 import qualified Stratosphere
 
-addNoopParams :: InstanceSpec -> Stratosphere.Template -> InstanceSpec
-addNoopParams instanceSpec@InstanceSpec{..} template = instanceSpec
-  { parameters = parameters <> usePreviousParameters }
-  where
-    usePreviousParameters :: [CF.Parameter]
-    usePreviousParameters = mkUsePrevious <$> Foldable.toList missingParameterNames
+newtype Parameters = Parameters (HashMap Text CF.Parameter)
 
-    mkUsePrevious name
+empty :: Parameters
+empty = Parameters HashMap.empty
+
+fromList :: [(Text, CF.Parameter)] -> Parameters
+fromList = Parameters . HashMap.fromList
+
+cfParameters :: Parameters -> [CF.Parameter]
+cfParameters (Parameters hash) = HashMap.elems hash
+
+union :: Parameters -> Parameters -> Parameters
+union (Parameters left) (Parameters right) =
+  Parameters $ HashMap.union right left
+
+expandTemplate :: Parameters -> Template -> Parameters
+expandTemplate parameters@(Parameters hash) template
+  = parameters `union` usePreviousParameters
+  where
+    usePreviousParameters :: Parameters
+    usePreviousParameters
+      =   Parameters
+      .   HashMap.fromList
+      $   mkPair
+      <$> Foldable.toList missingParameterNames
+
+    mkPair parameterName = (parameterName, mkUsePrevious parameterName)
+
+    mkUsePrevious parameterName
       = CF.parameter
-      & CF.pParameterKey     ?~ name
+      & CF.pParameterKey     ?~ parameterName
       & CF.pUsePreviousValue ?~ True
 
     missingParameterNames :: Set Text
     missingParameterNames =
       Set.difference
         templateParameterNames
-        instanceSpecParameterNames
+        givenParameterNames
 
-    instanceSpecParameterNames :: Set Text
-    instanceSpecParameterNames
-      = Set.fromList
-      . catMaybes
-      $ view CF.pParameterKey <$> parameters
+    givenParameterNames :: Set Text
+    givenParameterNames = Set.fromList $ HashMap.keys hash
 
     templateParameterNames :: Set Text
     templateParameterNames
@@ -43,6 +70,6 @@ addNoopParams instanceSpec@InstanceSpec{..} template = instanceSpec
     templateParameters :: [Stratosphere.Parameter]
     templateParameters
       = maybe
-          empty
+          Alternative.empty
           Stratosphere.unParameters
-      $ view Stratosphere.templateParameters template
+      $ view Stratosphere.templateParameters (stratosphere template)
