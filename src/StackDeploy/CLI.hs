@@ -20,6 +20,7 @@ import qualified Data.Attoparsec.Text                           as Text
 import qualified Data.ByteString.Lazy                           as LBS
 import qualified Data.Char                                      as Char
 import qualified Data.Conduit.Combinators                       as Conduit
+import qualified Data.Foldable                                  as Foldable
 import qualified Data.Text.Encoding                             as Text
 import qualified Data.Text.IO                                   as Text
 import qualified Network.AWS                                    as AWS
@@ -46,11 +47,16 @@ parserInfo templateProvider instanceSpecProvider = wrapHelper commands "stack co
       <> mkCommand "list"    (pure list)                           "list stack instances"
       <> mkCommand "outputs" (outputs <$> stackName)               "list stack outputs"
       <> mkCommand "render"  (render <$> templateName)             "render template"
+      <> mkCommand "spec"    (specCommands)                        "instance spec commands"
       <> mkCommand "sync"    (sync <$> stackName <*> parameters)   "sync stack with spec"
       <> mkCommand "token"   (pure printNewToken)                  "print a new stack token"
       <> mkCommand "update"  (update <$> stackName <*> parameters) "update existing stack"
       <> mkCommand "wait"    (wait <$> stackName <*> tokenParser)  "wait for stack operation"
       <> mkCommand "watch"   (watch <$> stackName)                 "watch stack events"
+
+    specCommands :: Parser (m ExitCode)
+    specCommands = hsubparser
+      $  mkCommand "list"   (pure listSpecs) "list stack specifications"
 
     tokenParser :: Parser Token
     tokenParser = Token <$> argument str (metavar "TOKEN")
@@ -103,6 +109,13 @@ parserInfo templateProvider instanceSpecProvider = wrapHelper commands "stack co
     list :: m ExitCode
     list = do
       runConduit $ stackNames .| Conduit.mapM_ say
+      success
+
+    listSpecs :: m ExitCode
+    listSpecs = do
+      Foldable.mapM_
+        (liftIO . Text.putStrLn . toText . InstanceSpec.name)
+        =<< instanceSpecProvider
       success
 
     events :: InstanceSpec.Name -> m ExitCode
