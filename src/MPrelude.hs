@@ -87,6 +87,10 @@ import Data.Text.Conversions as Exports
   , toText
   )
 
+import Data.Tuple as Exports
+  ( uncurry
+  )
+
 import Text.Show as Exports
   ( Show
   , show
