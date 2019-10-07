@@ -9,7 +9,7 @@ import qualified Stratosphere
 
 template :: Template
 template
-  = mk (Name "Code")
+  = mk (Name "code")
   $ Stratosphere.template [codeBucket]
   & templateOutputs ?~ outputs
   where
