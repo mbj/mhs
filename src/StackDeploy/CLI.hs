@@ -59,7 +59,7 @@ parserInfo templateProvider instanceSpecProvider = wrapHelper commands
     mkCommand name = command name . wrapHelper
 
     wrapHelper :: Parser b -> ParserInfo b
-    wrapHelper parser = info (helper <*> parser) idm
+    wrapHelper parser = info parser idm
 
     cancel :: InstanceSpec.Name -> m ExitCode
     cancel name = do
