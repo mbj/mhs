@@ -1,4 +1,4 @@
-module AWS.Lambda.Runtime.Deploy (getFunctionTarget) where
+module AWS.Lambda.Runtime.Deploy (podmanTargetObject) where
 
 import AWS.Lambda.Runtime.Prelude
 import Data.Text.Encoding (decodeUtf8)
@@ -10,8 +10,12 @@ import qualified Network.AWS               as AWS
 import qualified Network.AWS.Data.Body     as AWS
 import qualified Network.AWS.S3.Types      as S3
 
-getFunctionTarget :: forall m . MonadIO m => Podman.Config -> S3.BucketName -> m S3.TargetObject
-getFunctionTarget config bucketName = do
+podmanTargetObject
+  :: forall m . MonadIO m
+  => Podman.Config
+  -> S3.BucketName
+  -> m S3.TargetObject
+podmanTargetObject config bucketName = do
   bootstrap <- Podman.build config
 
   let
