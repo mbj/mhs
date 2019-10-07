@@ -35,31 +35,31 @@ parserInfo
   => Template.Provider
   -> InstanceSpec.Provider
   -> ParserInfo (m ExitCode)
-parserInfo templateProvider instanceSpecProvider = wrapHelper commands
+parserInfo templateProvider instanceSpecProvider = wrapHelper commands "stack commands"
   where
     commands :: Parser (m ExitCode)
     commands = hsubparser
-      $  mkCommand "cancel"  (cancel <$> instanceSpecName)
-      <> mkCommand "create"  (create <$> instanceSpecName <*> parameters)
-      <> mkCommand "delete"  (delete <$> instanceSpecName)
-      <> mkCommand "events"  (events <$> instanceSpecName)
-      <> mkCommand "list"    (pure list)
-      <> mkCommand "outputs" (outputs <$> instanceSpecName)
-      <> mkCommand "render"  (render <$> templateName)
-      <> mkCommand "sync"    (sync <$> instanceSpecName <*> parameters)
-      <> mkCommand "token"   (pure printNewToken)
-      <> mkCommand "update"  (update <$> instanceSpecName <*> parameters)
-      <> mkCommand "wait"    (wait <$> instanceSpecName <*> tokenParser)
-      <> mkCommand "watch"   (watch <$> instanceSpecName)
+      $  mkCommand "cancel"  (cancel <$> instanceSpecName)                "cancel stack update"
+      <> mkCommand "create"  (create <$> instanceSpecName <*> parameters) "create stack"
+      <> mkCommand "delete"  (delete <$> instanceSpecName)                "delete stack"
+      <> mkCommand "events"  (events <$> instanceSpecName)                "list stack events"
+      <> mkCommand "list"    (pure list)                                  "list stack instances"
+      <> mkCommand "outputs" (outputs <$> instanceSpecName)               "list stack outputs"
+      <> mkCommand "render"  (render <$> templateName)                    "render template"
+      <> mkCommand "sync"    (sync <$> instanceSpecName <*> parameters)   "sync stack with spec"
+      <> mkCommand "token"   (pure printNewToken)                         "print a new stack token"
+      <> mkCommand "update"  (update <$> instanceSpecName <*> parameters) "update existing stack"
+      <> mkCommand "wait"    (wait <$> instanceSpecName <*> tokenParser)  "wait for stack operation"
+      <> mkCommand "watch"   (watch <$> instanceSpecName)                 "watch stack events"
 
     tokenParser :: Parser Token
     tokenParser = Token <$> argument str (metavar "TOKEN")
 
-    mkCommand :: String -> Parser b -> Mod CommandFields b
-    mkCommand name = command name . wrapHelper
+    mkCommand :: String -> Parser b -> String -> Mod CommandFields b
+    mkCommand name parser desc = command name (wrapHelper parser desc)
 
-    wrapHelper :: Parser b -> ParserInfo b
-    wrapHelper parser = info parser idm
+    wrapHelper :: Parser b -> String -> ParserInfo b
+    wrapHelper parser desc = info parser (progDesc desc)
 
     cancel :: InstanceSpec.Name -> m ExitCode
     cancel name = do
