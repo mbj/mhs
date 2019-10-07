@@ -1,4 +1,4 @@
-module StackDeploy.CLI (instanceSpecName, parserInfo) where
+module StackDeploy.CLI (parserInfo, stackName) where
 
 import Control.Applicative (many)
 import Control.Lens ((&), (.~), view)
@@ -39,18 +39,18 @@ parserInfo templateProvider instanceSpecProvider = wrapHelper commands "stack co
   where
     commands :: Parser (m ExitCode)
     commands = hsubparser
-      $  mkCommand "cancel"  (cancel <$> instanceSpecName)                "cancel stack update"
-      <> mkCommand "create"  (create <$> instanceSpecName <*> parameters) "create stack"
-      <> mkCommand "delete"  (delete <$> instanceSpecName)                "delete stack"
-      <> mkCommand "events"  (events <$> instanceSpecName)                "list stack events"
-      <> mkCommand "list"    (pure list)                                  "list stack instances"
-      <> mkCommand "outputs" (outputs <$> instanceSpecName)               "list stack outputs"
-      <> mkCommand "render"  (render <$> templateName)                    "render template"
-      <> mkCommand "sync"    (sync <$> instanceSpecName <*> parameters)   "sync stack with spec"
-      <> mkCommand "token"   (pure printNewToken)                         "print a new stack token"
-      <> mkCommand "update"  (update <$> instanceSpecName <*> parameters) "update existing stack"
-      <> mkCommand "wait"    (wait <$> instanceSpecName <*> tokenParser)  "wait for stack operation"
-      <> mkCommand "watch"   (watch <$> instanceSpecName)                 "watch stack events"
+      $  mkCommand "cancel"  (cancel <$> stackName)                "cancel stack update"
+      <> mkCommand "create"  (create <$> stackName <*> parameters) "create stack"
+      <> mkCommand "delete"  (delete <$> stackName)                "delete stack"
+      <> mkCommand "events"  (events <$> stackName)                "list stack events"
+      <> mkCommand "list"    (pure list)                           "list stack instances"
+      <> mkCommand "outputs" (outputs <$> stackName)               "list stack outputs"
+      <> mkCommand "render"  (render <$> templateName)             "render template"
+      <> mkCommand "sync"    (sync <$> stackName <*> parameters)   "sync stack with spec"
+      <> mkCommand "token"   (pure printNewToken)                  "print a new stack token"
+      <> mkCommand "update"  (update <$> stackName <*> parameters) "update existing stack"
+      <> mkCommand "wait"    (wait <$> stackName <*> tokenParser)  "wait for stack operation"
+      <> mkCommand "watch"   (watch <$> stackName)                 "watch stack events"
 
     tokenParser :: Parser Token
     tokenParser = Token <$> argument str (metavar "TOKEN")
@@ -166,11 +166,11 @@ parameterReader = eitherReader (Text.parseOnly parser . convertText)
       & CF.pParameterValue .~ pure value
 
 
-instanceSpecName :: Parser InstanceSpec.Name
-instanceSpecName = InstanceSpec.Name <$> argument str (metavar "INSTANCE_NAME")
+stackName :: Parser InstanceSpec.Name
+stackName = InstanceSpec.Name <$> argument str (metavar "STACK")
 
 templateName :: Parser Template.Name
-templateName = Template.Name <$> argument str (metavar "TEMPLATE_NAME")
+templateName = Template.Name <$> argument str (metavar "TEMPLATE")
 
 parameters :: Parser Parameters
 parameters = Parameters.fromList <$> many parameter
