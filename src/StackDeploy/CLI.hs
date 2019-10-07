@@ -40,10 +40,10 @@ parserInfo templateProvider instanceSpecProvider = wrapHelper commands "stack co
   where
     commands :: Parser (m ExitCode)
     commands = hsubparser
-      $  mkCommand "instance" instanceCommands                      "instance commands"
-      <> mkCommand "spec"     specCommands                          "instance spec commands"
-      <> mkCommand "token"    (pure printNewToken)                  "print a new stack token"
-      <> mkCommand "template" templateCommands                      "template commands"
+      $  mkCommand "instance" instanceCommands     "instance commands"
+      <> mkCommand "spec"     specCommands         "instance spec commands"
+      <> mkCommand "token"    (pure printNewToken) "print a new stack token"
+      <> mkCommand "template" templateCommands     "template commands"
 
     instanceCommands :: Parser (m ExitCode)
     instanceCommands = hsubparser
