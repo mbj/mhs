@@ -40,19 +40,23 @@ parserInfo templateProvider instanceSpecProvider = wrapHelper commands "stack co
   where
     commands :: Parser (m ExitCode)
     commands = hsubparser
+      $  mkCommand "instance" instanceCommands                      "instance commands"
+      <> mkCommand "spec"     specCommands                          "instance spec commands"
+      <> mkCommand "token"    (pure printNewToken)                  "print a new stack token"
+      <> mkCommand "template" templateCommands                      "template commands"
+
+    instanceCommands :: Parser (m ExitCode)
+    instanceCommands = hsubparser
       $  mkCommand "cancel"   (cancel <$> stackName)                "cancel stack update"
       <> mkCommand "create"   (create <$> stackName <*> parameters) "create stack"
       <> mkCommand "delete"   (delete <$> stackName)                "delete stack"
       <> mkCommand "events"   (events <$> stackName)                "list stack events"
       <> mkCommand "list"     (pure list)                           "list stack instances"
       <> mkCommand "outputs"  (outputs <$> stackName)               "list stack outputs"
-      <> mkCommand "spec"     specCommands                          "instance spec commands"
       <> mkCommand "sync"     (sync <$> stackName <*> parameters)   "sync stack with spec"
-      <> mkCommand "token"    (pure printNewToken)                  "print a new stack token"
       <> mkCommand "update"   (update <$> stackName <*> parameters) "update existing stack"
       <> mkCommand "wait"     (wait <$> stackName <*> tokenParser)  "wait for stack operation"
       <> mkCommand "watch"    (watch <$> stackName)                 "watch stack events"
-      <> mkCommand "template" templateCommands                      "template commands"
 
     templateCommands :: Parser (m ExitCode)
     templateCommands = hsubparser
