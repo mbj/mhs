@@ -1,14 +1,16 @@
 module StackDeploy.Template.Code (template) where
 
 import StackDeploy.Prelude
+import StackDeploy.Template
 import StackDeploy.Utils
-import Stratosphere hiding (template)
+import Stratosphere hiding (Template, template)
 
 import qualified Stratosphere
 
 template :: Template
 template
-  = Stratosphere.template [codeBucket]
+  = mk (Name "Code")
+  $ Stratosphere.template [codeBucket]
   & templateOutputs ?~ outputs
   where
     outputs = Outputs

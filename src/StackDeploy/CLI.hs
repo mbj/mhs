@@ -1,4 +1,4 @@
-module StackDeploy.CLI (nameParser, parserInfo) where
+module StackDeploy.CLI (instanceSpecName, parserInfo) where
 
 import Control.Applicative (many)
 import Control.Lens ((&), (.~), view)
@@ -9,9 +9,9 @@ import Options.Applicative hiding (value)
 import StackDeploy.AWS
 import StackDeploy.Events
 import StackDeploy.IO
+import StackDeploy.Parameters (Parameters)
 import StackDeploy.Prelude
 import StackDeploy.Stack
-import StackDeploy.Template
 import StackDeploy.Types
 import StackDeploy.Wait
 import System.Exit (ExitCode(..))
@@ -26,37 +26,31 @@ import qualified Network.AWS                                    as AWS
 import qualified Network.AWS.CloudFormation.CancelUpdateStack   as CF
 import qualified Network.AWS.CloudFormation.DescribeStackEvents as CF
 import qualified Network.AWS.CloudFormation.Types               as CF
-import qualified Stratosphere
-
-type InstanceSpecProvider
-  =  forall m r . (AWSConstraint r m, MonadAWS m)
-  => (Name -> [CF.Parameter] -> m InstanceSpec)
-
-type TemplateProvider
-  =  forall m . MonadIO m
-  => (Name -> m Stratosphere.Template)
+import qualified StackDeploy.InstanceSpec                       as InstanceSpec
+import qualified StackDeploy.Parameters                         as Parameters
+import qualified StackDeploy.Template                           as Template
 
 parserInfo
   :: forall m r . (AWSConstraint r m, MonadAWS m)
-  => TemplateProvider
-  -> InstanceSpecProvider
+  => Template.Provider
+  -> InstanceSpec.Provider
   -> ParserInfo (m ExitCode)
 parserInfo templateProvider instanceSpecProvider = wrapHelper commands
   where
     commands :: Parser (m ExitCode)
     commands = hsubparser
-      $  mkCommand "cancel"  (cancel <$> nameParser)
-      <> mkCommand "create"  (create <$> nameParser <*> many parameterParser)
-      <> mkCommand "delete"  (delete <$> nameParser)
-      <> mkCommand "events"  (events <$> nameParser)
+      $  mkCommand "cancel"  (cancel <$> instanceSpecName)
+      <> mkCommand "create"  (create <$> instanceSpecName <*> parameters)
+      <> mkCommand "delete"  (delete <$> instanceSpecName)
+      <> mkCommand "events"  (events <$> instanceSpecName)
       <> mkCommand "list"    (pure list)
-      <> mkCommand "outputs" (outputs <$> nameParser)
-      <> mkCommand "render"  (render <$> nameParser)
-      <> mkCommand "sync"    (sync <$> nameParser <*> many parameterParser)
+      <> mkCommand "outputs" (outputs <$> instanceSpecName)
+      <> mkCommand "render"  (render <$> templateName)
+      <> mkCommand "sync"    (sync <$> instanceSpecName <*> parameters)
       <> mkCommand "token"   (pure printNewToken)
-      <> mkCommand "update"  (update <$> nameParser <*> many parameterParser)
-      <> mkCommand "wait"    (wait <$> nameParser <*> tokenParser)
-      <> mkCommand "watch"   (watch <$> nameParser)
+      <> mkCommand "update"  (update <$> instanceSpecName <*> parameters)
+      <> mkCommand "wait"    (wait <$> instanceSpecName <*> tokenParser)
+      <> mkCommand "watch"   (watch <$> instanceSpecName)
 
     tokenParser :: Parser Token
     tokenParser = Token <$> argument str (metavar "TOKEN")
@@ -67,38 +61,35 @@ parserInfo templateProvider instanceSpecProvider = wrapHelper commands
     wrapHelper :: Parser b -> ParserInfo b
     wrapHelper parser = info (helper <*> parser) idm
 
-    cancel :: Name -> m ExitCode
+    cancel :: InstanceSpec.Name -> m ExitCode
     cancel name = do
       void . AWS.send . CF.cancelUpdateStack $ toText name
       success
 
-    create :: Name -> [CF.Parameter] -> m ExitCode
+    create :: InstanceSpec.Name -> Parameters -> m ExitCode
     create name params = do
-      spec     <- instanceSpecProvider name params
-      template <- templateProvider name
-      exitCode =<< perform (OpCreate name spec template)
+      spec <- InstanceSpec.get instanceSpecProvider name params
+      exitCode =<< perform (OpCreate spec)
 
-    update :: Name -> [CF.Parameter] -> m ExitCode
+    update :: InstanceSpec.Name -> Parameters -> m ExitCode
     update name params = do
-      spec     <- instanceSpecProvider name params
+      spec     <- InstanceSpec.get instanceSpecProvider name params
       stackId  <- getExistingStackId name
-      template <- templateProvider name
 
-      exitCode =<< perform (OpUpdate stackId spec template)
+      exitCode =<< perform (OpUpdate stackId spec)
 
-    sync :: Name -> [CF.Parameter] -> m ExitCode
+    sync :: InstanceSpec.Name -> Parameters -> m ExitCode
     sync name params = do
-      spec     <- instanceSpecProvider name params
-      template <- templateProvider name
+      spec <- InstanceSpec.get instanceSpecProvider name params
 
       exitCode
-        =<< perform . maybe (OpCreate name spec template) (\stackId -> OpUpdate stackId spec template)
+        =<< perform . maybe (OpCreate spec) (`OpUpdate` spec)
         =<< getStackId name
 
-    wait :: Name -> Token -> m ExitCode
+    wait :: InstanceSpec.Name -> Token -> m ExitCode
     wait name token = maybe success (waitForOperation token) =<< getStackId name
 
-    outputs :: Name -> m ExitCode
+    outputs :: InstanceSpec.Name -> m ExitCode
     outputs name = do
       mapM_ printOutput =<< (view CF.sOutputs <$> getExistingStack name)
       success
@@ -106,7 +97,7 @@ parserInfo templateProvider instanceSpecProvider = wrapHelper commands
         printOutput :: CF.Output -> m ()
         printOutput = liftIO . Text.putStrLn . convertText . show
 
-    delete :: Name -> m ExitCode
+    delete :: InstanceSpec.Name -> m ExitCode
     delete = maybe success (exitCode <=< perform . OpDelete) <=< getStackId
 
     list :: m ExitCode
@@ -114,14 +105,14 @@ parserInfo templateProvider instanceSpecProvider = wrapHelper commands
       runConduit $ stackNames .| Conduit.mapM_ say
       success
 
-    events :: Name -> m ExitCode
+    events :: InstanceSpec.Name -> m ExitCode
     events name = do
       runConduit $ listResource req CF.dsersStackEvents .| Conduit.mapM_ printEvent
       success
       where
         req = CF.describeStackEvents & CF.dseStackName .~ pure (toText name)
 
-    watch :: Name -> m ExitCode
+    watch :: InstanceSpec.Name -> m ExitCode
     watch name = do
       stackId <- getExistingStackId name
       void $ pollEvents (defaultPoll stackId) printEvent
@@ -136,10 +127,10 @@ parserInfo templateProvider instanceSpecProvider = wrapHelper commands
       say =<< newToken
       success
 
-    render :: Name -> m ExitCode
+    render :: Template.Name -> m ExitCode
     render name = do
-      template <- templateProvider name
-      say . Text.decodeUtf8 . LBS.toStrict $ encodeTemplate template
+      template <- Template.get templateProvider name
+      say . Text.decodeUtf8 . LBS.toStrict $ Template.encode template
       success
 
     success :: m ExitCode
@@ -149,12 +140,12 @@ parserInfo templateProvider instanceSpecProvider = wrapHelper commands
       RemoteOperationSuccess -> success
       RemoteOperationFailure -> pure $ ExitFailure 1
 
-parameterParser :: Parser CF.Parameter
-parameterParser = option
+parameter :: Parser (Text, CF.Parameter)
+parameter = option
   parameterReader
   (long "parameter" <> help "Set stack parameter")
 
-parameterReader :: ReadM CF.Parameter
+parameterReader :: ReadM (Text, CF.Parameter)
 parameterReader = eitherReader (Text.parseOnly parser . convertText)
   where
     parser = do
@@ -163,14 +154,23 @@ parameterReader = eitherReader (Text.parseOnly parser . convertText)
       value <- convertText <$> Text.many1 Text.anyChar
       void Text.endOfInput
 
-      pure
-        $ CF.parameter
-        & CF.pParameterKey .~ pure key
-        & CF.pParameterValue .~ pure value
+      pure (key, mkCFParam key value)
 
     allowChar = \case
       '-'  -> True
       char -> Char.isDigit char || Char.isAlpha char
 
-nameParser :: Parser Name
-nameParser = Name <$> argument str (metavar "NAME")
+    mkCFParam key value
+      = CF.parameter
+      & CF.pParameterKey .~ pure key
+      & CF.pParameterValue .~ pure value
+
+
+instanceSpecName :: Parser InstanceSpec.Name
+instanceSpecName = InstanceSpec.Name <$> argument str (metavar "INSTANCE_NAME")
+
+templateName :: Parser Template.Name
+templateName = Template.Name <$> argument str (metavar "TEMPLATE_NAME")
+
+parameters :: Parser Parameters
+parameters = Parameters.fromList <$> many parameter

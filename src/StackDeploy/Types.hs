@@ -1,39 +1,21 @@
 module StackDeploy.Types where
 
 import Data.Word (Word32)
-import StackDeploy.AWS
+import StackDeploy.InstanceSpec
 import StackDeploy.Prelude
 
 import qualified Data.ByteString.Builder          as BS
 import qualified Data.ByteString.Lazy             as LBS
 import qualified Data.Text.Encoding               as Text
-import qualified Network.AWS.CloudFormation.Types as CF
-import qualified Stratosphere
 import qualified System.Random                    as Random
 
 newtype Id = Id Text
   deriving newtype ToText
 
-newtype Name = Name Text
-  deriving newtype ToText
-  deriving stock   Eq
-
-newtype RoleARN = RoleARN Text
-  deriving newtype ToText
-  deriving stock   Eq
-
 data Operation
-  = OpCreate Name InstanceSpec Stratosphere.Template
+  = OpCreate InstanceSpec
   | OpDelete Id
-  | OpUpdate Id InstanceSpec Stratosphere.Template
-
-data InstanceSpec = InstanceSpec
-  { capabilities :: [CF.Capability]
-  , onSuccess    :: forall m r . (AWSConstraint r m, MonadAWS m) => m ()
-  , parameters   :: [CF.Parameter]
-  , prepareSync  :: forall m r . (AWSConstraint r m, MonadAWS m) => m ()
-  , roleARN      :: Maybe RoleARN
-  }
+  | OpUpdate Id InstanceSpec
 
 data RemoteOperation = RemoteOperation
   { stackId   :: Id
@@ -47,9 +29,9 @@ newtype Token = Token Text
 
 verb :: Operation -> Text
 verb = \case
-  (OpCreate _name _instanceSpec _template) -> "create"
-  (OpDelete _id                          ) -> "delete"
-  (OpUpdate _id   _instanceSpec _template) -> "update"
+  (OpCreate     _instanceSpec) -> "create"
+  (OpDelete _id              ) -> "delete"
+  (OpUpdate _id _instanceSpec) -> "update"
 
 newToken :: forall m . MonadIO m => m Token
 newToken = Token . text <$> bytes

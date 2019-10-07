@@ -3,7 +3,6 @@ module StackDeploy.Events (Poll(..), defaultPoll, pollEvents) where
 import Control.Concurrent (threadDelay)
 import Control.Exception.Base (AssertionFailed(AssertionFailed))
 import Control.Lens ((&), (.~), view)
-import Control.Monad.Catch (throwM)
 import Data.Conduit (ConduitT, (.|), await, runConduit, yield)
 import Data.Conduit.Combinators (find, iterM, takeWhile, yieldMany)
 import Data.Conduit.List (consume)

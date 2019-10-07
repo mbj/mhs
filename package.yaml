@@ -71,12 +71,13 @@ library:
   - src
   exposed-modules:
   - StackDeploy.CLI
+  - StackDeploy.InstanceSpec
   - StackDeploy.Stack
   - StackDeploy.Template
   - StackDeploy.Template.Code
   - StackDeploy.Types
-  - StackDeploy.Wait
   - StackDeploy.Utils
+  - StackDeploy.Wait
 
 tests:
   hlint:
