@@ -2,7 +2,7 @@ module StackDeploy.Provider (Provider, get) where
 
 import StackDeploy.Prelude
 
-import qualified Data.List as List
+import qualified Data.Foldable as Foldable
 
 type Provider a = forall m . (MonadIO m) => m [a]
 
@@ -15,7 +15,7 @@ get
   -> m a
 get subject accessor provider target
   =   maybe failMissing pure
-  .   List.find ((==) target . accessor)
+  .   Foldable.find ((==) target . accessor)
   =<< provider
   where
     failMissing :: m a
