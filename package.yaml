@@ -1,0 +1,64 @@
+name:        tasty-mgolden
+version:     0.0.0.1
+github:      mbj/tasty-mgolden
+description: An alternative golden testing provider for tasty
+license:     AllRightsReserved
+author:      Markus Schirp <mbj@schirp-dso.com>
+
+dependencies:
+- Diff               == 0.3.4
+- base               == 4.12.0.0
+- filepath           == 1.4.2.1
+- mprelude           == 0.0.0.1
+- source-constraints == 0.0.0.1
+- tasty              == 1.2.3
+- text               == 1.2.3.1
+
+library:
+  source-dirs: src
+
+default-extensions:
+- DerivingStrategies
+- LambdaCase
+- NoImplicitPrelude
+- OverloadedStrings
+- RecordWildCards
+- StrictData
+
+ghc-options:
+- -Wall
+- -Wcompat
+- -Werror
+- -Widentities
+- -Wimplicit-prelude
+- -Wincomplete-record-updates
+- -Wincomplete-uni-patterns
+- -Wmissing-exported-signatures
+- -Wmissing-local-signatures
+- -Wmonomorphism-restriction
+- -Wredundant-constraints
+- -fplugin=SourceConstraints
+- -funbox-strict-fields
+
+tests:
+  hlint:
+    main:          HLint.hs
+    source-dirs:   test
+    other-modules: []
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -with-rtsopts=-N
+    dependencies:
+    - hlint == 2.1.26
+
+  golden:
+    main:          test/Test.hs
+    other-modules: []
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -with-rtsopts=-N
+    dependencies:
+    - tasty-mgolden
+    - text
