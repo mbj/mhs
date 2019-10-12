@@ -21,7 +21,6 @@ import Numeric.Natural (Natural)
 import PGT.Formatter
 import PGT.Prelude
 import System.FilePath (FilePath, (-<.>))
-import System.Posix.Process (getProcessID)
 import System.Posix.Types (ProcessID)
 import UnliftIO.Exception (bracket)
 
@@ -31,6 +30,7 @@ import qualified Data.Text                  as Text
 import qualified Data.Text.Encoding         as Text
 import qualified Data.Text.IO               as Text
 import qualified System.Environment         as Environment
+import qualified System.Posix.Process       as Process
 import qualified System.Process.Typed       as Process
 import qualified Test.Hspec                 as Hspec
 import qualified Test.Hspec.Core.Formatters as Hspec
@@ -208,7 +208,7 @@ fromEnv Options{..} = do
   host        <- lookup "PGHOST"
   path        <- lookup "PATH"
   pgtUser     <- lookup "PGTUSER"
-  pid         <- liftIO getProcessID
+  pid         <- liftIO Process.getProcessID
   port        <- lookup "PGPORT"
   sslmode     <- lookup "PGSSLMODE"
   sslrootcert <- lookup "PGSSLROOTCERT"
