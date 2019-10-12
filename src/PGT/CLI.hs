@@ -4,7 +4,6 @@ module PGT.CLI (run) where
 
 import Control.Applicative (Alternative(many))
 import Control.Monad (mapM)
-import Data.Foldable (Foldable)
 import Data.Set.Ordered (OSet, (|<>))
 import Data.String (String)
 import Data.Traversable (Traversable)

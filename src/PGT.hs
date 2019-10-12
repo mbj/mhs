@@ -16,7 +16,6 @@ where
 import Control.Monad (sequence_)
 import Control.Monad.IO.Unlift (MonadUnliftIO)
 import Data.Bifunctor (second)
-import Data.Foldable (Foldable, mapM_)
 import Data.String (String)
 import Numeric.Natural (Natural)
 import PGT.Formatter
@@ -28,6 +27,7 @@ import System.Posix.Types (ProcessID)
 import UnliftIO.Exception (bracket)
 
 import qualified Data.ByteString.Lazy       as LBS
+import qualified Data.Foldable              as Foldable
 import qualified Data.Text                  as Text
 import qualified Data.Text.Encoding         as Text
 import qualified Data.Text.IO               as Text
@@ -69,13 +69,13 @@ data PSQLConfig = PSQLConfig
   }
 
 runList :: forall f m . (Foldable f, MonadIO m) => Config -> f Test -> m ()
-runList config = mapM_ printTest
+runList config = Foldable.mapM_ printTest
   where
     printTest :: Test -> m ()
     printTest Test{..} = print config $ convertText path
 
 runExamples :: forall f m . (Foldable f, MonadUnliftIO m) => Config -> f Test -> m ()
-runExamples config = mapM_ $ runTestSession config Process.runProcess_
+runExamples config = Foldable.mapM_ $ runTestSession config Process.runProcess_
 
 print :: MonadIO m => Config -> Text -> m ()
 print Config{ output = Verbose } = liftIO . Text.putStrLn
@@ -104,7 +104,7 @@ runTests config@Config{..} tests = liftIO $ Hspec.evaluateSummary =<< Hspec.runS
     hspecFormatter Verbose = Hspec.progress { Hspec.failedFormatter = multilineFailedFormatter }
 
 runUpdates :: forall f m . (Foldable f, MonadIO m) => Config -> f Test -> m ()
-runUpdates config = mapM_ updateTest
+runUpdates config = Foldable.mapM_ updateTest
   where
     updateTest :: Test -> m ()
     updateTest test =
