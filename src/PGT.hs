@@ -20,7 +20,6 @@ import Data.String (String)
 import Numeric.Natural (Natural)
 import PGT.Formatter
 import PGT.Prelude
-import System.Environment (getEnv)
 import System.FilePath (FilePath, (-<.>))
 import System.Posix.Process (getProcessID)
 import System.Posix.Types (ProcessID)
@@ -31,6 +30,7 @@ import qualified Data.Foldable              as Foldable
 import qualified Data.Text                  as Text
 import qualified Data.Text.Encoding         as Text
 import qualified Data.Text.IO               as Text
+import qualified System.Environment         as Environment
 import qualified System.Process.Typed       as Process
 import qualified Test.Hspec                 as Hspec
 import qualified Test.Hspec.Core.Formatters as Hspec
@@ -219,4 +219,4 @@ fromEnv Options{..} = do
   pure Config{..}
   where
     lookup :: String -> m Text
-    lookup = (convertText <$>) . liftIO . getEnv
+    lookup = (convertText <$>) . liftIO . Environment.getEnv
