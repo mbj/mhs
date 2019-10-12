@@ -18,7 +18,6 @@ import Control.Monad.IO.Unlift (MonadUnliftIO)
 import Data.Bifunctor (second)
 import Data.Foldable (Foldable, mapM_)
 import Data.String (String)
-import Data.Text.IO (putStrLn, readFile, writeFile)
 import Numeric.Natural (Natural)
 import PGT.Formatter
 import PGT.Prelude
@@ -31,6 +30,7 @@ import UnliftIO.Exception (bracket)
 import qualified Data.ByteString.Lazy       as LBS
 import qualified Data.Text                  as Text
 import qualified Data.Text.Encoding         as Text
+import qualified Data.Text.IO               as Text
 import qualified System.Process.Typed       as Process
 import qualified Test.Hspec                 as Hspec
 import qualified Test.Hspec.Core.Formatters as Hspec
@@ -78,7 +78,7 @@ runExamples :: forall f m . (Foldable f, MonadUnliftIO m) => Config -> f Test ->
 runExamples config = mapM_ $ runTestSession config Process.runProcess_
 
 print :: MonadIO m => Config -> Text -> m ()
-print Config{ output = Verbose } = liftIO . putStrLn
+print Config{ output = Verbose } = liftIO . Text.putStrLn
 print Config{ output = Silent }  = const $ pure ()
 
 runTests :: (Foldable f, Functor f, MonadIO m) => Config -> f Test -> m ()
@@ -89,7 +89,7 @@ runTests config@Config{..} tests = liftIO $ Hspec.evaluateSummary =<< Hspec.runS
     makeSpec test@Test{..} =
       Hspec.specify path $ do
         captured <- captureTest config test
-        expected <- readFile $ expectedFileName test
+        expected <- Text.readFile $ expectedFileName test
         captured `Hspec.shouldBe` expected
 
     hspecConfig = Hspec.defaultConfig
@@ -108,7 +108,7 @@ runUpdates config = mapM_ updateTest
   where
     updateTest :: Test -> m ()
     updateTest test =
-      liftIO $ writeFile (expectedFileName test) =<< captureTest config test
+      liftIO $ Text.writeFile (expectedFileName test) =<< captureTest config test
 
 expectedFileName :: Test -> FilePath
 expectedFileName Test{..} = path -<.> ".expected"
@@ -137,7 +137,7 @@ runTestSession config runProcess test@Test{..} =
   where
     runSession :: PSQLConfig -> m a
     runSession psqlConfig =
-      runProcess . psql psqlConfig =<< LBS.fromStrict . Text.encodeUtf8 <$> liftIO (readFile path)
+      runProcess . psql psqlConfig =<< LBS.fromStrict . Text.encodeUtf8 <$> liftIO (Text.readFile path)
 
     psql psqlConfig body
       = pgEnv psqlConfig
