@@ -1,4 +1,3 @@
-import Data.Foldable (Foldable)
 import Data.String (String)
 import PGT.CLI
 import PGT.Prelude

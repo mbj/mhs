@@ -16,21 +16,21 @@ where
 import Control.Monad (sequence_)
 import Control.Monad.IO.Unlift (MonadUnliftIO)
 import Data.Bifunctor (second)
-import Data.Foldable (Foldable, mapM_)
 import Data.String (String)
-import Data.Text.IO (putStrLn, readFile, writeFile)
 import Numeric.Natural (Natural)
 import PGT.Formatter
 import PGT.Prelude
-import System.Environment (getEnv)
 import System.FilePath (FilePath, (-<.>))
-import System.Posix.Process (getProcessID)
 import System.Posix.Types (ProcessID)
 import UnliftIO.Exception (bracket)
 
 import qualified Data.ByteString.Lazy       as LBS
+import qualified Data.Foldable              as Foldable
 import qualified Data.Text                  as Text
 import qualified Data.Text.Encoding         as Text
+import qualified Data.Text.IO               as Text
+import qualified System.Environment         as Environment
+import qualified System.Posix.Process       as Process
 import qualified System.Process.Typed       as Process
 import qualified Test.Hspec                 as Hspec
 import qualified Test.Hspec.Core.Formatters as Hspec
@@ -69,16 +69,16 @@ data PSQLConfig = PSQLConfig
   }
 
 runList :: forall f m . (Foldable f, MonadIO m) => Config -> f Test -> m ()
-runList config = mapM_ printTest
+runList config = Foldable.mapM_ printTest
   where
     printTest :: Test -> m ()
     printTest Test{..} = print config $ convertText path
 
 runExamples :: forall f m . (Foldable f, MonadUnliftIO m) => Config -> f Test -> m ()
-runExamples config = mapM_ $ runTestSession config Process.runProcess_
+runExamples config = Foldable.mapM_ $ runTestSession config Process.runProcess_
 
 print :: MonadIO m => Config -> Text -> m ()
-print Config{ output = Verbose } = liftIO . putStrLn
+print Config{ output = Verbose } = liftIO . Text.putStrLn
 print Config{ output = Silent }  = const $ pure ()
 
 runTests :: (Foldable f, Functor f, MonadIO m) => Config -> f Test -> m ()
@@ -89,7 +89,7 @@ runTests config@Config{..} tests = liftIO $ Hspec.evaluateSummary =<< Hspec.runS
     makeSpec test@Test{..} =
       Hspec.specify path $ do
         captured <- captureTest config test
-        expected <- readFile $ expectedFileName test
+        expected <- Text.readFile $ expectedFileName test
         captured `Hspec.shouldBe` expected
 
     hspecConfig = Hspec.defaultConfig
@@ -104,11 +104,11 @@ runTests config@Config{..} tests = liftIO $ Hspec.evaluateSummary =<< Hspec.runS
     hspecFormatter Verbose = Hspec.progress { Hspec.failedFormatter = multilineFailedFormatter }
 
 runUpdates :: forall f m . (Foldable f, MonadIO m) => Config -> f Test -> m ()
-runUpdates config = mapM_ updateTest
+runUpdates config = Foldable.mapM_ updateTest
   where
     updateTest :: Test -> m ()
     updateTest test =
-      liftIO $ writeFile (expectedFileName test) =<< captureTest config test
+      liftIO $ Text.writeFile (expectedFileName test) =<< captureTest config test
 
 expectedFileName :: Test -> FilePath
 expectedFileName Test{..} = path -<.> ".expected"
@@ -137,7 +137,7 @@ runTestSession config runProcess test@Test{..} =
   where
     runSession :: PSQLConfig -> m a
     runSession psqlConfig =
-      runProcess . psql psqlConfig =<< LBS.fromStrict . Text.encodeUtf8 <$> liftIO (readFile path)
+      runProcess . psql psqlConfig =<< LBS.fromStrict . Text.encodeUtf8 <$> liftIO (Text.readFile path)
 
     psql psqlConfig body
       = pgEnv psqlConfig
@@ -208,7 +208,7 @@ fromEnv Options{..} = do
   host        <- lookup "PGHOST"
   path        <- lookup "PATH"
   pgtUser     <- lookup "PGTUSER"
-  pid         <- liftIO getProcessID
+  pid         <- liftIO Process.getProcessID
   port        <- lookup "PGPORT"
   sslmode     <- lookup "PGSSLMODE"
   sslrootcert <- lookup "PGSSLROOTCERT"
@@ -219,4 +219,4 @@ fromEnv Options{..} = do
   pure Config{..}
   where
     lookup :: String -> m Text
-    lookup = (convertText <$>) . liftIO . getEnv
+    lookup = (convertText <$>) . liftIO . Environment.getEnv
