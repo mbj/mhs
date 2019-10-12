@@ -46,6 +46,10 @@ import Data.Eq as Exports
   , (==)
   )
 
+import Data.Foldable as Exports
+  ( Foldable
+  )
+
 import Data.Function as Exports
   ( ($)
   , (.)
