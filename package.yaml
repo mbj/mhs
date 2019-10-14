@@ -72,6 +72,7 @@ library:
   exposed-modules:
   - StackDeploy.CLI
   - StackDeploy.InstanceSpec
+  - StackDeploy.Parameters
   - StackDeploy.Stack
   - StackDeploy.Template
   - StackDeploy.Template.Code
