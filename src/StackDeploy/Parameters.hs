@@ -1,16 +1,22 @@
 module StackDeploy.Parameters
-  ( Parameters
+  ( Parameter(..)
+  , ParameterName(..)
+  , ParameterValue(..)
+  , Parameters
   , cfParameters
   , empty
   , expandTemplate
   , fromList
+  , fromStratosphereParameter
   , union
   )
 where
 
 import Control.Lens ((&), (?~), view)
 import Data.HashMap.Strict (HashMap)
+import Data.Hashable (Hashable)
 import Data.Set (Set)
+import Data.Text (Text)
 import StackDeploy.Prelude hiding (empty)
 import StackDeploy.Template
 
@@ -21,16 +27,61 @@ import qualified Data.Set                         as Set
 import qualified Network.AWS.CloudFormation.Types as CF
 import qualified Stratosphere
 
-newtype Parameters = Parameters (HashMap Text CF.Parameter)
+newtype ParameterName = ParameterName Text
+  deriving newtype (Hashable, ToText)
+  deriving stock   (Eq, Ord)
+
+newtype ParameterValue = ParameterValue Text
+  deriving newtype ToText
+  deriving stock   Eq
+
+data Parameter
+  = Parameter ParameterName ParameterValue
+  | ParameterUsePrevious ParameterName
+
+newtype Parameters = Parameters (HashMap ParameterName Parameter)
+
+parameterName :: Parameter -> ParameterName
+parameterName = \case
+  (Parameter name _value)     -> name
+  (ParameterUsePrevious name) -> name
 
 empty :: Parameters
 empty = Parameters HashMap.empty
 
-fromList :: [(Text, CF.Parameter)] -> Parameters
-fromList = Parameters . HashMap.fromList
+fromStratosphereParameter
+  :: Stratosphere.Parameter
+  -> ParameterValue
+  -> Parameter
+fromStratosphereParameter stratosphereParameter = Parameter name
+  where
+    name
+      = ParameterName
+      $ view Stratosphere.parameterName stratosphereParameter
+
+fromList :: [Parameter] -> Parameters
+fromList parameters =
+  Parameters . HashMap.fromList $ pairs
+  where
+    pairs :: [(ParameterName, Parameter)]
+    pairs = mkPair <$> parameters
+
+    mkPair :: Parameter -> (ParameterName, Parameter)
+    mkPair parameter = (parameterName parameter, parameter)
 
 cfParameters :: Parameters -> [CF.Parameter]
-cfParameters (Parameters hash) = HashMap.elems hash
+cfParameters (Parameters hash) = mkCFParameter <$> HashMap.elems hash
+
+mkCFParameter :: Parameter -> CF.Parameter
+mkCFParameter = \case
+  Parameter name value ->
+    CF.parameter
+      & CF.pParameterKey   ?~ toText name
+      & CF.pParameterValue ?~ toText value
+  ParameterUsePrevious name ->
+    CF.parameter
+      & CF.pParameterKey     ?~ toText name
+      & CF.pUsePreviousValue ?~ True
 
 union :: Parameters -> Parameters -> Parameters
 union (Parameters left) (Parameters right) =
@@ -47,25 +98,21 @@ expandTemplate parameters@(Parameters hash) template
       $   mkPair
       <$> Foldable.toList missingParameterNames
 
-    mkPair parameterName = (parameterName, mkUsePrevious parameterName)
+    mkPair name = (name, ParameterUsePrevious name)
 
-    mkUsePrevious parameterName
-      = CF.parameter
-      & CF.pParameterKey     ?~ parameterName
-      & CF.pUsePreviousValue ?~ True
-
-    missingParameterNames :: Set Text
+    missingParameterNames :: Set ParameterName
     missingParameterNames =
       Set.difference
         templateParameterNames
         givenParameterNames
 
-    givenParameterNames :: Set Text
+    givenParameterNames :: Set ParameterName
     givenParameterNames = Set.fromList $ HashMap.keys hash
 
-    templateParameterNames :: Set Text
+    templateParameterNames :: Set ParameterName
     templateParameterNames
-      = Set.fromList $ view Stratosphere.parameterName <$> templateParameters
+      = Set.fromList
+      $ ParameterName . view Stratosphere.parameterName <$> templateParameters
 
     templateParameters :: [Stratosphere.Parameter]
     templateParameters
