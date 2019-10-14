@@ -44,11 +44,16 @@ get
   -> Parameters
   -> m InstanceSpec
 get provider targetName userParameters = do
-  instanceSpec@InstanceSpec{..} <- Provider.get "instance-spec" name provider targetName
+  instanceSpec <-
+    Provider.get "instance-spec" name provider targetName
 
   pure $ instanceSpec
-    { parameters = Parameters.union (Parameters.expandTemplate parameters template) userParameters
+    { parameters = Parameters.union (expandedParameters instanceSpec) userParameters
     }
+
+  where
+    expandedParameters InstanceSpec{..} =
+      Parameters.expandTemplate parameters template
 
 mk :: Name -> Template -> InstanceSpec
 mk name template = InstanceSpec
