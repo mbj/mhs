@@ -9,7 +9,7 @@ import Options.Applicative hiding (value)
 import StackDeploy.AWS
 import StackDeploy.Events
 import StackDeploy.IO
-import StackDeploy.Parameters (Parameters)
+import StackDeploy.Parameters
 import StackDeploy.Prelude
 import StackDeploy.Stack
 import StackDeploy.Types
@@ -169,31 +169,25 @@ parserInfo templateProvider instanceSpecProvider = wrapHelper commands "stack co
       RemoteOperationSuccess -> success
       RemoteOperationFailure -> pure $ ExitFailure 1
 
-parameter :: Parser (Text, CF.Parameter)
+parameter :: Parser Parameter
 parameter = option
   parameterReader
   (long "parameter" <> help "Set stack parameter")
 
-parameterReader :: ReadM (Text, CF.Parameter)
+parameterReader :: ReadM Parameter
 parameterReader = eitherReader (Text.parseOnly parser . convertText)
   where
     parser = do
-      key <- convertText <$> Text.many1 (Text.satisfy allowChar)
+      name <- ParameterName . convertText <$> Text.many1 (Text.satisfy allowChar)
       Text.skip (== ':')
-      value <- convertText <$> Text.many1 Text.anyChar
+      value <- ParameterValue . convertText <$> Text.many1 Text.anyChar
       void Text.endOfInput
 
-      pure (key, mkCFParam key value)
+      pure $ Parameter name value
 
     allowChar = \case
       '-'  -> True
       char -> Char.isDigit char || Char.isAlpha char
-
-    mkCFParam key value
-      = CF.parameter
-      & CF.pParameterKey .~ pure key
-      & CF.pParameterValue .~ pure value
-
 
 stackName :: Parser InstanceSpec.Name
 stackName = InstanceSpec.Name <$> argument str (metavar "STACK")
