@@ -7,6 +7,7 @@ module StackDeploy.Template
   , mk
   ) where
 
+import Control.Monad.Catch (MonadThrow)
 import Data.ByteString.Lazy (ByteString)
 import Data.Ord (compare)
 import StackDeploy.Prelude
@@ -35,11 +36,7 @@ encode = Pretty.encodePretty' config . stratosphere
       , Pretty.confCompare = compare
       }
 
-get
-  :: forall m . (MonadIO m)
-  => Provider
-  -> Name
-  -> m Template
+get :: MonadThrow m => Provider -> Name -> m Template
 get = Provider.get "template" name
 
 mk :: Name -> Stratosphere.Template -> Template

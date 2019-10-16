@@ -124,14 +124,14 @@ parserInfo templateProvider instanceSpecProvider = wrapHelper commands "stack co
     listTemplates = do
       Foldable.mapM_
         (liftIO . Text.putStrLn . toText . Template.name)
-        =<< templateProvider
+        templateProvider
       success
 
     listSpecs :: m ExitCode
     listSpecs = do
       Foldable.mapM_
         (liftIO . Text.putStrLn . toText . InstanceSpec.name)
-        =<< instanceSpecProvider
+        instanceSpecProvider
       success
 
     events :: InstanceSpec.Name -> m ExitCode

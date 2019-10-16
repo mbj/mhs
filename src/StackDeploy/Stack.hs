@@ -69,7 +69,6 @@ perform = \case
 
     create :: InstanceSpec -> m RemoteOperationResult
     create instanceSpec@InstanceSpec{..} = do
-      void prepareSync
       token   <- newToken
       stackId <- accessStackId CF.csrsStackId =<< doCreate token
       waitFor RemoteOperation{..}
@@ -106,8 +105,7 @@ perform = \case
       -> m RemoteOperationResult
     update
       instanceSpec@InstanceSpec{..}
-      remoteOperation@RemoteOperation{..} = do
-        void prepareSync
+      remoteOperation@RemoteOperation{..} =
         catchIf isNoUpdateError
           (doUpdate >> waitFor remoteOperation)
           (const $ pure RemoteOperationSuccess)

@@ -28,34 +28,52 @@ newtype RoleARN = RoleARN Text
 type Provider = Provider.Provider InstanceSpec
 
 data InstanceSpec = InstanceSpec
-  { capabilities :: [CF.Capability]
-  , name         :: Name
-  , onSuccess    :: forall m r . (AWSConstraint r m, MonadAWS m) => m ()
-  , parameters   :: Parameters
-  , prepareSync  :: forall m r . (AWSConstraint r m, MonadAWS m) => m ()
-  , roleARN      :: Maybe RoleARN
-  , template     :: Template
+  { capabilities  :: [CF.Capability]
+  , envParameters :: forall m r . (AWSConstraint r m, MonadAWS m) => m Parameters
+  , envRoleARN    :: forall m r . (AWSConstraint r m, MonadAWS m) => Maybe (m RoleARN)
+  , name          :: Name
+  , onSuccess     :: forall m r . (AWSConstraint r m, MonadAWS m) => m ()
+  , parameters    :: Parameters
+  , roleARN       :: Maybe RoleARN
+  , template      :: Template
   }
 
 get
-  :: forall m . MonadIO m
+  :: forall m r . (AWSConstraint r m, MonadAWS m)
   => Provider
   -> Name
   -> Parameters
   -> m InstanceSpec
 get provider targetName userParameters = do
-  instanceSpec@InstanceSpec{..} <- Provider.get "instance-spec" name provider targetName
+  instanceSpec <- Provider.get "instance-spec" name provider targetName
+  env          <- envParameters instanceSpec
+  roleARN      <- tryEnvRole instanceSpec
 
   pure $ instanceSpec
-    { parameters = Parameters.union (Parameters.expandTemplate parameters template) userParameters
+    { parameters
+        =  expandedParameters instanceSpec
+        `union` env
+        `union` userParameters
+    , roleARN  = roleARN
     }
+
+  where
+    expandedParameters :: InstanceSpec -> Parameters
+    expandedParameters InstanceSpec{..} =
+      Parameters.expandTemplate parameters template
+
+    tryEnvRole :: InstanceSpec -> m (Maybe RoleARN)
+    tryEnvRole InstanceSpec{..} = maybe (pure roleARN) (pure <$>) envRoleARN
+
+    union = Parameters.union
 
 mk :: Name -> Template -> InstanceSpec
 mk name template = InstanceSpec
-  { capabilities = empty
-  , onSuccess    = pure ()
-  , parameters   = Parameters.empty
-  , prepareSync  = pure ()
-  , roleARN      = empty
+  { capabilities  = empty
+  , envParameters = pure Parameters.empty
+  , envRoleARN    = empty
+  , onSuccess     = pure ()
+  , parameters    = Parameters.empty
+  , roleARN       = empty
   , ..
   }
