@@ -1,4 +1,5 @@
-import MPrelude
+import Control.Applicative (pure)
+import Data.Function (($))
 import System.IO (IO)
 import Test.Tasty
 import Test.Tasty.MGolden
