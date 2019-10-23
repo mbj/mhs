@@ -1,0 +1,58 @@
+name:        devtools
+version:     0.0.0.1
+github:      mbj/devtools-hs
+description: Haskell development tooling
+license:     AllRightsReserved
+author:      Markus Schirp <mbj@schirp-dso.com>
+
+dependencies:
+- Diff               > 0.3 && < 0.5
+- base               > 4.12 && < 4.14
+- cmdargs            ^>= 0.10.20
+- bytestring         ^>= 0.10
+- filepath           ^>= 1.4
+- hlint              ^>= 2.1
+- source-constraints == 0.0.0.1
+- tasty              ^>= 1.2
+- tasty-mgolden      == 0.0.0.1
+- text               ^>= 1.2
+- typed-process      ^>= 0.2
+
+library:
+  source-dirs: src
+
+default-extensions:
+- DerivingStrategies
+- LambdaCase
+- NoImplicitPrelude
+- OverloadedStrings
+- RecordWildCards
+- StrictData
+
+ghc-options:
+- -Wall
+- -Wcompat
+- -Werror
+- -Widentities
+- -Wimplicit-prelude
+- -Wincomplete-record-updates
+- -Wincomplete-uni-patterns
+- -Wmissing-exported-signatures
+- -Wmissing-local-signatures
+- -Wmonomorphism-restriction
+- -Wredundant-constraints
+- -fplugin=SourceConstraints
+- -funbox-strict-fields
+
+executables:
+  devtools: &devtools
+    main:        app/Main.hs
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -with-rtsopts=-N
+    dependencies:
+    - devtools
+
+tests:
+  devtools-test: *devtools
