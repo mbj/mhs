@@ -1,16 +1,26 @@
 module Test.Tasty.MGolden where
 
+import Control.Applicative (empty, pure)
+import Control.Monad ((=<<))
+import Data.Bool (Bool)
 import Data.Char (Char)
+import Data.Eq (Eq, (==))
 import Data.Foldable (traverse_)
+import Data.Function (($), (.))
+import Data.Functor ((<$>))
+import Data.Maybe
+import Data.Ord (Ord)
 import Data.Proxy (Proxy(..))
+import Data.Semigroup ((<>))
+import Data.Text (Text)
 import Data.Typeable (Typeable)
-import MPrelude
 import System.FilePath (FilePath)
 import System.IO (IO)
 import Test.Tasty
 import Test.Tasty.ConsoleFormat
 import Test.Tasty.Options
 import Test.Tasty.Providers
+import Text.Show (Show)
 
 import qualified Data.Algorithm.Diff as Diff
 import qualified Data.Text           as Text

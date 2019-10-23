@@ -9,7 +9,6 @@ dependencies:
 - Diff               == 0.3.4
 - base               == 4.12.0.0
 - filepath           == 1.4.2.1
-- mprelude           == 0.0.0.1
 - source-constraints == 0.0.0.1
 - tasty              == 1.2.3
 - text               == 1.2.3.1
