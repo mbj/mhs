@@ -50,11 +50,11 @@ packages:
     git: https://github.com/mbj/devtools-hs
     pantry-tree:
       size: 615
-      sha256: 6f3fb712812f82792f1b15b750cb8b821eb481738a2b39d66c75872067a6179d
-    commit: a2219661a1853552edd3a50b30c243ca5c634f6e
+      sha256: 88b0abd3dbc6dd83d3a02fb5cccda251c5de805f1df66b86e12ad5fa5e873766
+    commit: fdf83fb9875b7ea2b0d0801cea0f269daea5ed4b
   original:
     git: https://github.com/mbj/devtools-hs
-    commit: a2219661a1853552edd3a50b30c243ca5c634f6e
+    commit: fdf83fb9875b7ea2b0d0801cea0f269daea5ed4b
 - completed:
     cabal-file:
       size: 2328

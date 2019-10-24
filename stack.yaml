@@ -10,7 +10,7 @@ extra-deps:
   subdirs:
   - amazonka-cloudformation
 - git: https://github.com/mbj/devtools-hs
-  commit: a2219661a1853552edd3a50b30c243ca5c634f6e
+  commit: fdf83fb9875b7ea2b0d0801cea0f269daea5ed4b
 - git: https://github.com/mbj/mprelude
   commit: 5708d9ce9b417362e0c79cbd7b48d892e7f7f32a
 - git: https://github.com/mbj/source-constraints
