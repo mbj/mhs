@@ -9,13 +9,13 @@ category:    CodeQuality
 github:      schirp-dso/source-constraints
 
 dependencies:
-- attoparsec ^>= 0.13.2.2
-- base       ^>= 4.12.0.0
-- bytestring ^>= 0.10.8.2
-- filepath   ^>= 1.4.2.1
-- ghc        ^>= 8.6.5
-- syb        ^>= 0.7.1
-- text       ^>= 1.2.3.1
+- attoparsec ^>= 0.13
+- base       ^>= 4.12
+- bytestring ^>= 0.10
+- filepath   ^>= 1.4
+- ghc        ^>= 8.6
+- syb        ^>= 0.7
+- text       ^>= 1.2
 
 extra-source-files:
 - test/LocalModuleExplicitImport.hs
@@ -55,12 +55,6 @@ library:
   - SourceConstraints.LocalModule
 
 tests:
-  hlint:
-    main:          HLint.hs
-    source-dirs:   test
-    other-modules: []
-    dependencies:
-    - hlint == 2.1.26
   hspec:
     main:          Spec.hs
     source-dirs:   test
@@ -74,3 +68,11 @@ tests:
     - heredoc            == 0.2.0.0
     - hspec              == 2.7.1
     - source-constraints
+  devtools:
+    main:          test/Devtools.hs
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -with-rtsopts=-N
+    dependencies:
+    - devtools
