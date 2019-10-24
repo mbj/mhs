@@ -1,7 +1,7 @@
 resolver: lts-14.11
 extra-deps:
 - git: https://github.com/mbj/devtools-hs
-  commit: a2219661a1853552edd3a50b30c243ca5c634f6e
+  commit: fdf83fb9875b7ea2b0d0801cea0f269daea5ed4b
 - git: https://github.com/mbj/tasty
   commit: 4f97799635560e5ce60d933f4a0feaa607ad10df
   subdirs:
