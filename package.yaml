@@ -77,9 +77,11 @@ library:
   - AWS.Lambda.Runtime.Zip
 
 tests:
-  hlint:
-    main:          HLint.hs
-    source-dirs:   test
-    other-modules: []
+  devtools:
+    main:          test/Devtools.hs
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -with-rtsopts=-N
     dependencies:
-    - hlint == 2.1.26
+    - devtools
