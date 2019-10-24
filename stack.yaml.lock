@@ -6,6 +6,20 @@
 packages:
 - completed:
     cabal-file:
+      size: 3419
+      sha256: 8110c03442f09e15a48bdad6f5b693a2d27fbd1170da50c17688c1c759bb8d49
+    name: devtools
+    version: 0.0.0.1
+    git: https://github.com/mbj/devtools-hs
+    pantry-tree:
+      size: 615
+      sha256: 88b0abd3dbc6dd83d3a02fb5cccda251c5de805f1df66b86e12ad5fa5e873766
+    commit: fdf83fb9875b7ea2b0d0801cea0f269daea5ed4b
+  original:
+    git: https://github.com/mbj/devtools-hs
+    commit: fdf83fb9875b7ea2b0d0801cea0f269daea5ed4b
+- completed:
+    cabal-file:
       size: 2328
       sha256: 0f00ab2ddc80c76ccd6806ef87c5f488b779f8d995abf631899c372349a77bb4
     name: mprelude
@@ -32,6 +46,36 @@ packages:
   original:
     git: https://github.com/mbj/source-constraints
     commit: 3eea6c0c3c4c66c39e1b68a5a27e74554395699d
+- completed:
+    subdir: core
+    cabal-file:
+      size: 2538
+      sha256: 47dca9c41c2887ff15c1c96651a7fd7e1b419e4272ab5964c1e20ee0a2ac29c8
+    name: tasty
+    version: 1.2.3
+    git: https://github.com/mbj/tasty
+    pantry-tree:
+      size: 1793
+      sha256: 312ba9392cf8690fe3794436afb36111783a1eca4b73435bc7debefee2ee5336
+    commit: 4f97799635560e5ce60d933f4a0feaa607ad10df
+  original:
+    subdir: core
+    git: https://github.com/mbj/tasty
+    commit: 4f97799635560e5ce60d933f4a0feaa607ad10df
+- completed:
+    cabal-file:
+      size: 2849
+      sha256: fcc5e6e7c250650880c12f07c96e88ca22b92cc88d81cb529703fa4ae973f033
+    name: tasty-mgolden
+    version: 0.0.0.1
+    git: https://github.com/mbj/tasty-mgolden
+    pantry-tree:
+      size: 489
+      sha256: 9bb766b04eec9f3de64b0a7a883cd1186e25826e571938b6ed724d3e45022172
+    commit: a2e538036e16aa6b002de7bf39392fa0a2d7c370
+  original:
+    git: https://github.com/mbj/tasty-mgolden
+    commit: a2e538036e16aa6b002de7bf39392fa0a2d7c370
 snapshots:
 - completed:
     size: 523700
