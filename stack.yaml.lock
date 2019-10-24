@@ -20,32 +20,32 @@ packages:
     commit: fdf83fb9875b7ea2b0d0801cea0f269daea5ed4b
 - completed:
     cabal-file:
-      size: 2328
-      sha256: 0f00ab2ddc80c76ccd6806ef87c5f488b779f8d995abf631899c372349a77bb4
+      size: 2372
+      sha256: 72cdb03d20aadb52dd832fad5f2591ca50f19a4068562bb38c0e93dfebb01969
     name: mprelude
     version: 0.0.0.1
     git: https://github.com/mbj/mprelude
     pantry-tree:
-      size: 368
-      sha256: 92c41a14e125f24d5a3afe02ed8c1ca9eef8ac76e9ff894f2f522888d9192019
-    commit: 6c2d455b341b323fd857809729092e442ae4dcd1
+      size: 439
+      sha256: bd6cd1ca61e83bbafe53392fe1cf578de95b5eb06cccccb57490fb801232e483
+    commit: 4b320792e3bbf8a6e2660d29466abfe3db865c7f
   original:
     git: https://github.com/mbj/mprelude
-    commit: 6c2d455b341b323fd857809729092e442ae4dcd1
+    commit: 4b320792e3bbf8a6e2660d29466abfe3db865c7f
 - completed:
     cabal-file:
-      size: 3339
-      sha256: 6e9eac89be5297683a9335262424a7e68452bf53b22ca94ebc731476346e758f
+      size: 3327
+      sha256: bec14e7228856e87765506edc2b4e41ceed0177ba817efbde292c98a9f15631e
     name: source-constraints
     version: 0.0.0.1
     git: https://github.com/mbj/source-constraints
     pantry-tree:
-      size: 914
-      sha256: a74730d61617df24560945f00faf769e6b68cf216a6cd048f660c583c4ae9b8f
-    commit: 3eea6c0c3c4c66c39e1b68a5a27e74554395699d
+      size: 1039
+      sha256: db2d5a0dd5a9b686e45734fa5c2c441bdb6cb2a4f3f33a5b00793b3d5884bb20
+    commit: d7678cfa96c98cf411cee5bf8aff9546fa2d31c1
   original:
     git: https://github.com/mbj/source-constraints
-    commit: 3eea6c0c3c4c66c39e1b68a5a27e74554395699d
+    commit: d7678cfa96c98cf411cee5bf8aff9546fa2d31c1
 - completed:
     subdir: core
     cabal-file:
@@ -78,7 +78,7 @@ packages:
     commit: a2e538036e16aa6b002de7bf39392fa0a2d7c370
 snapshots:
 - completed:
-    size: 523700
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/14/7.yaml
-    sha256: 8e3f3c894be74d71fa4bf085e0a8baae7e4d7622d07ea31a52736b80f8b9bb1a
-  original: lts-14.7
+    size: 524786
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/14/11.yaml
+    sha256: 088bb91b545839510a41ae92fa5feb36779ef3529571a42bd12b9f51eb89ded3
+  original: lts-14.11
