@@ -3,7 +3,7 @@ extra-deps:
 - git: https://github.com/mbj/devtools-hs
   commit: fdf83fb9875b7ea2b0d0801cea0f269daea5ed4b
 - git: https://github.com/mbj/tasty
-  commit: 4f97799635560e5ce60d933f4a0feaa607ad10df
+  commit: ff484ef812277ad27a9c9449b4597be30c845b13
   subdirs:
   - core
 - git: https://github.com/mbj/tasty-mgolden
