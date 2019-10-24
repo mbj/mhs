@@ -42,20 +42,20 @@ parseTemplate
     accepted :: [TestTree]
     accepted = mkAccepted <$>
       [ ("/",            Paths.Template empty)
-      , ("/1",           Paths.Template [static "1"])
-      , ("/__foo__",     Paths.Template [static "__foo__"])
-      , ("/foo",         Paths.Template [static "foo"])
-      , ("/foo/bar",     Paths.Template [static "foo", static "bar"])
-      , ("/foo/{bar}",   Paths.Template [static "foo", dynamic "bar"])
-      , ("/foo_bar",     Paths.Template [static "foo_bar"])
+      , ("/1",           Paths.Template [static' "1"])
+      , ("/__foo__",     Paths.Template [static' "__foo__"])
+      , ("/foo",         Paths.Template [static' "foo"])
+      , ("/foo/bar",     Paths.Template [static' "foo", static' "bar"])
+      , ("/foo/{bar}",   Paths.Template [static' "foo", dynamic "bar"])
+      , ("/foo_bar",     Paths.Template [static' "foo_bar"])
       , ("/{foo}",       Paths.Template [dynamic "foo"])
-      , ("/{foo}/bar",   Paths.Template [dynamic "foo", static "bar"])
+      , ("/{foo}/bar",   Paths.Template [dynamic "foo", static' "bar"])
       , ("/{foo}/{bar}", Paths.Template [dynamic "foo", dynamic "bar"])
       ]
 
     dynamic = Paths.Dynamic . Paths.ParameterName
 
-    static = Paths.Static
+    static' = Paths.Static
 
     rejected :: [TestTree]
     rejected = mkRejected' <$>

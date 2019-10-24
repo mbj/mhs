@@ -1,8 +1,14 @@
 resolver: lts-14.7
 extra-deps:
-- commit: 3eea6c0c3c4c66c39e1b68a5a27e74554395699d
-  git: https://github.com/schirp-dso/source-constraints
-- commit: 6c2d455b341b323fd857809729092e442ae4dcd1
-  git: https://github.com/mbj/mprelude
-packages:
-- .
+- git: https://github.com/mbj/devtools-hs
+  commit: fdf83fb9875b7ea2b0d0801cea0f269daea5ed4b
+- git: https://github.com/mbj/mprelude
+  commit: 6c2d455b341b323fd857809729092e442ae4dcd1
+- git: https://github.com/mbj/source-constraints
+  commit: 3eea6c0c3c4c66c39e1b68a5a27e74554395699d
+- git: https://github.com/mbj/tasty
+  commit: 4f97799635560e5ce60d933f4a0feaa607ad10df
+  subdirs:
+  - core
+- git: https://github.com/mbj/tasty-mgolden
+  commit: a2e538036e16aa6b002de7bf39392fa0a2d7c370
