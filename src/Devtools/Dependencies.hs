@@ -25,4 +25,4 @@ testTree =
     readDependencies :: IO LBS.ByteString
     readDependencies
       = Process.readProcessStdout_
-      $ Process.proc "stack" ["ls", "dependencies"]
+      $ Process.proc "stack" ["ls", "dependencies", "--test"]
