@@ -6,20 +6,6 @@
 packages:
 - completed:
     cabal-file:
-      size: 3339
-      sha256: 6e9eac89be5297683a9335262424a7e68452bf53b22ca94ebc731476346e758f
-    name: source-constraints
-    version: 0.0.0.1
-    git: https://github.com/schirp-dso/source-constraints
-    pantry-tree:
-      size: 914
-      sha256: a74730d61617df24560945f00faf769e6b68cf216a6cd048f660c583c4ae9b8f
-    commit: 3eea6c0c3c4c66c39e1b68a5a27e74554395699d
-  original:
-    git: https://github.com/schirp-dso/source-constraints
-    commit: 3eea6c0c3c4c66c39e1b68a5a27e74554395699d
-- completed:
-    cabal-file:
       size: 2328
       sha256: 0f00ab2ddc80c76ccd6806ef87c5f488b779f8d995abf631899c372349a77bb4
     name: mprelude
@@ -32,6 +18,20 @@ packages:
   original:
     git: https://github.com/mbj/mprelude
     commit: 6c2d455b341b323fd857809729092e442ae4dcd1
+- completed:
+    cabal-file:
+      size: 3339
+      sha256: 6e9eac89be5297683a9335262424a7e68452bf53b22ca94ebc731476346e758f
+    name: source-constraints
+    version: 0.0.0.1
+    git: https://github.com/mbj/source-constraints
+    pantry-tree:
+      size: 914
+      sha256: a74730d61617df24560945f00faf769e6b68cf216a6cd048f660c583c4ae9b8f
+    commit: 3eea6c0c3c4c66c39e1b68a5a27e74554395699d
+  original:
+    git: https://github.com/mbj/source-constraints
+    commit: 3eea6c0c3c4c66c39e1b68a5a27e74554395699d
 snapshots:
 - completed:
     size: 523700
