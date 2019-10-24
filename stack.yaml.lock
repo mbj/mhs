@@ -26,34 +26,6 @@ packages:
   original:
     hackage: amazonka-s3-1.6.1@sha256:9d07240fca59ad5197fb614ce3051e701e4951e6d4625a2dab4a9c17a1900194,6317
 - completed:
-    cabal-file:
-      size: 3339
-      sha256: 6e9eac89be5297683a9335262424a7e68452bf53b22ca94ebc731476346e758f
-    name: source-constraints
-    version: 0.0.0.1
-    git: https://github.com/schirp-dso/source-constraints
-    pantry-tree:
-      size: 914
-      sha256: a74730d61617df24560945f00faf769e6b68cf216a6cd048f660c583c4ae9b8f
-    commit: 3eea6c0c3c4c66c39e1b68a5a27e74554395699d
-  original:
-    git: https://github.com/schirp-dso/source-constraints
-    commit: 3eea6c0c3c4c66c39e1b68a5a27e74554395699d
-- completed:
-    cabal-file:
-      size: 2328
-      sha256: d0f169b9149e3b35fffad7892018955e1f6682bb2b50706b710329b18715e782
-    name: mprelude
-    version: 0.0.0.1
-    git: https://github.com/mbj/mprelude
-    pantry-tree:
-      size: 368
-      sha256: 392b5032a86e17560474ee34d7f1cf7b044cb8ac01114b75cc99ad41b5d6f624
-    commit: 5708d9ce9b417362e0c79cbd7b48d892e7f7f32a
-  original:
-    git: https://github.com/mbj/mprelude
-    commit: 5708d9ce9b417362e0c79cbd7b48d892e7f7f32a
-- completed:
     subdir: amazonka-cloudformation
     cabal-file:
       size: 5261
@@ -69,6 +41,34 @@ packages:
     subdir: amazonka-cloudformation
     git: https://github.com/mbj/amazonka
     commit: 33aa6b71309793829b534fb29f6532d71c32b106
+- completed:
+    cabal-file:
+      size: 2328
+      sha256: d0f169b9149e3b35fffad7892018955e1f6682bb2b50706b710329b18715e782
+    name: mprelude
+    version: 0.0.0.1
+    git: https://github.com/mbj/mprelude
+    pantry-tree:
+      size: 368
+      sha256: 392b5032a86e17560474ee34d7f1cf7b044cb8ac01114b75cc99ad41b5d6f624
+    commit: 5708d9ce9b417362e0c79cbd7b48d892e7f7f32a
+  original:
+    git: https://github.com/mbj/mprelude
+    commit: 5708d9ce9b417362e0c79cbd7b48d892e7f7f32a
+- completed:
+    cabal-file:
+      size: 3339
+      sha256: 6e9eac89be5297683a9335262424a7e68452bf53b22ca94ebc731476346e758f
+    name: source-constraints
+    version: 0.0.0.1
+    git: https://github.com/mbj/source-constraints
+    pantry-tree:
+      size: 914
+      sha256: a74730d61617df24560945f00faf769e6b68cf216a6cd048f660c583c4ae9b8f
+    commit: 3eea6c0c3c4c66c39e1b68a5a27e74554395699d
+  original:
+    git: https://github.com/mbj/source-constraints
+    commit: 3eea6c0c3c4c66c39e1b68a5a27e74554395699d
 snapshots:
 - completed:
     size: 523700
