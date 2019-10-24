@@ -55,12 +55,6 @@ library:
   - SourceConstraints.LocalModule
 
 tests:
-  hlint:
-    main:          HLint.hs
-    source-dirs:   test
-    other-modules: []
-    dependencies:
-    - hlint == 2.1.26
   hspec:
     main:          Spec.hs
     source-dirs:   test
@@ -74,3 +68,11 @@ tests:
     - heredoc            == 0.2.0.0
     - hspec              == 2.7.1
     - source-constraints
+  devtools:
+    main:          test/Devtools.hs
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -with-rtsopts=-N
+    dependencies:
+    - devtools

@@ -3,7 +3,51 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-packages: []
+packages:
+- completed:
+    cabal-file:
+      size: 3419
+      sha256: 8110c03442f09e15a48bdad6f5b693a2d27fbd1170da50c17688c1c759bb8d49
+    name: devtools
+    version: 0.0.0.1
+    git: https://github.com/mbj/devtools-hs
+    pantry-tree:
+      size: 615
+      sha256: 6f3fb712812f82792f1b15b750cb8b821eb481738a2b39d66c75872067a6179d
+    commit: a2219661a1853552edd3a50b30c243ca5c634f6e
+  original:
+    git: https://github.com/mbj/devtools-hs
+    commit: a2219661a1853552edd3a50b30c243ca5c634f6e
+- completed:
+    subdir: core
+    cabal-file:
+      size: 2538
+      sha256: 47dca9c41c2887ff15c1c96651a7fd7e1b419e4272ab5964c1e20ee0a2ac29c8
+    name: tasty
+    version: 1.2.3
+    git: https://github.com/mbj/tasty
+    pantry-tree:
+      size: 1793
+      sha256: 312ba9392cf8690fe3794436afb36111783a1eca4b73435bc7debefee2ee5336
+    commit: 4f97799635560e5ce60d933f4a0feaa607ad10df
+  original:
+    subdir: core
+    git: https://github.com/mbj/tasty
+    commit: 4f97799635560e5ce60d933f4a0feaa607ad10df
+- completed:
+    cabal-file:
+      size: 2849
+      sha256: fcc5e6e7c250650880c12f07c96e88ca22b92cc88d81cb529703fa4ae973f033
+    name: tasty-mgolden
+    version: 0.0.0.1
+    git: https://github.com/mbj/tasty-mgolden
+    pantry-tree:
+      size: 489
+      sha256: 9bb766b04eec9f3de64b0a7a883cd1186e25826e571938b6ed724d3e45022172
+    commit: a2e538036e16aa6b002de7bf39392fa0a2d7c370
+  original:
+    git: https://github.com/mbj/tasty-mgolden
+    commit: a2e538036e16aa6b002de7bf39392fa0a2d7c370
 snapshots:
 - completed:
     size: 523700
