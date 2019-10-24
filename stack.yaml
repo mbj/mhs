@@ -9,7 +9,15 @@ extra-deps:
   commit: 33aa6b71309793829b534fb29f6532d71c32b106
   subdirs:
   - amazonka-cloudformation
+- git: https://github.com/mbj/devtools-hs
+  commit: a2219661a1853552edd3a50b30c243ca5c634f6e
 - git: https://github.com/mbj/mprelude
   commit: 5708d9ce9b417362e0c79cbd7b48d892e7f7f32a
 - git: https://github.com/mbj/source-constraints
   commit: 3eea6c0c3c4c66c39e1b68a5a27e74554395699d
+- git: https://github.com/mbj/tasty
+  commit: 4f97799635560e5ce60d933f4a0feaa607ad10df
+  subdirs:
+  - core
+- git: https://github.com/mbj/tasty-mgolden
+  commit: a2e538036e16aa6b002de7bf39392fa0a2d7c370
