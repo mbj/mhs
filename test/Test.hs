@@ -1,5 +1,6 @@
 import Control.Applicative (pure)
 import Data.Function (($))
+import Data.String (String)
 import System.IO (IO)
 import Test.Tasty
 import Test.Tasty.MGolden
@@ -9,5 +10,8 @@ main = defaultMain tests
 
 tests :: TestTree
 tests = testGroup "mgolden tests"
-  [ goldenTest "test/expected/foo.txt" $ pure "foo\nbar\n"
+  [ goldenTest path path $ pure "foo\nbar\n"
   ]
+  where
+    path :: String
+    path = "test/expected/foo.txt"

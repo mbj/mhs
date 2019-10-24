@@ -12,6 +12,7 @@ import Data.Maybe
 import Data.Ord (Ord)
 import Data.Proxy (Proxy(..))
 import Data.Semigroup ((<>))
+import Data.String (String)
 import Data.Text (Text)
 import Data.Typeable (Typeable)
 import System.FilePath (FilePath)
@@ -51,8 +52,8 @@ instance IsTest Golden where
   run options golden _callback = runGolden golden options
   testOptions = pure . pure $ Option (Proxy :: Proxy Mode)
 
-goldenTest :: FilePath -> IO Text -> TestTree
-goldenTest expectedPath action = singleTest expectedPath Golden{..}
+goldenTest :: String -> FilePath -> IO Text -> TestTree
+goldenTest name expectedPath action = singleTest name Golden{..}
 
 runGolden :: Golden -> OptionSet -> IO Result
 runGolden golden@Golden{..} options = do
