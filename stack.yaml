@@ -1,4 +1,4 @@
-resolver: lts-14.7
+resolver: lts-14.11
 extra-deps:
 - git: https://github.com/mbj/devtools-hs
   commit: a2219661a1853552edd3a50b30c243ca5c634f6e
