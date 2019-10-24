@@ -26,34 +26,6 @@ packages:
   original:
     hackage: amazonka-s3-1.6.1@sha256:9d07240fca59ad5197fb614ce3051e701e4951e6d4625a2dab4a9c17a1900194,6317
 - completed:
-    cabal-file:
-      size: 3339
-      sha256: 6e9eac89be5297683a9335262424a7e68452bf53b22ca94ebc731476346e758f
-    name: source-constraints
-    version: 0.0.0.1
-    git: https://github.com/schirp-dso/source-constraints
-    pantry-tree:
-      size: 914
-      sha256: a74730d61617df24560945f00faf769e6b68cf216a6cd048f660c583c4ae9b8f
-    commit: 3eea6c0c3c4c66c39e1b68a5a27e74554395699d
-  original:
-    git: https://github.com/schirp-dso/source-constraints
-    commit: 3eea6c0c3c4c66c39e1b68a5a27e74554395699d
-- completed:
-    cabal-file:
-      size: 2328
-      sha256: d0f169b9149e3b35fffad7892018955e1f6682bb2b50706b710329b18715e782
-    name: mprelude
-    version: 0.0.0.1
-    git: https://github.com/mbj/mprelude
-    pantry-tree:
-      size: 368
-      sha256: 392b5032a86e17560474ee34d7f1cf7b044cb8ac01114b75cc99ad41b5d6f624
-    commit: 5708d9ce9b417362e0c79cbd7b48d892e7f7f32a
-  original:
-    git: https://github.com/mbj/mprelude
-    commit: 5708d9ce9b417362e0c79cbd7b48d892e7f7f32a
-- completed:
     subdir: amazonka-cloudformation
     cabal-file:
       size: 5261
@@ -69,9 +41,81 @@ packages:
     subdir: amazonka-cloudformation
     git: https://github.com/mbj/amazonka
     commit: 33aa6b71309793829b534fb29f6532d71c32b106
+- completed:
+    cabal-file:
+      size: 3419
+      sha256: 8110c03442f09e15a48bdad6f5b693a2d27fbd1170da50c17688c1c759bb8d49
+    name: devtools
+    version: 0.0.0.1
+    git: https://github.com/mbj/devtools-hs
+    pantry-tree:
+      size: 615
+      sha256: 6f3fb712812f82792f1b15b750cb8b821eb481738a2b39d66c75872067a6179d
+    commit: a2219661a1853552edd3a50b30c243ca5c634f6e
+  original:
+    git: https://github.com/mbj/devtools-hs
+    commit: a2219661a1853552edd3a50b30c243ca5c634f6e
+- completed:
+    cabal-file:
+      size: 2372
+      sha256: 72cdb03d20aadb52dd832fad5f2591ca50f19a4068562bb38c0e93dfebb01969
+    name: mprelude
+    version: 0.0.0.1
+    git: https://github.com/mbj/mprelude
+    pantry-tree:
+      size: 438
+      sha256: 2c21ba431e0dcfd678c1c1638c1072697bac64d5827661fb51acc573aab0b96b
+    commit: eaed192cc5409b229d2f1f240c9e95830733835e
+  original:
+    git: https://github.com/mbj/mprelude
+    commit: eaed192cc5409b229d2f1f240c9e95830733835e
+- completed:
+    cabal-file:
+      size: 3327
+      sha256: bec14e7228856e87765506edc2b4e41ceed0177ba817efbde292c98a9f15631e
+    name: source-constraints
+    version: 0.0.0.1
+    git: https://github.com/mbj/source-constraints
+    pantry-tree:
+      size: 1038
+      sha256: 12a0a22d6f9cf5ad9dc78a59801cd6b7a654d480e62267b17752a3cc104e8210
+    commit: e6969b00892eccefde830aa4a5ab68a472f682b3
+  original:
+    git: https://github.com/mbj/source-constraints
+    commit: e6969b00892eccefde830aa4a5ab68a472f682b3
+- completed:
+    subdir: core
+    cabal-file:
+      size: 2538
+      sha256: 47dca9c41c2887ff15c1c96651a7fd7e1b419e4272ab5964c1e20ee0a2ac29c8
+    name: tasty
+    version: 1.2.3
+    git: https://github.com/mbj/tasty
+    pantry-tree:
+      size: 1793
+      sha256: 312ba9392cf8690fe3794436afb36111783a1eca4b73435bc7debefee2ee5336
+    commit: 4f97799635560e5ce60d933f4a0feaa607ad10df
+  original:
+    subdir: core
+    git: https://github.com/mbj/tasty
+    commit: 4f97799635560e5ce60d933f4a0feaa607ad10df
+- completed:
+    cabal-file:
+      size: 2849
+      sha256: fcc5e6e7c250650880c12f07c96e88ca22b92cc88d81cb529703fa4ae973f033
+    name: tasty-mgolden
+    version: 0.0.0.1
+    git: https://github.com/mbj/tasty-mgolden
+    pantry-tree:
+      size: 489
+      sha256: 9bb766b04eec9f3de64b0a7a883cd1186e25826e571938b6ed724d3e45022172
+    commit: a2e538036e16aa6b002de7bf39392fa0a2d7c370
+  original:
+    git: https://github.com/mbj/tasty-mgolden
+    commit: a2e538036e16aa6b002de7bf39392fa0a2d7c370
 snapshots:
 - completed:
-    size: 523700
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/14/7.yaml
-    sha256: 8e3f3c894be74d71fa4bf085e0a8baae7e4d7622d07ea31a52736b80f8b9bb1a
-  original: lts-14.7
+    size: 524786
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/14/11.yaml
+    sha256: 088bb91b545839510a41ae92fa5feb36779ef3529571a42bd12b9f51eb89ded3
+  original: lts-14.11
