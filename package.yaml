@@ -8,21 +8,21 @@ copyright:   2019 Markus Schirp
 github:      mbj/openapi
 
 dependencies:
-- aeson                == 1.4.5.0
-- attoparsec           == 0.13.2.3
-- base                 == 4.12.0.0
-- bytestring           == 0.10.8.2
-- conduit              == 1.3.1.1
-- containers           == 0.6.0.1
-- exceptions           == 0.10.3
-- filepath             == 1.4.2.1
-- ghc                  == 8.6.5
-- http-types           == 0.12.3
+- aeson                ^>= 1.4
+- attoparsec           ^>= 0.13
+- base                 ^>= 4.12
+- bytestring           ^>= 0.10
+- conduit              ^>= 1.3
+- containers           ^>= 0.6
+- exceptions           ^>= 0.10
+- filepath             ^>= 1.4
+- ghc                  ^>= 8.6
+- http-types           ^>= 0.12
 - mprelude             == 0.0.0.1
 - source-constraints   == 0.0.0.1
-- text                 == 1.2.3.1
-- text-conversions     == 0.3.0
-- unordered-containers == 0.2.10.0
+- text                 ^>= 1.2
+- text-conversions     ^>= 0.3
+- unordered-containers ^>= 0.2
 
 extra-source-files: []
 
