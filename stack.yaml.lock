@@ -10,13 +10,13 @@ packages:
       sha256: 010238a2f12f32219cbfbd7212e93bbd563a55fa296f919b6a064b9c4a1b9387
     name: source-constraints
     version: 0.0.0.1
-    git: https://github.com/schirp-dso/source-constraints
+    git: https://github.com/mbj/source-constraints
     pantry-tree:
       size: 914
       sha256: 985afb0f7d3a4af281e97045023e44f8b6b1a9cdc6faa9c4e5edb4dbd1e52fe5
     commit: 1dc085107022055fca0aece8f63eb8fd73e9c1ec
   original:
-    git: https://github.com/schirp-dso/source-constraints
+    git: https://github.com/mbj/source-constraints
     commit: 1dc085107022055fca0aece8f63eb8fd73e9c1ec
 snapshots:
 - completed:

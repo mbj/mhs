@@ -1,4 +1,4 @@
 resolver: lts-14.7
 extra-deps:
-- commit: 1dc085107022055fca0aece8f63eb8fd73e9c1ec
-  git: https://github.com/schirp-dso/source-constraints
+- git: https://github.com/mbj/source-constraints
+  commit: 1dc085107022055fca0aece8f63eb8fd73e9c1ec
