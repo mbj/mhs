@@ -5,7 +5,7 @@ extra-deps:
 - git: https://github.com/mbj/mprelude
   commit: 1fefadb9172a5b08b98180aab2bd669724c74287
 - git: https://github.com/mbj/source-constraints
-  commit: d7678cfa96c98cf411cee5bf8aff9546fa2d31c1
+  commit: 75ba67ba7a8853db3c2ca22c5db10dbe883e1dae
 - git: https://github.com/mbj/tasty
   commit: 4f97799635560e5ce60d933f4a0feaa607ad10df
   subdirs:
