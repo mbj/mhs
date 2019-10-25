@@ -1,7 +1,7 @@
 resolver: lts-14.11
 extra-deps:
 - git: https://github.com/mbj/devtools-hs
-  commit: fdf83fb9875b7ea2b0d0801cea0f269daea5ed4b
+  commit: 2dabd175a4ea86dee89f79f56ffaea66db3f3a62
 - git: https://github.com/mbj/mprelude
   commit: 4b320792e3bbf8a6e2660d29466abfe3db865c7f
 - git: https://github.com/mbj/source-constraints
