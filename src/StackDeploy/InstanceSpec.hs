@@ -5,6 +5,7 @@ module StackDeploy.InstanceSpec
   , RoleARN(..)
   , get
   , mk
+  , templateProvider
   )
 where
 
@@ -16,6 +17,7 @@ import StackDeploy.Template (Template)
 import qualified Network.AWS.CloudFormation.Types as CF
 import qualified StackDeploy.Parameters           as Parameters
 import qualified StackDeploy.Provider             as Provider
+import qualified StackDeploy.Template             as Template
 
 newtype Name = Name Text
   deriving newtype ToText
@@ -77,3 +79,6 @@ mk name template = InstanceSpec
   , roleARN       = empty
   , ..
   }
+
+templateProvider :: Provider -> Template.Provider
+templateProvider provider = template <$> provider
