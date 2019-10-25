@@ -33,10 +33,9 @@ import qualified StackDeploy.Template                           as Template
 
 parserInfo
   :: forall m r . (AWSConstraint r m, MonadAWS m)
-  => Template.Provider
-  -> InstanceSpec.Provider
+  => InstanceSpec.Provider
   -> ParserInfo (m ExitCode)
-parserInfo templateProvider instanceSpecProvider = wrapHelper commands "stack commands"
+parserInfo instanceSpecProvider = wrapHelper commands "stack commands"
   where
     commands :: Parser (m ExitCode)
     commands = hsubparser
@@ -168,6 +167,8 @@ parserInfo templateProvider instanceSpecProvider = wrapHelper commands "stack co
     exitCode = \case
       RemoteOperationSuccess -> success
       RemoteOperationFailure -> pure $ ExitFailure 1
+
+    templateProvider = InstanceSpec.templateProvider instanceSpecProvider
 
 parameter :: Parser Parameter
 parameter = option
