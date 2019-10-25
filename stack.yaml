@@ -5,7 +5,7 @@ extra-deps:
 - git: https://github.com/mbj/source-constraints
   commit: 75ba67ba7a8853db3c2ca22c5db10dbe883e1dae
 - git: https://github.com/mbj/tasty
-  commit: 4f97799635560e5ce60d933f4a0feaa607ad10df
+  commit: ff484ef812277ad27a9c9449b4597be30c845b13
   subdirs:
   - core
 - git: https://github.com/mbj/tasty-mgolden
