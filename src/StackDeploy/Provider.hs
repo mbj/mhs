@@ -1,12 +1,32 @@
-module StackDeploy.Provider (Get, Provider, get) where
+module StackDeploy.Provider (Get, HasName(..), Name, Provider, get, mkName) where
 
 import Control.Exception.Base (Exception)
 import Control.Monad.Catch (MonadThrow, throwM)
+import Data.HashMap.Strict (HashMap)
+import Data.Hashable (Hashable)
 import StackDeploy.Prelude
 
-import qualified Data.Foldable as Foldable
+import qualified Data.HashMap.Strict as HashMap
+import qualified Data.List           as List
 
-type Provider a = [a]
+newtype Name a = Name Text
+  deriving newtype (Hashable, ToText)
+  deriving stock   (Eq, Ord)
+
+newtype Provider a = Provider (HashMap (Name a) a)
+
+class HasName a where
+  name :: a -> Name a
+
+instance HasName a => IsList (Provider a) where
+  type Item (Provider a) = a
+
+  fromList items = Provider $ HashMap.fromList (mkPair <$> items)
+    where
+      mkPair :: a -> (Name a, a)
+      mkPair item = (name item, item)
+
+  toList (Provider map) = List.sortOn name $ HashMap.elems map
 
 type Get a b = forall m . MonadThrow m => Provider a -> b -> m a
 
@@ -16,17 +36,19 @@ newtype MissingProviderItem = MissingProviderItem Text
 instance Exception MissingProviderItem
 
 get
-  :: forall a b m . (Eq b, MonadThrow m, ToText b)
+  :: forall a m . (MonadThrow m)
   => Text
-  -> (a -> b)
   -> Provider a
-  -> b
+  -> Name a
   -> m a
-get subject accessor provider target
-  = maybe failMissing pure $ Foldable.find ((==) target . accessor) provider
+get subject (Provider map) targetName
+  = maybe failMissing pure $ HashMap.lookup targetName map
   where
     failMissing :: m a
     failMissing
       = throwM
       . MissingProviderItem
-      $ "Unknown " <> subject <> ": " <> toText target
+      $ "Unknown " <> subject <> ": " <> toText targetName
+
+mkName :: Text -> Name a
+mkName = Name

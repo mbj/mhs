@@ -28,7 +28,6 @@ import qualified Network.AWS.CloudFormation.CancelUpdateStack   as CF
 import qualified Network.AWS.CloudFormation.DescribeStackEvents as CF
 import qualified Network.AWS.CloudFormation.Types               as CF
 import qualified StackDeploy.InstanceSpec                       as InstanceSpec
-import qualified StackDeploy.Parameters                         as Parameters
 import qualified StackDeploy.Template                           as Template
 
 parserInfo
@@ -123,14 +122,14 @@ parserInfo instanceSpecProvider = wrapHelper commands "stack commands"
     listTemplates = do
       Foldable.mapM_
         (liftIO . Text.putStrLn . toText . Template.name)
-        templateProvider
+        (toList templateProvider)
       success
 
     listSpecs :: m ExitCode
     listSpecs = do
       Foldable.mapM_
         (liftIO . Text.putStrLn . toText . InstanceSpec.name)
-        instanceSpecProvider
+        (toList instanceSpecProvider)
       success
 
     events :: InstanceSpec.Name -> m ExitCode
@@ -191,10 +190,10 @@ parameterReader = eitherReader (Text.parseOnly parser . convertText)
       char -> Char.isDigit char || Char.isAlpha char
 
 stackName :: Parser InstanceSpec.Name
-stackName = InstanceSpec.Name <$> argument str (metavar "STACK")
+stackName = InstanceSpec.mkName <$> argument str (metavar "STACK")
 
 templateName :: Parser Template.Name
-templateName = Template.Name <$> argument str (metavar "TEMPLATE")
+templateName = Template.mkName <$> argument str (metavar "TEMPLATE")
 
 parameters :: Parser Parameters
-parameters = Parameters.fromList <$> many parameter
+parameters = fromList <$> many parameter

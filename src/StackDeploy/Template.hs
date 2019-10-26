@@ -1,11 +1,13 @@
 module StackDeploy.Template
-  ( Name(..)
+  ( Name
   , Provider
   , Template(..)
   , encode
   , get
   , mk
-  ) where
+  , mkName
+  )
+where
 
 import Control.Monad.Catch (MonadThrow)
 import Data.ByteString.Lazy (ByteString)
@@ -16,14 +18,15 @@ import qualified Data.Aeson.Encode.Pretty as Pretty
 import qualified StackDeploy.Provider     as Provider
 import qualified Stratosphere
 
-newtype Name = Name Text
-  deriving newtype ToText
-  deriving stock   Eq
+type Name = Provider.Name Template
 
 data Template = Template
   { name         :: Name
   , stratosphere :: Stratosphere.Template
   }
+
+instance Provider.HasName Template where
+  name = name
 
 type Provider = Provider.Provider Template
 
@@ -37,7 +40,10 @@ encode = Pretty.encodePretty' config . stratosphere
       }
 
 get :: MonadThrow m => Provider -> Name -> m Template
-get = Provider.get "template" name
+get = Provider.get "template"
 
 mk :: Name -> Stratosphere.Template -> Template
 mk = Template
+
+mkName :: Text -> Name
+mkName = Provider.mkName

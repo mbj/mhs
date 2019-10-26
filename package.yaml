@@ -66,6 +66,7 @@ default-extensions:
 - RecordWildCards
 - ScopedTypeVariables
 - Strict
+- TypeFamilies
 
 library:
   source-dirs:
@@ -74,6 +75,7 @@ library:
   - StackDeploy.CLI
   - StackDeploy.InstanceSpec
   - StackDeploy.Parameters
+  - StackDeploy.Provider
   - StackDeploy.Stack
   - StackDeploy.Template
   - StackDeploy.Template.Code

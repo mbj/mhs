@@ -256,7 +256,7 @@ getOutput name key = do
 
 stackNames :: (AWSConstraint r m, MonadAWS m) => ConduitT () InstanceSpec.Name m ()
 stackNames =
-  listResource CF.describeStacks CF.dsrsStacks .| map (InstanceSpec.Name . view CF.sStackName)
+  listResource CF.describeStacks CF.dsrsStacks .| map (InstanceSpec.mkName . view CF.sStackName)
 
 configureStack
   :: OperationFields a
