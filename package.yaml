@@ -1,0 +1,76 @@
+name:        dbt
+version:     0.0.0.1
+synopsis:    A database toolkit
+homepage:    https://github.com/mbj/dbt
+author:      Markus Schirp
+maintainer:  mbj@schirp-dso.com
+copyright:   2019 Markus Schirp
+github:      mbj/dbt
+
+dependencies:
+- base                 ^>= 4.12
+- bytestring           ^>= 0.10
+- cryptonite           ^>= 0.25
+- mprelude             == 0.0.0.1
+- optparse-applicative ^>= 0.14
+- pathtype             ^>= 0.8
+- source-constraints   == 0.0.0.1
+- template-haskell     ^>= 2.14
+- text                 ^>= 1.2
+- th-lift-instances    ^>= 0.1
+- typed-process        ^>= 0.2
+
+ghc-options:
+- -Wall
+- -Wcompat
+- -Werror
+- -Widentities
+- -Wimplicit-prelude
+- -Wincomplete-record-updates
+- -Wincomplete-uni-patterns
+- -Wmissing-exported-signatures
+- -Wmissing-local-signatures
+- -Wmonomorphism-restriction
+- -Wredundant-constraints
+- -fplugin=SourceConstraints
+- -funbox-strict-fields
+
+default-extensions:
+- CPP
+- DerivingStrategies
+- DuplicateRecordFields
+- GeneralizedNewtypeDeriving
+- LambdaCase
+- NoImplicitPrelude
+- NumericUnderscores
+- OverloadedLists
+- OverloadedStrings
+- RecordWildCards
+- ScopedTypeVariables
+- StrictData
+- TemplateHaskell
+
+library:
+  source-dirs: src
+
+executables:
+  dbt:
+    main: app/Main.hs
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -with-rtsopts=-N
+    dependencies: dbt
+
+tests:
+  devtools:
+    main: test/Test.hs
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -with-rtsopts=-N
+    dependencies:
+    - dbt
+    - devtools
+    - tasty
+    - tasty-hunit
