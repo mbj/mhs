@@ -6,7 +6,6 @@ module StackDeploy.Parameters
   , cfParameters
   , empty
   , expandTemplate
-  , fromList
   , fromStratosphereParameter
   , union
   )
@@ -23,6 +22,7 @@ import StackDeploy.Template
 import qualified Control.Applicative              as Alternative
 import qualified Data.Foldable                    as Foldable
 import qualified Data.HashMap.Strict              as HashMap
+import qualified Data.List                        as List
 import qualified Data.Set                         as Set
 import qualified Network.AWS.CloudFormation.Types as CF
 import qualified Stratosphere
@@ -59,18 +59,22 @@ fromStratosphereParameter stratosphereParameter = Parameter name
       = ParameterName
       $ view Stratosphere.parameterName stratosphereParameter
 
-fromList :: [Parameter] -> Parameters
-fromList parameters =
-  Parameters . HashMap.fromList $ pairs
-  where
-    pairs :: [(ParameterName, Parameter)]
-    pairs = mkPair <$> parameters
+instance IsList Parameters where
+  type Item Parameters = Parameter
 
-    mkPair :: Parameter -> (ParameterName, Parameter)
-    mkPair parameter = (parameterName parameter, parameter)
+  fromList parameters =
+    Parameters . HashMap.fromList $ pairs
+    where
+      pairs :: [(ParameterName, Parameter)]
+      pairs = mkPair <$> parameters
+
+      mkPair :: Parameter -> (ParameterName, Parameter)
+      mkPair parameter = (parameterName parameter, parameter)
+
+  toList (Parameters map) = List.sortOn parameterName $ HashMap.elems map
 
 cfParameters :: Parameters -> [CF.Parameter]
-cfParameters (Parameters hash) = mkCFParameter <$> HashMap.elems hash
+cfParameters parameters = mkCFParameter <$> toList parameters
 
 mkCFParameter :: Parameter -> CF.Parameter
 mkCFParameter = \case

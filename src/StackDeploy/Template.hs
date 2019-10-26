@@ -1,34 +1,42 @@
 module StackDeploy.Template
-  ( Name(..)
+  ( Name
   , Provider
   , Template(..)
   , encode
   , get
   , mk
-  ) where
+  , mkName
+  , testTree
+  )
+where
 
 import Control.Monad.Catch (MonadThrow)
-import Data.ByteString.Lazy (ByteString)
 import Data.Ord (compare)
 import StackDeploy.Prelude
+import System.FilePath ((<.>), (</>))
 
 import qualified Data.Aeson.Encode.Pretty as Pretty
+import qualified Data.ByteString.Lazy     as LBS
+import qualified Data.Text.Encoding       as Text
 import qualified StackDeploy.Provider     as Provider
 import qualified Stratosphere
+import qualified Test.Tasty               as Tasty
+import qualified Test.Tasty.MGolden       as Tasty
 
-newtype Name = Name Text
-  deriving newtype ToText
-  deriving stock   Eq
+type Name = Provider.Name Template
 
 data Template = Template
   { name         :: Name
   , stratosphere :: Stratosphere.Template
   }
 
+instance Provider.HasName Template where
+  name = name
+
 type Provider = Provider.Provider Template
 
 -- | Pretty print a template using aeson-pretty.
-encode :: Template -> ByteString
+encode :: Template -> LBS.ByteString
 encode = Pretty.encodePretty' config . stratosphere
   where
     config = Pretty.defConfig
@@ -37,7 +45,23 @@ encode = Pretty.encodePretty' config . stratosphere
       }
 
 get :: MonadThrow m => Provider -> Name -> m Template
-get = Provider.get "template" name
+get = Provider.get "template"
 
 mk :: Name -> Stratosphere.Template -> Template
 mk = Template
+
+mkName :: Text -> Name
+mkName = Provider.mkName
+
+testTree :: Provider -> Tasty.TestTree
+testTree provider
+  = Tasty.testGroup "template" (templateTest <$> toList provider)
+
+templateTest :: Template -> Tasty.TestTree
+templateTest template@Template{..} =
+  Tasty.goldenTest
+    (convertText name)
+    expectedPath
+    (pure . Text.decodeUtf8 . LBS.toStrict $ encode template)
+  where
+    expectedPath = "test" </> "template" </> convertText name <.> ".json"

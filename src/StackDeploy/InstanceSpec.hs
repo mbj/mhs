@@ -1,10 +1,11 @@
 module StackDeploy.InstanceSpec
   ( InstanceSpec(..)
-  , Name(..)
+  , Name
   , Provider
   , RoleARN(..)
   , get
   , mk
+  , mkName
   , templateProvider
   )
 where
@@ -19,13 +20,11 @@ import qualified StackDeploy.Parameters           as Parameters
 import qualified StackDeploy.Provider             as Provider
 import qualified StackDeploy.Template             as Template
 
-newtype Name = Name Text
-  deriving newtype ToText
-  deriving stock   Eq
-
 newtype RoleARN = RoleARN Text
   deriving newtype ToText
   deriving stock   Eq
+
+type Name = Provider.Name InstanceSpec
 
 type Provider = Provider.Provider InstanceSpec
 
@@ -40,6 +39,9 @@ data InstanceSpec = InstanceSpec
   , template      :: Template
   }
 
+instance Provider.HasName InstanceSpec where
+  name = name
+
 get
   :: forall m r . (AWSConstraint r m, MonadAWS m)
   => Provider
@@ -47,7 +49,7 @@ get
   -> Parameters
   -> m InstanceSpec
 get provider targetName userParameters = do
-  instanceSpec <- Provider.get "instance-spec" name provider targetName
+  instanceSpec <- Provider.get "instance-spec" provider targetName
   env          <- envParameters instanceSpec
   roleARN      <- tryEnvRole instanceSpec
 
@@ -80,5 +82,8 @@ mk name template = InstanceSpec
   , ..
   }
 
+mkName :: Text -> Name
+mkName = Provider.mkName
+
 templateProvider :: Provider -> Template.Provider
-templateProvider provider = template <$> provider
+templateProvider provider = fromList $ template <$> toList provider
