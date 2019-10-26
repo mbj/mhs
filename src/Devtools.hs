@@ -1,4 +1,4 @@
-module Devtools (main, tests) where
+module Devtools (main, testTree) where
 
 import Control.Applicative (empty)
 import System.IO (IO, putStrLn)
@@ -10,10 +10,10 @@ import qualified Test.Tasty            as Tasty
 main :: IO ()
 main = do
   putStrLn empty
-  Tasty.defaultMain tests
+  Tasty.defaultMain testTree
 
-tests :: Tasty.TestTree
-tests = Tasty.testGroup "devtools"
+testTree :: Tasty.TestTree
+testTree = Tasty.testGroup "devtools"
   [ Dependencies.testTree
   , HLint.testTree
   ]
