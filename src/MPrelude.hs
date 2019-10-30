@@ -86,6 +86,10 @@ import Data.Semigroup as Exports
   , (<>)
   )
 
+import Data.String as Exports
+  ( String
+  )
+
 import Data.Text as Exports
   ( Text
   )
