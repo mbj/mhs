@@ -86,6 +86,10 @@ import Data.Semigroup as Exports
   , (<>)
   )
 
+import Data.String as Exports
+  ( String
+  )
+
 import Data.Text as Exports
   ( Text
   )
@@ -98,6 +102,10 @@ import Data.Text.Conversions as Exports
 
 import Data.Tuple as Exports
   ( uncurry
+  )
+
+import System.IO as Exports
+  ( IO
   )
 
 import Text.Show as Exports
