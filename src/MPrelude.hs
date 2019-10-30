@@ -68,6 +68,11 @@ import Data.Maybe as Exports
   , maybe
   )
 
+import Data.Monoid as Exports
+  ( Monoid
+  , mempty
+  )
+
 import Data.Ord as Exports
   ( Ord
   , (<)
