@@ -104,6 +104,10 @@ import Data.Tuple as Exports
   ( uncurry
   )
 
+import System.IO as Exports
+  ( IO
+  )
+
 import Text.Show as Exports
   ( Show
   , show
