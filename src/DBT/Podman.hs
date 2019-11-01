@@ -49,7 +49,7 @@ run arguments =
 
 start :: MonadIO m => Detach -> [String] -> m ()
 start detach arguments = do
-  void $ getImage
+  void getImage
   Process.runProcess_ $
     Process.proc "podman" $ podmanArguments detach <>
       [ "setuidgid"

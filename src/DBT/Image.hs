@@ -1,6 +1,7 @@
-module DBT.Image (ImageName(..), imageName, testImageExists) where
+module DBT.Image (ImageName(..), hbaSource, imageName, testImageExists) where
 
 import DBT.Prelude
+import Data.ByteString (ByteString)
 
 import qualified Crypto.Hash          as Hash
 import qualified DBT.TH               as TH
@@ -24,7 +25,11 @@ imageName
 #ifndef __HLINT__
   where
     buildSource = $$(TH.readFile $ Path.file "src/DBT/Build.hs")
-    hbaSource   = $$(TH.readFile $ Path.file "pg_hba.conf")
+#endif
+
+#ifndef __HLINT__
+hbaSource :: ByteString
+hbaSource = $$(TH.readFile $ Path.file "pg_hba.conf")
 #endif
 
 testImageExists :: MonadIO m => m Bool
