@@ -1,6 +1,6 @@
 module DBT.Path
   ( pgData
-  , pgHBAAbs
+  , pgHBAConfAbs
   , pgHome
   , pgMasterPasswordAbs
   )
@@ -11,11 +11,8 @@ import System.Path
 pgData :: AbsDir
 pgData = pgHome </> relDir "data"
 
-pgHBAAbs :: AbsFile
-pgHBAAbs = pgData </> pgHBARel
-
-pgHBARel :: RelFile
-pgHBARel = relFile "pg_hba.conf"
+pgHBAConfAbs :: AbsFile
+pgHBAConfAbs = pgData </> file "pg_hba.conf"
 
 pgHome :: AbsDir
 pgHome = absDir "/var/lib/postgresql"

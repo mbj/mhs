@@ -48,7 +48,8 @@ run arguments =
     podmanArguments Foreground <> arguments
 
 start :: MonadIO m => Detach -> [String] -> m ()
-start detach arguments =
+start detach arguments = do
+  void getImage
   Process.runProcess_ $
     Process.proc "podman" $ podmanArguments detach <>
       [ "setuidgid"

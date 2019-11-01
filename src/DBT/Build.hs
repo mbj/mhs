@@ -6,6 +6,7 @@ import DBT.Prelude
 import DBT.Process
 
 import qualified DBT.Postgresql       as Postgresql
+import qualified Data.ByteString.Lazy as LBS
 import qualified System.Path          as Path
 import qualified System.Process.Typed as Process
 
@@ -87,14 +88,18 @@ populateContainer containerName = do
     configureHBA :: m ()
     configureHBA
       = Process.runProcess_
+      $ Process.setStdin (Process.byteStringInput $ LBS.fromStrict hbaSource)
       $ Process.proc
         "buildah"
-        [ "add"
-        , "--chown"
-        , "postgres:postgres"
+        [ "run"
         , convertText containerName
-        , "pg_hba.conf"
-        , "/var/lib/postgresql/data/pg_hba.conf"
+        , "--"
+        , "install"
+        , "-o", "postgres"
+        , "-g", "postgres"
+        , "-m", "0400"
+        , "/dev/stdin"
+        , Path.toString pgHBAConfAbs
         ]
 
     runContainerPostgres :: [String] -> m ()
