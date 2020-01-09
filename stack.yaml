@@ -1,4 +1,4 @@
-resolver: lts-14.14
+resolver: lts-14.20
 extra-deps:
 - git: https://github.com/mbj/mprelude
   commit: 1fefadb9172a5b08b98180aab2bd669724c74287
