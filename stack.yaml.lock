@@ -86,19 +86,19 @@ packages:
 - completed:
     subdir: core
     cabal-file:
-      size: 2538
-      sha256: 47dca9c41c2887ff15c1c96651a7fd7e1b419e4272ab5964c1e20ee0a2ac29c8
+      size: 2530
+      sha256: 60beb276bf10755318a258ef6b5f43733dff520cf790e11216c83703d5d826b6
     name: tasty
     version: 1.2.3
     git: https://github.com/mbj/tasty
     pantry-tree:
       size: 1793
-      sha256: 312ba9392cf8690fe3794436afb36111783a1eca4b73435bc7debefee2ee5336
-    commit: 4f97799635560e5ce60d933f4a0feaa607ad10df
+      sha256: 60bd79f25631f11cf3ae92f3098332efbded183c3cb62af5950e204f4357856e
+    commit: ff484ef812277ad27a9c9449b4597be30c845b13
   original:
     subdir: core
     git: https://github.com/mbj/tasty
-    commit: 4f97799635560e5ce60d933f4a0feaa607ad10df
+    commit: ff484ef812277ad27a9c9449b4597be30c845b13
 - completed:
     cabal-file:
       size: 2849
@@ -115,7 +115,7 @@ packages:
     commit: a2e538036e16aa6b002de7bf39392fa0a2d7c370
 snapshots:
 - completed:
-    size: 524786
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/14/11.yaml
-    sha256: 088bb91b545839510a41ae92fa5feb36779ef3529571a42bd12b9f51eb89ded3
-  original: lts-14.11
+    size: 524154
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/14/20.yaml
+    sha256: 2f5099f69ddb6abfe64400fe1e6a604e8e628f55e6837211cd70a81eb0a8fa4d
+  original: lts-14.20

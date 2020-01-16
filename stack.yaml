@@ -1,6 +1,6 @@
 build:
   haddock: false
-resolver: lts-14.11
+resolver: lts-14.20
 extra-deps:
 - amazonka-1.6.1@sha256:d863557379350ed6bbb91187abeb8c349a654f60b140d138710486f58ae7c476,3536
 - amazonka-core-1.6.1@sha256:9bc59ce403c6eeba3b3eaf3f10e5f0b6a33b6edbbf8f6de0dd6f4c67b86fa698,5135
@@ -16,7 +16,7 @@ extra-deps:
 - git: https://github.com/mbj/source-constraints
   commit: e6969b00892eccefde830aa4a5ab68a472f682b3
 - git: https://github.com/mbj/tasty
-  commit: 4f97799635560e5ce60d933f4a0feaa607ad10df
+  commit: ff484ef812277ad27a9c9449b4597be30c845b13
   subdirs:
   - core
 - git: https://github.com/mbj/tasty-mgolden
