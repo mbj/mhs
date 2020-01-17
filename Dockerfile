@@ -1,4 +1,4 @@
-FROM alpine:3.9
+FROM alpine:3.11
 
 # Setup for userns mapped single user
 RUN echo $'build:x:0:0:build:/opt/build:/bin/ash\n\
@@ -27,16 +27,18 @@ RUN apk add                       \
   --no-cache                      \
   --                              \
   cache-s3=0.1.5-r0               \
-  curl=7.64.0-r2                  \
+  curl=7.67.0-r0                  \
   ghc=8.6.5-r0                    \
-  git=2.20.1-r0                   \
+  git=2.24.1-r0                   \
   make=4.2.1-r2                   \
-  musl-dev=1.1.20-r5              \
-  ncurses-dev=6.1_p20190105-r0    \
-  ncurses-static=6.1_p20190105-r0 \
+  musl-dev=1.1.24-r0              \
+  ncurses-dev=6.1_p20191130-r0    \
+  ncurses-static=6.1_p20191130-r0 \
   stack=1.9.3-r0                  \
   xz=5.2.4-r0                     \
-  zlib-dev=1.2.11-r1
+  zlib-dev=1.2.11-r3              \
+  zlib-static=1.2.11-r3
+
 
 # Setup build directory
 RUN mkdir -p -m 0700 /opt/build
