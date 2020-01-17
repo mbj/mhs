@@ -12,7 +12,7 @@ extra-deps:
 - git: https://github.com/mbj/devtools-hs
   commit: fdf83fb9875b7ea2b0d0801cea0f269daea5ed4b
 - git: https://github.com/mbj/mprelude
-  commit: eaed192cc5409b229d2f1f240c9e95830733835e
+  commit: 451e3c2bed257c42e45dfb00d66376285cfaa56f
 - git: https://github.com/mbj/source-constraints
   commit: e6969b00892eccefde830aa4a5ab68a472f682b3
 - git: https://github.com/mbj/tasty
