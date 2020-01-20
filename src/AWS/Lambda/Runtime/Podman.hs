@@ -8,9 +8,9 @@ module AWS.Lambda.Runtime.Podman
   )
 where
 
+import AWS.Lambda.Runtime.Executable
 import AWS.Lambda.Runtime.Prelude
 import Control.Monad (unless)
-import Data.ByteString (ByteString)
 import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import System.Exit (ExitCode(ExitSuccess))
 import System.Path ((</>))
@@ -37,8 +37,6 @@ newtype PackageName = PackageName Text
 
 newtype TargetName = TargetName Text
   deriving newtype ToText
-
-newtype Executable = Executable ByteString
 
 data Config = Config
   { executablePath :: Path.RelFile

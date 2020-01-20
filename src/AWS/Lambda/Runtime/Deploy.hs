@@ -1,5 +1,10 @@
-module AWS.Lambda.Runtime.Deploy (byteStringTargetObject, podmanTargetObject) where
+module AWS.Lambda.Runtime.Deploy
+  ( Executable(..), byteStringTargetObject
+  , podmanTargetObject
+  )
+where
 
+import AWS.Lambda.Runtime.Executable
 import AWS.Lambda.Runtime.Prelude
 import Data.Text.Encoding (decodeUtf8)
 
@@ -20,9 +25,9 @@ podmanTargetObject config bucketName =
 
 byteStringTargetObject
   :: S3.BucketName
-  -> Podman.Executable
+  -> Executable
   -> S3.TargetObject
-byteStringTargetObject bucketName (Podman.Executable bootstrap) =
+byteStringTargetObject bucketName (Executable bootstrap) =
   S3.TargetObject
     { message = "Uploading new lambda function: " <> objectKeyText
     , ..
