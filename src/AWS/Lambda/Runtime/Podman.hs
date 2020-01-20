@@ -1,6 +1,6 @@
 module AWS.Lambda.Runtime.Podman
   ( Config(..)
-  , ExecutablePath(..)
+  , Executable(..)
   , ImageName(..)
   , PackageName(..)
   , TargetName(..)
@@ -10,26 +10,23 @@ where
 
 import AWS.Lambda.Runtime.Prelude
 import Control.Monad (unless)
-import Data.Bits (shiftL)
 import Data.ByteString (ByteString)
-import Data.Foldable (foldr')
 import Data.Text.Encoding (decodeUtf8, encodeUtf8)
-import GHC.Real (fromIntegral, toInteger)
 import System.Exit (ExitCode(ExitSuccess))
-import System.FilePath (FilePath, (</>))
-import System.Posix.Types (FileMode)
+import System.Path ((</>))
 
 import qualified AWS.Lambda.Runtime.TH as TH
-import qualified Codec.Archive.Zip     as Zip
 import qualified Data.ByteString       as ByteString
-import qualified Data.ByteString.Lazy  as ByteString (fromStrict)
+import qualified Data.ByteString.Lazy  as LBS
+import qualified Data.List             as List
+import qualified Data.Text.Encoding    as Text
 import qualified Network.AWS           as AWS
 import qualified Network.AWS.Data.Body as AWS
-import qualified System.Directory      as Directory
-import qualified System.Posix.Files    as File
+import qualified System.Path           as Path
+import qualified System.Path.Directory as Path
 import qualified System.Process.Typed  as Process
 
-newtype ExecutablePath = ExecutablePath FilePath
+newtype ContainerName = ContainerName Text
   deriving newtype ToText
 
 newtype ImageName = ImageName Text
@@ -41,20 +38,30 @@ newtype PackageName = PackageName Text
 newtype TargetName = TargetName Text
   deriving newtype ToText
 
+newtype Executable = Executable ByteString
+
 data Config = Config
-  { executablePath :: ExecutablePath
+  { executablePath :: Path.RelFile
   , packageName    :: PackageName
   , targetName     :: TargetName
   }
 
-build :: forall m . MonadIO m => Config -> m ByteString
+build :: forall m . MonadIO m => Config -> m Executable
 build Config{..} = do
   imageBuild
   targetBuild
-
-  liftIO . ByteString.readFile $ convertText executablePath
-
+  mountPath <- readMountPath
+  executable <-
+    Executable <$> liftIO (ByteString.readFile . Path.toString $ executableHostPath mountPath)
+  removeContainer
+  pure executable
   where
+    executableHostPath :: Path.AbsDir -> Path.AbsFile
+    executableHostPath mount = mount </> containerHomePathRel </> executablePath
+
+    containerHomePathRel :: Path.RelDir
+    containerHomePathRel = Path.relDir "opt/build"
+
     imageBuild :: m ()
     imageBuild = do
       exists <- testImageExists imageName
@@ -70,33 +77,33 @@ build Config{..} = do
 
     targetBuild :: m ()
     targetBuild = do
-      hostProjectPath <- liftIO Directory.getCurrentDirectory
-      hostHomePath    <- liftIO Directory.getHomeDirectory
+      hostProjectPath <- liftIO Path.getCurrentDirectory
+      hostHomePath    <- liftIO Path.getHomeDirectory
 
       let
-        buildHomePath :: FilePath
-        buildHomePath = "/opt/build"
+        containerHomePath :: Path.AbsDir
+        containerHomePath = Path.absDir "/" </> containerHomePathRel
 
-        buildProjectPath :: FilePath
-        buildProjectPath = buildHomePath </> convertText packageName
+        containerProjectPath :: Path.AbsDir
+        containerProjectPath = containerHomePath </> Path.relDir (convertText packageName)
 
-        buildStackPath :: FilePath
-        buildStackPath = buildHomePath </> ".stack"
+        containerStackPath :: Path.AbsDir
+        containerStackPath = containerHomePath </> Path.relDir ".stack"
 
-        hostStackPath :: FilePath
-        hostStackPath = hostHomePath </> ".stack-lambda-runtime"
+        hostStackPath :: Path.AbsDir
+        hostStackPath = hostHomePath </> Path.relDir ".stack-lambda-runtime"
 
-      liftIO $ Directory.createDirectoryIfMissing False hostStackPath
+      liftIO $ Path.createDirectoryIfMissing False hostStackPath
 
       Process.runProcess_ $ Process.proc "podman"
         [ "run"
-        , "--mount", "type=bind,source=" <> hostProjectPath <> ",destination=" <> buildProjectPath
-        , "--mount", "type=bind,source=" <> hostStackPath   <> ",destination=" <> buildStackPath
+        , "--mount", bindMount hostProjectPath containerProjectPath
+        , "--mount", bindMount hostStackPath   containerStackPath
+        , "--name", convertText containerName
         , "--net", "host"
-        , "--rm"
         , "--stop-timeout", "0"
         , "--tty"
-        , "--workdir", buildProjectPath
+        , "--workdir", Path.toString containerProjectPath
         , "--"
         , convertText imageName
         , "stack"
@@ -109,34 +116,51 @@ build Config{..} = do
         , convertText packageName <> ":" <> convertText targetName
         ]
 
+    bindMount :: Path.AbsDir -> Path.AbsDir -> String
+    bindMount source destination =
+      List.intercalate
+        ","
+        [ "type=bind"
+        , "source="      <> Path.toString source
+        , "destination=" <> Path.toString destination
+        ]
+
+    readMountPath :: m Path.AbsDir
+    readMountPath =
+      Path.absDir . rstrip . convertText . Text.decodeUtf8 . LBS.toStrict <$> readProcess
+      where
+        readProcess :: m LBS.ByteString
+        readProcess
+          = Process.readProcessStdout_
+          $ Process.proc "podman"
+          [ "mount"
+          , convertText containerName
+          ]
+
+        rstrip :: String -> String
+        rstrip
+          = List.reverse
+          . List.dropWhile (== '\n')
+          . List.reverse
+
+    removeContainer :: m ()
+    removeContainer =
+      Process.runProcess_ $ Process.proc "podman"
+        [ "rm"
+        , convertText containerName
+        ]
+
     imageName :: ImageName
     imageName =
       ImageName $
         "lambda-build-" <> (decodeUtf8 . AWS.sha256Base16 $ AWS.toHashed dockerfile)
 
+    containerName :: ContainerName
+    containerName = ContainerName $ convertText imageName
+
 #ifndef __HLINT__
-    dockerfile = ByteString.fromStrict $ encodeUtf8 $$(TH.readFile "Dockerfile")
+    dockerfile = LBS.fromStrict $ encodeUtf8 $$(TH.readFile "Dockerfile")
 #endif
-
-functionArchive :: ByteString -> Zip.Archive
-functionArchive bootstrap = Zip.addEntryToArchive bootstrapEntry Zip.emptyArchive
-  where
-    bootstrapEntry =
-      setMode
-        bootstrapFileMode
-        (Zip.toEntry "bootstrap" 0 $ ByteString.fromStrict bootstrap)
-
-    bootstrapFileMode =
-      foldr'
-        File.unionFileModes
-        File.regularFileMode
-        ([File.otherExecuteMode, File.otherReadMode] :: [FileMode])
-
-setMode :: FileMode -> Zip.Entry -> Zip.Entry
-setMode newMode entry = entry
-  { Zip.eExternalFileAttributes = fromIntegral (shiftL (toInteger newMode) 16)
-  , Zip.eVersionMadeBy          = 0x0300  -- UNIX file attributes
-  }
 
 testImageExists :: MonadIO m => ImageName -> m Bool
 testImageExists imageName = checkExit <$> Process.runProcess process
