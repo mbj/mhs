@@ -4,7 +4,7 @@ resolver: lts-14.11
 extra-deps:
 - amazonka-1.6.1@sha256:d863557379350ed6bbb91187abeb8c349a654f60b140d138710486f58ae7c476,3536
 - amazonka-core-1.6.1@sha256:9bc59ce403c6eeba3b3eaf3f10e5f0b6a33b6edbbf8f6de0dd6f4c67b86fa698,5135
-- stratosphere-0.42.0@sha256:745944b92e107cc2663e0e443ddd6455bf5371795eb1d4437af5d13d38ec18de,107989
+- stratosphere-0.48.0@sha256:a6f96c30abd840f9b63bd8f9eae5f0fd5a35503cccf2a9ffa826eba98fe4c45b,117293
 - git: https://github.com/mbj/amazonka
   commit: 33aa6b71309793829b534fb29f6532d71c32b106
   subdirs:
