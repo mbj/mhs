@@ -19,12 +19,12 @@ packages:
   original:
     hackage: amazonka-core-1.6.1@sha256:9bc59ce403c6eeba3b3eaf3f10e5f0b6a33b6edbbf8f6de0dd6f4c67b86fa698,5135
 - completed:
-    hackage: stratosphere-0.42.0@sha256:745944b92e107cc2663e0e443ddd6455bf5371795eb1d4437af5d13d38ec18de,107989
+    hackage: stratosphere-0.48.0@sha256:a6f96c30abd840f9b63bd8f9eae5f0fd5a35503cccf2a9ffa826eba98fe4c45b,117293
     pantry-tree:
-      size: 180353
-      sha256: 435212246cb72215edf22e0b53c79e4f33c2fdc778817229acdf62b90280f04a
+      size: 196284
+      sha256: dbf9eafe49701ab0a234413eb46eaf54b76d64993dc74d685ed63268e2bb024d
   original:
-    hackage: stratosphere-0.42.0@sha256:745944b92e107cc2663e0e443ddd6455bf5371795eb1d4437af5d13d38ec18de,107989
+    hackage: stratosphere-0.48.0@sha256:a6f96c30abd840f9b63bd8f9eae5f0fd5a35503cccf2a9ffa826eba98fe4c45b,117293
 - completed:
     subdir: amazonka-cloudformation
     cabal-file:
