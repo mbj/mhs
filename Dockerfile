@@ -35,6 +35,7 @@ RUN apk add                       \
   ncurses-dev=6.1_p20200118-r2    \
   ncurses-static=6.1_p20200118-r2 \
   stack@mbj=2.1.3-r0              \
+  tar=1.32-r1                     \
   xz=5.2.4-r0                     \
   zlib-dev=1.2.11-r3              \
   zlib-static=1.2.11-r3
