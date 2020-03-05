@@ -10,35 +10,34 @@ nobody:x:65534:\n\A'\
 
 # Setup apk public key
 RUN echo $'-----BEGIN PUBLIC KEY-----\n\
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvCahdd8oZywDQbvSaukg\n\
-7HvfgAGW6kRk0n6Ae1f+e5dIzbFBW8AQTULubf6brfEoJLSgHijnDEY56nJsDJAK\n\
-Nq4NTeYHgOQxZ1K3I55Fk/53vstyJPUTzy/BhX/2lNZohpaGGuM+20baPJ3hf6GA\n\
-Wa5JGagrvbIQdivQC1AnAiOallJ7nixCjItJZuY8r3I3gqoIP3IPyRJipTlQ6seo\n\
-wQm7DWpTeRiLk/kbx0XutIIGs/9/xkmwaNd266eMD6N5M01Z/SkmC6QAnnUlEoez\n\
-YpC9sLubFQFbUqJ5SJ9BYQ5xkEl5JHa7yScyimsK02xHRQY+yeo5FK0jtvPoLekX\n\
-AwIDAQAB\n\
------END PUBLIC KEY-----\n\A'\
->> /etc/apk/keys/mrh-apk.rsa.pub
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtZRLJDokvEpadk3M1KqW\n\
+hJ3sMVJzmP1XNMKsG/PxnfWaYGpGzPlkAgSKbHmbn+McWL6/B2GwhwqO4YCZ02rV\n\
+P9BBrzlnTak6OFHaxj9nOB0YV0uXMJWW5foNsmmNhPCDzbLDP/F7HmRcuBiosucb\n\
+Xiw1JxuRF99tQeksoMxn4jaqIRLpZr2u2QHGU3SAw9FkL9uHtF3h3GE13sgjWXYO\n\
+w+ST3GtURxI6RdL/2L09ShCxt2NvwBNvevNxoZOaCMgu/7c+DnIw7q4yII083XjZ\n\
+RKgPgxSylguY+X3uuPaV9ZIX8hCuAuFF1fzbTvl/plyeptB9HF6vtXe4CbsZvdYU\n\
+9QIDAQAB\n\
+-----END PUBLIC KEY-----\n'\
+>> /etc/apk/keys/mbj@schirp-dso.com-5e5c5d2b.rsa.pub
 
-RUN echo https://mrh-state-alpinepackagesbucket-eu8bh5k00ruo.s3.dualstack.us-east-1.amazonaws.com >> /etc/apk/repositories
+RUN echo '@mbj https://mbj-apk.s3.dualstack.us-east-1.amazonaws.com' >> /etc/apk/repositories
 
 # Install dependencies
 RUN apk add                       \
   --no-cache                      \
   --                              \
-  cache-s3=0.1.5-r0               \
+  cache-s3@mbj=0.1.5-r0           \
   curl=7.67.0-r0                  \
-  ghc=8.6.5-r0                    \
+  ghc=8.6.5-r3                    \
   git=2.24.1-r0                   \
   make=4.2.1-r2                   \
-  musl-dev=1.1.24-r0              \
-  ncurses-dev=6.1_p20191130-r0    \
-  ncurses-static=6.1_p20191130-r0 \
-  stack=1.9.3-r0                  \
+  musl-dev=1.1.24-r1              \
+  ncurses-dev=6.1_p20200118-r2    \
+  ncurses-static=6.1_p20200118-r2 \
+  stack@mbj=2.1.3-r0              \
   xz=5.2.4-r0                     \
   zlib-dev=1.2.11-r3              \
   zlib-static=1.2.11-r3
-
 
 # Setup build directory
 RUN mkdir -p -m 0700 /opt/build
