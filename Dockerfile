@@ -30,10 +30,13 @@ RUN apk add                       \
   curl=7.67.0-r0                  \
   ghc=8.6.5-r3                    \
   git=2.24.1-r0                   \
+  libpq@mbj=12.2-r0               \
   make=4.2.1-r2                   \
   musl-dev=1.1.24-r1              \
   ncurses-dev=6.1_p20200118-r2    \
   ncurses-static=6.1_p20200118-r2 \
+  postgresql-dev@mbj=12.2-r0      \
+  openssl-libs-static=1.1.1d-r3   \
   stack@mbj=2.1.3-r0              \
   tar=1.32-r1                     \
   xz=5.2.4-r0                     \
