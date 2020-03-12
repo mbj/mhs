@@ -1,6 +1,7 @@
 module AWS.Lambda.Runtime.Podman
   ( Config(..)
   , Executable(..)
+  , Flag(..)
   , ImageName(..)
   , PackageName(..)
   , TargetName(..)
@@ -18,6 +19,7 @@ import System.Path ((</>))
 import qualified AWS.Lambda.Runtime.TH as TH
 import qualified Data.ByteString       as ByteString
 import qualified Data.ByteString.Lazy  as LBS
+import qualified Data.Foldable         as Foldable
 import qualified Data.List             as List
 import qualified Data.Text.Encoding    as Text
 import qualified Network.AWS           as AWS
@@ -38,8 +40,11 @@ newtype PackageName = PackageName Text
 newtype TargetName = TargetName Text
   deriving newtype ToText
 
+data Flag = Flag PackageName Text
+
 data Config = Config
   { executablePath :: Path.RelFile
+  , flags          :: [Flag]
   , packageName    :: PackageName
   , targetName     :: TargetName
   }
@@ -93,7 +98,7 @@ build Config{..} = do
 
       liftIO $ Path.createDirectoryIfMissing False hostStackPath
 
-      Process.runProcess_ $ Process.proc "podman"
+      Process.runProcess_ . Process.proc "podman" $
         [ "run"
         , "--mount", bindMount hostProjectPath containerProjectPath
         , "--mount", bindMount hostStackPath   containerStackPath
@@ -107,12 +112,19 @@ build Config{..} = do
         , "stack"
         , "build"
         , "--copy-bins"
-        , "--flag", convertText packageName <> ":static"
         , "--interleaved-output"
         , "--system-ghc"
         , "--work-dir", ".stack-work-lambda-runtime"
-        , convertText packageName <> ":" <> convertText targetName
+        ] <> (convertText <$> flagArguments) <>
+        [ convertText packageName <> ":" <> convertText targetName
         ]
+
+    flagArguments :: [Text]
+    flagArguments = Foldable.foldMap mkFlag flags
+      where
+        mkFlag :: Flag -> [Text]
+        mkFlag (Flag name value) =
+          ["--flag", convertText name <> ":" <> value]
 
     bindMount :: Path.AbsDir -> Path.AbsDir -> String
     bindMount source destination =
