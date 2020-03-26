@@ -1,16 +1,15 @@
-resolver: lts-14.11
+resolver: lts-14.27
 build:
   haddock: false
 extra-deps:
-- ordered-containers-0.2.1@sha256:f03ac75d3d57c13e3d9da4fd87b363844baab3ba8819c00df2fe6d9d67d0a8b0,758
 - git: https://github.com/mbj/devtools-hs
-  commit: fdf83fb9875b7ea2b0d0801cea0f269daea5ed4b
+  commit: 44bfbe3c9f53188c5702f9a10396d509b7cd6a90
 - git: https://github.com/mbj/mprelude
-  commit: 15726838548d859c19d2b7135e60b7acc3d3ae1b
+  commit: 451e3c2bed257c42e45dfb00d66376285cfaa56f
 - git: https://github.com/mbj/source-constraints
   commit: 3eea6c0c3c4c66c39e1b68a5a27e74554395699d
 - git: https://github.com/mbj/tasty
-  commit: 4f97799635560e5ce60d933f4a0feaa607ad10df
+  commit: ff484ef812277ad27a9c9449b4597be30c845b13
   subdirs:
   - core
 - git: https://github.com/mbj/tasty-mgolden

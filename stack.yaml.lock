@@ -5,40 +5,33 @@
 
 packages:
 - completed:
-    hackage: ordered-containers-0.2.1@sha256:f03ac75d3d57c13e3d9da4fd87b363844baab3ba8819c00df2fe6d9d67d0a8b0,758
-    pantry-tree:
-      size: 391
-      sha256: 29b9712a3885b33a1df858dd52000488fc2e932e16f204720be392453db2bc1f
-  original:
-    hackage: ordered-containers-0.2.1@sha256:f03ac75d3d57c13e3d9da4fd87b363844baab3ba8819c00df2fe6d9d67d0a8b0,758
-- completed:
     cabal-file:
-      size: 3419
-      sha256: 8110c03442f09e15a48bdad6f5b693a2d27fbd1170da50c17688c1c759bb8d49
+      size: 3524
+      sha256: 9bc9ae0f9a6a690e1012a991e083e1e40f0cb831df53d32d7d0032dd2842f5f4
     name: devtools
     version: 0.0.0.1
     git: https://github.com/mbj/devtools-hs
     pantry-tree:
       size: 615
-      sha256: 88b0abd3dbc6dd83d3a02fb5cccda251c5de805f1df66b86e12ad5fa5e873766
-    commit: fdf83fb9875b7ea2b0d0801cea0f269daea5ed4b
+      sha256: 0156032fe3ff6c1e47cbeb4056182f60ad6bb297209389fc9e46d49e26c67d25
+    commit: 44bfbe3c9f53188c5702f9a10396d509b7cd6a90
   original:
     git: https://github.com/mbj/devtools-hs
-    commit: fdf83fb9875b7ea2b0d0801cea0f269daea5ed4b
+    commit: 44bfbe3c9f53188c5702f9a10396d509b7cd6a90
 - completed:
     cabal-file:
-      size: 2328
-      sha256: 0f00ab2ddc80c76ccd6806ef87c5f488b779f8d995abf631899c372349a77bb4
+      size: 2372
+      sha256: 72cdb03d20aadb52dd832fad5f2591ca50f19a4068562bb38c0e93dfebb01969
     name: mprelude
     version: 0.0.0.1
     git: https://github.com/mbj/mprelude
     pantry-tree:
-      size: 368
-      sha256: 480b79e22d4e044666dba75dc809e3c05fee19c4b1b330d2dd75e8d39a88b3f4
-    commit: 15726838548d859c19d2b7135e60b7acc3d3ae1b
+      size: 439
+      sha256: a390a9c1c423a2a9b3802b1a5a035bed426d1b9883b86d4e872bb94bfcfd0a45
+    commit: 451e3c2bed257c42e45dfb00d66376285cfaa56f
   original:
     git: https://github.com/mbj/mprelude
-    commit: 15726838548d859c19d2b7135e60b7acc3d3ae1b
+    commit: 451e3c2bed257c42e45dfb00d66376285cfaa56f
 - completed:
     cabal-file:
       size: 3339
@@ -56,19 +49,19 @@ packages:
 - completed:
     subdir: core
     cabal-file:
-      size: 2538
-      sha256: 47dca9c41c2887ff15c1c96651a7fd7e1b419e4272ab5964c1e20ee0a2ac29c8
+      size: 2530
+      sha256: 60beb276bf10755318a258ef6b5f43733dff520cf790e11216c83703d5d826b6
     name: tasty
     version: 1.2.3
     git: https://github.com/mbj/tasty
     pantry-tree:
       size: 1793
-      sha256: 312ba9392cf8690fe3794436afb36111783a1eca4b73435bc7debefee2ee5336
-    commit: 4f97799635560e5ce60d933f4a0feaa607ad10df
+      sha256: 60bd79f25631f11cf3ae92f3098332efbded183c3cb62af5950e204f4357856e
+    commit: ff484ef812277ad27a9c9449b4597be30c845b13
   original:
     subdir: core
     git: https://github.com/mbj/tasty
-    commit: 4f97799635560e5ce60d933f4a0feaa607ad10df
+    commit: ff484ef812277ad27a9c9449b4597be30c845b13
 - completed:
     cabal-file:
       size: 2849
@@ -85,7 +78,7 @@ packages:
     commit: a2e538036e16aa6b002de7bf39392fa0a2d7c370
 snapshots:
 - completed:
-    size: 524786
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/14/11.yaml
-    sha256: 088bb91b545839510a41ae92fa5feb36779ef3529571a42bd12b9f51eb89ded3
-  original: lts-14.11
+    size: 524996
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/14/27.yaml
+    sha256: 7ea31a280c56bf36ff591a7397cc384d0dff622e7f9e4225b47d8980f019a0f0
+  original: lts-14.27
