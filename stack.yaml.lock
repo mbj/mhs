@@ -6,18 +6,18 @@
 packages:
 - completed:
     cabal-file:
-      size: 3419
-      sha256: 8110c03442f09e15a48bdad6f5b693a2d27fbd1170da50c17688c1c759bb8d49
+      size: 3524
+      sha256: 9bc9ae0f9a6a690e1012a991e083e1e40f0cb831df53d32d7d0032dd2842f5f4
     name: devtools
     version: 0.0.0.1
     git: https://github.com/mbj/devtools-hs
     pantry-tree:
       size: 615
-      sha256: 37b4cd92e0f183d498a1bd3f33e71a640cc121d144880a43635aa12f0f2ddf2b
-    commit: ab30fa75896c77d2139854b45f8913f8234a6655
+      sha256: 0156032fe3ff6c1e47cbeb4056182f60ad6bb297209389fc9e46d49e26c67d25
+    commit: 44bfbe3c9f53188c5702f9a10396d509b7cd6a90
   original:
     git: https://github.com/mbj/devtools-hs
-    commit: ab30fa75896c77d2139854b45f8913f8234a6655
+    commit: 44bfbe3c9f53188c5702f9a10396d509b7cd6a90
 - completed:
     cabal-file:
       size: 2372
@@ -34,18 +34,18 @@ packages:
     commit: 451e3c2bed257c42e45dfb00d66376285cfaa56f
 - completed:
     cabal-file:
-      size: 3327
-      sha256: bec14e7228856e87765506edc2b4e41ceed0177ba817efbde292c98a9f15631e
+      size: 3339
+      sha256: 6e9eac89be5297683a9335262424a7e68452bf53b22ca94ebc731476346e758f
     name: source-constraints
     version: 0.0.0.1
     git: https://github.com/mbj/source-constraints
     pantry-tree:
-      size: 1039
-      sha256: d26679d5fe809ab2140c5c18a341434bfdbb09e654c435684beac30a91a17b81
-    commit: 75ba67ba7a8853db3c2ca22c5db10dbe883e1dae
+      size: 914
+      sha256: a74730d61617df24560945f00faf769e6b68cf216a6cd048f660c583c4ae9b8f
+    commit: 3eea6c0c3c4c66c39e1b68a5a27e74554395699d
   original:
     git: https://github.com/mbj/source-constraints
-    commit: 75ba67ba7a8853db3c2ca22c5db10dbe883e1dae
+    commit: 3eea6c0c3c4c66c39e1b68a5a27e74554395699d
 - completed:
     subdir: core
     cabal-file:
@@ -78,7 +78,7 @@ packages:
     commit: a2e538036e16aa6b002de7bf39392fa0a2d7c370
 snapshots:
 - completed:
-    size: 545658
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/14/12.yaml
-    sha256: 26b807457213126d26b595439d705dc824dbb7618b0de6b900adc2bf6a059406
-  original: lts-14.12
+    size: 524996
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/14/27.yaml
+    sha256: 7ea31a280c56bf36ff591a7397cc384d0dff622e7f9e4225b47d8980f019a0f0
+  original: lts-14.27
