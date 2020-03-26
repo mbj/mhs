@@ -9,7 +9,7 @@ import qualified Test.Tasty as Tasty
 main :: IO ()
 main
   = Tasty.defaultMain
-  $ Tasty.testGroup "dbt" [Devtools.testTree, image]
+  $ Tasty.testGroup "dbt" [Devtools.testTree Devtools.defaultConfig, image]
 
 image :: Tasty.TestTree
 image
