@@ -20,7 +20,8 @@ parseCLI
   . CLI.handleParseResult
   . CLI.execParserPure CLI.defaultPrefs root
   where
-    root = wrapHelper commands "DBT commands"
+    root :: CLI.ParserInfo (m ())
+    root = wrapHelper (CLI.helper <*> commands) "DBT commands"
 
     commands :: CLI.Parser (m ())
     commands =
