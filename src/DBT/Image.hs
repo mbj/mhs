@@ -15,7 +15,7 @@ newtype ImageName = ImageName Text
 imageName :: ImageName
 imageName
   = ImageName
-  . ("dbt" <>)
+  . ("dbt-" <>)
   . convertText
   . show
   . Hash.hashFinalize
