@@ -1,12 +1,12 @@
-resolver: lts-14.20
+resolver: lts-14.27
 extra-deps:
 - git: https://github.com/mbj/mprelude
-  commit: 1fefadb9172a5b08b98180aab2bd669724c74287
+  commit: 451e3c2bed257c42e45dfb00d66376285cfaa56f
 - git: https://github.com/mbj/source-constraints
   commit: 75ba67ba7a8853db3c2ca22c5db10dbe883e1dae
 - git: https://github.com/mbj/tasty
-  commit: ff484ef812277ad27a9c9449b4597be30c845b13
+  commit: 049bacbabd35b5a91ffb0beb115026e6bd5ab127
   subdirs:
   - core
 - git: https://github.com/mbj/tasty-mgolden
-  commit: a2e538036e16aa6b002de7bf39392fa0a2d7c370
+  commit: f91ac9424352d4844b0acd237323acf91943ad82
