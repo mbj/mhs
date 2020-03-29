@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: cc1a68fb2fe6d8a9aaea05d8c7fbe5af2e2b98084810decf061e37e4920dc975
+-- hash: 3bc0862f54f5ad81520ebce4c8a9e47815409436b3c84251387990958d3a3f95
 
 name:           pgt
 version:        0.0.1
@@ -45,6 +45,7 @@ library
     , mprelude ==0.0.0.1
     , optparse-applicative >=0.14 && <0.15
     , ordered-containers >=0.2 && <0.3
+    , pathtype >=0.8.1 && <0.9
     , source-constraints ==0.0.0.1
     , text >=1.2 && <1.3
     , text-conversions >=0.3 && <0.4
@@ -73,6 +74,7 @@ executable pgt
     , mprelude ==0.0.0.1
     , optparse-applicative >=0.14 && <0.15
     , ordered-containers >=0.2 && <0.3
+    , pathtype >=0.8.1 && <0.9
     , pgt
     , source-constraints ==0.0.0.1
     , text >=1.2 && <1.3
@@ -102,6 +104,7 @@ test-suite devtools
     , mprelude ==0.0.0.1
     , optparse-applicative >=0.14 && <0.15
     , ordered-containers >=0.2 && <0.3
+    , pathtype >=0.8.1 && <0.9
     , source-constraints ==0.0.0.1
     , text >=1.2 && <1.3
     , text-conversions >=0.3 && <0.4
@@ -131,6 +134,7 @@ test-suite hspec
     , mprelude ==0.0.0.1
     , optparse-applicative >=0.14 && <0.15
     , ordered-containers >=0.2 && <0.3
+    , pathtype >=0.8.1 && <0.9
     , pgt
     , source-constraints ==0.0.0.1
     , text >=1.2 && <1.3

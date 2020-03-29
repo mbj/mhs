@@ -20,6 +20,7 @@ dependencies:
 - mprelude             == 0.0.0.1
 - optparse-applicative ^>= 0.14
 - ordered-containers   ^>= 0.2
+- pathtype             ^>= 0.8.1
 - source-constraints   == 0.0.0.1
 - text                 ^>= 1.2
 - text-conversions     ^>= 0.3

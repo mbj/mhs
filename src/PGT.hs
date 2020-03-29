@@ -20,7 +20,6 @@ import Data.String (String)
 import Numeric.Natural (Natural)
 import PGT.Formatter
 import PGT.Prelude
-import System.FilePath (FilePath, (-<.>))
 import System.Posix.Types (ProcessID)
 import UnliftIO.Exception (bracket)
 
@@ -30,6 +29,7 @@ import qualified Data.Text                  as Text
 import qualified Data.Text.Encoding         as Text
 import qualified Data.Text.IO               as Text
 import qualified System.Environment         as Environment
+import qualified System.Path                as Path
 import qualified System.Posix.Process       as Process
 import qualified System.Process.Typed       as Process
 import qualified Test.Hspec                 as Hspec
@@ -38,7 +38,7 @@ import qualified Test.Hspec.Runner          as Hspec
 
 data Test = Test
   { id   :: Natural
-  , path :: FilePath
+  , path :: Path.RelFile
   }
   deriving stock (Eq, Ord)
 
@@ -72,7 +72,7 @@ runList :: forall f m . (Foldable f, MonadIO m) => Config -> f Test -> m ()
 runList config = Foldable.mapM_ printTest
   where
     printTest :: Test -> m ()
-    printTest Test{..} = print config $ convertText path
+    printTest Test{..} = print config . convertText $ Path.toString path
 
 runExamples :: forall f m . (Foldable f, MonadUnliftIO m) => Config -> f Test -> m ()
 runExamples config = Foldable.mapM_ $ runTestSession config Process.runProcess_
@@ -87,9 +87,9 @@ runTests config@Config{..} tests = liftIO $ Hspec.evaluateSummary =<< Hspec.runS
     spec = Hspec.describe "pgt" $ sequence_ (makeSpec <$> tests)
 
     makeSpec test@Test{..} =
-      Hspec.specify path $ do
+      Hspec.specify (Path.toString path) $ do
         captured <- captureTest config test
-        expected <- Text.readFile $ expectedFileName test
+        expected <- readFile $ expectedFileName test
         captured `Hspec.shouldBe` expected
 
     hspecConfig = Hspec.defaultConfig
@@ -108,10 +108,10 @@ runUpdates config = Foldable.mapM_ updateTest
   where
     updateTest :: Test -> m ()
     updateTest test =
-      liftIO $ Text.writeFile (expectedFileName test) =<< captureTest config test
+      liftIO $ Text.writeFile (Path.toString $ expectedFileName test) =<< captureTest config test
 
-expectedFileName :: Test -> FilePath
-expectedFileName Test{..} = path -<.> ".expected"
+expectedFileName :: Test -> Path.RelFile
+expectedFileName Test{..} = Path.replaceExtension path ".expected"
 
 captureTest :: forall m . MonadUnliftIO m => Config -> Test -> m Text
 captureTest config
@@ -137,7 +137,7 @@ runTestSession config runProcess test@Test{..} =
   where
     runSession :: PSQLConfig -> m a
     runSession psqlConfig =
-      runProcess . psql psqlConfig =<< LBS.fromStrict . Text.encodeUtf8 <$> liftIO (Text.readFile path)
+      runProcess . psql psqlConfig =<< LBS.fromStrict . Text.encodeUtf8 <$> readFile path
 
     psql psqlConfig body
       = pgEnv psqlConfig
@@ -220,3 +220,6 @@ fromEnv Options{..} = do
   where
     lookup :: String -> m Text
     lookup = (convertText <$>) . liftIO . Environment.getEnv
+
+readFile :: MonadIO m => Path.RelFile -> m Text
+readFile = liftIO . Text.readFile . Path.toString
