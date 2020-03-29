@@ -6,20 +6,6 @@
 packages:
 - completed:
     cabal-file:
-      size: 2372
-      sha256: 72cdb03d20aadb52dd832fad5f2591ca50f19a4068562bb38c0e93dfebb01969
-    name: mprelude
-    version: 0.0.0.1
-    git: https://github.com/mbj/mprelude
-    pantry-tree:
-      size: 439
-      sha256: a390a9c1c423a2a9b3802b1a5a035bed426d1b9883b86d4e872bb94bfcfd0a45
-    commit: 451e3c2bed257c42e45dfb00d66376285cfaa56f
-  original:
-    git: https://github.com/mbj/mprelude
-    commit: 451e3c2bed257c42e45dfb00d66376285cfaa56f
-- completed:
-    cabal-file:
       size: 3327
       sha256: bec14e7228856e87765506edc2b4e41ceed0177ba817efbde292c98a9f15631e
     name: source-constraints

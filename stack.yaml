@@ -1,7 +1,5 @@
 resolver: lts-14.27
 extra-deps:
-- git: https://github.com/mbj/mprelude
-  commit: 451e3c2bed257c42e45dfb00d66376285cfaa56f
 - git: https://github.com/mbj/source-constraints
   commit: 75ba67ba7a8853db3c2ca22c5db10dbe883e1dae
 - git: https://github.com/mbj/tasty
