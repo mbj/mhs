@@ -2,4 +2,4 @@ import System.IO (IO)
 import qualified Devtools
 
 main :: IO ()
-main = Devtools.main
+main = Devtools.main Devtools.defaultConfig
