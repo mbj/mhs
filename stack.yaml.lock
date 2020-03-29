@@ -13,11 +13,11 @@ packages:
     git: https://github.com/mbj/mprelude
     pantry-tree:
       size: 439
-      sha256: fb2e7ba130cabc25f879af064bf855f6bed87e8d6fdb8cee9e2d1b7f48277800
-    commit: 1fefadb9172a5b08b98180aab2bd669724c74287
+      sha256: a390a9c1c423a2a9b3802b1a5a035bed426d1b9883b86d4e872bb94bfcfd0a45
+    commit: 451e3c2bed257c42e45dfb00d66376285cfaa56f
   original:
     git: https://github.com/mbj/mprelude
-    commit: 1fefadb9172a5b08b98180aab2bd669724c74287
+    commit: 451e3c2bed257c42e45dfb00d66376285cfaa56f
 - completed:
     cabal-file:
       size: 3327
@@ -64,7 +64,7 @@ packages:
     commit: f91ac9424352d4844b0acd237323acf91943ad82
 snapshots:
 - completed:
-    size: 524154
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/14/20.yaml
-    sha256: 2f5099f69ddb6abfe64400fe1e6a604e8e628f55e6837211cd70a81eb0a8fa4d
-  original: lts-14.20
+    size: 524996
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/14/27.yaml
+    sha256: 7ea31a280c56bf36ff591a7397cc384d0dff622e7f9e4225b47d8980f019a0f0
+  original: lts-14.27
