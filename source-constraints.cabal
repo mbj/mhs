@@ -1,0 +1,88 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: a834c46ba2a7b53a3501d17d4d904921cd834434d037243d4d23805fabf38986
+
+name:           source-constraints
+version:        0.0.1
+synopsis:       Source constraints GHC plugin
+category:       CodeQuality
+homepage:       https://github.com/schirp-dso/source-constraints#readme
+bug-reports:    https://github.com/schirp-dso/source-constraints/issues
+author:         Markus Schirp
+maintainer:     mbj@schirp-dso.com
+copyright:      2018 Markus Schirp
+build-type:     Simple
+extra-source-files:
+    test/LocalModuleExplicitImport.hs
+    test/MissingDerivingStrategy.hs
+    test/UnsortedIE.hs
+    test/UnsortedIEThingWith.hs
+    test/UnsortedImportStatement.hs
+    test/UnsortedMultipleDeriving.hs
+
+source-repository head
+  type: git
+  location: https://github.com/schirp-dso/source-constraints
+
+library
+  exposed-modules:
+      SourceConstraints
+      SourceConstraints.LocalModule
+  other-modules:
+      Paths_source_constraints
+  hs-source-dirs:
+      src
+  default-extensions: DerivingStrategies GeneralizedNewtypeDeriving LambdaCase NoImplicitPrelude OverloadedStrings RecordWildCards ScopedTypeVariables Strict
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction
+  build-depends:
+      attoparsec >=0.13 && <0.14
+    , base >=4.13 && <4.14
+    , bytestring >=0.10 && <0.11
+    , filepath >=1.4 && <1.5
+    , ghc >=8.8 && <8.9
+    , syb >=0.7 && <0.8
+    , text >=1.2 && <1.3
+  default-language: Haskell2010
+
+test-suite devtools
+  type: exitcode-stdio-1.0
+  main-is: test/Devtools.hs
+  other-modules:
+      Paths_source_constraints
+  default-extensions: DerivingStrategies GeneralizedNewtypeDeriving LambdaCase NoImplicitPrelude OverloadedStrings RecordWildCards ScopedTypeVariables Strict
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -rtsopts -threaded -with-rtsopts=-N
+  build-depends:
+      attoparsec >=0.13 && <0.14
+    , base >=4.13 && <4.14
+    , bytestring >=0.10 && <0.11
+    , devtools
+    , filepath >=1.4 && <1.5
+    , ghc >=8.8 && <8.9
+    , syb >=0.7 && <0.8
+    , text >=1.2 && <1.3
+  default-language: Haskell2010
+
+test-suite hspec
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  hs-source-dirs:
+      test
+  default-extensions: DerivingStrategies GeneralizedNewtypeDeriving LambdaCase NoImplicitPrelude OverloadedStrings RecordWildCards ScopedTypeVariables Strict
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -rtsopts -threaded -with-rtsopts=-N
+  build-depends:
+      attoparsec >=0.13 && <0.14
+    , base >=4.13 && <4.14
+    , bytestring >=0.10 && <0.11
+    , filepath >=1.4 && <1.5
+    , ghc >=8.8 && <8.9
+    , ghc-paths >=0.1 && <0.2
+    , heredoc >=0.2 && <0.3
+    , hspec >=2.7 && <2.8
+    , source-constraints
+    , syb >=0.7 && <0.8
+    , text >=1.2 && <1.3
+  default-language: Haskell2010

@@ -1,5 +1,5 @@
 name:        source-constraints
-version:     0.0.0.1
+version:     0.0.1
 synopsis:    Source constraints GHC plugin
 homepage:    https://github.com/schirp-dso/source-constraints#readme
 author:      Markus Schirp
@@ -10,10 +10,10 @@ github:      schirp-dso/source-constraints
 
 dependencies:
 - attoparsec ^>= 0.13
-- base       ^>= 4.12
+- base       ^>= 4.13
 - bytestring ^>= 0.10
 - filepath   ^>= 1.4
-- ghc        ^>= 8.6
+- ghc        ^>= 8.8
 - syb        ^>= 0.7
 - text       ^>= 1.2
 
@@ -64,9 +64,9 @@ tests:
     - -threaded
     - -with-rtsopts=-N
     dependencies:
-    - ghc-paths          == 0.1.0.12
-    - heredoc            == 0.2.0.0
-    - hspec              == 2.7.1
+    - ghc-paths          ^>= 0.1
+    - heredoc            ^>= 0.2
+    - hspec              ^>= 2.7
     - source-constraints
   devtools:
     main:          test/Devtools.hs

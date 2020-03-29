@@ -1,10 +1,10 @@
-resolver: lts-14.27
+resolver: lts-15.11
 extra-deps:
 - git: https://github.com/mbj/devtools-hs
-  commit: 5b9e3d84b3cce4afbc701dd34d4f8ced51dd0aa5
+  commit: db02e6f80f27cb672b919e5ab078ebdfad996f3b
 - git: https://github.com/mbj/tasty
-  commit: ff484ef812277ad27a9c9449b4597be30c845b13
+  commit: 6b884dc97902feaf6e81ad46f3cc905eb122e5d6
   subdirs:
   - core
 - git: https://github.com/mbj/tasty-mgolden
-  commit: a2e538036e16aa6b002de7bf39392fa0a2d7c370
+  commit: 3bdcddb38d1d2005a205fb4c1d35e88bc3f3f432
