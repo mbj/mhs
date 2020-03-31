@@ -30,7 +30,9 @@ runHLintTest arguments = do
 
   pure $ if Foldable.null ideas
     then Tasty.testPassed empty
-    else Tasty.testFailedDetails empty . const $ runHLintVerbose arguments
+    else Tasty.testFailedDetails empty
+      . Tasty.ResultDetailsPrinter
+      . const $ runHLintVerbose arguments
 
 -- Run HLint (again) but with output enabled.
 -- There is no good public API in HLint to render the output.
