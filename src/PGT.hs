@@ -1,8 +1,5 @@
 module PGT
   ( Config
-  , FirstError(Continue, Stop)
-  , Options(..)
-  , Output(..)
   , PSQLConfig
   , Test(..)
   , fromEnv
@@ -13,12 +10,10 @@ module PGT
   )
 where
 
-import Control.Monad (sequence_)
 import Control.Monad.IO.Unlift (MonadUnliftIO)
 import Data.Bifunctor (second)
 import Data.String (String)
 import Numeric.Natural (Natural)
-import PGT.Formatter
 import PGT.Prelude
 import System.Posix.Types (ProcessID)
 import UnliftIO.Exception (bracket)
@@ -29,12 +24,14 @@ import qualified Data.Text                  as Text
 import qualified Data.Text.Encoding         as Text
 import qualified Data.Text.IO               as Text
 import qualified System.Environment         as Environment
+import qualified System.Exit                as System
 import qualified System.Path                as Path
 import qualified System.Posix.Process       as Process
 import qualified System.Process.Typed       as Process
-import qualified Test.Hspec                 as Hspec
-import qualified Test.Hspec.Core.Formatters as Hspec
-import qualified Test.Hspec.Runner          as Hspec
+import qualified Test.Tasty                 as Tasty
+import qualified Test.Tasty.MGolden         as Tasty.MGolden
+import qualified Test.Tasty.Options         as Tasty
+import qualified Test.Tasty.Runners         as Tasty.Runners
 
 data Test = Test
   { id   :: Natural
@@ -43,19 +40,9 @@ data Test = Test
   deriving stock (Eq, Ord)
 
 data Config = Config
-  { firstError :: FirstError
-  , output     :: Output
-  , pid        :: ProcessID
+  { pid        :: ProcessID
   , psqlAdmin  :: PSQLConfig
   , psqlUser   :: PSQLConfig
-  }
-
-data FirstError = Continue | Stop
-data Output     = Silent | Verbose
-
-data Options = Options
-  { firstError :: FirstError
-  , output     :: Output
   }
 
 data PSQLConfig = PSQLConfig
@@ -69,46 +56,44 @@ data PSQLConfig = PSQLConfig
   }
 
 runList :: forall f m . (Foldable f, MonadIO m) => Config -> f Test -> m ()
-runList config = Foldable.mapM_ printTest
+runList _config = Foldable.mapM_ printTest
   where
     printTest :: Test -> m ()
-    printTest Test{..} = print config . convertText $ Path.toString path
+    printTest Test{..} = liftIO . Text.putStrLn . convertText $ Path.toString path
 
 runExamples :: forall f m . (Foldable f, MonadUnliftIO m) => Config -> f Test -> m ()
 runExamples config = Foldable.mapM_ $ runTestSession config Process.runProcess_
 
-print :: MonadIO m => Config -> Text -> m ()
-print Config{ output = Verbose } = liftIO . Text.putStrLn
-print Config{ output = Silent }  = const $ pure ()
-
-runTests :: (Foldable f, Functor f, MonadIO m) => Config -> f Test -> m ()
-runTests config@Config{..} tests = liftIO $ Hspec.evaluateSummary =<< Hspec.runSpec spec hspecConfig
+runTasty :: MonadIO m => Tasty.OptionSet -> Config -> [Test] -> m ()
+runTasty tastyOptions config tests = liftIO $ do
+  Tasty.Runners.installSignalHandlers
+  maybe failIngredients run
+    $ Tasty.Runners.tryIngredients Tasty.defaultIngredients tastyOptions goldenTests
   where
-    spec = Hspec.describe "pgt" $ sequence_ (makeSpec <$> tests)
+    goldenTests = Tasty.testGroup "pgt" $ mkGolden config <$> tests
 
-    makeSpec test@Test{..} =
-      Hspec.specify (Path.toString path) $ do
-        captured <- captureTest config test
-        expected <- readFile $ expectedFileName test
-        captured `Hspec.shouldBe` expected
+    failIngredients :: IO a
+    failIngredients = fail "Internal failure running ingredients"
 
-    hspecConfig = Hspec.defaultConfig
-      { Hspec.configFastFail  = hspecFastFail firstError
-      , Hspec.configFormatter = pure $ hspecFormatter output
-      }
+    run :: IO Bool -> IO ()
+    run action = do
+      ok <- action
+      if ok
+        then System.exitSuccess
+        else System.exitFailure
 
-    hspecFastFail Continue = False
-    hspecFastFail Stop     = True
+runTests :: MonadIO m => Config -> [Test] -> m ()
+runTests = runTasty mempty
 
-    hspecFormatter Silent  = Hspec.silent
-    hspecFormatter Verbose = Hspec.progress { Hspec.failedFormatter = multilineFailedFormatter }
+runUpdates :: MonadIO m => Config -> [Test] -> m ()
+runUpdates = runTasty (Tasty.singleOption Tasty.MGolden.UpdateExpected)
 
-runUpdates :: forall f m . (Foldable f, MonadIO m) => Config -> f Test -> m ()
-runUpdates config = Foldable.mapM_ updateTest
-  where
-    updateTest :: Test -> m ()
-    updateTest test =
-      liftIO $ Text.writeFile (Path.toString $ expectedFileName test) =<< captureTest config test
+mkGolden :: Config -> Test -> Tasty.TestTree
+mkGolden config test@Test{..}
+  = Tasty.MGolden.goldenTest
+     (Path.toString path)
+     (Path.toString $ expectedFileName test)
+  $ captureTest config test
 
 expectedFileName :: Test -> Path.RelFile
 expectedFileName Test{..} = Path.replaceExtension path ".expected"
@@ -202,8 +187,8 @@ pgEnv PSQLConfig{..} = Process.setEnv env
       , ("PGUSER",        user)
       ]
 
-fromEnv :: forall m . MonadIO m => Options -> m Config
-fromEnv Options{..} = do
+fromEnv :: forall m . MonadIO m => m Config
+fromEnv = do
   database    <- lookup "PGDATABASE"
   host        <- lookup "PGHOST"
   path        <- lookup "PATH"

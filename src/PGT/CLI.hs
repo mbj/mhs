@@ -23,37 +23,31 @@ import qualified System.Posix.Files    as FS
 
 newtype Selector = Selector Path.RelFileDir
 
-data Command    = Command Options Subcommand
 data Subcommand = forall t . (Traversable t) => Subcommand (Config -> [Test] -> IO ()) (t Selector)
 
 run :: forall f m . (Foldable f, MonadIO m) => f String -> m ()
 run arguments = do
   setupStdoutBuffer
-  runCommand =<< parseCLI arguments
+  runSubcommand =<< parseCLI arguments
   where
     setupStdoutBuffer :: m ()
     setupStdoutBuffer = liftIO $ IO.hSetBuffering IO.stdout IO.LineBuffering
 
-    runCommand :: Command -> m ()
-    runCommand (Command options (Subcommand action selectors)) = do
-      config <- fromEnv options
+    runSubcommand :: Subcommand -> m ()
+    runSubcommand (Subcommand action selectors) = do
+      config <- fromEnv
       liftIO $ action config =<< (makeTests <$> expand selectors)
 
     makeTests :: [Path.RelFile] -> [Test]
     makeTests files = (\(id, path) -> Test{..}) <$> List.zip [0..] files
 
-parseCLI :: (Foldable f, MonadIO m) => f String -> m Command
+parseCLI :: (Foldable f, MonadIO m) => f String -> m Subcommand
 parseCLI
   = liftIO
   . CLI.handleParseResult
-  . CLI.execParserPure CLI.defaultPrefs main
+  . CLI.execParserPure CLI.defaultPrefs (wrapHelper subcommands)
   . Foldable.toList
   where
-    failFastFlag  = CLI.flag Continue Stop $ CLI.long "fail-fast" <> CLI.help "Stop on first error"
-    main          = wrapHelper mainCommand
-    mainCommand   = Command <$> optionsParser <*> subcommands
-    optionsParser = Options <$> failFastFlag <*> outputFlag
-    outputFlag    = CLI.flag Verbose Silent $ CLI.long "silent" <> CLI.help "Silence all output"
     selector      = CLI.argument (Selector <$> CLI.eitherReader Path.parse) (CLI.metavar "SELECTOR")
     selectors     = many selector
 
