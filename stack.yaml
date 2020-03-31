@@ -3,6 +3,6 @@ extra-deps:
 - git: https://github.com/mbj/source-constraints
   commit: 75ba67ba7a8853db3c2ca22c5db10dbe883e1dae
 - git: https://github.com/mbj/tasty
-  commit: 049bacbabd35b5a91ffb0beb115026e6bd5ab127
+  commit: 6b884dc97902feaf6e81ad46f3cc905eb122e5d6
   subdirs:
   - core
