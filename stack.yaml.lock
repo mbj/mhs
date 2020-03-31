@@ -28,12 +28,12 @@ packages:
     git: https://github.com/mbj/tasty
     pantry-tree:
       size: 1793
-      sha256: f42c9ae64f7baf900c2c43b19c623d6467ee45698ec6ab1ac7f6ba952f9e0a34
-    commit: 049bacbabd35b5a91ffb0beb115026e6bd5ab127
+      sha256: 9a78c93658061fa5d6d1655faf5532d64abe61c1f7eed389ddc61d922525761a
+    commit: 6b884dc97902feaf6e81ad46f3cc905eb122e5d6
   original:
     subdir: core
     git: https://github.com/mbj/tasty
-    commit: 049bacbabd35b5a91ffb0beb115026e6bd5ab127
+    commit: 6b884dc97902feaf6e81ad46f3cc905eb122e5d6
 snapshots:
 - completed:
     size: 524996

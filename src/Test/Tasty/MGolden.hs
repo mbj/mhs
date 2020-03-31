@@ -88,26 +88,29 @@ updateExpected Golden{..} actual = do
   pure $ testPassed "UPDATE"
 
 printDetails :: Golden -> Text -> Text -> ResultDetailsPrinter
-printDetails Golden{..} expected actual formatter =
-  traverse_ printDiff $ Diff.getDiff actualLines expectedLines
+printDetails Golden{..} expected actual = ResultDetailsPrinter print
   where
-    actualLines :: [Text]
-    actualLines = Text.lines actual
+    print formatter
+      = traverse_ printDiff
+      $ Diff.getDiff actualLines expectedLines
+      where
+        actualLines :: [Text]
+        actualLines = Text.lines actual
 
-    printDiff :: Diff.Diff Text -> IO ()
-    printDiff = \case
-      (Diff.Both   line _) -> printLine ' ' neutralFormat line
-      (Diff.First  line)   -> printLine '+' addFormat line
-      (Diff.Second line)   -> printLine '-' removeFormat line
+        printDiff :: Diff.Diff Text -> IO ()
+        printDiff = \case
+          (Diff.Both   line _) -> printLine ' ' neutralFormat line
+          (Diff.First  line)   -> printLine '+' addFormat line
+          (Diff.Second line)   -> printLine '-' removeFormat line
 
-    printLine :: Char -> ConsoleFormat -> Text -> IO ()
-    printLine prefix format line
-      = formatter format
-      $ Text.putStrLn
-      $ Text.singleton prefix <> line
+        printLine :: Char -> ConsoleFormat -> Text -> IO ()
+        printLine prefix format line
+          = formatter format
+          $ Text.putStrLn
+          $ Text.singleton prefix <> line
 
-    expectedLines :: [Text]
-    expectedLines = Text.lines expected
+        expectedLines :: [Text]
+        expectedLines = Text.lines expected
 
 addFormat :: ConsoleFormat
 addFormat = okFormat
