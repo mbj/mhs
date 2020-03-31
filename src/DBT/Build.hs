@@ -25,7 +25,7 @@ buildImage = do
     createContainer :: m ContainerName
     createContainer
       =   ContainerName
-      <$> captureText (Process.proc "buildah" ["from", "alpine:3.10"])
+      <$> captureText (Process.proc "buildah" ["from", "alpine:3.11"])
 
     commitImage :: ContainerName -> m ()
     commitImage containerName

@@ -15,7 +15,7 @@ newtype ImageName = ImageName Text
 imageName :: ImageName
 imageName
   = ImageName
-  . ("dbt" <>)
+  . ("localhost/dbt-" <>)
   . convertText
   . show
   . Hash.hashFinalize

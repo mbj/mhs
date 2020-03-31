@@ -99,7 +99,8 @@ getHostPort :: MonadIO m => m Postgresql.Port
 getHostPort = Postgresql.Port <$> captureText proc
   where
     proc = Process.proc "podman"
-      [ "inspect"
+      [ "container"
+      , "inspect"
       , "dbt"
       , "--format"
       , template
