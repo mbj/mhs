@@ -1,4 +1,4 @@
-module Test.Tasty.MGolden (goldenTest) where
+module Test.Tasty.MGolden (Mode(..), goldenTest) where
 
 import Control.Applicative (empty, pure)
 import Control.Monad ((=<<))
