@@ -1,4 +1,4 @@
-module Devtools (Config(..), defaultConfig, main, testTree) where
+module Devtools (Config(..), defaultConfig, defaultMain, main, testTree) where
 
 import Control.Applicative (empty)
 import Data.Function (($))
@@ -17,6 +17,9 @@ defaultConfig :: Config
 defaultConfig = Config
   { hlintArguments = []
   }
+
+defaultMain :: IO ()
+defaultMain = main defaultConfig
 
 main :: Config -> IO ()
 main config = do
