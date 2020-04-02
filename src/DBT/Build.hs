@@ -112,5 +112,5 @@ populateContainer containerName = do
       . Process.proc "buildah"
       $ ["run", "--", convertText containerName] <> command
 
-masterUsername :: Postgresql.Username
-masterUsername = Postgresql.Username "postgres"
+masterUsername :: Postgresql.UserName
+masterUsername = Postgresql.UserName "postgres"

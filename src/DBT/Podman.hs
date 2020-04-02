@@ -1,6 +1,7 @@
 module DBT.Podman
   ( Detach(..)
   , ImageName(..)
+  , getClientConfig
   , getHostPort
   , getImage
   , getMasterPassword
@@ -9,11 +10,13 @@ module DBT.Podman
   , start
   , status
   , stop
+  , withDatabaseContainer
   , withPostgresqlEnv
   )
 where
 
 import Control.Monad (unless)
+import Control.Monad.IO.Unlift (MonadUnliftIO)
 import DBT.Image
 import DBT.Prelude
 import DBT.Process
@@ -30,6 +33,7 @@ import qualified System.Path           as Path
 import qualified System.Path.Directory as Path
 import qualified System.Path.IO        as Path
 import qualified System.Process.Typed  as Process
+import qualified UnliftIO.Exception    as Exception
 
 newtype ContainerName = ContainerName Text
   deriving newtype ToText
@@ -95,8 +99,8 @@ getMasterPassword =
   Postgresql.Password <$> captureText
     (postgresProc ["cat", Path.toString Path.pgMasterPasswordAbs])
 
-getHostPort :: MonadIO m => m Postgresql.Port
-getHostPort = Postgresql.Port <$> captureText proc
+getHostPort :: forall m . MonadIO m => m Postgresql.HostPort
+getHostPort = Postgresql.parseHostPort =<< captureText proc
   where
     proc = Process.proc "podman"
       [ "container"
@@ -123,28 +127,32 @@ getHostPort = Postgresql.Port <$> captureText proc
     mkIndex :: String -> String -> String
     mkIndex index exp = mconcat ["(", "index", " ", exp, " ", index, ")"]
 
-getPostgresqlEnv :: MonadIO m => m Postgresql.Env
-getPostgresqlEnv = do
-  hostPort       <- getHostPort
-  masterPassword <- getMasterPassword
+getClientConfig :: MonadIO m => m Postgresql.ClientConfig
+getClientConfig = do
+  hostPort <- pure <$> getHostPort
+  password <- pure <$> getMasterPassword
 
-  pure Postgresql.Env
-    { hostname       = localhost
-    , masterUsername = Build.masterUsername
+  pure Postgresql.ClientConfig
+    { databaseName = Postgresql.DatabaseName "postgres"
+    , hostName     = localhost
+    , sslMode      = empty
+    , sslRootCert  = empty
+    , userName     = Build.masterUsername
     , ..
     }
 
 withPostgresqlEnv :: MonadIO m => Proc -> m ()
 withPostgresqlEnv proc = do
   environment   <- liftIO Environment.getEnvironment
-  postgresqlEnv <- Postgresql.mkEnv <$> getPostgresqlEnv
+  postgresqlEnv <- Postgresql.toEnv <$> getClientConfig
 
   Process.runProcess_ $ Process.setEnv (environment <> postgresqlEnv) proc
 
 localConfig :: MonadIO m => m ()
 localConfig = do
-  Postgresql.Env{..} <- getPostgresqlEnv
-  home               <- liftIO Path.getHomeDirectory
+  Postgresql.ClientConfig{..} <- getClientConfig
+  home                        <- liftIO Path.getHomeDirectory
+  port                        <- maybe (liftIO $ fail "Local config without port") pure hostPort
 
   let pgpass = home </> Path.relFile ".pgpass"
   liftIO . Path.writeFile
@@ -152,9 +160,9 @@ localConfig = do
       List.intercalate
         ":"
         [ convertText localhost
-        , convertText hostPort
-        , convertText masterUsername
-        , convertText masterPassword
+        , convertText port
+        , convertText userName
+        , maybe "" convertText password
         ]
 
 containerName :: ContainerName
@@ -170,11 +178,11 @@ containerProc arguments
   = Process.proc "podman"
   $ ["run", "--rm", "--", convertText imageName] <> arguments
 
-localhost :: Postgresql.Hostname
-localhost = Postgresql.Hostname "127.0.0.1"
+localhost :: Postgresql.HostName
+localhost = Postgresql.HostName "127.0.0.1"
 
-containerPort :: Postgresql.Port
-containerPort = Postgresql.Port "5432"
+containerPort :: Postgresql.HostPort
+containerPort = Postgresql.HostPort 5432
 
 podmanArguments :: Detach -> [String]
 podmanArguments detach = mconcat
@@ -196,3 +204,20 @@ podmanArguments detach = mconcat
     detachFlag = case detach of
       Detach     -> ["--detach"]
       Foreground -> empty
+
+withDatabaseContainer :: MonadUnliftIO m => (Postgresql.ClientConfig -> m a) -> m a
+withDatabaseContainer action = tryReUse =<< status
+  where
+    tryReUse = \case
+      Running -> reUse
+      Absent  -> startOnce
+
+    startOnce = do
+      log @Text "[DBT] Creating new one off container"
+      Exception.bracket_ (start Detach []) stop runAction
+
+    reUse = do
+      log @Text "[DBT] Re using existing database container"
+      runAction
+
+    runAction = action =<< getClientConfig
