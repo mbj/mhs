@@ -13,11 +13,11 @@ packages:
     git: https://github.com/mbj/devtools-hs
     pantry-tree:
       size: 615
-      sha256: 0156032fe3ff6c1e47cbeb4056182f60ad6bb297209389fc9e46d49e26c67d25
-    commit: 44bfbe3c9f53188c5702f9a10396d509b7cd6a90
+      sha256: ce829e4fc5c4de4c5e59b011de2e804a9df75ee341111905bd11bbec3598b23d
+    commit: 4a05908e59690ed852fde484eb0b2a57f8fb1ae6
   original:
     git: https://github.com/mbj/devtools-hs
-    commit: 44bfbe3c9f53188c5702f9a10396d509b7cd6a90
+    commit: 4a05908e59690ed852fde484eb0b2a57f8fb1ae6
 - completed:
     cabal-file:
       size: 2372
@@ -49,19 +49,19 @@ packages:
 - completed:
     subdir: core
     cabal-file:
-      size: 2530
-      sha256: 60beb276bf10755318a258ef6b5f43733dff520cf790e11216c83703d5d826b6
+      size: 2510
+      sha256: a94ba70edd47058ee91a7dfddf0c5da45f834c2cc717051edb1cc4b45f124318
     name: tasty
     version: 1.2.3
     git: https://github.com/mbj/tasty
     pantry-tree:
       size: 1793
-      sha256: 60bd79f25631f11cf3ae92f3098332efbded183c3cb62af5950e204f4357856e
-    commit: ff484ef812277ad27a9c9449b4597be30c845b13
+      sha256: 9a78c93658061fa5d6d1655faf5532d64abe61c1f7eed389ddc61d922525761a
+    commit: 6b884dc97902feaf6e81ad46f3cc905eb122e5d6
   original:
     subdir: core
     git: https://github.com/mbj/tasty
-    commit: ff484ef812277ad27a9c9449b4597be30c845b13
+    commit: 6b884dc97902feaf6e81ad46f3cc905eb122e5d6
 - completed:
     cabal-file:
       size: 2849
@@ -70,12 +70,12 @@ packages:
     version: 0.0.0.1
     git: https://github.com/mbj/tasty-mgolden
     pantry-tree:
-      size: 489
-      sha256: 9bb766b04eec9f3de64b0a7a883cd1186e25826e571938b6ed724d3e45022172
-    commit: a2e538036e16aa6b002de7bf39392fa0a2d7c370
+      size: 549
+      sha256: 547ac0cbcb76539021a493afbb3b2027197d87e6a905560e0a5d8751810c8e14
+    commit: 42d35574b29b52c8357676375aa4d91223d3e9bc
   original:
     git: https://github.com/mbj/tasty-mgolden
-    commit: a2e538036e16aa6b002de7bf39392fa0a2d7c370
+    commit: 42d35574b29b52c8357676375aa4d91223d3e9bc
 snapshots:
 - completed:
     size: 524996

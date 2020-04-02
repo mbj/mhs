@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: cc1a68fb2fe6d8a9aaea05d8c7fbe5af2e2b98084810decf061e37e4920dc975
+-- hash: 241d282527b13259e35f54f8203bb76b129a346a28d8766fd3c69ebfa6fda6e6
 
 name:           pgt
 version:        0.0.1
@@ -13,10 +13,10 @@ bug-reports:    https://github.com/mbj/pgt/issues
 license:        AllRightsReserved
 build-type:     Simple
 extra-source-files:
-    spec/failure.expected
-    spec/failure.sql
-    spec/success.expected
-    spec/success.sql
+    examples/failure.expected
+    examples/failure.sql
+    examples/success.expected
+    examples/success.sql
 
 source-repository head
   type: git
@@ -26,7 +26,6 @@ library
   exposed-modules:
       PGT
       PGT.CLI
-      PGT.Formatter
       PGT.Prelude
   other-modules:
       Paths_pgt
@@ -38,14 +37,16 @@ library
       Diff >=0.3 && <0.4
     , base >=4.12 && <4.13
     , bytestring >=0.10 && <0.11
+    , containers >=0.6 && <0.7
     , directory >=1.3 && <1.4
     , filepath >=1.4 && <1.5
-    , hspec >=2.7 && <2.8
-    , hspec-core >=2.7 && <2.8
     , mprelude ==0.0.0.1
     , optparse-applicative >=0.14 && <0.15
     , ordered-containers >=0.2 && <0.3
+    , pathtype >=0.8.1 && <0.9
     , source-constraints ==0.0.0.1
+    , tasty >=1.2 && <1.3
+    , tasty-mgolden ==0.0.0.1
     , text >=1.2 && <1.3
     , text-conversions >=0.3 && <0.4
     , typed-process >=0.2 && <0.3
@@ -66,15 +67,17 @@ executable pgt
       Diff >=0.3 && <0.4
     , base >=4.12 && <4.13
     , bytestring >=0.10 && <0.11
+    , containers >=0.6 && <0.7
     , directory >=1.3 && <1.4
     , filepath >=1.4 && <1.5
-    , hspec >=2.7 && <2.8
-    , hspec-core >=2.7 && <2.8
     , mprelude ==0.0.0.1
     , optparse-applicative >=0.14 && <0.15
     , ordered-containers >=0.2 && <0.3
+    , pathtype >=0.8.1 && <0.9
     , pgt
     , source-constraints ==0.0.0.1
+    , tasty >=1.2 && <1.3
+    , tasty-mgolden ==0.0.0.1
     , text >=1.2 && <1.3
     , text-conversions >=0.3 && <0.4
     , typed-process >=0.2 && <0.3
@@ -94,45 +97,17 @@ test-suite devtools
       Diff >=0.3 && <0.4
     , base >=4.12 && <4.13
     , bytestring >=0.10 && <0.11
+    , containers >=0.6 && <0.7
     , devtools
     , directory >=1.3 && <1.4
     , filepath >=1.4 && <1.5
-    , hspec >=2.7 && <2.8
-    , hspec-core >=2.7 && <2.8
     , mprelude ==0.0.0.1
     , optparse-applicative >=0.14 && <0.15
     , ordered-containers >=0.2 && <0.3
+    , pathtype >=0.8.1 && <0.9
     , source-constraints ==0.0.0.1
-    , text >=1.2 && <1.3
-    , text-conversions >=0.3 && <0.4
-    , typed-process >=0.2 && <0.3
-    , unix >=2.7 && <2.8
-    , unliftio >=0.2 && <0.3
-    , unliftio-core >=0.1 && <0.2
-  default-language: Haskell2010
-
-test-suite hspec
-  type: exitcode-stdio-1.0
-  main-is: Spec.hs
-  other-modules:
-      Paths_pgt
-  hs-source-dirs:
-      spec
-  default-extensions: CPP DataKinds DeriveAnyClass DeriveGeneric DerivingStrategies DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving MultiParamTypeClasses NoImplicitPrelude OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables StrictData TemplateHaskell
-  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin-opt=SourceConstraints:local:Pgt -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
-  build-depends:
-      Diff >=0.3 && <0.4
-    , base >=4.12 && <4.13
-    , bytestring >=0.10 && <0.11
-    , directory >=1.3 && <1.4
-    , filepath >=1.4 && <1.5
-    , hspec >=2.7 && <2.8
-    , hspec-core >=2.7 && <2.8
-    , mprelude ==0.0.0.1
-    , optparse-applicative >=0.14 && <0.15
-    , ordered-containers >=0.2 && <0.3
-    , pgt
-    , source-constraints ==0.0.0.1
+    , tasty >=1.2 && <1.3
+    , tasty-mgolden ==0.0.0.1
     , text >=1.2 && <1.3
     , text-conversions >=0.3 && <0.4
     , typed-process >=0.2 && <0.3
