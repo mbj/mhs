@@ -9,7 +9,11 @@ import qualified Test.Tasty as Tasty
 main :: IO ()
 main
   = Tasty.defaultMain
-  $ Tasty.testGroup "dbt" [Devtools.testTree Devtools.defaultConfig, image]
+  $ Tasty.testGroup "dbt" [Devtools.testTree devtoolsConfig, image]
+
+devtoolsConfig :: Devtools.Config
+devtoolsConfig = Devtools.defaultConfig
+  { Devtools.hlintArguments = ["-XTypeApplications"] }
 
 image :: Tasty.TestTree
 image

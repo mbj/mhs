@@ -97,6 +97,7 @@ typed-process 0.2.6.0
 unbounded-delays 0.1.1.0
 uniplate 1.6.12
 unix 2.7.2.2
+unliftio 0.2.12
 unliftio-core 0.1.2.0
 unordered-containers 0.2.10.0
 utility-ht 0.0.14
