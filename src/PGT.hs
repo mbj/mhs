@@ -1,29 +1,30 @@
 module PGT
-  ( Config
-  , PSQLConfig
+  ( Config(..)
   , Test(..)
+  , configure
   , fromEnv
   , runExamples
   , runList
   , runTests
   , runUpdates
+  , testTree
   )
 where
 
 import Control.Monad.IO.Unlift (MonadUnliftIO)
-import Data.Bifunctor (second)
 import Data.String (String)
 import Numeric.Natural (Natural)
 import PGT.Prelude
 import System.Posix.Types (ProcessID)
 import UnliftIO.Exception (bracket)
 
+import qualified DBT.Postgresql             as Postgresql
 import qualified Data.ByteString.Lazy       as LBS
 import qualified Data.Foldable              as Foldable
 import qualified Data.Text                  as Text
 import qualified Data.Text.Encoding         as Text
 import qualified Data.Text.IO               as Text
-import qualified System.Environment         as Environment
+import qualified System.Environment         as System
 import qualified System.Exit                as System
 import qualified System.Path                as Path
 import qualified System.Posix.Process       as Process
@@ -41,18 +42,8 @@ data Test = Test
 
 data Config = Config
   { pid        :: ProcessID
-  , psqlAdmin  :: PSQLConfig
-  , psqlUser   :: PSQLConfig
-  }
-
-data PSQLConfig = PSQLConfig
-  { database    :: Text
-  , host        :: Text
-  , path        :: Text
-  , port        :: Text
-  , sslmode     :: Text
-  , sslrootcert :: Text
-  , user        :: Text
+  , psqlAdmin  :: Postgresql.ClientConfig
+  , psqlUser   :: Postgresql.ClientConfig
   }
 
 runList :: forall f m . (Foldable f, MonadIO m) => Config -> f Test -> m ()
@@ -68,10 +59,9 @@ runTasty :: MonadIO m => Tasty.OptionSet -> Config -> [Test] -> m ()
 runTasty tastyOptions config tests = liftIO $ do
   Tasty.Runners.installSignalHandlers
   maybe failIngredients run
-    $ Tasty.Runners.tryIngredients Tasty.defaultIngredients tastyOptions goldenTests
+    . Tasty.Runners.tryIngredients Tasty.defaultIngredients tastyOptions
+    $ testTree config tests
   where
-    goldenTests = Tasty.testGroup "pgt" $ mkGolden config <$> tests
-
     failIngredients :: IO a
     failIngredients = fail "Internal failure running ingredients"
 
@@ -87,6 +77,9 @@ runTests = runTasty mempty
 
 runUpdates :: MonadIO m => Config -> [Test] -> m ()
 runUpdates = runTasty (Tasty.singleOption Tasty.MGolden.UpdateExpected)
+
+testTree :: Config -> [Test] -> Tasty.TestTree
+testTree config tests = Tasty.testGroup "pgt" $ mkGolden config <$> tests
 
 mkGolden :: Config -> Test -> Tasty.TestTree
 mkGolden config test@Test{..}
@@ -120,14 +113,15 @@ runTestSession
 runTestSession config runProcess test@Test{..} =
   withTestDatabase config test runSession
   where
-    runSession :: PSQLConfig -> m a
-    runSession psqlConfig =
-      runProcess . psql psqlConfig =<< LBS.fromStrict . Text.encodeUtf8 <$> readFile path
+    runSession :: Postgresql.ClientConfig -> m a
+    runSession psqlConfig = do
+      env  <- pgEnv psqlConfig
+      body <- LBS.fromStrict . Text.encodeUtf8 <$> readFile path
 
-    psql psqlConfig body
-      = pgEnv psqlConfig
-      . Process.setStdin (Process.byteStringInput body)
-      $ Process.proc "psql" arguments
+      runProcess
+        . Process.setEnv env
+        . Process.setStdin (Process.byteStringInput body)
+        $ Process.proc "psql" arguments
 
     arguments :: [String]
     arguments =
@@ -139,19 +133,20 @@ runTestSession config runProcess test@Test{..} =
       , "ON_ERROR_STOP=1"
       ]
 
-withTestDatabase :: MonadUnliftIO m => Config -> Test -> (PSQLConfig -> m a) -> m a
+withTestDatabase :: MonadUnliftIO m => Config -> Test -> (Postgresql.ClientConfig -> m a) -> m a
 withTestDatabase config@Config{..} test action =
   bracket
     (createTestDatabase config test)
     (dropDatabase psqlAdmin)
-    (\testDatabase -> action $ psqlUser { database = testDatabase })
+    (\testDatabase -> action $ psqlUser { Postgresql.databaseName = testDatabase })
 
-createTestDatabase :: MonadIO m => Config -> Test -> m Text
+createTestDatabase :: MonadIO m => Config -> Test -> m Postgresql.DatabaseName
 createTestDatabase Config{..} Test{..} = do
-  Process.runProcess_ $ pgEnv psqlAdmin command
+  env <- pgEnv psqlAdmin
+  Process.runProcess_ $ Process.setEnv env command
   pure testDatabase
   where
-    masterDatabase = database psqlAdmin
+    masterDatabase = Postgresql.databaseName psqlAdmin
 
     command = Process.proc
       "createdb"
@@ -162,49 +157,56 @@ createTestDatabase Config{..} Test{..} = do
       ]
 
     testDatabase =
-      Text.intercalate
-        "_"
-        [ masterDatabase
-        , convertText $ show pid
-        , convertText $ show id
-        ]
+      Postgresql.DatabaseName $
+        Text.intercalate
+          "_"
+          [ convertText masterDatabase
+          , convertText $ show pid
+          , convertText $ show id
+          ]
 
-dropDatabase :: MonadIO m => PSQLConfig -> Text -> m ()
-dropDatabase config dbName =
-  Process.runProcess_ . pgEnv config $ Process.proc "dropdb" ["--", convertText dbName]
+dropDatabase :: MonadIO m => Postgresql.ClientConfig -> Postgresql.DatabaseName -> m ()
+dropDatabase config databaseName = do
+  env <- pgEnv config
+  Process.runProcess_ . Process.setEnv env $ Process.proc "dropdb" ["--", convertText databaseName]
 
-pgEnv :: PSQLConfig -> Process.ProcessConfig a b c -> Process.ProcessConfig a b c
-pgEnv PSQLConfig{..} = Process.setEnv env
-  where
-    env :: [(String, String)]
-    env = second convertText <$>
-      [ ("PATH",          path)
-      , ("PGDATABASE",    database)
-      , ("PGHOST",        host)
-      , ("PGPORT",        port)
-      , ("PGSSLMODE",     sslmode)
-      , ("PGSSLROOTCERT", sslrootcert)
-      , ("PGUSER",        user)
-      ]
+pgEnv :: MonadIO m => Postgresql.ClientConfig -> m [(String, String)]
+pgEnv clientConfig = do
+  env <- liftIO System.getEnvironment
+  pure $ env <> Postgresql.toEnv clientConfig
+
+configure
+  :: MonadIO m
+  => Postgresql.ClientConfig
+  -> Maybe Postgresql.ClientConfig
+  -> m Config
+configure psqlAdmin psqlUser = do
+  pid          <- liftIO Process.getProcessID
+
+  pure $ Config
+    { psqlUser = fromMaybe psqlAdmin psqlUser
+    , ..
+    }
 
 fromEnv :: forall m . MonadIO m => m Config
 fromEnv = do
-  database    <- lookup "PGDATABASE"
-  host        <- lookup "PGHOST"
-  path        <- lookup "PATH"
-  pgtUser     <- lookup "PGTUSER"
-  pid         <- liftIO Process.getProcessID
-  port        <- lookup "PGPORT"
-  sslmode     <- lookup "PGSSLMODE"
-  sslrootcert <- lookup "PGSSLROOTCERT"
-  user        <- lookup "PGUSER"
-  let psqlAdmin = PSQLConfig{..}
-      psqlUser  = psqlAdmin { user = pgtUser }
+  databaseName <- Postgresql.DatabaseName <$> lookup "PGDATABASE"
+  hostName     <- Postgresql.HostName     <$> lookup "PGHOST"
+  pgtUser      <- Postgresql.UserName     <$> lookup "PGTUSER"
+  userName     <- Postgresql.UserName     <$> lookup "PGUSER"
 
-  pure Config{..}
+  sslMode      <- pure . Postgresql.SSLMode      <$> lookup "PGSSLMODE"
+  sslRootCert  <- pure . Postgresql.SSLRootCert  <$> lookup "PGSSLROOTCERT"
+
+  hostPort     <- pure <$> (Postgresql.parseHostPort =<< lookup "PGPORT")
+
+  let psqlAdmin = Postgresql.ClientConfig{password = empty, ..}
+      psqlUser  = psqlAdmin { Postgresql.userName = pgtUser }
+
+  configure psqlAdmin $ pure psqlUser
   where
     lookup :: String -> m Text
-    lookup = (convertText <$>) . liftIO . Environment.getEnv
+    lookup = (convertText <$>) . liftIO . System.getEnv
 
 readFile :: MonadIO m => Path.RelFile -> m Text
 readFile = liftIO . Text.readFile . Path.toString

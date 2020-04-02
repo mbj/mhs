@@ -14,3 +14,5 @@ extra-deps:
   - core
 - git: https://github.com/mbj/tasty-mgolden
   commit: 42d35574b29b52c8357676375aa4d91223d3e9bc
+- git: https://github.com/mbj/dbt
+  commit: 6a8a276c0f64b0d2e6635723b0f6e7416ad1f32e
