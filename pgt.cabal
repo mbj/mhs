@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 241d282527b13259e35f54f8203bb76b129a346a28d8766fd3c69ebfa6fda6e6
+-- hash: dcf5975b9368332076e3fcd3d4233a4885a6677b17f2b0cd289b460f02c92a39
 
 name:           pgt
 version:        0.0.1
@@ -27,6 +27,7 @@ library
       PGT
       PGT.CLI
       PGT.Prelude
+      PGT.Selector
   other-modules:
       Paths_pgt
   hs-source-dirs:
