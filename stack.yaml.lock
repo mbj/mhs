@@ -85,11 +85,11 @@ packages:
     git: https://github.com/mbj/dbt
     pantry-tree:
       size: 1042
-      sha256: 7fff486d30697e05d7b31509fc049456cdde613cb7d6adee922b9c1f51e57909
-    commit: 6a8a276c0f64b0d2e6635723b0f6e7416ad1f32e
+      sha256: b7d93c38c3b7d755bac198ae814fb136331b0888d07a75bb26ad5b45748900ba
+    commit: 356eb2e18a26eb13e522f0b794d2924bf37eab4b
   original:
     git: https://github.com/mbj/dbt
-    commit: 6a8a276c0f64b0d2e6635723b0f6e7416ad1f32e
+    commit: 356eb2e18a26eb13e522f0b794d2924bf37eab4b
 snapshots:
 - completed:
     size: 524996
