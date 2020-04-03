@@ -12,7 +12,6 @@ module PGT
 where
 
 import Control.Monad.IO.Unlift (MonadUnliftIO)
-import Data.String (String)
 import Numeric.Natural (Natural)
 import PGT.Prelude
 import System.Posix.Types (ProcessID)
@@ -45,6 +44,7 @@ data Config = Config
   , psqlAdmin  :: Postgresql.ClientConfig
   , psqlUser   :: Postgresql.ClientConfig
   }
+  deriving stock Show
 
 runList :: forall f m . (Foldable f, MonadIO m) => Config -> f Test -> m ()
 runList _config = Foldable.mapM_ printTest
