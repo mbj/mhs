@@ -1,4 +1,4 @@
-module DBT.Image (ImageName(..), build, name, testImageExists) where
+module DBT.Image (Name(..), build, dockerfileContents, name, testImageExists) where
 
 import DBT.Prelude
 import Data.ByteString (ByteString)
@@ -10,16 +10,16 @@ import qualified System.Exit          as Exit
 import qualified System.Path          as Path
 import qualified System.Process.Typed as Process
 
-newtype ImageName = ImageName Text
+newtype Name = Name Text
   deriving newtype ToText
 
-name :: ImageName
+name :: Name
 name
-  = ImageName
-  . ("localhost/dbt-" <>)
+  = Name
+  . ("dbt-" <>)
   . convertText
   . show
-  $ Hash.hashWith Hash.SHA3_256 dockerfile
+  $ Hash.hashWith Hash.SHA3_256 dockerfileContents
 
 testImageExists :: MonadIO m => m Bool
 testImageExists = checkExit <$> Process.runProcess process
@@ -40,10 +40,10 @@ testImageExists = checkExit <$> Process.runProcess process
 build :: forall m . MonadIO m => m ()
 build
   = Process.runProcess_
-  $ Process.setStdin (Process.byteStringInput $ LBS.fromStrict dockerfile)
+  $ Process.setStdin (Process.byteStringInput $ LBS.fromStrict dockerfileContents)
   $ Process.proc "podman" ["build", "--tag", convertText name, "-"]
 
 #ifndef __HLINT__
-dockerfile :: ByteString
-dockerfile = $$(TH.readFile $ Path.file "Dockerfile")
+dockerfileContents :: ByteString
+dockerfileContents = $$(TH.readFile $ Path.file "Dockerfile")
 #endif

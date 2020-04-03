@@ -39,9 +39,11 @@ ghc-options:
 
 default-extensions:
 - CPP
+- DataKinds
 - DerivingStrategies
 - DuplicateRecordFields
 - GeneralizedNewtypeDeriving
+- KindSignatures
 - LambdaCase
 - NoImplicitPrelude
 - NumericUnderscores
@@ -56,8 +58,9 @@ default-extensions:
 library:
   source-dirs: src
   exposed-modules:
+  - DBT
+  - DBT.Backend
   - DBT.CLI
-  - DBT.Podman
   - DBT.Postgresql
 
 executables:
