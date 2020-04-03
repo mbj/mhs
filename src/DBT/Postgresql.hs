@@ -9,6 +9,8 @@ module DBT.Postgresql
   , SSLMode(..)
   , SSLRootCert(..)
   , UserName(..)
+  , defaultHostPort
+  , effectiveHostPort
   , parseHostPort
   , toEnv
   )
@@ -85,3 +87,9 @@ parseHostPort input = maybe failParse (pure . HostPort) . readMaybe $ convertTex
   where
     failParse :: m HostPort
     failParse = liftIO . fail $ "Cannot parse PostgresqlPort from input: " <> show input
+
+defaultHostPort :: HostPort
+defaultHostPort = HostPort 5432
+
+effectiveHostPort :: ClientConfig -> HostPort
+effectiveHostPort ClientConfig{..} = fromMaybe defaultHostPort hostPort
