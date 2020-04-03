@@ -81,7 +81,6 @@ stm 2.5.0.0
 syb 0.7.1
 tagged 0.8.6
 tasty 1.2.3
-tasty-expected-failure 0.11.1.2
 tasty-mgolden 0.0.0.1
 template-haskell 2.14.0.0
 terminfo 0.4.1.2
