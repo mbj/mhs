@@ -12,7 +12,6 @@ module PGT
 where
 
 import Control.Monad.IO.Unlift (MonadUnliftIO)
-import Data.String (String)
 import Numeric.Natural (Natural)
 import PGT.Prelude
 import System.Posix.Types (ProcessID)

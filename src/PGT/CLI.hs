@@ -3,7 +3,6 @@
 module PGT.CLI (run) where
 
 import Control.Applicative (Alternative(many))
-import Data.String (String)
 import Data.Traversable (Traversable)
 import PGT
 import PGT.Prelude
