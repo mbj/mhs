@@ -52,6 +52,7 @@ populateContainer containerName = do
         , "--"
         , "openssl"
         , "postgresql"
+        , "postgresql-contrib"
         ]
 
       runContainer
