@@ -2,7 +2,7 @@ import MPrelude
 import System.IO (IO)
 import Test.Tasty.HUnit
 
-import qualified DBT.Podman as Podman
+import qualified DBT.Backend as Backend
 import qualified Devtools
 import qualified Test.Tasty as Tasty
 
@@ -17,4 +17,4 @@ devtoolsConfig = Devtools.defaultConfig
 
 image :: Tasty.TestTree
 image
-  = testCase "image" . void $ Podman.getImage
+  = testCase "image" . void $ Backend.getImage @'Backend.Podman

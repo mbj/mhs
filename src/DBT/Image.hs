@@ -1,36 +1,25 @@
-module DBT.Image (ImageName(..), hbaSource, imageName, testImageExists) where
+module DBT.Image (Name(..), build, dockerfileContents, name, testImageExists) where
 
 import DBT.Prelude
 import Data.ByteString (ByteString)
 
 import qualified Crypto.Hash          as Hash
 import qualified DBT.TH               as TH
+import qualified Data.ByteString.Lazy as LBS
 import qualified System.Exit          as Exit
 import qualified System.Path          as Path
 import qualified System.Process.Typed as Process
 
-newtype ImageName = ImageName Text
+newtype Name = Name Text
   deriving newtype ToText
 
-imageName :: ImageName
-imageName
-  = ImageName
-  . ("localhost/dbt-" <>)
+name :: Name
+name
+  = Name
+  . ("dbt-" <>)
   . convertText
   . show
-  . Hash.hashFinalize
-  $ Hash.hashUpdates
-    (Hash.hashInit :: Hash.Context Hash.SHA3_256)
-    [buildSource, hbaSource]
-#ifndef __HLINT__
-  where
-    buildSource = $$(TH.readFile $ Path.file "src/DBT/Build.hs")
-#endif
-
-#ifndef __HLINT__
-hbaSource :: ByteString
-hbaSource = $$(TH.readFile $ Path.file "pg_hba.conf")
-#endif
+  $ Hash.hashWith Hash.SHA3_256 dockerfileContents
 
 testImageExists :: MonadIO m => m Bool
 testImageExists = checkExit <$> Process.runProcess process
@@ -41,9 +30,20 @@ testImageExists = checkExit <$> Process.runProcess process
         [ "image"
         , "exists"
         , "--"
-        , convertText imageName
+        , convertText name
         ]
 
     checkExit = \case
       Exit.ExitSuccess -> True
       _                -> False
+
+build :: forall m . MonadIO m => m ()
+build
+  = Process.runProcess_
+  $ Process.setStdin (Process.byteStringInput $ LBS.fromStrict dockerfileContents)
+  $ Process.proc "podman" ["build", "--tag", convertText name, "-"]
+
+#ifndef __HLINT__
+dockerfileContents :: ByteString
+dockerfileContents = $$(TH.readFile $ Path.file "Dockerfile")
+#endif

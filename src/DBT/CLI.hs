@@ -5,7 +5,7 @@ import Control.Monad (join)
 import DBT.Prelude
 import System.IO (IO)
 
-import qualified DBT.Podman           as Podman
+import qualified DBT.Backend           as Backend
 import qualified Data.Text.IO         as Text
 import qualified Options.Applicative  as CLI
 import qualified System.Environment   as Environment
@@ -47,56 +47,56 @@ parseCLI
     localConfigCommand =
       mkCommand
         "local-config"
-        (pure Podman.localConfig)
+        (pure (Backend.localConfig @'Backend.Podman))
         "Perform local database setup"
 
     printImageCommand :: CLI.Mod CLI.CommandFields (m ())
     printImageCommand =
       mkCommand
         "image"
-        (pure $ print Podman.getImage)
+        (pure $ print (Backend.getImage @'Backend.Podman))
         "Print image"
 
     printMasterPasswordCommand :: CLI.Mod CLI.CommandFields (m ())
     printMasterPasswordCommand =
       mkCommand
         "master-password"
-        (pure $ print Podman.getMasterPassword)
+        (pure $ print (Backend.getMasterPassword @'Backend.Podman))
         "Print master password"
 
     printPortCommand :: CLI.Mod CLI.CommandFields (m ())
     printPortCommand =
       mkCommand
         "port"
-        (pure $ print Podman.getHostPort)
+        (pure $ print (Backend.getHostPort @'Backend.Podman))
         "Print host port"
 
     runCommand :: CLI.Mod CLI.CommandFields (m ())
     runCommand =
       mkCommand
         "run"
-        (Podman.run <$> arguments)
+        (Backend.run @'Backend.Podman <$> arguments)
         "Run command in new container"
 
     startCommand :: CLI.Mod CLI.CommandFields (m ())
     startCommand =
       mkCommand
         "start"
-        (Podman.start <$> detachOption <*> arguments)
+        (Backend.start @'Backend.Podman <$> detachOption <*> arguments)
         "Start database container"
 
     stopCommand :: CLI.Mod CLI.CommandFields (m ())
     stopCommand =
       mkCommand
         "stop"
-        (pure Podman.stop)
+        (pure (Backend.stop @'Backend.Podman))
         "Stop database container"
 
     statusCommand :: CLI.Mod CLI.CommandFields (m ())
     statusCommand =
       mkCommand
         "status"
-        (pure $ print Podman.status)
+        (pure $ print (Backend.status @'Backend.Podman))
         "Print status"
 
     argument :: CLI.Parser String
@@ -113,7 +113,7 @@ parseCLI
     mkCommand name parser desc = CLI.command name (wrapHelper parser desc)
 
     detachOption
-      = CLI.flag Podman.Detach Podman.Foreground
+      = CLI.flag Backend.Detach Backend.Foreground
       $ CLI.long "foreground" <> CLI.help "Start in foreground"
 
     arguments = many argument
@@ -122,4 +122,4 @@ print :: (MonadIO m, ToText a) => m a -> m ()
 print action = liftIO . Text.putStrLn =<< convertText <$> action
 
 runEnv :: MonadIO m => String -> [String] -> m ()
-runEnv app arguments = Podman.withPostgresqlEnv $ Process.proc app arguments
+runEnv app arguments = Backend.withPostgresqlEnv @'Backend.Podman $ Process.proc app arguments
