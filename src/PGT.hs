@@ -44,6 +44,7 @@ data Config = Config
   , psqlAdmin  :: Postgresql.ClientConfig
   , psqlUser   :: Postgresql.ClientConfig
   }
+  deriving stock Show
 
 runList :: forall f m . (Foldable f, MonadIO m) => Config -> f Test -> m ()
 runList _config = Foldable.mapM_ printTest
