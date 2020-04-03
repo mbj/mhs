@@ -36,6 +36,7 @@ ghc-options:
 - -Wredundant-constraints
 - -fplugin=SourceConstraints
 - -funbox-strict-fields
+- -optP-Wno-nonportable-include-path
 
 default-extensions:
 - CPP
