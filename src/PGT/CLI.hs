@@ -10,10 +10,10 @@ import PGT.Prelude
 import PGT.Selector
 import System.IO (IO)
 
-import qualified Data.Foldable         as Foldable
-import qualified Options.Applicative   as CLI
-import qualified System.IO             as IO
-import qualified System.Path           as Path
+import qualified Data.Foldable       as Foldable
+import qualified Options.Applicative as CLI
+import qualified System.IO           as IO
+import qualified System.Path         as Path
 
 data Subcommand = forall t . (Traversable t) => Subcommand (Config -> [Test] -> IO ()) (t Selector)
 
@@ -37,8 +37,8 @@ parseCLI
   . CLI.execParserPure CLI.defaultPrefs (wrapHelper subcommands)
   . Foldable.toList
   where
-    selector      = CLI.argument (Selector <$> CLI.eitherReader Path.parse) (CLI.metavar "SELECTOR")
-    selectors     = many selector
+    selector  = CLI.argument (Selector <$> CLI.eitherReader Path.parse) (CLI.metavar "SELECTOR")
+    selectors = many selector
 
     wrapHelper :: CLI.Parser a -> CLI.ParserInfo a
     wrapHelper parser = CLI.info (CLI.helper <*> parser) CLI.idm
