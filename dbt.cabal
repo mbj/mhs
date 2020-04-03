@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 809023cd1cafb28e6b79c21631911dd267317b4ccd0311d4f472c6edc8792f02
+-- hash: 3b16b388f70114d618852640e87a22939a47d944704e3d5c890c3f8e00b8837c
 
 name:           dbt
 version:        0.0.0.1
@@ -26,9 +26,7 @@ library
       DBT.Podman
       DBT.Postgresql
   other-modules:
-      DBT.Build
       DBT.Image
-      DBT.Path
       DBT.Prelude
       DBT.Process
       DBT.TH

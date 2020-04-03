@@ -23,8 +23,7 @@ import DBT.Process
 import Data.Monoid (mconcat)
 import System.Path ((</>))
 
-import qualified DBT.Build             as Build
-import qualified DBT.Path              as Path
+import qualified DBT.Image             as Image
 import qualified DBT.Postgresql        as Postgresql
 import qualified Data.List             as List
 import qualified System.Environment    as Environment
@@ -57,9 +56,9 @@ start detach arguments = do
   Process.runProcess_ $
     Process.proc "podman" $ podmanArguments detach <>
       [ "setuidgid"
-      , convertText Build.masterUsername
+      , convertText masterUserName
       , "postgres"
-      , "-D", Path.toString Path.pgData
+      , "-D", Path.toString pgData
       , "-h", "0.0.0.0"  -- connections from outside the container
       , "-k", ""         -- no unix socket
       ] <> arguments
@@ -90,14 +89,14 @@ getImage :: MonadIO m => m ImageName
 getImage = do
   exists <- testImageExists
 
-  unless exists Build.buildImage
+  unless exists Image.build
 
-  pure imageName
+  pure Image.name
 
 getMasterPassword :: MonadIO m => m Postgresql.Password
 getMasterPassword =
   Postgresql.Password <$> captureText
-    (postgresProc ["cat", Path.toString Path.pgMasterPasswordAbs])
+    (postgresProc ["cat", Path.toString pgMasterPasswordAbs])
 
 getHostPort :: forall m . MonadIO m => m Postgresql.HostPort
 getHostPort = Postgresql.parseHostPort =<< captureText proc
@@ -122,7 +121,7 @@ getHostPort = Postgresql.parseHostPort =<< captureText proc
     mkTemplate exp = mconcat ["{{", exp, "}}"]
 
     mkField :: String -> String -> String
-    mkField name exp = exp <> ('.':name)
+    mkField key exp = exp <> ('.':key)
 
     mkIndex :: String -> String -> String
     mkIndex index exp = mconcat ["(", "index", " ", exp, " ", index, ")"]
@@ -137,7 +136,7 @@ getClientConfig = do
     , hostName     = localhost
     , sslMode      = empty
     , sslRootCert  = empty
-    , userName     = Build.masterUsername
+    , userName     = masterUserName
     , ..
     }
 
@@ -171,12 +170,12 @@ containerName = ContainerName "dbt"
 postgresProc :: [String] -> Proc
 postgresProc arguments
   = containerProc
-  $ ["setuidgid", convertText Build.masterUsername] <> arguments
+  $ ["setuidgid", convertText masterUserName] <> arguments
 
 containerProc :: [String] -> Proc
 containerProc arguments
   = Process.proc "podman"
-  $ ["run", "--rm", "--", convertText imageName] <> arguments
+  $ ["run", "--rm", "--", convertText Image.name] <> arguments
 
 localhost :: Postgresql.HostName
 localhost = Postgresql.HostName "127.0.0.1"
@@ -196,7 +195,7 @@ podmanArguments detach = mconcat
     ]
   , detachFlag
   , [ "--"
-    , convertText imageName
+    , convertText Image.name
     ]
   ]
   where
@@ -221,3 +220,15 @@ withDatabaseContainer action = tryReUse =<< status
       runAction
 
     runAction = action =<< getClientConfig
+
+pgData :: Path.AbsDir
+pgData = pgHome </> Path.relDir "data"
+
+pgHome :: Path.AbsDir
+pgHome = Path.absDir "/var/lib/postgresql"
+
+pgMasterPasswordAbs :: Path.AbsFile
+pgMasterPasswordAbs = pgHome </> Path.relFile "master-password.txt"
+
+masterUserName :: Postgresql.UserName
+masterUserName = Postgresql.UserName "postgres"
