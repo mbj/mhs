@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4deef5fabe46f6d822bbe99be20baf08458d4ea203b4aa783a03b60636649090
+-- hash: 52ca0da175b3ea124f91b037bd4b74091faae0622b76fa32ae325cfd03c2cad6
 
 name:           dbt
 version:        0.0.0.1
@@ -35,7 +35,7 @@ library
   hs-source-dirs:
       src
   default-extensions: CPP DataKinds DerivingStrategies DuplicateRecordFields GeneralizedNewtypeDeriving KindSignatures LambdaCase NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TypeApplications
-  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
       base >=4.12 && <4.13
     , bytestring >=0.10 && <0.11
@@ -57,7 +57,7 @@ executable dbt
   other-modules:
       Paths_dbt
   default-extensions: CPP DataKinds DerivingStrategies DuplicateRecordFields GeneralizedNewtypeDeriving KindSignatures LambdaCase NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TypeApplications
-  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -rtsopts -threaded -with-rtsopts=-N
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       base >=4.12 && <4.13
     , bytestring >=0.10 && <0.11
@@ -81,7 +81,7 @@ test-suite devtools
   other-modules:
       Paths_dbt
   default-extensions: CPP DataKinds DerivingStrategies DuplicateRecordFields GeneralizedNewtypeDeriving KindSignatures LambdaCase NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TypeApplications
-  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -rtsopts -threaded -with-rtsopts=-N
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       base >=4.12 && <4.13
     , bytestring >=0.10 && <0.11
