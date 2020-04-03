@@ -1,7 +1,7 @@
 import MPrelude
 import System.IO (IO)
 
-import qualified DBT.Podman     as DBT
+import qualified DBT
 import qualified DBT.Postgresql as DBT
 import qualified Data.Text.IO   as Text
 import qualified Devtools
