@@ -23,25 +23,25 @@ RKgPgxSylguY+X3uuPaV9ZIX8hCuAuFF1fzbTvl/plyeptB9HF6vtXe4CbsZvdYU\n\
 RUN echo '@mbj https://mbj-apk.s3.dualstack.us-east-1.amazonaws.com' >> /etc/apk/repositories
 
 # Install dependencies
-RUN apk add                       \
-  --no-cache                      \
-  --                              \
-  cache-s3@mbj=0.1.5-r0           \
-  curl=7.67.0-r0                  \
-  ghc=8.6.5-r3                    \
-  git=2.24.1-r0                   \
-  libpq@mbj=12.2-r0               \
-  make=4.2.1-r2                   \
-  musl-dev=1.1.24-r1              \
-  ncurses-dev=6.1_p20200118-r2    \
-  ncurses-static=6.1_p20200118-r2 \
-  postgresql-dev@mbj=12.2-r0      \
-  openssl-libs-static=1.1.1d-r3   \
-  stack@mbj=2.1.3-r0              \
-  tar=1.32-r1                     \
-  xz=5.2.4-r0                     \
-  zlib-dev=1.2.11-r3              \
-  zlib-static=1.2.11-r3
+RUN apk add                  \
+  --no-cache                 \
+  --                         \
+  cache-s3@mbj=0.1.5-r0      \
+  curl                       \
+  ghc=8.6.5-r3               \
+  git=2.24.1-r0              \
+  libpq@mbj=12.2-r0          \
+  make                       \
+  musl-dev                   \
+  ncurses-dev                \
+  ncurses-static             \
+  postgresql-dev@mbj=12.2-r0 \
+  openssl-libs-static        \
+  stack@mbj=2.1.3-r0         \
+  tar                        \
+  xz                         \
+  zlib-dev                   \
+  zlib-static
 
 # Setup build directory
 RUN mkdir -p -m 0700 /opt/build
