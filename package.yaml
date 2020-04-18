@@ -63,19 +63,12 @@ library:
   - OpenApi.Schema
   - OpenApi.Types
 tests:
-  devtools:
-    main:          test/Devtools.hs
-    ghc-options:
-    - -rtsopts
-    - -threaded
-    - -with-rtsopts=-N
-    dependencies:
-    - devtools
   tasty:
     main:          Main.hs
     source-dirs:   test
     other-modules: []
     dependencies:
+    - devtools
     - openapi
     - tasty
     - tasty-hunit

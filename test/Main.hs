@@ -12,12 +12,18 @@ import qualified Data.Aeson                as JSON
 import qualified Data.Aeson.Types          as JSON
 import qualified Data.HashMap.Strict       as HashMap
 import qualified Data.Map.Strict           as Map
+import qualified Devtools
 import qualified Network.HTTP.Types.Status as HTTP
 import qualified OpenApi.Paths             as Paths
 import qualified OpenApi.Schema            as Schema
 
 suite :: TestTree
-suite = testGroup "Test Suite" [parseFormat, parseResponses, parseTemplate]
+suite = testGroup "Test Suite"
+  [ Devtools.testTree Devtools.defaultConfig
+  , parseFormat
+  , parseResponses
+  , parseTemplate
+  ]
 
 parseFormat :: TestTree
 parseFormat
