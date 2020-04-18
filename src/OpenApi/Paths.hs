@@ -129,7 +129,7 @@ data RequestBody = RequestBody
   , required    :: Maybe Bool
   }
   deriving anyclass (JSON.FromJSON, JSON.ToJSON)
-  deriving stock   (Eq, Generic, Show)
+  deriving stock    (Eq, Generic, Show)
 
 instance HasDescription RequestBody where
   getDescription = description
