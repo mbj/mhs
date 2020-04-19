@@ -36,8 +36,11 @@ data Operation = Operation
   , requestBody :: Maybe RequestBody
   , responses   :: Responses
   }
-  deriving anyclass (JSON.FromJSON, JSON.ToJSON)
+  deriving anyclass JSON.ToJSON
   deriving stock    (Eq, Generic, Show)
+
+instance JSON.FromJSON Operation where
+  parseJSON = genericParseJSON
 
 instance HasDescription Operation where
   getDescription = description
@@ -100,8 +103,11 @@ data Response = Response
   , description :: Maybe (Description Response)
   , headers     :: Maybe (Map Text ResponseHeader)
   }
-  deriving anyclass (JSON.FromJSON, JSON.ToJSON)
+  deriving anyclass JSON.ToJSON
   deriving stock    (Eq, Generic, Show)
+
+instance JSON.FromJSON Response where
+  parseJSON = genericParseJSON
 
 instance HasDescription Response where
   getDescription = description
@@ -110,8 +116,11 @@ data ResponseHeader = ResponseHeader
   { description :: Maybe (Description ResponseHeader)
   , name        :: HeaderName
   }
-  deriving anyclass (JSON.FromJSON, JSON.ToJSON)
+  deriving anyclass JSON.ToJSON
   deriving stock    (Eq, Generic, Show)
+
+instance JSON.FromJSON ResponseHeader where
+  parseJSON = genericParseJSON
 
 instance HasDescription ResponseHeader where
   getDescription = description
@@ -128,8 +137,11 @@ data RequestBody = RequestBody
   , description :: Maybe (Description RequestBody)
   , required    :: Maybe Bool
   }
-  deriving anyclass (JSON.FromJSON, JSON.ToJSON)
+  deriving anyclass JSON.ToJSON
   deriving stock    (Eq, Generic, Show)
+
+instance JSON.FromJSON RequestBody where
+  parseJSON = genericParseJSON
 
 instance HasDescription RequestBody where
   getDescription = description
@@ -140,8 +152,11 @@ newtype MediaTypeQuery = MediaTypeQuery Text
 
 newtype MediaType = MediaType
   { schema :: Schema }
-  deriving anyclass (JSON.FromJSON, JSON.ToJSON)
+  deriving anyclass JSON.ToJSON
   deriving stock    (Eq, Generic, Show)
+
+instance JSON.FromJSON MediaType where
+  parseJSON = genericParseJSON
 
 data Parameter = Parameter
   { description :: Maybe (Description Parameter)
@@ -261,5 +276,7 @@ data Item = Item
   , put     :: Maybe Operation
   , patch   :: Maybe Operation
   }
-  deriving anyclass JSON.FromJSON
-  deriving stock    (Eq, Generic, Show)
+  deriving stock (Eq, Generic, Show)
+
+instance JSON.FromJSON Item where
+  parseJSON = genericParseJSON

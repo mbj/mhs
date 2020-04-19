@@ -1,5 +1,6 @@
 resolver: lts-14.27
 extra-deps:
+- aeson-1.4.7.1@sha256:6d8d2fd959b7122a1df9389cf4eca30420a053d67289f92cdc0dbc0dab3530ba,7098
 - git: https://github.com/mbj/devtools-hs
   commit: e7b966414d123e3b8fa843fc94e95f29aa04016a
 - git: https://github.com/mbj/mprelude

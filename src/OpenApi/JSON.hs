@@ -1,5 +1,6 @@
 module OpenApi.JSON
   ( generateRenamed
+  , genericParseJSON
   , parseJSONFixed
   , parseRefSum
   , parseRenamed
@@ -24,6 +25,12 @@ parseRenamed
   -> JSON.Value
   -> JSON.Parser a
 parseRenamed = JSON.genericParseJSON . renameOptions
+
+genericParseJSON
+  :: ((JSON.GFromJSON JSON.Zero (Rep a)), Generic a)
+  => JSON.Value
+  -> JSON.Parser a
+genericParseJSON = JSON.genericParseJSON defaultOptions
 
 generateRenamed
   :: (Generic a, JSON.GToJSON JSON.Zero (Rep a))
@@ -82,8 +89,11 @@ parseRefSum mkName mkBody mkRef prefix name value =
            then parseReference expression
            else fail "$ref with more than one key"
 
+defaultOptions :: JSON.Options
+defaultOptions = JSON.defaultOptions { JSON.rejectUnknownFields = True }
+
 renameOptions :: Map String String -> JSON.Options
 renameOptions renames =
-  JSON.defaultOptions { JSON.fieldLabelModifier = rename }
+  defaultOptions { JSON.fieldLabelModifier = rename }
     where
       rename input = fromMaybe input $ Map.lookup input renames

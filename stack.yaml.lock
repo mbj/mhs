@@ -5,6 +5,13 @@
 
 packages:
 - completed:
+    hackage: aeson-1.4.7.1@sha256:6d8d2fd959b7122a1df9389cf4eca30420a053d67289f92cdc0dbc0dab3530ba,7098
+    pantry-tree:
+      size: 40133
+      sha256: caa9306e519c601ab0170d113daa03c1163db53e5466be2968bbd61a771bebcb
+  original:
+    hackage: aeson-1.4.7.1@sha256:6d8d2fd959b7122a1df9389cf4eca30420a053d67289f92cdc0dbc0dab3530ba,7098
+- completed:
     cabal-file:
       size: 3524
       sha256: 9bc9ae0f9a6a690e1012a991e083e1e40f0cb831df53d32d7d0032dd2842f5f4
