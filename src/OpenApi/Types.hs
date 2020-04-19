@@ -43,12 +43,16 @@ data Components = Components
   { schemas         :: Map Schema.Name Schema.SchemaObject
   , securitySchemes :: Map SecuritySchemeName SecurityScheme
   }
-  deriving anyclass JSON.FromJSON
-  deriving stock    (Eq, Generic, Show)
+  deriving stock (Eq, Generic, Show)
+
+instance JSON.FromJSON Components where
+  parseJSON = genericParseJSON
 
 data Specification = Specification
   { components :: Components
   , paths      :: Map Paths.Template Paths.Item
   }
-  deriving anyclass JSON.FromJSON
-  deriving stock    (Eq, Generic, Show)
+  deriving stock (Eq, Generic, Show)
+
+instance JSON.FromJSON Specification where
+  parseJSON = genericParseJSON

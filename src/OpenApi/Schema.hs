@@ -50,8 +50,11 @@ newtype MinProperties = MinProperties Natural
   deriving stock   (Eq, Show)
 
 newtype Properties = Properties (Map PropertyName Schema)
-  deriving anyclass (JSON.FromJSON, JSON.ToJSON)
+  deriving anyclass JSON.ToJSON
   deriving stock    (Eq, Generic, Show)
+
+instance JSON.FromJSON Properties where
+  parseJSON = genericParseJSON
 
 newtype PropertyName = PropertyName Text
   deriving newtype
