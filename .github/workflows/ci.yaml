@@ -1,12 +1,13 @@
-name: Haskell CI
+name: CI
 
 on:
   push:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+
 jobs:
-  build:
+  ci:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -19,15 +20,14 @@ jobs:
         cache-name: stack-cache
       with:
         path: ~/.stack
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('{stack.yaml,**/*.cabal}') }}
+        key: cache-${{ hashFiles('stack.yaml') }}-${{ hashFiles('**/*.cabal') }}
         restore-keys: |
-          ${{ runner.os }}-build-${{ env.cache-name }}-
-          ${{ runner.os }}-build-
-          ${{ runner.os }}-
+          cache-
+          cache-${{ hashFiles('stack.yaml') }}-
     - name: Install dependencies
       run: |
         stack build --test --only-dependencies
     - name: Build
-      run: stack build --test --no-run-tests --fast
+      run: stack build --fast --test --no-run-tests
     - name: Run tests
       run: stack test --fast
