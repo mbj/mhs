@@ -1,0 +1,78 @@
+name:        cbt
+version:     0.0.1
+synopsis:    A container backend toolkit
+homepage:    https://github.com/mbj/cbt
+author:      Markus Schirp
+maintainer:  mbj@schirp-dso.com
+copyright:   2020 Markus Schirp
+github:      mbj/cbt
+
+dependencies:
+- base               ^>= 4.12
+- bytestring         ^>= 0.10
+- cryptonite         ^>= 0.25
+- mprelude           == 0.0.0.1
+- pathtype           ^>= 0.8
+- source-constraints == 0.0.0.1
+- tar                ^>= 0.5
+- template-haskell   ^>= 2.14
+- text               ^>= 1.2
+- th-lift-instances  ^>= 0.1
+- typed-process      ^>= 0.2
+- unliftio           ^>= 0.2
+- unliftio-core      ^>= 0.1
+- uuid               ^>= 1.3
+
+ghc-options:
+- -Wall
+- -Wcompat
+- -Werror
+- -Widentities
+- -Wimplicit-prelude
+- -Wincomplete-record-updates
+- -Wincomplete-uni-patterns
+- -Wmissing-exported-signatures
+- -Wmissing-local-signatures
+- -Wmonomorphism-restriction
+- -Wredundant-constraints
+- -fplugin=SourceConstraints
+- -funbox-strict-fields
+- -optP-Wno-nonportable-include-path
+
+default-extensions:
+- AllowAmbiguousTypes
+- DataKinds
+- DerivingStrategies
+- DuplicateRecordFields
+- GeneralizedNewtypeDeriving
+- KindSignatures
+- LambdaCase
+- NoImplicitPrelude
+- NumericUnderscores
+- OverloadedLists
+- OverloadedStrings
+- RecordWildCards
+- ScopedTypeVariables
+- StrictData
+- TemplateHaskell
+- TypeApplications
+
+library:
+  source-dirs: src
+  exposed-modules:
+  - CBT
+  - CBT.Backend
+  - CBT.TH
+
+tests:
+  devtools:
+    main: test/Test.hs
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -with-rtsopts=-N
+    dependencies:
+    - cbt
+    - devtools
+    - tasty
+    - tasty-hunit
