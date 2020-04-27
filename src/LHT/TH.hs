@@ -1,7 +1,7 @@
-module AWS.Lambda.Runtime.TH (readFile) where
+module LHT.TH (readFile) where
 
-import AWS.Lambda.Runtime.Prelude
 import Instances.TH.Lift ()
+import LHT.Prelude
 import Language.Haskell.TH.Syntax
 import System.FilePath (FilePath)
 

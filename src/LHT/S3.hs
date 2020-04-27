@@ -1,13 +1,13 @@
-module AWS.Lambda.Runtime.S3
+module LHT.S3
   ( TargetObject(..)
   , objectKeyText
   , syncTarget
   ) where
 
-import AWS.Lambda.Runtime.Prelude
 import Control.Monad (unless)
 import Control.Monad.Catch (catchIf)
 import Control.Monad.Trans.AWS (AWSConstraint)
+import LHT.Prelude
 
 import qualified Data.Text.IO              as Text
 import qualified Network.AWS               as AWS

@@ -1,3 +1,5 @@
-# haskell-lambda-runtime
+# lht
 
-An alpine based, statically compiled haskell lambda runtime.
+A tool to compile and deploy static executables for AWS lambda.
+
+Uses an Alpine container to compile the executable.
