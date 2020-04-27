@@ -29,7 +29,7 @@ RUN apk add                  \
   cache-s3@mbj=0.1.5-r0      \
   curl                       \
   ghc=8.6.5-r3               \
-  git=2.24.1-r0              \
+  git                        \
   libpq@mbj=12.2-r0          \
   make                       \
   musl-dev                   \
