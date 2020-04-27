@@ -1,10 +1,10 @@
-module AWS.Lambda.Runtime.Zip (mkZip) where
+module LHT.Zip (mkZip) where
 
-import AWS.Lambda.Runtime.Prelude
 import Data.Bits (shiftL)
 import Data.ByteString (ByteString)
 import Data.Foldable (foldr')
 import GHC.Real (fromIntegral, toInteger)
+import LHT.Prelude
 import System.Posix.Types (FileMode)
 
 import qualified Codec.Archive.Zip    as Zip

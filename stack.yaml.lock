@@ -43,6 +43,20 @@ packages:
     commit: 33aa6b71309793829b534fb29f6532d71c32b106
 - completed:
     cabal-file:
+      size: 3201
+      sha256: 2202ac2f0ef2d4e6e5ee087588967e7a976c51fb41074bd0e3c6488c2e823771
+    name: cbt
+    version: 0.0.1
+    git: https://github.com/mbj/cbt
+    pantry-tree:
+      size: 957
+      sha256: e963ed558c159c3a0c7f310bd12d439d02767a82e3646e6c8a80329cedec64fb
+    commit: 6ddba8cccca003b8b71507401ecf17687d85abe8
+  original:
+    git: https://github.com/mbj/cbt
+    commit: 6ddba8cccca003b8b71507401ecf17687d85abe8
+- completed:
+    cabal-file:
       size: 3524
       sha256: 9bc9ae0f9a6a690e1012a991e083e1e40f0cb831df53d32d7d0032dd2842f5f4
     name: devtools

@@ -22,6 +22,9 @@ RKgPgxSylguY+X3uuPaV9ZIX8hCuAuFF1fzbTvl/plyeptB9HF6vtXe4CbsZvdYU\n\
 
 RUN echo '@mbj https://mbj-apk.s3.dualstack.us-east-1.amazonaws.com' >> /etc/apk/repositories
 
+# Setup build directory
+RUN mkdir -p -m 0700 /opt/build
+
 # Install dependencies
 RUN apk add                  \
   --no-cache                 \
@@ -29,7 +32,7 @@ RUN apk add                  \
   cache-s3@mbj=0.1.5-r0      \
   curl                       \
   ghc=8.6.5-r3               \
-  git=2.24.1-r0              \
+  git                        \
   libpq@mbj=12.2-r0          \
   make                       \
   musl-dev                   \
@@ -42,6 +45,3 @@ RUN apk add                  \
   xz                         \
   zlib-dev                   \
   zlib-static
-
-# Setup build directory
-RUN mkdir -p -m 0700 /opt/build
