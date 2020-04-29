@@ -9,7 +9,6 @@ import Control.Exception (Exception)
 import Control.Monad (unless)
 import Data.Maybe (isJust)
 import Data.Monoid (mconcat)
-import System.Path ((</>))
 import Text.Read (readMaybe)
 
 import qualified CBT.Backend.Tar       as Tar
@@ -36,7 +35,6 @@ instance Show ContainerRunFailure where
 class Backend (b :: Implementation) where
   binaryName        :: String
   getHostPort       :: MonadIO m => ContainerName -> Port -> m Port
-  readContainerFile :: MonadIO m => ContainerName -> Path.AbsFile -> m BS.ByteString
   testImageExists   :: MonadIO m => BuildDefinition -> m Bool
 
   available :: MonadIO m => m Bool
@@ -84,6 +82,22 @@ class Backend (b :: Implementation) where
         case (remove, removeOnRunFail) of
           (NoRemove, Remove) -> removeContainer @b containerName
           _                  -> pure ()
+
+  readContainerFile :: forall m . MonadIO m => ContainerName -> Path.AbsFile -> m BS.ByteString
+  readContainerFile containerName path = do
+    tar <- readProcessStdout_ proc
+    maybe notFound (pure . LBS.toStrict) . Tar.findEntry tar $ Path.takeFileName path
+    where
+      notFound :: m BS.ByteString
+      notFound = liftIO $ fail "Tar from docker did not contain expected entry"
+
+      proc
+        = Process.proc (binaryName @b)
+        [ "container"
+        , "cp"
+        , convertText containerName <> ":" <> Path.toString path
+        , "-"
+        ]
 
   removeContainer :: MonadIO m => ContainerName -> m ()
   removeContainer containerName = runProcess_ $ backendProc @b ["container", "rm", convertText containerName]
@@ -172,28 +186,6 @@ instance Backend 'Podman where
                 mkField "PortBindings" $
                   mkField "HostConfig" ""
 
-  readContainerFile :: forall m . MonadIO m => ContainerName -> Path.AbsFile -> m BS.ByteString
-  readContainerFile containerName path = do
-    mountPath <- readMountPath
-    liftIO . BS.readFile . Path.toString $ mountPath </> Path.makeRelative Path.rootDir path
-    where
-     readMountPath :: m Path.AbsDir
-     readMountPath = Path.absDir . rstrip . convertText . Text.decodeUtf8 . LBS.toStrict <$> readProcess
-
-     readProcess :: m LBS.ByteString
-     readProcess
-       = readProcessStdout_
-       $ backendProc @'Podman
-       [ "mount"
-       , convertText containerName
-       ]
-
-     rstrip :: String -> String
-     rstrip
-       = List.reverse
-       . List.dropWhile (== '\n')
-       . List.reverse
-
   testImageExists BuildDefinition{..} = exitBool <$> runProcess process
     where
       process =
@@ -225,23 +217,6 @@ instance Backend 'Docker where
               mkIndex (show $ (convertText containerPort' :: String) <> "/tcp") $
                 mkField "Ports" $
                   mkField "NetworkSettings" ""
-
-  readContainerFile :: forall m . MonadIO m => ContainerName -> Path.AbsFile -> m BS.ByteString
-  readContainerFile containerName path = do
-    tar <- readProcessStdout_ proc
-    maybe notFound (pure . LBS.toStrict) . Tar.findEntry tar $ Path.takeFileName path
-    where
-      notFound :: m BS.ByteString
-      notFound = liftIO $ fail "Tar from docker did not contain expected entry"
-
-      proc
-        = Process.proc (binaryName @'Docker)
-        [ "container"
-        , "cp"
-        , convertText containerName <> ":" <> Path.toString path
-        , "-"
-        ]
-
 
   testImageExists BuildDefinition{..} = exitBool <$> runProcess process
     where
