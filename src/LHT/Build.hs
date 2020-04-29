@@ -17,6 +17,7 @@ import qualified CBT.TH
 import qualified Data.Foldable         as Foldable
 import qualified System.Path           as Path
 import qualified System.Path.Directory as Path
+import qualified System.Posix.Files    as Files
 import qualified UnliftIO.Exception    as Exception
 
 newtype PackageName = PackageName Text
@@ -64,6 +65,9 @@ withBuildContainer Config{..} action = do
     hostStackPath :: Path.AbsDir
     hostStackPath = hostHomePath </> Path.relDir ".stack-lht"
 
+    hostStackWorkPath :: Path.AbsDir
+    hostStackWorkPath = hostProjectPath </> Path.relDir ".stack-work-lht"
+
     containerDefinition = CBT.ContainerDefinition
       { detach           = CBT.Foreground
       , publishPorts     = []
@@ -89,7 +93,8 @@ withBuildContainer Config{..} action = do
       , ..
       }
 
-  liftIO $ Path.createDirectoryIfMissing False hostStackPath
+  setupSharedDirectory hostStackPath
+  setupSharedDirectory hostStackWorkPath
 
   Exception.bracket_
     (CBT.buildRun buildDefinition containerDefinition)
@@ -104,6 +109,10 @@ withBuildContainer Config{..} action = do
         mkFlag (Flag name value) =
           ["--flag", convertText name <> ":" <> convertText value]
 
+setupSharedDirectory :: MonadIO m => Path.AbsDir -> m ()
+setupSharedDirectory path = liftIO $ do
+  Path.createDirectoryIfMissing False path
+  Files.setFileMode (Path.toString path) Files.accessModes
 
 containerHomePath :: Path.AbsDir
 containerHomePath = Path.absDir "/opt/build"
