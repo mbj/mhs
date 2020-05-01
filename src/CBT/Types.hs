@@ -40,7 +40,7 @@ data ContainerDefinition = ContainerDefinition
 newtype ContainerName = ContainerName Text
   deriving newtype ToText
 
-newtype Port = Port Word16
+newtype Port = Port { unPort :: Word16 }
 
 instance ToText Port where
   toText (Port port) = convertText $ show port

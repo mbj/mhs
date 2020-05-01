@@ -6,6 +6,7 @@ module CBT
   , build
   , buildIfAbsent
   , buildRun
+  , getImplementation
   , nextContainerName
   , readContainerFile
   , removeContainer

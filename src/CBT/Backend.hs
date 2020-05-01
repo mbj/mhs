@@ -3,7 +3,6 @@
 module CBT.Backend (Backend(..)) where
 
 import CBT.Prelude
-import CBT.Process
 import CBT.Types
 import Control.Exception (Exception)
 import Control.Monad (unless)
@@ -15,10 +14,9 @@ import qualified CBT.Backend.Tar       as Tar
 import qualified Data.ByteString       as BS
 import qualified Data.ByteString.Lazy  as LBS
 import qualified Data.List             as List
+import qualified Data.Text             as Text
 import qualified Data.Text.Encoding    as Text
-import qualified Data.Text.IO          as Text
 import qualified System.Exit           as Exit
-import qualified System.IO             as IO
 import qualified System.Path           as Path
 import qualified System.Path.Directory as Path
 import qualified System.Process.Typed  as Process
@@ -66,22 +64,15 @@ class Backend (b :: Implementation) where
   buildRun buildDefinition containerDefinition =
     buildIfAbsent @b buildDefinition >> run @b containerDefinition
 
+  runCapture :: forall m . MonadIO m => ContainerDefinition -> m LBS.ByteString
+  runCapture containerDefinition@ContainerDefinition{..} = do
+    (exitCode, output) <- readProcessStdout $ runProc @b containerDefinition
+    handleFailure @b containerDefinition exitCode
+    pure output
+
   run :: forall m . MonadIO m => ContainerDefinition -> m ()
   run containerDefinition@ContainerDefinition{..}
-    = handleFailure =<< (runProcess . backendProc @b $ containerArguments containerDefinition)
-    where
-      handleFailure :: Exit.ExitCode -> m ()
-      handleFailure = \case
-        Exit.ExitSuccess -> pure ()
-        _ -> do
-          doRemoveOnRunFail
-          Exception.throwIO $ ContainerRunFailure containerDefinition
-
-      doRemoveOnRunFail :: m ()
-      doRemoveOnRunFail =
-        case (remove, removeOnRunFail) of
-          (NoRemove, Remove) -> removeContainer @b containerName
-          _                  -> pure ()
+    = handleFailure @b containerDefinition =<< runProcess (runProc @b containerDefinition)
 
   readContainerFile :: forall m . MonadIO m => ContainerName -> Path.AbsFile -> m BS.ByteString
   readContainerFile containerName path = do
@@ -100,7 +91,13 @@ class Backend (b :: Implementation) where
         ]
 
   removeContainer :: MonadIO m => ContainerName -> m ()
-  removeContainer containerName = runProcess_ $ backendProc @b ["container", "rm", convertText containerName]
+  removeContainer containerName
+    = runProcess_
+    $ backendProc @b
+    [ "container"
+    , "rm"
+    , convertText containerName
+    ]
 
   stop :: MonadIO m => ContainerName -> m ()
   stop containerName
@@ -119,51 +116,57 @@ class Backend (b :: Implementation) where
 backendProc :: forall b . Backend b => [String] -> Process.ProcessConfig () () ()
 backendProc = Process.proc (binaryName @b)
 
-containerArguments :: ContainerDefinition -> [String]
-containerArguments ContainerDefinition{..} = mconcat
-  [
-    [ "run"
-    , "--name", convertText containerName
-    , "--workdir", Path.toString workDir
-    ]
-  , detachFlag
-  , mountOptions
-  , publishOptions
-  , removeFlag
-  , [ "--"
-    , convertText imageName
-    ]
-  ] <> [programName] <> programArguments
+runProc
+  :: forall b . Backend b
+  => ContainerDefinition
+  -> Process.ProcessConfig () () ()
+runProc ContainerDefinition{..} = backendProc @b containerArguments
   where
-    publishOptions :: [String]
-    publishOptions = mconcat $ mkPublish <$> publishPorts
-
-    mkPublish :: Port -> [String]
-    mkPublish (Port port) = ["--publish", "127.0.0.1::" <> show port]
-
-    mountOptions :: [String]
-    mountOptions = mconcat $ mkMount <$> mounts
-
-    mkMount :: Mount -> [String]
-    mkMount Mount{..} = ["--mount", bindMount]
+    containerArguments :: [String]
+    containerArguments = mconcat
+      [
+        [ "run"
+        , "--name", convertText containerName
+        , "--workdir", Path.toString workDir
+        ]
+      , detachFlag
+      , mountOptions
+      , publishOptions
+      , removeFlag
+      , [ "--"
+        , convertText imageName
+        ]
+      ] <> [programName] <> programArguments
       where
-        bindMount
-          = List.intercalate
-          ","
-          [ "type=bind"
-          , "source="      <> Path.toString hostPath
-          , "destination=" <> Path.toString containerPath
-          ]
+        publishOptions :: [String]
+        publishOptions = mconcat $ mkPublish <$> publishPorts
 
-    removeFlag :: [String]
-    removeFlag = case remove of
-      Remove   -> ["--rm"]
-      NoRemove -> []
+        mkPublish :: Port -> [String]
+        mkPublish (Port port) = ["--publish", "127.0.0.1::" <> show port]
 
-    detachFlag :: [String]
-    detachFlag = case detach of
-      Detach     -> ["--detach"]
-      Foreground -> []
+        mountOptions :: [String]
+        mountOptions = mconcat $ mkMount <$> mounts
+
+        mkMount :: Mount -> [String]
+        mkMount Mount{..} = ["--mount", bindMount]
+          where
+            bindMount
+              = List.intercalate
+              ","
+              [ "type=bind"
+              , "source="      <> Path.toString hostPath
+              , "destination=" <> Path.toString containerPath
+              ]
+
+        removeFlag :: [String]
+        removeFlag = case remove of
+          Remove   -> ["--rm"]
+          NoRemove -> []
+
+        detachFlag :: [String]
+        detachFlag = case detach of
+          Detach     -> ["--detach"]
+          Foreground -> []
 
 instance Backend 'Podman where
   binaryName = "podman"
@@ -229,7 +232,8 @@ instance Backend 'Docker where
         , convertText imageName
         ]
 
-silence :: Proc -> Proc
+
+silence :: Process.ProcessConfig () () () -> Process.ProcessConfig () () ()
 silence
   = Process.setStderr Process.nullStream
   . Process.setStdout Process.nullStream
@@ -258,25 +262,51 @@ runProcess
   :: forall m stdin stdout stderr . MonadIO m
   => Process.ProcessConfig stdin stdout stderr
   -> m Exit.ExitCode
-runProcess proc = runProc proc Process.runProcess
+runProcess proc = procRun proc Process.runProcess
 
 runProcess_
   :: forall m stdin stdout stderr . MonadIO m
   => Process.ProcessConfig stdin stdout stderr
   -> m ()
-runProcess_ proc = runProc proc Process.runProcess_
+runProcess_ proc = procRun proc Process.runProcess_
+
+readProcessStdout
+  :: forall m stdin stdout stderr . MonadIO m
+  => Process.ProcessConfig stdin stdout stderr
+  -> m (Exit.ExitCode, LBS.ByteString)
+readProcessStdout proc = procRun proc Process.readProcessStdout
 
 readProcessStdout_
   :: forall m stdin stdout stderr . MonadIO m
   => Process.ProcessConfig stdin stdout stderr
   -> m LBS.ByteString
-readProcessStdout_ proc = runProc proc Process.readProcessStdout_
+readProcessStdout_ proc = procRun proc Process.readProcessStdout_
 
-runProc
+procRun
   :: forall m a stdin stdout stderr . MonadIO m
   => Process.ProcessConfig stdin stdout stderr
   -> (Process.ProcessConfig stdin stdout stderr -> IO a)
   -> m a
-runProc proc action = liftIO $ do
-  Text.hPutStrLn IO.stderr . convertText $ show proc
-  action proc
+procRun proc action = debug (show proc) >> liftIO (action proc)
+
+handleFailure
+  :: forall b m . (Backend b, MonadIO m)
+  => ContainerDefinition
+  -> Exit.ExitCode -> m ()
+handleFailure containerDefinition@ContainerDefinition{..} = \case
+  Exit.ExitSuccess -> pure ()
+  _ -> do
+    case (remove, removeOnRunFail) of
+      (NoRemove, Remove) -> removeContainer @b containerName
+      _                  -> pure ()
+    Exception.throwIO $ ContainerRunFailure containerDefinition
+
+captureText
+  :: MonadIO m
+  => Process.ProcessConfig stdin stdout stderr
+  -> m Text
+captureText proc
+  =   Text.strip
+  .   Text.decodeUtf8
+  .   LBS.toStrict
+  <$> readProcessStdout_ proc
