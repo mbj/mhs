@@ -1,26 +1,39 @@
 module OpenApi
   ( module OpenApi.Description
   , module OpenApi.Types
-  , loadSpecFile
+  , loadSpecFileJSON
+  , loadSpecFileYAML
   )
 where
 
-import Data.ByteString.Lazy (ByteString)
 import OpenApi.Description
 import OpenApi.Prelude
 import OpenApi.Types
 
 import qualified Data.Aeson           as JSON
+import qualified Data.ByteString      as BS
 import qualified Data.ByteString.Lazy as LBS
+import qualified Data.Yaml            as YAML
 import qualified System.Path          as Path
 
-loadSpecFile
+loadSpecFileJSON
   :: forall m .(MonadFail m, MonadIO m)
   => Path.AbsRelFile
   -> m Specification
-loadSpecFile = loadSpec <=< (liftIO . LBS.readFile . Path.toString)
+loadSpecFileJSON = loadSpec <=< (liftIO . LBS.readFile . Path.toString)
   where
-    loadSpec :: ByteString -> m Specification
+    loadSpec :: LBS.ByteString -> m Specification
     loadSpec
       = either (fail . ("Specification JSON decode failed: " <>)) pure
       . JSON.eitherDecode'
+
+loadSpecFileYAML
+  :: forall m .(MonadFail m, MonadIO m)
+  => Path.AbsRelFile
+  -> m Specification
+loadSpecFileYAML = loadSpec <=< (liftIO . BS.readFile . Path.toString)
+  where
+    loadSpec :: BS.ByteString -> m Specification
+    loadSpec
+      = either (fail . ("Specification YAML decode failed: " <>). show) pure
+      . YAML.decodeEither'

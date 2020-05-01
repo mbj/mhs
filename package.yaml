@@ -23,6 +23,7 @@ dependencies:
 - text                 ^>= 1.2
 - text-conversions     ^>= 0.3
 - unordered-containers ^>= 0.2
+- yaml                 ^>= 0.11
 
 extra-source-files: []
 
