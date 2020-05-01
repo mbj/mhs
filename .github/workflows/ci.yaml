@@ -22,8 +22,8 @@ jobs:
         path: ~/.stack
         key: cache-${{ hashFiles('stack.yaml') }}-${{ hashFiles('**/*.cabal') }}
         restore-keys: |
-          cache-
           cache-${{ hashFiles('stack.yaml') }}-
+          cache-
     - name: Install dependencies
       run: |
         stack build --test --only-dependencies
