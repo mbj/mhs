@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 8c15a6b43f8cc573433035e36636cf725f5339f35a381e6e96497c62e71eede0
+-- hash: fbbd0decff5401deb6128a8180227cf4536f482a5cc06e8bb9ea794784ea881f
 
 name:           openapi
 version:        0.0.0.1
@@ -52,6 +52,7 @@ library
     , text >=1.2 && <1.3
     , text-conversions >=0.3 && <0.4
     , unordered-containers >=0.2 && <0.3
+    , yaml >=0.11 && <0.12
   default-language: Haskell2010
 
 test-suite tasty
@@ -81,4 +82,5 @@ test-suite tasty
     , text >=1.2 && <1.3
     , text-conversions >=0.3 && <0.4
     , unordered-containers
+    , yaml >=0.11 && <0.12
   default-language: Haskell2010
