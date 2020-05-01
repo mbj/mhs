@@ -40,7 +40,7 @@ newtype HostName = HostName Text
   deriving newtype ToText
   deriving stock Show
 
-newtype HostPort = HostPort Word16
+newtype HostPort = HostPort { unPort :: Word16 }
   deriving stock Show
 
 instance ToText HostPort where

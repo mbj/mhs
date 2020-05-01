@@ -1,38 +1,33 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 module DBT where
 
--- Disclaimer, yes I should use singletons.
--- No I'll not block on re-learning them right now.
-
-import DBT.Backend
 import DBT.Prelude
-import qualified DBT.Backend    as Backend
-import qualified DBT.Postgresql as Postgresql
 
-withDatabaseContainer :: MonadUnliftIO m => (Postgresql.ClientConfig -> m a) -> m a
-withDatabaseContainer action = do
-  implementation <- getImplementation
+import qualified CBT
+import qualified DBT.Backend          as Backend
+import qualified DBT.Postgresql       as Postgresql
+import qualified System.Environment   as Environment
+import qualified System.Process.Typed as Process
+
+withDatabaseContainer
+  :: MonadUnliftIO m
+  => CBT.Prefix
+  -> (Postgresql.ClientConfig -> m a)
+  -> m a
+withDatabaseContainer prefix action = do
+  containerName  <- CBT.nextContainerName prefix
+  implementation <- CBT.getImplementation
   case implementation of
-    Podman -> Backend.withDatabaseContainer @'Podman action
-    Docker -> Backend.withDatabaseContainer @'Docker action
+    CBT.Docker -> Backend.withDatabaseContainer @'CBT.Docker containerName action
+    CBT.Podman -> Backend.withDatabaseContainer @'CBT.Podman containerName action
 
-getImplementation :: MonadIO m => m Implementation
-getImplementation = do
-  podman <- try @'Podman Podman
-  docker <- try @'Docker Docker
-
-  maybe
-    (liftIO $ fail "Neither found podman nor docker dbt backends")
-    pure
-    (podman <|> docker)
-
-try
-  :: forall (b :: Implementation) m . (Backend b, MonadIO m)
-  => Implementation
-  -> m (Maybe Implementation)
-try implementation = do
-  isAvailable <- available @b
-  if isAvailable
-    then pure $ pure implementation
-    else pure empty
+withDatabaseEnv
+  :: MonadUnliftIO m
+  => CBT.Prefix
+  -> Process.ProcessConfig () () ()
+  -> m ()
+withDatabaseEnv prefix proc =
+  withDatabaseContainer prefix $ \config -> do
+    environment <- liftIO Environment.getEnvironment
+    Process.runProcess_ $ Process.setEnv (environment <> Postgresql.toEnv config) proc
 
