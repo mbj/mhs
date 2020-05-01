@@ -43,18 +43,18 @@ packages:
     commit: 33aa6b71309793829b534fb29f6532d71c32b106
 - completed:
     cabal-file:
-      size: 3201
-      sha256: 2202ac2f0ef2d4e6e5ee087588967e7a976c51fb41074bd0e3c6488c2e823771
+      size: 3183
+      sha256: 2d715c20eb1c2663b018de1048e16e7c2fb4f56b84466b366bb4e174e72c3be4
     name: cbt
     version: 0.0.1
     git: https://github.com/mbj/cbt
     pantry-tree:
-      size: 957
-      sha256: ffdc09fec294a68869471eabb75e9822b73e8e9f5b95bb0321ba698dbebc4822
-    commit: 8833088edd0a717c0322913f25d1deaa5ef79aa9
+      size: 899
+      sha256: 54c7e15512c114eb5ec41bc4e9b0839cbf8dab9a2d8ff7768d94e6177fc0ba79
+    commit: 990a2f3274d03b3626607adfb3528f315c498f44
   original:
     git: https://github.com/mbj/cbt
-    commit: 8833088edd0a717c0322913f25d1deaa5ef79aa9
+    commit: 990a2f3274d03b3626607adfb3528f315c498f44
 - completed:
     cabal-file:
       size: 3524

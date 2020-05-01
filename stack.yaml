@@ -10,7 +10,7 @@ extra-deps:
   subdirs:
   - amazonka-cloudformation
 - git: https://github.com/mbj/cbt
-  commit: 8833088edd0a717c0322913f25d1deaa5ef79aa9
+  commit: 990a2f3274d03b3626607adfb3528f315c498f44
 - git: https://github.com/mbj/devtools-hs
   commit: e7b966414d123e3b8fa843fc94e95f29aa04016a
 - git: https://github.com/mbj/mprelude
