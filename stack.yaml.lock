@@ -6,6 +6,34 @@
 packages:
 - completed:
     cabal-file:
+      size: 3183
+      sha256: 2d715c20eb1c2663b018de1048e16e7c2fb4f56b84466b366bb4e174e72c3be4
+    name: cbt
+    version: 0.0.1
+    git: https://github.com/mbj/cbt
+    pantry-tree:
+      size: 899
+      sha256: 25324ad34e2d909f86df286cea12e84fd6647bd7bd78d18508a6d1d90b1ae562
+    commit: 8d9fc55503d576698faa8d7392d1c8973d910c4e
+  original:
+    git: https://github.com/mbj/cbt
+    commit: 8d9fc55503d576698faa8d7392d1c8973d910c4e
+- completed:
+    cabal-file:
+      size: 3079
+      sha256: d973a913b07d7831da09d6b46dc331230a9a7e14f4861f7b7b07c4071cd047a3
+    name: dbt
+    version: 0.0.0.1
+    git: https://github.com/mbj/dbt
+    pantry-tree:
+      size: 876
+      sha256: a868c16d7b4e85cbb5ce2a6d67bcde8661fdb8f68360994dbdfdc01c1647942b
+    commit: 8e601471f162a9848697ab1024bc785c3626ba04
+  original:
+    git: https://github.com/mbj/dbt
+    commit: 8e601471f162a9848697ab1024bc785c3626ba04
+- completed:
+    cabal-file:
       size: 3524
       sha256: 9bc9ae0f9a6a690e1012a991e083e1e40f0cb831df53d32d7d0032dd2842f5f4
     name: devtools
@@ -76,20 +104,6 @@ packages:
   original:
     git: https://github.com/mbj/tasty-mgolden
     commit: 42d35574b29b52c8357676375aa4d91223d3e9bc
-- completed:
-    cabal-file:
-      size: 4220
-      sha256: 3fa010079fb7acf0faa7bbef14728a5d289e19d6414f642e6ef8f494f00cbb7d
-    name: dbt
-    version: 0.0.0.1
-    git: https://github.com/mbj/dbt
-    pantry-tree:
-      size: 1032
-      sha256: de305f51ed6ee9b62c8f9e2087afe4b5f6ab8a3f95b28b89b07773c56fa814f4
-    commit: be656186088cff0f4742aba3ab6116ae8a1aa49a
-  original:
-    git: https://github.com/mbj/dbt
-    commit: be656186088cff0f4742aba3ab6116ae8a1aa49a
 snapshots:
 - completed:
     size: 524996
