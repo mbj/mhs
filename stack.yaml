@@ -2,6 +2,8 @@ build:
   haddock: false
 resolver: lts-14.27
 extra-deps:
+- git: https://github.com/mbj/cbt
+  commit: 990a2f3274d03b3626607adfb3528f315c498f44
 - git: https://github.com/mbj/devtools-hs
   commit: 4a05908e59690ed852fde484eb0b2a57f8fb1ae6
 - git: https://github.com/mbj/mprelude

@@ -10,9 +10,9 @@ github:      mbj/dbt
 dependencies:
 - base                 ^>= 4.12
 - bytestring           ^>= 0.10
+- cbt                  == 0.0.1
 - cryptonite           ^>= 0.25
 - mprelude             == 0.0.0.1
-- optparse-applicative ^>= 0.14
 - pathtype             ^>= 0.8
 - source-constraints   == 0.0.0.1
 - template-haskell     ^>= 2.14
@@ -39,6 +39,7 @@ ghc-options:
 - -optP-Wno-nonportable-include-path
 
 default-extensions:
+- AllowAmbiguousTypes
 - CPP
 - DataKinds
 - DerivingStrategies
@@ -60,18 +61,7 @@ library:
   source-dirs: src
   exposed-modules:
   - DBT
-  - DBT.Backend
-  - DBT.CLI
   - DBT.Postgresql
-
-executables:
-  dbt:
-    main: app/Main.hs
-    ghc-options:
-    - -rtsopts
-    - -threaded
-    - -with-rtsopts=-N
-    dependencies: dbt
 
 tests:
   devtools:

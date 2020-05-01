@@ -2,19 +2,23 @@ import MPrelude
 import System.IO (IO)
 import Test.Tasty.HUnit
 
-import qualified DBT.Backend as Backend
+import qualified CBT
+import qualified DBT
 import qualified Devtools
-import qualified Test.Tasty as Tasty
+import qualified System.Process.Typed as Process
+import qualified Test.Tasty           as Tasty
 
 main :: IO ()
 main
   = Tasty.defaultMain
-  $ Tasty.testGroup "dbt" [Devtools.testTree devtoolsConfig, image]
+  $ Tasty.testGroup "dbt" [Devtools.testTree devtoolsConfig, postgres]
 
 devtoolsConfig :: Devtools.Config
 devtoolsConfig = Devtools.defaultConfig
   { Devtools.hlintArguments = ["-XTypeApplications"] }
 
-image :: Tasty.TestTree
-image
-  = testCase "image" . void $ Backend.getImage @'Backend.Podman
+postgres :: Tasty.TestTree
+postgres
+  = testCase "postgres" . void
+  . DBT.withDatabaseEnv (CBT.Prefix "dbt")
+  $ Process.proc "psql" ["-c", "SELECT 1"]

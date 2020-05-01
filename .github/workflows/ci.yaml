@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: mstksg/setup-stack@v1
+      with:
+        ghc-version: '8.6.5'
+    - name: Cache
+      uses: actions/cache@v1
+      env:
+        cache-name: stack-cache
+      with:
+        path: ~/.stack
+        key: cache-${{ hashFiles('stack.yaml') }}-${{ hashFiles('**/*.cabal') }}
+        restore-keys: |
+          cache-
+          cache-${{ hashFiles('stack.yaml') }}-
+    - name: Install dependencies
+      run: |
+        stack build --test --only-dependencies
+    - name: Build
+      run: stack build --fast --test --no-run-tests
+    - name: Run tests
+      run: stack test --fast
