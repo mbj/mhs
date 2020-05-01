@@ -1,5 +1,6 @@
 module OpenApi
   ( module OpenApi.Description
+  , module OpenApi.TaggedText
   , module OpenApi.Types
   , loadSpecFileJSON
   , loadSpecFileYAML
@@ -8,6 +9,7 @@ where
 
 import OpenApi.Description
 import OpenApi.Prelude
+import OpenApi.TaggedText
 import OpenApi.Types
 
 import qualified Data.Aeson           as JSON

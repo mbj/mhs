@@ -8,6 +8,7 @@ import Numeric.Natural (Natural)
 import OpenApi.Description
 import OpenApi.JSON
 import OpenApi.Prelude
+import OpenApi.TaggedText
 import Prelude (undefined)
 
 import qualified Data.Aeson          as JSON
@@ -56,43 +57,19 @@ newtype Properties = Properties (Map PropertyName Schema)
 instance JSON.FromJSON Properties where
   parseJSON = genericParseJSON
 
-newtype PropertyName = PropertyName Text
-  deriving newtype
-    ( JSON.FromJSON
-    , JSON.FromJSONKey
-    , JSON.ToJSON
-    , JSON.ToJSONKey
-    , ToText
-    )
-  deriving stock (Eq, Ord, Show)
+type ReferenceName = TaggedText "ReferenceName" ()
 
 newtype MultipleOf = MultipleOf Natural
   deriving newtype (JSON.FromJSON, JSON.ToJSON)
   deriving stock   (Eq, Show)
 
-newtype ResourceId = ResourceId Text
-  deriving newtype (JSON.FromJSON, JSON.ToJSON, ToText)
-  deriving stock   (Eq, Show)
+type PropertyName = TaggedText "PropertyName" ()
 
-newtype Name = Name Text
-  deriving newtype
-    ( JSON.FromJSON
-    , JSON.FromJSONKey
-    , JSON.ToJSON
-    , JSON.ToJSONKey
-    , ToText
-    )
-  deriving stock (Eq, Ord, Show)
-
-newtype Pattern = Pattern Text
-  deriving newtype (JSON.FromJSON, JSON.ToJSON, ToText)
-  deriving stock   (Eq, Show)
-
-data Schema = Content SchemaObject | Reference Name
+data Schema = Content SchemaObject | Reference ReferenceName
   deriving stock (Eq, Show)
 
 instance JSON.FromJSON Schema where
-  parseJSON = parseRefSum Name Content Reference "#/components/schemas/" "Schema"
+  parseJSON = parseRefSum TaggedText Content Reference "#/components/schemas/" "Schema"
 
 instance JSON.ToJSON Schema where
   toJSON = \case
@@ -118,14 +95,14 @@ data SchemaObject = SchemaObject
   , not                  :: Maybe Schema
   , nullable             :: Maybe Bool
   , oneOf                :: Maybe [Schema]
-  , pattern'             :: Maybe Pattern
+  , pattern'             :: Maybe (TaggedText "Pattern" ())
   , properties           :: Maybe Properties
   , required             :: Maybe [PropertyName]
-  , title                :: Maybe Title
+  , title                :: Maybe (TaggedText "Title" ())
   , type'                :: Maybe Type
   , uniqueItems          :: Maybe Bool
   , xExpandableFields    :: Maybe [PropertyName]
-  , xResourceId          :: Maybe ResourceId
+  , xResourceId          :: Maybe (TaggedText "ResourceId" ())
   }
   deriving stock (Eq, Generic, Show)
 
@@ -171,10 +148,6 @@ toJSONSchema schemaObject = case JSON.toJSON schemaObject of
 
     collapsePair :: Text -> JSON.Value -> JSON.Pair
     collapsePair text value = (text, collapse value)
-
-newtype Title = Title Text
-  deriving newtype (JSON.FromJSON, JSON.ToJSON, ToText)
-  deriving stock   (Eq, Show)
 
 data Type = Array | Boolean | Integer | Number | Object | String
   deriving stock (Eq, GHC.Bounded, GHC.Enum, Show)

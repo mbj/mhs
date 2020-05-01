@@ -17,6 +17,7 @@ import OpenApi.HTTP
 import OpenApi.JSON
 import OpenApi.Prelude
 import OpenApi.Schema
+import OpenApi.TaggedText
 
 import qualified Data.Aeson                as JSON
 import qualified Data.Aeson.Types          as JSON
@@ -31,7 +32,7 @@ import qualified Network.HTTP.Types.Status as HTTP
 data Operation = Operation
   { deprecated  :: Maybe Bool
   , description :: Maybe (Description Operation)
-  , operationId :: OperationId
+  , operationId :: TaggedText "OperationId" ()
   , parameters  :: Maybe [Parameter]
   , requestBody :: Maybe RequestBody
   , responses   :: Responses
@@ -44,10 +45,6 @@ instance JSON.FromJSON Operation where
 
 instance HasDescription Operation where
   getDescription = description
-
-newtype OperationId = OperationId Text
-  deriving newtype (JSON.FromJSON, JSON.ToJSON, ToText)
-  deriving stock   (Eq, Show)
 
 data Responses = Responses
   { default' :: Maybe Response
@@ -114,7 +111,7 @@ instance HasDescription Response where
 
 data ResponseHeader = ResponseHeader
   { description :: Maybe (Description ResponseHeader)
-  , name        :: HeaderName
+  , name        :: TaggedText "HeaderName" ()
   }
   deriving anyclass JSON.ToJSON
   deriving stock    (Eq, Generic, Show)
@@ -124,10 +121,6 @@ instance JSON.FromJSON ResponseHeader where
 
 instance HasDescription ResponseHeader where
   getDescription = description
-
-newtype HeaderName = HeaderName Text
-  deriving newtype (JSON.FromJSON, JSON.ToJSON, ToText)
-  deriving stock   (Eq, Show)
 
 newtype ResponseStatusPattern = ResponseStatusExact HTTP.Status
   deriving stock (Eq, Ord, Show)
@@ -146,9 +139,7 @@ instance JSON.FromJSON RequestBody where
 instance HasDescription RequestBody where
   getDescription = description
 
-newtype MediaTypeQuery = MediaTypeQuery Text
-  deriving newtype (JSON.FromJSON, JSON.FromJSONKey, JSON.ToJSON, JSON.ToJSONKey, ToText)
-  deriving stock   (Eq, Ord, Show)
+type MediaTypeQuery = TaggedText "MediaTypeQuery" ()
 
 newtype MediaType = MediaType
   { schema :: Schema }
@@ -196,9 +187,7 @@ instance ToText ParameterLocation where
     Path   -> "path"
     Query  -> "query"
 
-newtype ParameterName = ParameterName Text
-  deriving newtype (JSON.FromJSON, JSON.ToJSON, ToText)
-  deriving stock   (Eq, Ord, Show)
+type ParameterName = TaggedText "ParameterName" ()
 
 data ParameterStyle = DeepObject | Form | Simple
   deriving stock (Eq, GHC.Bounded, GHC.Enum, Show)
@@ -261,7 +250,7 @@ parseTemplateText input =
     anySegment :: Text.Parser Segment
     anySegment = dynamicSegment <|> (Static <$> segmentName)
 
-    dynamicSegment   = skip '{' *> (Dynamic . ParameterName <$> segmentName) <* skip '}'
+    dynamicSegment   = skip '{' *> (Dynamic . TaggedText <$> segmentName) <* skip '}'
     segmentChar char = any ($ char) [Char.isDigit, Char.isLower, Char.isUpper, (== '_')]
     segmentName      = Text.takeWhile1 segmentChar
     separator        = skip '/'

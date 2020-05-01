@@ -42,12 +42,14 @@ ghc-options:
 - -fplugin-opt=SourceConstraints:local:Gen
 
 default-extensions:
+- DataKinds
 - DeriveAnyClass
 - DeriveGeneric
 - DerivingStrategies
 - DuplicateRecordFields
 - FlexibleContexts
 - GeneralizedNewtypeDeriving
+- KindSignatures
 - LambdaCase
 - NoImplicitPrelude
 - OverloadedStrings
