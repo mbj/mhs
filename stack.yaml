@@ -2,6 +2,10 @@ resolver: lts-14.27
 build:
   haddock: false
 extra-deps:
+- git: https://github.com/mbj/cbt
+  commit: 8d9fc55503d576698faa8d7392d1c8973d910c4e
+- git: https://github.com/mbj/dbt
+  commit: 8e601471f162a9848697ab1024bc785c3626ba04
 - git: https://github.com/mbj/devtools-hs
   commit: 4a05908e59690ed852fde484eb0b2a57f8fb1ae6
 - git: https://github.com/mbj/mprelude
@@ -14,5 +18,3 @@ extra-deps:
   - core
 - git: https://github.com/mbj/tasty-mgolden
   commit: 42d35574b29b52c8357676375aa4d91223d3e9bc
-- git: https://github.com/mbj/dbt
-  commit: be656186088cff0f4742aba3ab6116ae8a1aa49a

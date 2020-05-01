@@ -1,6 +1,7 @@
 import MPrelude
 import System.IO (IO)
 
+import qualified CBT
 import qualified DBT
 import qualified DBT.Postgresql as DBT
 import qualified Data.Text.IO   as Text
@@ -15,7 +16,7 @@ main = do
   Text.putStrLn ""
   success <- PGT.expand ([PGT.Selector $ Path.rel "examples/success.sql"] :: [PGT.Selector])
 
-  DBT.withDatabaseContainer $ \pgConfig -> do
+  DBT.withDatabaseContainer (CBT.Prefix "pgt") $ \pgConfig -> do
     config <- PGT.configure pgConfig { DBT.databaseName = DBT.DatabaseName "template0" } empty
     Tasty.defaultMain $
       Tasty.testGroup ""
