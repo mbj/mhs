@@ -14,6 +14,7 @@ import qualified Data.HashMap.Strict       as HashMap
 import qualified Data.Map.Strict           as Map
 import qualified Devtools
 import qualified Network.HTTP.Types.Status as HTTP
+import qualified OpenApi
 import qualified OpenApi.Paths             as Paths
 import qualified OpenApi.Schema            as Schema
 
@@ -59,7 +60,7 @@ parseTemplate
       , ("/{foo}/{bar}", Paths.Template [dynamic "foo", dynamic "bar"])
       ]
 
-    dynamic = Paths.Dynamic . Paths.ParameterName
+    dynamic = Paths.Dynamic . OpenApi.TaggedText
 
     static' = Paths.Static
 

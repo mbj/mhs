@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: fbbd0decff5401deb6128a8180227cf4536f482a5cc06e8bb9ea794784ea881f
+-- hash: e1cbc3352739718650d56d8a8344a079369aa28a2d11e495e45807a332bdfc9a
 
 name:           openapi
 version:        0.0.0.1
@@ -31,10 +31,11 @@ library
       OpenApi.HTTP
       OpenApi.JSON
       OpenApi.Prelude
+      OpenApi.TaggedText
       Paths_openapi
   hs-source-dirs:
       src
-  default-extensions: DeriveAnyClass DeriveGeneric DerivingStrategies DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving LambdaCase NoImplicitPrelude OverloadedStrings RecordWildCards ScopedTypeVariables Strict
+  default-extensions: DataKinds DeriveAnyClass DeriveGeneric DerivingStrategies DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving KindSignatures LambdaCase NoImplicitPrelude OverloadedStrings RecordWildCards ScopedTypeVariables Strict
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -fplugin=SourceConstraints -fplugin-opt=SourceConstraints:local:Gen
   build-depends:
       aeson (>=1.4 && <1.5) && >=1.4.7.0
@@ -60,7 +61,7 @@ test-suite tasty
   main-is: Main.hs
   hs-source-dirs:
       test
-  default-extensions: DeriveAnyClass DeriveGeneric DerivingStrategies DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving LambdaCase NoImplicitPrelude OverloadedStrings RecordWildCards ScopedTypeVariables Strict
+  default-extensions: DataKinds DeriveAnyClass DeriveGeneric DerivingStrategies DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving KindSignatures LambdaCase NoImplicitPrelude OverloadedStrings RecordWildCards ScopedTypeVariables Strict
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -fplugin=SourceConstraints -fplugin-opt=SourceConstraints:local:Gen
   build-depends:
       aeson (>=1.4 && <1.5) && >=1.4.7.0
