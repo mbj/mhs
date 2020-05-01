@@ -9,16 +9,16 @@ import Data.ByteString.Lazy (ByteString)
 import OpenApi.Description
 import OpenApi.Prelude
 import OpenApi.Types
-import System.FilePath (FilePath)
 
 import qualified Data.Aeson           as JSON
-import qualified Data.ByteString.Lazy as ByteString
+import qualified Data.ByteString.Lazy as LBS
+import qualified System.Path          as Path
 
 loadSpecFile
   :: forall m .(MonadFail m, MonadIO m)
-  => FilePath
+  => Path.AbsRelFile
   -> m Specification
-loadSpecFile = loadSpec <=< (liftIO . ByteString.readFile)
+loadSpecFile = loadSpec <=< (liftIO . LBS.readFile . Path.toString)
   where
     loadSpec :: ByteString -> m Specification
     loadSpec
