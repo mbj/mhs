@@ -1,16 +1,12 @@
 module OpenApi.Schema where
 
-import Data.Tuple (snd, uncurry)
 import OpenApi.Description
 import OpenApi.JSON
 import OpenApi.Prelude
 import OpenApi.TaggedText
-import Prelude (undefined)
 
 import qualified Data.Aeson          as JSON
 import qualified Data.Aeson.Types    as JSON
-import qualified Data.HashMap.Strict as HashMap
-import qualified Data.List           as List
 import qualified Data.Map.Strict     as Map
 import qualified GHC.Enum            as GHC
 
@@ -119,31 +115,6 @@ instance JSON.FromJSON SchemaObject where
 
 instance JSON.ToJSON SchemaObject where
   toJSON = generateRenamed schemaObjectRenames
-
-toJSONSchema :: SchemaObject -> JSON.Object
-toJSONSchema schemaObject = case JSON.toJSON schemaObject of
-  JSON.Object object -> collapseObject object
-  -- TODO refactor so the impure exception goes away.
-  -- It requires that we define this function natively via re-using the
-  -- generic mechanisms provided by aeson.
-  _                  -> undefined
-  where
-    collapse :: JSON.Value -> JSON.Value
-    collapse = \case
-      (JSON.Array values)  -> JSON.Array $ collapse <$> values
-      (JSON.Object object) -> JSON.Object $ collapseObject object
-      value                -> value
-
-    collapseObject :: JSON.Object -> JSON.Object
-    collapseObject = HashMap.fromList . collapsePairs . HashMap.toList
-
-    collapsePairs :: [JSON.Pair] -> [JSON.Pair]
-    collapsePairs
-      = (uncurry collapsePair <$>)
-      . List.filter ((/= JSON.Null) . snd)
-
-    collapsePair :: Text -> JSON.Value -> JSON.Pair
-    collapsePair text value = (text, collapse value)
 
 data Type = Array | Boolean | Integer | Number | Object | String
   deriving stock (Eq, GHC.Bounded, GHC.Enum, Show)
