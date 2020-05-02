@@ -5,10 +5,9 @@ import OpenApi.JSON
 import OpenApi.Prelude
 import OpenApi.TaggedText
 
-import qualified Data.Aeson          as JSON
-import qualified Data.Aeson.Types    as JSON
-import qualified Data.Map.Strict     as Map
-import qualified GHC.Enum            as GHC
+import qualified Data.Aeson       as JSON
+import qualified Data.Aeson.Types as JSON
+import qualified GHC.Enum         as GHC
 
 data AdditionalProperties
   = AdditionalPropertiesBool Bool
@@ -102,7 +101,7 @@ instance HasDescription SchemaObject where
   getDescription = description
 
 schemaObjectRenames :: Map String String
-schemaObjectRenames = Map.fromList
+schemaObjectRenames =
   [ ("default'",          "default")
   , ("pattern'",          "pattern")
   , ("type'",             "type")

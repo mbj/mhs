@@ -4,6 +4,7 @@ module OpenApi.Paths where
 
 import Control.Applicative ((*>), (<*))
 import Data.Aeson ((.:?))
+import Data.Char (Char)
 import Data.Foldable (any)
 import Data.Functor (($>))
 import Data.Maybe (catMaybes)
@@ -248,7 +249,7 @@ parseTemplateText input =
     anySegment = dynamicSegment <|> (Static <$> segmentName)
 
     dynamicSegment   = skip '{' *> (Dynamic . TaggedText <$> segmentName) <* skip '}'
-    segmentChar char = any ($ char) [Char.isDigit, Char.isLower, Char.isUpper, (== '_')]
+    segmentChar char = any ($ char) ([Char.isDigit, Char.isLower, Char.isUpper, (== '_')] :: [Char -> Bool])
     segmentName      = Text.takeWhile1 segmentChar
     separator        = skip '/'
     skip             = void . Text.char

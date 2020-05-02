@@ -2,7 +2,7 @@
 
 import Data.HashMap.Strict (HashMap)
 import Data.Maybe (catMaybes)
-import MPrelude
+import OpenApi.Prelude
 import Test.Tasty
 import Test.Tasty.HUnit
 
@@ -95,8 +95,8 @@ parseResponses :: TestTree
     responses :: Paths.Responses
     responses = Paths.Responses {default' = empty, ..}
       where
-        patterns = Map.fromList
-          [ (Paths.ResponseStatusExact HTTP.status200, response) ]
+        patterns :: Map Paths.ResponseStatusPattern Paths.Response
+        patterns = [ (Paths.ResponseStatusExact HTTP.status200, response) ]
 
         response = Paths.Response
           { description = empty

@@ -52,6 +52,7 @@ default-extensions:
 - KindSignatures
 - LambdaCase
 - NoImplicitPrelude
+- OverloadedLists
 - OverloadedStrings
 - RecordWildCards
 - ScopedTypeVariables
@@ -63,6 +64,7 @@ library:
   exposed-modules:
   - OpenApi
   - OpenApi.Paths
+  - OpenApi.Prelude
   - OpenApi.Schema
   - OpenApi.Types
 tests:
