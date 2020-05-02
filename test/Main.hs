@@ -2,9 +2,7 @@
 
 import Data.HashMap.Strict (HashMap)
 import Data.Maybe (catMaybes)
-import Data.String (String)
 import MPrelude
-import System.IO (IO)
 import Test.Tasty
 import Test.Tasty.HUnit
 

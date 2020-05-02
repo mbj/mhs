@@ -7,10 +7,8 @@ module OpenApi.JSON
   )
 where
 
-import Data.Map.Strict (Map)
-import Data.String (String)
 import GHC.Enum (Bounded, Enum, minBound)
-import GHC.Generics (Generic, Rep)
+import GHC.Generics (Rep)
 import OpenApi.Prelude
 
 import qualified Data.Aeson.Types    as JSON

@@ -6,12 +6,9 @@ import Control.Applicative ((*>), (<*))
 import Data.Aeson ((.:?))
 import Data.Foldable (any)
 import Data.Functor (($>))
-import Data.Map.Strict (Map)
 import Data.Maybe (catMaybes)
-import Data.String (String)
 import Data.Traversable (traverse)
 import Data.Tuple (uncurry)
-import GHC.Generics (Generic)
 import OpenApi.Description
 import OpenApi.HTTP
 import OpenApi.JSON

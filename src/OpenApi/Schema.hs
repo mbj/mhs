@@ -1,10 +1,6 @@
 module OpenApi.Schema where
 
-import Data.Map.Strict (Map)
-import Data.String (String)
 import Data.Tuple (snd, uncurry)
-import GHC.Generics (Generic)
-import Numeric.Natural (Natural)
 import OpenApi.Description
 import OpenApi.JSON
 import OpenApi.Prelude
