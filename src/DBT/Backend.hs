@@ -44,32 +44,22 @@ class CBT.Backend b => Backend b where
       , ..
       }
 
+  startDatabaseContainer
+    :: MonadIO m
+    => CBT.ContainerName
+    -> m Postgresql.ClientConfig
+  startDatabaseContainer containerName = do
+    CBT.buildRun buildDefinition (containerDefinition containerName)
+    getClientConfig @b containerName
+
   withDatabaseContainer
     :: MonadUnliftIO m
     => CBT.ContainerName
     -> (Postgresql.ClientConfig -> m a)
     -> m a
   withDatabaseContainer containerName action =
-    CBT.withContainer buildDefinition containerDefinition $
+    CBT.withContainer buildDefinition (containerDefinition containerName) $
       action =<< getClientConfig @b containerName
-
-    where
-      containerDefinition
-        = deamonize
-        $ postgresqlDefinition
-          containerName
-          [ "postgres"
-          , "-D", Path.toString pgData
-          , "-h", "0.0.0.0"  -- connections from outside the container
-          , "-k", ""         -- no unix socket
-          ]
-
-      deamonize value = value
-        { CBT.detach          = CBT.Detach
-        , CBT.remove          = CBT.Remove
-        , CBT.removeOnRunFail = CBT.Remove
-        , CBT.publishPorts    = [CBT.Port 5432]
-        }
 
 instance Backend 'CBT.Docker
 instance Backend 'CBT.Podman
@@ -114,3 +104,21 @@ postgresqlDefinition containerName arguments =
     , workDir          = pgHome
     , ..
     }
+
+containerDefinition :: CBT.ContainerName -> CBT.ContainerDefinition
+containerDefinition containerName
+  = deamonize
+  $ postgresqlDefinition
+    containerName
+    [ "postgres"
+    , "-D", Path.toString pgData
+    , "-h", "0.0.0.0"  -- connections from outside the container
+    , "-k", ""         -- no unix socket
+    ]
+  where
+    deamonize value = value
+      { CBT.detach          = CBT.Detach
+      , CBT.remove          = CBT.Remove
+      , CBT.removeOnRunFail = CBT.Remove
+      , CBT.publishPorts    = [CBT.Port 5432]
+      }
