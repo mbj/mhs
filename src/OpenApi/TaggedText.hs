@@ -5,7 +5,7 @@ import OpenApi.Prelude
 
 import qualified Data.Aeson as JSON
 
-newtype TaggedText (label :: Symbol) a = TaggedText Text
+newtype TaggedText (label :: Symbol) = TaggedText Text
   deriving newtype
     ( JSON.FromJSON
     , JSON.FromJSONKey

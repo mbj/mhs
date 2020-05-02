@@ -1,14 +1,12 @@
-module OpenApi.Types where
+module OpenApi.SecurityScheme where
 
 import OpenApi.JSON
 import OpenApi.Prelude
-import OpenApi.TaggedText
+import OpenApi.Reference
 
 import qualified Data.Aeson      as JSON
 import qualified Data.Map.Strict as Map
 import qualified GHC.Enum        as GHC
-import qualified OpenApi.Paths   as Paths
-import qualified OpenApi.Schema  as Schema
 
 data SecuritySchemeType = HTTP
   deriving stock (Eq, GHC.Bounded, GHC.Enum, Show)
@@ -31,23 +29,9 @@ data SecurityScheme = SecurityScheme
   }
   deriving stock (Eq, Generic, Show)
 
+instance Referencable SecurityScheme where
+  targetName    = "Security Scheme"
+  referencePath = ["components", "securitySchemes"]
+
 instance JSON.FromJSON SecurityScheme where
   parseJSON = parseRenamed $ Map.singleton "type'" "type"
-
-data Components = Components
-  { schemas         :: Map Schema.ReferenceName Schema.SchemaObject
-  , securitySchemes :: Map (TaggedText "SecurityScheme" SecurityScheme) SecurityScheme
-  }
-  deriving stock (Eq, Generic, Show)
-
-instance JSON.FromJSON Components where
-  parseJSON = genericParseJSON
-
-data Specification = Specification
-  { components :: Components
-  , paths      :: Map Paths.Template Paths.Item
-  }
-  deriving stock (Eq, Generic, Show)
-
-instance JSON.FromJSON Specification where
-  parseJSON = genericParseJSON

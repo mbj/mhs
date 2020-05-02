@@ -31,6 +31,7 @@ ghc-options:
 - -Wall
 - -Wcompat
 - -Werror
+- -O2
 - -Widentities
 - -Wimplicit-prelude
 - -Wincomplete-record-updates
@@ -39,9 +40,9 @@ ghc-options:
 - -Wmissing-local-signatures
 - -Wmonomorphism-restriction
 - -fplugin=SourceConstraints
-- -fplugin-opt=SourceConstraints:local:Gen
 
 default-extensions:
+- AllowAmbiguousTypes
 - DataKinds
 - DeriveAnyClass
 - DeriveGeneric
@@ -57,16 +58,13 @@ default-extensions:
 - RecordWildCards
 - ScopedTypeVariables
 - Strict
+- TupleSections
+- TypeApplications
 
 library:
   source-dirs:
   - src
-  exposed-modules:
-  - OpenApi
-  - OpenApi.Paths
-  - OpenApi.Prelude
-  - OpenApi.Schema
-  - OpenApi.Types
+
 tests:
   tasty:
     main:          Main.hs

@@ -1,13 +1,19 @@
 module OpenApi.Schema where
 
-import OpenApi.Description
 import OpenApi.JSON
 import OpenApi.Prelude
+import OpenApi.Reference
 import OpenApi.TaggedText
 
 import qualified Data.Aeson       as JSON
 import qualified Data.Aeson.Types as JSON
 import qualified GHC.Enum         as GHC
+
+newtype TaggedNatural (label :: Symbol) = TaggedNatural Natural
+  deriving newtype (JSON.FromJSON, JSON.ToJSON)
+  deriving stock   (Eq, Show)
+
+type PropertyName = TaggedText "PropertyName"
 
 data AdditionalProperties
   = AdditionalPropertiesBool Bool
@@ -25,94 +31,64 @@ instance JSON.ToJSON AdditionalProperties where
     AdditionalPropertiesBool bool     -> JSON.toJSON bool
     AdditionalPropertiesSchema schema -> JSON.toJSON schema
 
-newtype MaxLength = MaxLength Natural
-  deriving newtype (JSON.FromJSON, JSON.ToJSON)
-  deriving stock   (Eq, Show)
-
-newtype MaxProperties = MaxProperties Natural
-  deriving newtype (JSON.FromJSON, JSON.ToJSON)
-  deriving stock   (Eq, Show)
-
-newtype MinLength = MinLength Natural
-  deriving newtype (JSON.FromJSON, JSON.ToJSON)
-  deriving stock   (Eq, Show)
-
-newtype MinProperties = MinProperties Natural
-  deriving newtype (JSON.FromJSON, JSON.ToJSON)
-  deriving stock   (Eq, Show)
-
-newtype Properties = Properties (Map PropertyName Schema)
+newtype Properties = Properties (Map PropertyName (ReferenceOr Schema))
   deriving anyclass JSON.ToJSON
   deriving stock    (Eq, Generic, Show)
 
 instance JSON.FromJSON Properties where
   parseJSON = genericParseJSON
 
-type ReferenceName = TaggedText "ReferenceName" ()
 
-newtype MultipleOf = MultipleOf Natural
-  deriving newtype (JSON.FromJSON, JSON.ToJSON)
-  deriving stock   (Eq, Show)
-
-type PropertyName = TaggedText "PropertyName" ()
-
-data Schema = Content SchemaObject | Reference ReferenceName
-  deriving stock (Eq, Show)
-
-instance JSON.FromJSON Schema where
-  parseJSON = parseRefSum TaggedText Content Reference "#/components/schemas/" "Schema"
-
-instance JSON.ToJSON Schema where
-  toJSON = \case
-    Content schemaObject ->
-      JSON.toJSON schemaObject
-    Reference name ->
-      JSON.object [("$ref", JSON.toJSON $ "#/components/schemas/" <> toText name)]
-
-data SchemaObject = SchemaObject
+data Schema = Schema
   { additionalProperties :: Maybe AdditionalProperties
-  , allOf                :: Maybe [Schema]
-  , anyOf                :: Maybe [Schema]
+  , allOf                :: Maybe [ReferenceOr Schema]
+  , anyOf                :: Maybe [ReferenceOr Schema]
   , default'             :: Maybe JSON.Value
   , deprecated           :: Maybe Bool
-  , description          :: Maybe (Description SchemaObject)
+  , description          :: Maybe (TaggedText "SchemaDescription")
   , enum                 :: Maybe Enum
+  , example              :: Maybe JSON.Value
   , exclusiveMaximum     :: Maybe Bool
   , exclusiveMinimum     :: Maybe Bool
   , format               :: Maybe Format
-  , items                :: Maybe Schema
-  , maxLength            :: Maybe MaxLength
-  , minLength            :: Maybe MinLength
-  , not                  :: Maybe Schema
+  , items                :: Maybe (ReferenceOr Schema)
+  , maxItems             :: Maybe (TaggedNatural "MaxItems")
+  , maxLength            :: Maybe (TaggedNatural "MaxLength")
+  , minItems             :: Maybe (TaggedNatural "MinLength")
+  , minLength            :: Maybe (TaggedNatural "MinLength")
+  , not                  :: Maybe (ReferenceOr Schema)
   , nullable             :: Maybe Bool
-  , oneOf                :: Maybe [Schema]
-  , pattern'             :: Maybe (TaggedText "Pattern" ())
+  , oneOf                :: Maybe [ReferenceOr Schema]
+  , pattern'             :: Maybe (TaggedText "SchemaPattern")
   , properties           :: Maybe Properties
   , required             :: Maybe [PropertyName]
-  , title                :: Maybe (TaggedText "Title" ())
+  , title                :: Maybe (TaggedText "SchemaTitle")
   , type'                :: Maybe Type
   , uniqueItems          :: Maybe Bool
+  , xExamples            :: Maybe JSON.Object
   , xExpandableFields    :: Maybe [PropertyName]
-  , xResourceId          :: Maybe (TaggedText "ResourceId" ())
+  , xResourceId          :: Maybe (TaggedText "SchemaResourceId")
   }
   deriving stock (Eq, Generic, Show)
 
-instance HasDescription SchemaObject where
-  getDescription = description
+instance Referencable Schema where
+  targetName    = "Schema"
+  referencePath = ["components", "schemas"]
 
 schemaObjectRenames :: Map String String
 schemaObjectRenames =
   [ ("default'",          "default")
   , ("pattern'",          "pattern")
   , ("type'",             "type")
+  , ("xExamples",         "x-examples")
   , ("xExpandableFields", "x-expandableFields")
   , ("xResourceId",       "x-resourceId")
   ]
 
-instance JSON.FromJSON SchemaObject where
+instance JSON.FromJSON Schema where
   parseJSON = parseRenamed schemaObjectRenames
 
-instance JSON.ToJSON SchemaObject where
+instance JSON.ToJSON Schema where
   toJSON = generateRenamed schemaObjectRenames
 
 data Type = Array | Boolean | Integer | Number | Object | String
