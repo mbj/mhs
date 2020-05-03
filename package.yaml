@@ -7,6 +7,9 @@ maintainer:  mbj@schirp-dso.com
 copyright:   2019 Markus Schirp
 github:      mbj/lht
 
+extra-source-files:
+- aws/rds-ca-2019-root.pem
+
 flags:
   static:
     description: Build static lambda binary
@@ -22,7 +25,6 @@ dependencies:
 - cbt                == 0.0.1
 - directory          ^>= 1.3
 - exceptions         ^>= 0.10
-- filepath           ^>= 1.4
 - http-types         ^>= 0.12
 - mprelude           == 0.0.0.1
 - pathtype           ^>= 0.8
