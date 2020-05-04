@@ -1,10 +1,12 @@
-{-# LANGUAGE TypeApplications #-}
-
 import Data.HashMap.Strict (HashMap)
 import Data.Maybe (catMaybes)
-import Data.String (String)
-import MPrelude
-import System.IO (IO)
+import OpenApi.Paths
+import OpenApi.Prelude
+import OpenApi.Reference
+import OpenApi.Response
+import OpenApi.Responses
+import OpenApi.Schema
+import OpenApi.TaggedText
 import Test.Tasty
 import Test.Tasty.HUnit
 
@@ -14,16 +16,13 @@ import qualified Data.HashMap.Strict       as HashMap
 import qualified Data.Map.Strict           as Map
 import qualified Devtools
 import qualified Network.HTTP.Types.Status as HTTP
-import qualified OpenApi
-import qualified OpenApi.Paths             as Paths
-import qualified OpenApi.Schema            as Schema
 
 suite :: TestTree
 suite = testGroup "Test Suite"
-  [ Devtools.testTree Devtools.defaultConfig
+  [ Devtools.testTree Devtools.defaultConfig { Devtools.hlintArguments = ["-XTypeApplications"] }
   , parseFormat
   , parseResponses
-  , parseTemplate
+  , parsePathTemplate
   ]
 
 parseFormat :: TestTree
@@ -33,36 +32,36 @@ parseFormat
   where
     accepted :: [TestTree]
     accepted = mkAccepted <$>
-      [ ("decimal",   Schema.CustomFormat "decimal")
-      , ("unix-time", Schema.UnixTime)
+      [ ("decimal",   CustomFormat "decimal")
+      , ("unix-time", UnixTime)
       ]
 
     rejected :: [TestTree]
-    rejected = mkRejected (JSON.parseJSON @Schema.Format) "Error in $:" <$>
+    rejected = mkRejected (JSON.parseJSON @Format) "Error in $:" <$>
       [(JSON.object empty, "parsing format failed, expected String, but encountered Object")]
 
-parseTemplate :: TestTree
-parseTemplate
-  = testGroup "OpenAPI.Path.Template parsing"
+parsePathTemplate :: TestTree
+parsePathTemplate
+  = testGroup "OpenAPI.Paths.PathTemplate parsing"
   $ accepted <> rejected
   where
     accepted :: [TestTree]
     accepted = mkAccepted <$>
-      [ ("/",            Paths.Template empty)
-      , ("/1",           Paths.Template [static' "1"])
-      , ("/__foo__",     Paths.Template [static' "__foo__"])
-      , ("/foo",         Paths.Template [static' "foo"])
-      , ("/foo/bar",     Paths.Template [static' "foo", static' "bar"])
-      , ("/foo/{bar}",   Paths.Template [static' "foo", dynamic "bar"])
-      , ("/foo_bar",     Paths.Template [static' "foo_bar"])
-      , ("/{foo}",       Paths.Template [dynamic "foo"])
-      , ("/{foo}/bar",   Paths.Template [dynamic "foo", static' "bar"])
-      , ("/{foo}/{bar}", Paths.Template [dynamic "foo", dynamic "bar"])
+      [ ("/",            PathTemplate empty)
+      , ("/1",           PathTemplate [static' "1"])
+      , ("/__foo__",     PathTemplate [static' "__foo__"])
+      , ("/foo",         PathTemplate [static' "foo"])
+      , ("/foo/bar",     PathTemplate [static' "foo", static' "bar"])
+      , ("/foo/{bar}",   PathTemplate [static' "foo", dynamic "bar"])
+      , ("/foo_bar",     PathTemplate [static' "foo_bar"])
+      , ("/{foo}",       PathTemplate [dynamic "foo"])
+      , ("/{foo}/bar",   PathTemplate [dynamic "foo", static' "bar"])
+      , ("/{foo}/{bar}", PathTemplate [dynamic "foo", dynamic "bar"])
       ]
 
-    dynamic = Paths.Dynamic . OpenApi.TaggedText
+    dynamic = PathSegmentDynamic . TaggedText
 
-    static' = Paths.Static
+    static' = PathSegmentStatic
 
     rejected :: [TestTree]
     rejected = mkRejected' <$>
@@ -80,7 +79,7 @@ parseTemplate
     mkRejected' :: Text -> TestTree
     mkRejected' input =
       mkRejected
-        (JSON.parseJSON @Paths.Template)
+        (JSON.parseJSON @PathTemplate)
         "Error in $: invalid template path:"
         (JSON.toJSON input, convertText $ show input)
 
@@ -90,18 +89,18 @@ parseResponses :: TestTree
   where
     accepted :: [TestTree]
     accepted = mkAccepted <$>
-      [ (JSON.object empty, Paths.Responses { default' = empty, patterns = Map.empty })
+      [ (JSON.object empty, Responses { default' = empty, patterns = Map.empty })
       , (responsesJSON, responses)
       ]
 
-    responses :: Paths.Responses
-    responses = Paths.Responses {default' = empty, ..}
+    responses :: Responses
+    responses = Responses {default' = empty, ..}
       where
-        patterns = Map.fromList
-          [ (Paths.ResponseStatusExact HTTP.status200, response) ]
+        patterns :: Map ResponseStatusPattern (ReferenceOr Response)
+        patterns = [ (ResponseStatusExact HTTP.status200, Literal response) ]
 
-        response = Paths.Response
-          { description = empty
+        response = Response
+          { description = TaggedText "some-description"
           , headers     = empty
           , content     = Map.empty
           }
@@ -109,10 +108,10 @@ parseResponses :: TestTree
     responsesJSON :: JSON.Value
     responsesJSON =
       JSON.object
-        [ ("200", JSON.object [("content", JSON.object empty)]) ]
+        [ ("200", JSON.object [("content", JSON.object empty), ("description", "some-description")]) ]
 
     rejected :: [TestTree]
-    rejected = mkRejected (JSON.parseJSON @Paths.Responses) "Error in $:" <$>
+    rejected = mkRejected (JSON.parseJSON @Responses) "Error in $:" <$>
       [ ("", "parsing responses failed, expected Object, but encountered String")
       , (JSON.object [("", JSON.object empty)], "Invalid status code pattern: \"\"")
       , (JSON.object [("-1", JSON.object empty)], "Invalid status code pattern: \"-1\"")
