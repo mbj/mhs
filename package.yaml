@@ -31,7 +31,6 @@ ghc-options:
 - -Wall
 - -Wcompat
 - -Werror
-- -O2
 - -Widentities
 - -Wimplicit-prelude
 - -Wincomplete-record-updates
