@@ -82,9 +82,10 @@ library:
   source-dirs:
   - src
   exposed-modules:
+  - LHT.Build
   - LHT.Deploy
   - LHT.Executable
-  - LHT.Build
+  - LHT.RDS
   - LHT.S3
   - LHT.Zip
 
