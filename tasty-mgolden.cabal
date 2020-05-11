@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.31.2.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b9a9e880ea405f8c9d3d4d7a3b7183ffb5b1f79cfacc889b331bb90a32885e32
+-- hash: e58d6ef1416a91476f28b483f5d3770a8811014341c4a2bb184583ed81077986
 
 name:           tasty-mgolden
 version:        0.0.0.1
@@ -34,8 +34,8 @@ library
     , base >=4.12 && <=4.15
     , filepath >=1.4.2 && <1.5
     , source-constraints >=0.0.0.1 && <0.1
-    , tasty >=1.2.3 && <1.3
-    , text >=1.2.3 && <1.3
+    , tasty >=1.2 && <1.3
+    , text >=1.2 && <1.3
   default-language: Haskell2010
 
 test-suite golden
@@ -48,7 +48,7 @@ test-suite golden
     , base >=4.12 && <=4.15
     , filepath >=1.4.2 && <1.5
     , source-constraints >=0.0.0.1 && <0.1
-    , tasty >=1.2.3 && <1.3
+    , tasty >=1.2 && <1.3
     , tasty-mgolden
     , text
   default-language: Haskell2010
@@ -66,6 +66,6 @@ test-suite hlint
     , filepath >=1.4.2 && <1.5
     , hlint ==2.1.26
     , source-constraints >=0.0.0.1 && <0.1
-    , tasty >=1.2.3 && <1.3
-    , text >=1.2.3 && <1.3
+    , tasty >=1.2 && <1.3
+    , text >=1.2 && <1.3
   default-language: Haskell2010

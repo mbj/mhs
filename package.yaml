@@ -9,7 +9,7 @@ dependencies:
 - Diff               == 0.3.4 || ^>= 0.4
 - base               >= 4.12  && <= 4.15
 - filepath           ^>= 1.4.2
-- source-constraints ^>= 0.0.1
+- source-constraints ^>= 0.0.0.1
 - tasty              ^>= 1.2
 - text               ^>= 1.2
 
