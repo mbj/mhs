@@ -10,6 +10,7 @@ github:      mbj/dbt
 dependencies:
 - base                 ^>= 4.12
 - bytestring           ^>= 0.10
+- containers           ^>= 0.6
 - cbt                  == 0.0.1
 - cryptonite           ^>= 0.25
 - mprelude             == 0.0.0.1
