@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.31.2.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 41f9e553c053f7601187fef23a1b59648eadb1c7af65e4b47f0f7398c42e41a0
+-- hash: b9a9e880ea405f8c9d3d4d7a3b7183ffb5b1f79cfacc889b331bb90a32885e32
 
 name:           tasty-mgolden
 version:        0.0.0.1
@@ -30,12 +30,12 @@ library
   default-extensions: DerivingStrategies LambdaCase NoImplicitPrelude OverloadedStrings RecordWildCards StrictData
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields
   build-depends:
-      Diff ==0.3.4
-    , base ==4.12.0.0
-    , filepath ==1.4.2.1
-    , source-constraints ==0.0.0.1
-    , tasty ==1.2.3
-    , text ==1.2.3.1
+      Diff ==0.3.4 || >=0.4 && <0.5
+    , base >=4.12 && <=4.15
+    , filepath >=1.4.2 && <1.5
+    , source-constraints >=0.0.0.1 && <0.1
+    , tasty >=1.2.3 && <1.3
+    , text >=1.2.3 && <1.3
   default-language: Haskell2010
 
 test-suite golden
@@ -44,11 +44,11 @@ test-suite golden
   default-extensions: DerivingStrategies LambdaCase NoImplicitPrelude OverloadedStrings RecordWildCards StrictData
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      Diff ==0.3.4
-    , base ==4.12.0.0
-    , filepath ==1.4.2.1
-    , source-constraints ==0.0.0.1
-    , tasty ==1.2.3
+      Diff ==0.3.4 || >=0.4 && <0.5
+    , base >=4.12 && <=4.15
+    , filepath >=1.4.2 && <1.5
+    , source-constraints >=0.0.0.1 && <0.1
+    , tasty >=1.2.3 && <1.3
     , tasty-mgolden
     , text
   default-language: Haskell2010
@@ -61,11 +61,11 @@ test-suite hlint
   default-extensions: DerivingStrategies LambdaCase NoImplicitPrelude OverloadedStrings RecordWildCards StrictData
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      Diff ==0.3.4
-    , base ==4.12.0.0
-    , filepath ==1.4.2.1
+      Diff ==0.3.4 || >=0.4 && <0.5
+    , base >=4.12 && <=4.15
+    , filepath >=1.4.2 && <1.5
     , hlint ==2.1.26
-    , source-constraints ==0.0.0.1
-    , tasty ==1.2.3
-    , text ==1.2.3.1
+    , source-constraints >=0.0.0.1 && <0.1
+    , tasty >=1.2.3 && <1.3
+    , text >=1.2.3 && <1.3
   default-language: Haskell2010
