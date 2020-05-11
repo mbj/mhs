@@ -45,27 +45,42 @@ data Context = Context
 plugin :: Plugin
 plugin =
   defaultPlugin
-  { parsedResultAction = runSourceConstraints
+  { parsedResultAction = run
   , pluginRecompile    = purePlugin
   }
 
-runSourceConstraints :: [CommandLineOption]
-                     -> ModSummary
-                     -> HsParsedModule
-                     -> Hsc HsParsedModule
-runSourceConstraints options ModSummary{ms_location = ModLocation{..}} parsedModule = do
-  dynFlags     <- getDynFlags
+run
+  :: [CommandLineOption]
+  -> ModSummary
+  -> HsParsedModule
+  -> Hsc HsParsedModule
+run options summary parsedModule = do
+  dynFlags <- getDynFlags
+  runSourceConstraints dynFlags options summary parsedModule
+
+runSourceConstraints
+  :: DynFlags
+  -> [CommandLineOption]
+  -> ModSummary
+  -> HsParsedModule
+  -> Hsc HsParsedModule
+runSourceConstraints dynFlags options ModSummary{ms_location = ModLocation{..}} parsedModule = do
   localModules <- mapM parseLocalModule (pack <$> options)
-  when (allowLocation ml_hs_file) $
-    liftIO
-      . printOrThrowWarnings dynFlags
-      $ warnings Context{..} (hpm_module parsedModule)
+  when (allowLocation ml_hs_file) . emitWarnings $ warnings Context{..} (hpm_module parsedModule)
   pure parsedModule
   where
     allowLocation = maybe False (notElem "autogen/" . splitPath)
 
+    emitWarnings :: Bag WarnMsg -> Hsc ()
+    emitWarnings  = liftIO . printOrThrowWarnings dynFlags
+
     parseLocalModule :: Text -> Hsc LocalModule
-    parseLocalModule = either fail pure . parseOnly localModuleParser
+    parseLocalModule
+      = either localParseFailure pure . parseOnly localModuleParser
+
+    localParseFailure :: String -> Hsc a
+    localParseFailure =
+      throwOneError . mkPlainErrMsg dynFlags noSrcSpan . text
 
 -- | Find warnings for node
 warnings
@@ -183,8 +198,8 @@ locatedWarnings context@Context{..} node =
         mkClass Type name
       ie -> error $ "Unsupported: " <> gshow ie
 
-    mkClass :: Outputable b => (String -> IEClass) -> GenLocated a b -> IEClass
-    mkClass constructor name = constructor . render context $ unLoc name
+    mkClass :: (Outputable a, Outputable b) => (String -> IEClass) -> GenLocated a b -> IEClass
+    mkClass constructor name = constructor $ render context name
 
 unlocatedWarning :: Data a => Context -> a -> Maybe SDoc
 unlocatedWarning _context = mkQ empty requireDerivingStrategy
