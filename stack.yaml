@@ -3,7 +3,7 @@ extra-deps:
 - git: https://github.com/mbj/devtools-hs
   commit: db02e6f80f27cb672b919e5ab078ebdfad996f3b
 - git: https://github.com/mbj/source-constraints
-  commit: c57de5486d5ac383ef7013485e4d2c35cc8bd2f4
+  commit: 6957db606a5a4906b9e55af4e803859d19900478
 - git: https://github.com/mbj/tasty
   commit: 6b884dc97902feaf6e81ad46f3cc905eb122e5d6
   subdirs:
