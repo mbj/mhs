@@ -3,21 +3,24 @@ import System.IO (IO)
 
 import qualified CBT
 import qualified DBT
-import qualified DBT.Postgresql as DBT
-import qualified Data.Text.IO   as Text
+import qualified DBT.Postgresql       as Postgresql
+import qualified Data.Text.IO         as Text
 import qualified Devtools
 import qualified PGT
-import qualified PGT.Selector   as PGT
-import qualified System.Path    as Path
-import qualified Test.Tasty     as Tasty
+import qualified PGT.Selector         as PGT
+import qualified System.Path          as Path
+import qualified System.Process.Typed as Process
+import qualified Test.Tasty           as Tasty
 
 main :: IO ()
 main = do
   Text.putStrLn ""
-  success <- PGT.expand ([PGT.Selector $ Path.rel "examples/success.sql"] :: [PGT.Selector])
+  success <- PGT.expand selectors
 
   DBT.withDatabaseContainer (CBT.Prefix "pgt") $ \pgConfig -> do
-    config <- PGT.configure pgConfig { DBT.databaseName = DBT.DatabaseName "template0" } empty
+    let adminConfig = pgConfig { Postgresql.databaseName = Postgresql.DatabaseName "template1" }
+    setupSchema adminConfig
+    config <- PGT.configure adminConfig empty
     Tasty.defaultMain $
       Tasty.testGroup ""
         [ devtools
@@ -26,3 +29,29 @@ main = do
 
 devtools :: Tasty.TestTree
 devtools = Devtools.testTree Devtools.defaultConfig
+
+setupSchema :: Postgresql.ClientConfig -> IO ()
+setupSchema pgConfig = do
+  env  <- Postgresql.getEnv pgConfig
+
+  Process.runProcess_
+    . Process.setEnv env
+    . Process.setStdin (Process.byteStringInput "CREATE TABLE test (id serial)")
+    $ Process.proc "psql" arguments
+
+  where
+    arguments :: [String]
+    arguments =
+      [ "--no-password"
+      , "--no-psqlrc"
+      , "--no-readline"
+      , "--set"
+      , "ON_ERROR_STOP=1"
+      ]
+
+selectors :: [PGT.Selector]
+selectors =
+ [ PGT.Selector $ Path.rel "examples/success.sql"
+ , PGT.Selector $ Path.rel "examples/write-1.sql"
+ , PGT.Selector $ Path.rel "examples/write-2.sql"
+ ]

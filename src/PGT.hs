@@ -115,7 +115,7 @@ runTestSession config runProcess test@Test{..} =
   where
     runSession :: Postgresql.ClientConfig -> m a
     runSession psqlConfig = do
-      env  <- pgEnv psqlConfig
+      env  <- Postgresql.getEnv psqlConfig
       body <- LBS.fromStrict . Text.encodeUtf8 <$> readFile path
 
       runProcess
@@ -142,7 +142,7 @@ withTestDatabase config@Config{..} test action =
 
 createTestDatabase :: MonadIO m => Config -> Test -> m Postgresql.DatabaseName
 createTestDatabase Config{..} Test{..} = do
-  env <- pgEnv psqlAdmin
+  env <- Postgresql.getEnv psqlAdmin
   Process.runProcess_ $ Process.setEnv env command
   pure testDatabase
   where
@@ -167,13 +167,8 @@ createTestDatabase Config{..} Test{..} = do
 
 dropDatabase :: MonadIO m => Postgresql.ClientConfig -> Postgresql.DatabaseName -> m ()
 dropDatabase config databaseName = do
-  env <- pgEnv config
+  env <- Postgresql.getEnv config
   Process.runProcess_ . Process.setEnv env $ Process.proc "dropdb" ["--", convertText databaseName]
-
-pgEnv :: MonadIO m => Postgresql.ClientConfig -> m [(String, String)]
-pgEnv clientConfig = do
-  env <- liftIO System.getEnvironment
-  pure $ env <> Postgresql.toEnv clientConfig
 
 configure
   :: MonadIO m
