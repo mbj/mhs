@@ -16,8 +16,6 @@ jobs:
         ghc-version: '8.6.5'
     - name: Cache
       uses: actions/cache@v1
-      env:
-        cache-name: stack-cache
       with:
         path: ~/.stack
         key: cache-${{ hashFiles('stack.yaml') }}-${{ hashFiles('**/*.cabal') }}
