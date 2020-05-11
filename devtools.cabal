@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: dc6137adfb5c196a3f3a70668450acc0208a21ff82e11723f65e20428e44afb7
+-- hash: 0044c1470f4c83abfe57ee8f851006205a230783c6af5b732e09be65e6357be2
 
 name:           devtools
 version:        0.0.0.1
@@ -38,9 +38,9 @@ library
     , cmdargs >=0.10.20 && <0.11
     , filepath >=1.4 && <1.5
     , hlint >2.1 && <3
-    , source-constraints ==0.0.0.1
+    , source-constraints >=0.0.0.1 && <0.1
     , tasty >=1.2 && <1.3
-    , tasty-mgolden ==0.0.0.1
+    , tasty-mgolden >=0.0.0.1 && <0.1
     , text >=1.2 && <1.3
     , typed-process >=0.2 && <0.3
   default-language: Haskell2010
@@ -59,9 +59,9 @@ executable devtools
     , devtools
     , filepath >=1.4 && <1.5
     , hlint >2.1 && <3
-    , source-constraints ==0.0.0.1
+    , source-constraints >=0.0.0.1 && <0.1
     , tasty >=1.2 && <1.3
-    , tasty-mgolden ==0.0.0.1
+    , tasty-mgolden >=0.0.0.1 && <0.1
     , text >=1.2 && <1.3
     , typed-process >=0.2 && <0.3
   default-language: Haskell2010
@@ -81,9 +81,9 @@ test-suite devtools-test
     , devtools
     , filepath >=1.4 && <1.5
     , hlint >2.1 && <3
-    , source-constraints ==0.0.0.1
+    , source-constraints >=0.0.0.1 && <0.1
     , tasty >=1.2 && <1.3
-    , tasty-mgolden ==0.0.0.1
+    , tasty-mgolden >=0.0.0.1 && <0.1
     , text >=1.2 && <1.3
     , typed-process >=0.2 && <0.3
   default-language: Haskell2010
