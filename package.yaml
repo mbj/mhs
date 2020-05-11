@@ -1,12 +1,12 @@
 name:        mprelude
-version:     0.0.0.1
+version:     0.0.1
 github:      mbj/mprelude
 description: Please see the README on Github at <https://github.com/mbj/mprelude#readme>
 license:     AllRightsReserved
 
 dependencies:
-- base               ^>= 4.12
-- source-constraints == 0.0.0.1
+- base               > 4.12 && < 14.15
+- source-constraints ^>= 0.0.1
 - text               ^>= 1.2
 - text-conversions   ^>= 0.3
 

@@ -1,13 +1,13 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.31.2.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 271134d235b8189138cf8e680cad0b9a19c6117a3a1b9896c0b8cf177c478006
+-- hash: df1899de9640bc69040b421786a730c2a314fa9b77c35eb37011f96d64140a6e
 
 name:           mprelude
-version:        0.0.0.1
+version:        0.0.1
 description:    Please see the README on Github at <https://github.com/mbj/mprelude#readme>
 homepage:       https://github.com/mbj/mprelude#readme
 bug-reports:    https://github.com/mbj/mprelude/issues
@@ -28,8 +28,8 @@ library
   default-extensions: CPP DataKinds DeriveAnyClass DeriveGeneric DeriveLift DerivingStrategies DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving MultiParamTypeClasses NoImplicitPrelude OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables Strict TemplateHaskell
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields
   build-depends:
-      base >=4.12 && <4.13
-    , source-constraints ==0.0.0.1
+      base >4.12 && <14.15
+    , source-constraints >=0.0.1 && <0.1
     , text >=1.2 && <1.3
     , text-conversions >=0.3 && <0.4
   default-language: Haskell2010
@@ -42,9 +42,9 @@ test-suite devtools
   default-extensions: CPP DataKinds DeriveAnyClass DeriveGeneric DeriveLift DerivingStrategies DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving MultiParamTypeClasses NoImplicitPrelude OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables Strict TemplateHaskell
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      base >=4.12 && <4.13
+      base >4.12 && <14.15
     , devtools
-    , source-constraints ==0.0.0.1
+    , source-constraints >=0.0.1 && <0.1
     , text >=1.2 && <1.3
     , text-conversions >=0.3 && <0.4
   default-language: Haskell2010
