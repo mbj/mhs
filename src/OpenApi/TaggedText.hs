@@ -1,6 +1,5 @@
 module OpenApi.TaggedText where
 
-import GHC.TypeLits (Symbol)
 import OpenApi.Prelude
 
 import qualified Data.Aeson as JSON
