@@ -1,6 +1,5 @@
 module OpenApi.HTTP where
 
-import Numeric.Natural (Natural)
 import OpenApi.Prelude
 
 import qualified Network.HTTP.Types.Status as HTTP

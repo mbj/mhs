@@ -4,7 +4,6 @@ import Control.Applicative ((<*))
 import Data.Aeson ((.:?))
 import Data.Maybe (catMaybes)
 import Data.Traversable (traverse)
-import Data.Tuple (uncurry)
 import OpenApi.HTTP
 import OpenApi.Prelude
 import OpenApi.Reference
