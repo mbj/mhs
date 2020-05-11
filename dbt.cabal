@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d58be7af9daf5ce930a9f5bfeb7b14161d53af5b671b058b8b45eeb652727f89
+-- hash: 4fedf591d2e1c75445dbef4a057688393effe56bb3977ed55626b4793df02c20
 
 name:           dbt
 version:        0.0.0.1
@@ -37,6 +37,7 @@ library
       base >=4.12 && <4.13
     , bytestring >=0.10 && <0.11
     , cbt ==0.0.1
+    , containers >=0.6 && <0.7
     , cryptonite >=0.25 && <0.26
     , mprelude ==0.0.0.1
     , pathtype >=0.8 && <0.9
@@ -60,6 +61,7 @@ test-suite devtools
       base >=4.12 && <4.13
     , bytestring >=0.10 && <0.11
     , cbt ==0.0.1
+    , containers >=0.6 && <0.7
     , cryptonite >=0.25 && <0.26
     , dbt
     , devtools

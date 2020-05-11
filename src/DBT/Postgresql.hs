@@ -11,6 +11,7 @@ module DBT.Postgresql
   , UserName(..)
   , defaultHostPort
   , effectiveHostPort
+  , getEnv
   , parseHostPort
   , toEnv
   )
@@ -21,6 +22,9 @@ import Data.Maybe (catMaybes)
 import Data.Word (Word16)
 import Text.Read (readMaybe)
 import Text.Show (show)
+
+import qualified Data.Map.Strict    as Map
+import qualified System.Environment as System
 
 newtype DatabaseName = DatabaseName Text
   deriving newtype ToText
@@ -87,6 +91,13 @@ parseHostPort input = maybe failParse (pure . HostPort) . readMaybe $ convertTex
   where
     failParse :: m HostPort
     failParse = liftIO . fail $ "Cannot parse PostgresqlPort from input: " <> show input
+
+getEnv :: MonadIO m => ClientConfig -> m [(String, String)]
+getEnv clientConfig
+  =   Map.toList
+  .   Map.union (Map.fromList $ toEnv clientConfig)
+  .   Map.fromList
+  <$> liftIO System.getEnvironment
 
 defaultHostPort :: HostPort
 defaultHostPort = HostPort 5432
