@@ -1,5 +1,8 @@
-import System.IO (IO)
+import MPrelude
+
 import qualified Devtools
 
 main :: IO ()
-main = Devtools.main
+main
+  = Devtools.main
+  $ Devtools.defaultConfig { Devtools.hlintArguments = ["-XNumericUnderscores"] }

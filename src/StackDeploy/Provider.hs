@@ -1,7 +1,6 @@
 module StackDeploy.Provider (Get, HasName(..), Name, Provider, get, mkName) where
 
 import Control.Exception.Base (Exception)
-import Control.Monad.Catch (MonadThrow, throwM)
 import Data.HashMap.Strict (HashMap)
 import Data.Hashable (Hashable)
 import StackDeploy.Prelude
