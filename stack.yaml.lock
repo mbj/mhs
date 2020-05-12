@@ -21,17 +21,17 @@ packages:
 - completed:
     cabal-file:
       size: 3338
-      sha256: 72f08f8e814125d5b087181ef3ec1dfb71f7657d96ee6df82139c0c95c79dcd7
+      sha256: 7b578103a4cf6f34034776f849df4f8b3634b65827471f8843dee723910e9cad
     name: source-constraints
     version: 0.0.1
     git: https://github.com/mbj/source-constraints
     pantry-tree:
       size: 1170
-      sha256: 5c23593f976448b0818cff05f9adfd32dac1a09d2493d018175a51bdeb86812d
-    commit: c57de5486d5ac383ef7013485e4d2c35cc8bd2f4
+      sha256: ac0264015a7d5f14873f06393b7db6c985529f9afdef15c6319c999cf398b7cd
+    commit: 6957db606a5a4906b9e55af4e803859d19900478
   original:
     git: https://github.com/mbj/source-constraints
-    commit: c57de5486d5ac383ef7013485e4d2c35cc8bd2f4
+    commit: 6957db606a5a4906b9e55af4e803859d19900478
 - completed:
     subdir: core
     cabal-file:
