@@ -1,12 +1,12 @@
 name:        source-constraints
 version:     0.0.1
 synopsis:    Source constraints GHC plugin
-homepage:    https://github.com/schirp-dso/source-constraints#readme
+homepage:    https://github.com/mbj/source-constraints#readme
 author:      Markus Schirp
 maintainer:  mbj@schirp-dso.com
 copyright:   2018 Markus Schirp
 category:    CodeQuality
-github:      schirp-dso/source-constraints
+github:      mbj/source-constraints
 
 dependencies:
 - attoparsec ^>= 0.13

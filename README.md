@@ -8,7 +8,7 @@ Add the following extra-dep to your `stack.yml`:
 
 ```yaml
 extra-deps:
-- git: ssh://git@github.com/schirp-dso/source-constraints
+- git: ssh://git@github.com/mbj/source-constraints
   commit: $use_current_commit_hash
 ```
 
