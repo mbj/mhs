@@ -94,4 +94,4 @@ uuid-types 1.0.3
 vector 0.12.1.2
 vector-algorithms 0.8.0.3
 wcwidth 0.0.2
-yaml 0.11.3.0
+yaml 0.11.4.0
