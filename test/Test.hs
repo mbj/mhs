@@ -1,5 +1,4 @@
 import MPrelude
-import System.IO (IO)
 import Test.Tasty.HUnit
 
 import qualified CBT
