@@ -5,9 +5,6 @@
 
 packages:
 - completed:
-    cabal-file:
-      size: 3563
-      sha256: 920bab86bf373c3eaad028ccf4147797cde79c21d2106a04b073ebd7cf73eb83
     name: devtools
     version: 0.0.0.1
     git: https://github.com/mbj/devtools-hs
@@ -19,9 +16,6 @@ packages:
     git: https://github.com/mbj/devtools-hs
     commit: db02e6f80f27cb672b919e5ab078ebdfad996f3b
 - completed:
-    cabal-file:
-      size: 3338
-      sha256: 7b578103a4cf6f34034776f849df4f8b3634b65827471f8843dee723910e9cad
     name: source-constraints
     version: 0.0.1
     git: https://github.com/mbj/source-constraints
@@ -34,9 +28,6 @@ packages:
     commit: 6957db606a5a4906b9e55af4e803859d19900478
 - completed:
     subdir: core
-    cabal-file:
-      size: 2510
-      sha256: a94ba70edd47058ee91a7dfddf0c5da45f834c2cc717051edb1cc4b45f124318
     name: tasty
     version: 1.2.3
     git: https://github.com/mbj/tasty
@@ -49,9 +40,6 @@ packages:
     git: https://github.com/mbj/tasty
     commit: 6b884dc97902feaf6e81ad46f3cc905eb122e5d6
 - completed:
-    cabal-file:
-      size: 2996
-      sha256: c99255a1a2a289f91a598148814ae58b040440dc31915cb4734df14693a9df1c
     name: tasty-mgolden
     version: 0.0.0.1
     git: https://github.com/mbj/tasty-mgolden
@@ -64,7 +52,7 @@ packages:
     commit: 68e10ddcd37aa872c9d0cd57a1665d09ac4ddbc0
 snapshots:
 - completed:
-    size: 494638
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/15/11.yaml
-    sha256: 5747328cdcbb8fe9c96fc048b5566167c80dd176a41b52d3b363058e3cc1dc5d
-  original: lts-15.11
+    size: 494635
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/15/12.yaml
+    sha256: a71c4293d8f461f455ff0d9815dfe4ab2f1adacd7e0bbc9a218f46ced8c4929a
+  original: lts-15.12
