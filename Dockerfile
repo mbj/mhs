@@ -20,7 +20,11 @@ RKgPgxSylguY+X3uuPaV9ZIX8hCuAuFF1fzbTvl/plyeptB9HF6vtXe4CbsZvdYU\n\
 -----END PUBLIC KEY-----\n'\
 >> /etc/apk/keys/mbj@schirp-dso.com-5e5c5d2b.rsa.pub
 
-RUN echo '@mbj https://mbj-apk.s3.dualstack.us-east-1.amazonaws.com' >> /etc/apk/repositories
+RUN echo $'\
+@edge http://dl-cdn.alpinelinux.org/alpine/edge/community\n\
+@edge http://dl-cdn.alpinelinux.org/alpine/edge/main\n\
+@mbj https://mbj-apk.s3.dualstack.us-east-1.amazonaws.com\n'\
+>> /etc/apk/repositories
 
 # Setup build directory
 RUN mkdir -p -m 0700 /opt/build
@@ -29,18 +33,19 @@ RUN mkdir -p -m 0700 /opt/build
 RUN apk add                  \
   --no-cache                 \
   --                         \
-  cache-s3@mbj=0.1.5-r0      \
   curl                       \
-  ghc=8.6.5-r3               \
+  ghc@edge=8.8.3-r0          \
   git                        \
   libpq@mbj=12.2-r0          \
+  libffi@edge                \
+  llvm10@edge                \
   make                       \
   musl-dev                   \
   ncurses-dev                \
   ncurses-static             \
   postgresql-dev@mbj=12.2-r0 \
   openssl-libs-static        \
-  stack@mbj=2.1.3-r0         \
+  stack@mbj=2.3.1-r0         \
   tar                        \
   xz                         \
   zlib-dev                   \
