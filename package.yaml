@@ -2,7 +2,7 @@ name:        mprelude
 version:     0.0.1
 github:      mbj/mprelude
 description: Please see the README on Github at <https://github.com/mbj/mprelude#readme>
-license:     AllRightsReserved
+license:     BSD3
 
 dependencies:
 - base               > 4.12 && < 14.15
