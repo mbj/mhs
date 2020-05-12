@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a62bb4c9b795cc57bbf1b509fb40d3720756ab32f7a17dbb6bc43adcdcf1f139
+-- hash: b98be32f3ac7da5e3db251e1c8458142466f628189a350523491242188f5d32c
 
 name:           dbt
 version:        0.0.0.1
@@ -15,6 +15,7 @@ author:         Markus Schirp
 maintainer:     mbj@schirp-dso.com
 copyright:      2019 Markus Schirp
 license:        BSD3
+license-file:   LICENSE
 build-type:     Simple
 
 source-repository head
