@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.31.2.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 077e180adac9a54a639c77576719eb40d6ba23f70a078e2b2647447d0ed236ca
+-- hash: fa02dc07b38c3f1ea9e087911724b6ddcd3292c36c56dc6c6b27cd33db266354
 
 name:           pgt
 version:        0.0.1
@@ -35,21 +35,20 @@ library
   default-extensions: CPP DataKinds DeriveAnyClass DeriveGeneric DerivingStrategies DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving MultiParamTypeClasses NoImplicitPrelude OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables StrictData TemplateHaskell
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin-opt=SourceConstraints:local:Pgt -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
-      Diff >=0.3 && <0.4
-    , base >=4.12 && <4.13
+      base >=4.13 && <4.14
     , bytestring >=0.10 && <0.11
     , cbt ==0.0.1
     , containers >=0.6 && <0.7
     , dbt ==0.0.0.1
     , directory >=1.3 && <1.4
     , filepath >=1.4 && <1.5
-    , mprelude ==0.0.0.1
-    , optparse-applicative >=0.14 && <0.15
+    , mprelude >=0.0.1 && <0.1
+    , optparse-applicative >=0.15 && <0.16
     , ordered-containers >=0.2 && <0.3
     , pathtype >=0.8.1 && <0.9
-    , source-constraints ==0.0.0.1
+    , source-constraints >=0.0.1 && <0.1
     , tasty >=1.2 && <1.3
-    , tasty-mgolden ==0.0.0.1
+    , tasty-mgolden >=0.0.0.1 && <0.1
     , text >=1.2 && <1.3
     , text-conversions >=0.3 && <0.4
     , typed-process >=0.2 && <0.3
@@ -67,22 +66,21 @@ executable pgt
   default-extensions: CPP DataKinds DeriveAnyClass DeriveGeneric DerivingStrategies DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving MultiParamTypeClasses NoImplicitPrelude OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables StrictData TemplateHaskell
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin-opt=SourceConstraints:local:Pgt -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      Diff >=0.3 && <0.4
-    , base >=4.12 && <4.13
+      base >=4.13 && <4.14
     , bytestring >=0.10 && <0.11
     , cbt ==0.0.1
     , containers >=0.6 && <0.7
     , dbt ==0.0.0.1
     , directory >=1.3 && <1.4
     , filepath >=1.4 && <1.5
-    , mprelude ==0.0.0.1
-    , optparse-applicative >=0.14 && <0.15
+    , mprelude >=0.0.1 && <0.1
+    , optparse-applicative >=0.15 && <0.16
     , ordered-containers >=0.2 && <0.3
     , pathtype >=0.8.1 && <0.9
     , pgt
-    , source-constraints ==0.0.0.1
+    , source-constraints >=0.0.1 && <0.1
     , tasty >=1.2 && <1.3
-    , tasty-mgolden ==0.0.0.1
+    , tasty-mgolden >=0.0.0.1 && <0.1
     , text >=1.2 && <1.3
     , text-conversions >=0.3 && <0.4
     , typed-process >=0.2 && <0.3
@@ -99,8 +97,7 @@ test-suite test
   default-extensions: CPP DataKinds DeriveAnyClass DeriveGeneric DerivingStrategies DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving MultiParamTypeClasses NoImplicitPrelude OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables StrictData TemplateHaskell
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin-opt=SourceConstraints:local:Pgt -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      Diff >=0.3 && <0.4
-    , base >=4.12 && <4.13
+      base >=4.13 && <4.14
     , bytestring >=0.10 && <0.11
     , cbt ==0.0.1
     , containers >=0.6 && <0.7
@@ -108,14 +105,14 @@ test-suite test
     , devtools
     , directory >=1.3 && <1.4
     , filepath >=1.4 && <1.5
-    , mprelude ==0.0.0.1
-    , optparse-applicative >=0.14 && <0.15
+    , mprelude >=0.0.1 && <0.1
+    , optparse-applicative >=0.15 && <0.16
     , ordered-containers >=0.2 && <0.3
     , pathtype >=0.8.1 && <0.9
     , pgt
-    , source-constraints ==0.0.0.1
+    , source-constraints >=0.0.1 && <0.1
     , tasty >=1.2 && <1.3
-    , tasty-mgolden ==0.0.0.1
+    , tasty-mgolden >=0.0.0.1 && <0.1
     , text >=1.2 && <1.3
     , text-conversions >=0.3 && <0.4
     , typed-process >=0.2 && <0.3

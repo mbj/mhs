@@ -7,7 +7,6 @@ import Data.Traversable (Traversable)
 import PGT
 import PGT.Prelude
 import PGT.Selector
-import System.IO (IO)
 
 import qualified Options.Applicative as CLI
 import qualified System.IO           as IO
