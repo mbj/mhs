@@ -2,8 +2,8 @@ name:        devtools
 version:     0.0.0.1
 github:      mbj/devtools-hs
 description: Haskell development tooling
-license:     AllRightsReserved
 author:      Markus Schirp <mbj@schirp-dso.com>
+license:     BSD3
 
 dependencies:
 - Diff               > 0.3 && < 0.5
