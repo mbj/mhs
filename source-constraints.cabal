@@ -1,20 +1,22 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.31.2.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a834c46ba2a7b53a3501d17d4d904921cd834434d037243d4d23805fabf38986
+-- hash: a0e418ffd041d61aa59328ee3dd3fa6dfa602a6b7d83fb76d5b997b097d13e39
 
 name:           source-constraints
 version:        0.0.1
 synopsis:       Source constraints GHC plugin
 category:       CodeQuality
-homepage:       https://github.com/schirp-dso/source-constraints#readme
-bug-reports:    https://github.com/schirp-dso/source-constraints/issues
+homepage:       https://github.com/mbj/source-constraints#readme
+bug-reports:    https://github.com/mbj/source-constraints/issues
 author:         Markus Schirp
 maintainer:     mbj@schirp-dso.com
 copyright:      2018 Markus Schirp
+license:        BSD3
+license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
     test/LocalModuleExplicitImport.hs
@@ -26,7 +28,7 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/schirp-dso/source-constraints
+  location: https://github.com/mbj/source-constraints
 
 library
   exposed-modules:
