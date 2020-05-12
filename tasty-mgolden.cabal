@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.31.2.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e58d6ef1416a91476f28b483f5d3770a8811014341c4a2bb184583ed81077986
+-- hash: 1a2dffde4b4315ae1cd3230189f0ec08227bf4151edfc616c3d1f521467f5f2a
 
 name:           tasty-mgolden
 version:        0.0.0.1
@@ -13,7 +13,8 @@ homepage:       https://github.com/mbj/tasty-mgolden#readme
 bug-reports:    https://github.com/mbj/tasty-mgolden/issues
 author:         Markus Schirp <mbj@schirp-dso.com>
 maintainer:     Markus Schirp <mbj@schirp-dso.com>
-license:        AllRightsReserved
+license:        BSD3
+license-file:   LICENSE
 build-type:     Simple
 
 source-repository head
