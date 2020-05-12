@@ -6,6 +6,7 @@ author:      Markus Schirp
 maintainer:  mbj@schirp-dso.com
 copyright:   2019 Markus Schirp
 github:      mbj/stack-deploy
+license:     BSD3
 
 dependencies:
 - aeson                   ^>= 1.4

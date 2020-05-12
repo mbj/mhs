@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 13583ff21d79c5e11b62cfda9077c8d0c719c6b1d883df953de31e2954642c07
+-- hash: 363e9610de66c323bc3d360777bbce8a15b4a14d9a9c09b06c78d722d6f673f0
 
 name:           stack-deploy
 version:        0.0.0.1
@@ -14,6 +14,8 @@ bug-reports:    https://github.com/mbj/stack-deploy/issues
 author:         Markus Schirp
 maintainer:     mbj@schirp-dso.com
 copyright:      2019 Markus Schirp
+license:        BSD3
+license-file:   LICENSE
 build-type:     Simple
 
 source-repository head
