@@ -1,10 +1,9 @@
 import MPrelude
-import System.IO (IO)
 import Test.Tasty.HUnit
 
 import qualified CBT
 import qualified Devtools
-import qualified Test.Tasty  as Tasty
+import qualified Test.Tasty as Tasty
 
 main :: IO ()
 main
