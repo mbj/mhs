@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 0044c1470f4c83abfe57ee8f851006205a230783c6af5b732e09be65e6357be2
+-- hash: 43de9cd8bc612ffce5f8adc7f363b46051cff059f5b89d5ae164a593ef08dda7
 
 name:           devtools
 version:        0.0.0.1
@@ -13,7 +13,7 @@ homepage:       https://github.com/mbj/devtools-hs#readme
 bug-reports:    https://github.com/mbj/devtools-hs/issues
 author:         Markus Schirp <mbj@schirp-dso.com>
 maintainer:     Markus Schirp <mbj@schirp-dso.com>
-license:        AllRightsReserved
+license:        BSD3
 build-type:     Simple
 
 source-repository head
