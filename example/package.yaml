@@ -1,0 +1,26 @@
+name: example
+
+dependencies:
+- base
+
+flags:
+  static:
+    description: Build static executable binary
+    default: false
+    manual: true
+
+executables:
+  hello-world:
+    main: HelloWorld.hs
+    ghc-options:
+    - -rtsopts
+    - -static
+    - -threaded
+    - -with-rtsopts=-N
+    ld-options: -static
+    cc-options: -static
+    when:
+    - condition: flag(static)
+      buildable: true
+    - condition: '!flag(static)'
+      buildable: false
