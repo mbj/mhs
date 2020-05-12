@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 01eb75a3254275c02bc085a8c24b1324f8e057725688dc53a1fa7e3a3f4ed95b
+-- hash: 4e738e66f845ac5b4748ada2cfa24a6f9c511322626ad458bb18131c318b805b
 
 name:           cbt
 version:        0.0.1
@@ -14,6 +14,8 @@ bug-reports:    https://github.com/mbj/cbt/issues
 author:         Markus Schirp
 maintainer:     mbj@schirp-dso.com
 copyright:      2020 Markus Schirp
+license:        BSD3
+license-file:   LICENSE
 build-type:     Simple
 
 source-repository head
