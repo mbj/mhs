@@ -1,17 +1,17 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.31.2.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: df1899de9640bc69040b421786a730c2a314fa9b77c35eb37011f96d64140a6e
+-- hash: 6606ec1f2a4e16697627f1f97cb74cb9f25332bd79aea923789a850748284344
 
 name:           mprelude
 version:        0.0.1
 description:    Please see the README on Github at <https://github.com/mbj/mprelude#readme>
 homepage:       https://github.com/mbj/mprelude#readme
 bug-reports:    https://github.com/mbj/mprelude/issues
-license:        AllRightsReserved
+license:        BSD3
 build-type:     Simple
 
 source-repository head
