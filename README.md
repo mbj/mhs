@@ -1,3 +1,5 @@
+![CI](https://github.com/mbj/source-constraints/workflows/CI/badge.svg)
+
 # source-constraints
 
 An in progress GHC plugin to add constraints on the GHC AST.
