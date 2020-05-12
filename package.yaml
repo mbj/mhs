@@ -49,7 +49,7 @@ tests:
     - -threaded
     - -with-rtsopts=-N
     dependencies:
-    - hlint == 2.1.26
+    - hlint ^>= 2.2
 
   golden:
     main:          test/Test.hs

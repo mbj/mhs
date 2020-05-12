@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 1a2dffde4b4315ae1cd3230189f0ec08227bf4151edfc616c3d1f521467f5f2a
+-- hash: 15e471b542f59ef46f678ee3cc5bb23d36b3d140fbddea6f75fd292b075acea9
 
 name:           tasty-mgolden
 version:        0.0.0.1
@@ -65,7 +65,7 @@ test-suite hlint
       Diff ==0.3.4 || >=0.4 && <0.5
     , base >=4.12 && <=4.15
     , filepath >=1.4.2 && <1.5
-    , hlint ==2.1.26
+    , hlint >=2.2 && <2.3
     , source-constraints >=0.0.0.1 && <0.1
     , tasty >=1.2 && <1.3
     , text >=1.2 && <1.3
