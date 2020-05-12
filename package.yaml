@@ -6,6 +6,7 @@ author:      Markus Schirp
 maintainer:  mbj@schirp-dso.com
 copyright:   2019 Markus Schirp
 github:      mbj/lht
+license:     BSD3
 
 extra-source-files:
 - aws/rds-ca-2019-root.pem
