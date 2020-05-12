@@ -1,5 +1,4 @@
 import MPrelude
-import System.IO (IO)
 
 import qualified CBT
 import qualified DBT
