@@ -7,6 +7,7 @@ maintainer:  mbj@schirp-dso.com
 copyright:   2018 Markus Schirp
 category:    CodeQuality
 github:      mbj/source-constraints
+license:     BSD3
 
 dependencies:
 - attoparsec ^>= 0.13

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: fc31c6dcf24c8b1b67268634db72c9acbee06c65b0982499495080ad54fbcb8e
+-- hash: a0e418ffd041d61aa59328ee3dd3fa6dfa602a6b7d83fb76d5b997b097d13e39
 
 name:           source-constraints
 version:        0.0.1
@@ -15,6 +15,8 @@ bug-reports:    https://github.com/mbj/source-constraints/issues
 author:         Markus Schirp
 maintainer:     mbj@schirp-dso.com
 copyright:      2018 Markus Schirp
+license:        BSD3
+license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
     test/LocalModuleExplicitImport.hs
