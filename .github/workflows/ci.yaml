@@ -9,22 +9,29 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ghc: ['8.8']
+        os: [ubuntu-latest, macOS-latest, windows-latest]
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/setup-haskell@v1.1
+      with:
+        enable-stack: true
+        ghc-version: ${{ matrix.ghc }}
+        stack-version: '2.3'
     - name: Cache
       uses: actions/cache@v1
-      env:
-        cache-name: stack-cache
       with:
         path: ~/.stack
-        key: cache-${{ hashFiles('stack.yaml') }}-${{ hashFiles('**/*.cabal') }}
+        key: ${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('stack.yaml') }}-${{ hashFiles('**/*.cabal') }}
         restore-keys: |
-          cache-${{ hashFiles('stack.yaml') }}-
-          cache-
+          ${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('stack.yaml') }}-
+          ${{ matrix.os }}-${{ matrix.ghc }}-
+          ${{ matrix.os }}-
     - name: Install dependencies
-      run: |
-        stack build --test --only-dependencies
+      run: stack build --system-ghc --test --only-dependencies
     - name: Build
-      run: stack build --fast --test --no-run-tests
+      run: stack build --system-ghc --fast --test --no-run-tests
     - name: Run tests
-      run: stack test --fast
+      run: stack build --system-ghc --fast --test
