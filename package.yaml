@@ -1,7 +1,7 @@
-name:        pgt
-version:     0.0.1
-github:      mbj/pgt
-license:     AllRightsReserved
+name:    pgt
+version: 0.0.1
+github:  mbj/pgt
+license: BSD3
 
 extra-source-files:
 - examples/failure.expected
