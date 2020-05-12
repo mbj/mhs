@@ -20,18 +20,18 @@ packages:
     commit: 8d9fc55503d576698faa8d7392d1c8973d910c4e
 - completed:
     cabal-file:
-      size: 3079
-      sha256: d973a913b07d7831da09d6b46dc331230a9a7e14f4861f7b7b07c4071cd047a3
+      size: 3141
+      sha256: 78af3e31e4215ecc8771e67ec5abfce40269e23e4dea65bf673734f763a8f65f
     name: dbt
     version: 0.0.0.1
     git: https://github.com/mbj/dbt
     pantry-tree:
       size: 876
-      sha256: a868c16d7b4e85cbb5ce2a6d67bcde8661fdb8f68360994dbdfdc01c1647942b
-    commit: 8e601471f162a9848697ab1024bc785c3626ba04
+      sha256: d0ea05be22fb9b42cda70d411a9d627d880ccde23a0690407433c38f4dc8c7c3
+    commit: cdf1ac30cc02b1b8edb65d5cf553ea6e9cece60c
   original:
     git: https://github.com/mbj/dbt
-    commit: 8e601471f162a9848697ab1024bc785c3626ba04
+    commit: cdf1ac30cc02b1b8edb65d5cf553ea6e9cece60c
 - completed:
     cabal-file:
       size: 3524
