@@ -1,6 +1,5 @@
 module DBT.Backend (Backend(..)) where
 
-import Control.Monad.IO.Unlift (MonadUnliftIO)
 import DBT.Prelude
 import System.Path ((</>))
 

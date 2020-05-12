@@ -21,7 +21,6 @@ import DBT.Prelude
 import Data.Maybe (catMaybes)
 import Data.Word (Word16)
 import Text.Read (readMaybe)
-import Text.Show (show)
 
 import qualified Data.Map.Strict    as Map
 import qualified System.Environment as System
