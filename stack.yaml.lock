@@ -27,9 +27,6 @@ packages:
     hackage: stratosphere-0.48.0@sha256:a6f96c30abd840f9b63bd8f9eae5f0fd5a35503cccf2a9ffa826eba98fe4c45b,117293
 - completed:
     subdir: amazonka-cloudformation
-    cabal-file:
-      size: 5261
-      sha256: fb458ba3a3295ad6e17ee026f54c1f13023241af684522d0951352048a61df30
     name: amazonka-cloudformation
     version: 1.6.1
     git: https://github.com/mbj/amazonka
@@ -42,52 +39,7 @@ packages:
     git: https://github.com/mbj/amazonka
     commit: 33aa6b71309793829b534fb29f6532d71c32b106
 - completed:
-    cabal-file:
-      size: 3419
-      sha256: 8110c03442f09e15a48bdad6f5b693a2d27fbd1170da50c17688c1c759bb8d49
-    name: devtools
-    version: 0.0.0.1
-    git: https://github.com/mbj/devtools-hs
-    pantry-tree:
-      size: 615
-      sha256: 88b0abd3dbc6dd83d3a02fb5cccda251c5de805f1df66b86e12ad5fa5e873766
-    commit: fdf83fb9875b7ea2b0d0801cea0f269daea5ed4b
-  original:
-    git: https://github.com/mbj/devtools-hs
-    commit: fdf83fb9875b7ea2b0d0801cea0f269daea5ed4b
-- completed:
-    cabal-file:
-      size: 2328
-      sha256: d0f169b9149e3b35fffad7892018955e1f6682bb2b50706b710329b18715e782
-    name: mprelude
-    version: 0.0.0.1
-    git: https://github.com/mbj/mprelude
-    pantry-tree:
-      size: 368
-      sha256: 392b5032a86e17560474ee34d7f1cf7b044cb8ac01114b75cc99ad41b5d6f624
-    commit: 5708d9ce9b417362e0c79cbd7b48d892e7f7f32a
-  original:
-    git: https://github.com/mbj/mprelude
-    commit: 5708d9ce9b417362e0c79cbd7b48d892e7f7f32a
-- completed:
-    cabal-file:
-      size: 3339
-      sha256: 6e9eac89be5297683a9335262424a7e68452bf53b22ca94ebc731476346e758f
-    name: source-constraints
-    version: 0.0.0.1
-    git: https://github.com/mbj/source-constraints
-    pantry-tree:
-      size: 914
-      sha256: a74730d61617df24560945f00faf769e6b68cf216a6cd048f660c583c4ae9b8f
-    commit: 3eea6c0c3c4c66c39e1b68a5a27e74554395699d
-  original:
-    git: https://github.com/mbj/source-constraints
-    commit: 3eea6c0c3c4c66c39e1b68a5a27e74554395699d
-- completed:
     subdir: core
-    cabal-file:
-      size: 2530
-      sha256: 60beb276bf10755318a258ef6b5f43733dff520cf790e11216c83703d5d826b6
     name: tasty
     version: 1.2.3
     git: https://github.com/mbj/tasty
@@ -99,20 +51,6 @@ packages:
     subdir: core
     git: https://github.com/mbj/tasty
     commit: ff484ef812277ad27a9c9449b4597be30c845b13
-- completed:
-    cabal-file:
-      size: 2849
-      sha256: fcc5e6e7c250650880c12f07c96e88ca22b92cc88d81cb529703fa4ae973f033
-    name: tasty-mgolden
-    version: 0.0.0.1
-    git: https://github.com/mbj/tasty-mgolden
-    pantry-tree:
-      size: 489
-      sha256: 9bb766b04eec9f3de64b0a7a883cd1186e25826e571938b6ed724d3e45022172
-    commit: a2e538036e16aa6b002de7bf39392fa0a2d7c370
-  original:
-    git: https://github.com/mbj/tasty-mgolden
-    commit: a2e538036e16aa6b002de7bf39392fa0a2d7c370
 snapshots:
 - completed:
     size: 524786
