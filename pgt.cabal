@@ -4,13 +4,14 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: fa02dc07b38c3f1ea9e087911724b6ddcd3292c36c56dc6c6b27cd33db266354
+-- hash: 8ab97f536f303ae27a242548543291bce869f4980ac86914eef2c67d442f8c34
 
 name:           pgt
 version:        0.0.1
 homepage:       https://github.com/mbj/pgt#readme
 bug-reports:    https://github.com/mbj/pgt/issues
-license:        AllRightsReserved
+license:        BSD3
+license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
     examples/failure.expected
