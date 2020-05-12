@@ -10,7 +10,6 @@ module StackDeploy.Template
   )
 where
 
-import Control.Monad.Catch (MonadThrow)
 import Data.Ord (compare)
 import StackDeploy.Prelude
 import System.FilePath ((<.>), (</>))

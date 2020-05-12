@@ -1,10 +1,8 @@
 module StackDeploy.CLI (parserInfo, stackName) where
 
-import Control.Applicative (many)
 import Control.Lens ((&), (.~), view)
-import Control.Monad ((<=<), mapM_)
+import Control.Monad (mapM_)
 import Data.Conduit ((.|), runConduit)
-import Data.String (String)
 import Options.Applicative hiding (value)
 import StackDeploy.AWS
 import StackDeploy.Events

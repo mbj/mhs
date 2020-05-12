@@ -3,7 +3,6 @@ module StackDeploy.Wait (waitForAccept) where
 import Control.Exception.Base (AssertionFailed(AssertionFailed))
 import Control.Lens (view)
 import Data.Set (Set)
-import Data.String (String)
 import StackDeploy.AWS
 import StackDeploy.Events
 import StackDeploy.Prelude

@@ -14,8 +14,6 @@ import Control.Exception.Base (AssertionFailed(AssertionFailed))
 import Control.Lens (Lens', set, view)
 import Data.Conduit (ConduitT, (.|), runConduit)
 import Data.Conduit.Combinators (find, map)
-import Data.String (String)
-import Data.Text (Text)
 import Data.Time.Format (defaultTimeLocale, formatTime)
 import StackDeploy.AWS
 import StackDeploy.IO

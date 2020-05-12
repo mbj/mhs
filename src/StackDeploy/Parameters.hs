@@ -15,7 +15,6 @@ import Control.Lens ((&), (?~), view)
 import Data.HashMap.Strict (HashMap)
 import Data.Hashable (Hashable)
 import Data.Set (Set)
-import Data.Text (Text)
 import StackDeploy.Prelude hiding (empty)
 import StackDeploy.Template
 
