@@ -5,24 +5,18 @@
 
 packages:
 - completed:
-    cabal-file:
-      size: 3327
-      sha256: bec14e7228856e87765506edc2b4e41ceed0177ba817efbde292c98a9f15631e
     name: source-constraints
-    version: 0.0.0.1
+    version: 0.0.1
     git: https://github.com/mbj/source-constraints
     pantry-tree:
-      size: 1039
-      sha256: d26679d5fe809ab2140c5c18a341434bfdbb09e654c435684beac30a91a17b81
-    commit: 75ba67ba7a8853db3c2ca22c5db10dbe883e1dae
+      size: 1218
+      sha256: 15f5a909b3a193e309e37a0e4ce87c6bf7f1d048e8db7d621ecbaaef4ed51f63
+    commit: 882efed7bef03fcc92985b1e76c0056731739e82
   original:
     git: https://github.com/mbj/source-constraints
-    commit: 75ba67ba7a8853db3c2ca22c5db10dbe883e1dae
+    commit: 882efed7bef03fcc92985b1e76c0056731739e82
 - completed:
     subdir: core
-    cabal-file:
-      size: 2510
-      sha256: a94ba70edd47058ee91a7dfddf0c5da45f834c2cc717051edb1cc4b45f124318
     name: tasty
     version: 1.2.3
     git: https://github.com/mbj/tasty
@@ -36,7 +30,7 @@ packages:
     commit: 6b884dc97902feaf6e81ad46f3cc905eb122e5d6
 snapshots:
 - completed:
-    size: 524996
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/14/27.yaml
-    sha256: 7ea31a280c56bf36ff591a7397cc384d0dff622e7f9e4225b47d8980f019a0f0
-  original: lts-14.27
+    size: 494635
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/15/12.yaml
+    sha256: a71c4293d8f461f455ff0d9815dfe4ab2f1adacd7e0bbc9a218f46ced8c4929a
+  original: lts-15.12

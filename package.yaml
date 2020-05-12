@@ -2,7 +2,7 @@ name:        tasty-mgolden
 version:     0.0.0.1
 github:      mbj/tasty-mgolden
 description: An alternative golden testing provider for tasty
-license:     AllRightsReserved
+license:     BSD3
 author:      Markus Schirp <mbj@schirp-dso.com>
 
 dependencies:
@@ -49,7 +49,7 @@ tests:
     - -threaded
     - -with-rtsopts=-N
     dependencies:
-    - hlint == 2.1.26
+    - hlint ^>= 2.2
 
   golden:
     main:          test/Test.hs
