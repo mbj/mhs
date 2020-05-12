@@ -1,16 +1,16 @@
-resolver: lts-15.11
+resolver: lts-15.12
 extra-deps:
 - git: https://github.com/bos/aeson
   commit: f439b22b9cfc3527ee1a3088928bcfe56eefa26e
 - git: https://github.com/mbj/devtools-hs
   commit: db02e6f80f27cb672b919e5ab078ebdfad996f3b
 - git: https://github.com/mbj/mprelude
-  commit: afa3b780f81f9a8c5de345fe49c7c8ea0d88e0c5
+  commit: 047f2c93e59123af2572c8bbafc0b617ef2fc530
 - git: https://github.com/mbj/source-constraints
-  commit: 24a358b5e423d0fc0a10734369f88df22774e2c2
+  commit: 882efed7bef03fcc92985b1e76c0056731739e82
 - git: https://github.com/mbj/tasty
   commit: 6b884dc97902feaf6e81ad46f3cc905eb122e5d6
   subdirs:
   - core
 - git: https://github.com/mbj/tasty-mgolden
-  commit: 68e10ddcd37aa872c9d0cd57a1665d09ac4ddbc0
+  commit: 6f18ae430acf51dd2f2cc92d67cf2c3d3a2ae3f1
