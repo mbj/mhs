@@ -55,8 +55,10 @@ data Schema = Schema
   , items                :: Maybe (ReferenceOr Schema)
   , maxItems             :: Maybe (TaggedNatural "MaxItems")
   , maxLength            :: Maybe (TaggedNatural "MaxLength")
+  , maximum              :: Maybe Scientific
   , minItems             :: Maybe (TaggedNatural "MinLength")
   , minLength            :: Maybe (TaggedNatural "MinLength")
+  , minimum              :: Maybe Scientific
   , not                  :: Maybe (ReferenceOr Schema)
   , nullable             :: Maybe Bool
   , oneOf                :: Maybe [ReferenceOr Schema]
