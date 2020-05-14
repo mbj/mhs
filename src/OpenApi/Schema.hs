@@ -18,7 +18,7 @@ type PropertyName = TaggedText "PropertyName"
 
 data AdditionalProperties
   = AdditionalPropertiesBool Bool
-  | AdditionalPropertiesSchema Schema
+  | AdditionalPropertiesSchema (ReferenceOr Schema)
   deriving stock (Eq, Show)
 
 instance JSON.FromJSON AdditionalProperties where
