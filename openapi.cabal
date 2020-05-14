@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 1d4161d72a446e3b8cd3f76abfad065ee128ee93fb4c74bd0639e3cba7070175
+-- hash: b9aa2930e232b578ed26ac06a6e62e2fa062cb2148e3124a4f109ec42bdd9c5d
 
 name:           openapi
 version:        0.0.0.1
@@ -15,6 +15,7 @@ author:         Markus Schirp
 maintainer:     mbj@schirp-dso.com
 copyright:      2019 Markus Schirp
 license:        BSD3
+license-file:   LICENSE
 build-type:     Simple
 
 source-repository head
