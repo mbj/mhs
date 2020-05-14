@@ -1,5 +1,6 @@
 module OpenApi.Schema where
 
+import Data.Scientific (Scientific)
 import OpenApi.JSON
 import OpenApi.Prelude
 import OpenApi.Reference
@@ -17,7 +18,7 @@ type PropertyName = TaggedText "PropertyName"
 
 data AdditionalProperties
   = AdditionalPropertiesBool Bool
-  | AdditionalPropertiesSchema Schema
+  | AdditionalPropertiesSchema (ReferenceOr Schema)
   deriving stock (Eq, Show)
 
 instance JSON.FromJSON AdditionalProperties where
@@ -48,14 +49,16 @@ data Schema = Schema
   , description          :: Maybe (TaggedText "SchemaDescription")
   , enum                 :: Maybe Enum
   , example              :: Maybe JSON.Value
-  , exclusiveMaximum     :: Maybe Bool
-  , exclusiveMinimum     :: Maybe Bool
+  , exclusiveMaximum     :: Maybe Scientific
+  , exclusiveMinimum     :: Maybe Scientific
   , format               :: Maybe Format
   , items                :: Maybe (ReferenceOr Schema)
   , maxItems             :: Maybe (TaggedNatural "MaxItems")
   , maxLength            :: Maybe (TaggedNatural "MaxLength")
+  , maximum              :: Maybe Scientific
   , minItems             :: Maybe (TaggedNatural "MinLength")
   , minLength            :: Maybe (TaggedNatural "MinLength")
+  , minimum              :: Maybe Scientific
   , not                  :: Maybe (ReferenceOr Schema)
   , nullable             :: Maybe Bool
   , oneOf                :: Maybe [ReferenceOr Schema]
