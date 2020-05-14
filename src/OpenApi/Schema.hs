@@ -1,5 +1,6 @@
 module OpenApi.Schema where
 
+import Data.Scientific (Scientific)
 import OpenApi.JSON
 import OpenApi.Prelude
 import OpenApi.Reference
@@ -48,8 +49,8 @@ data Schema = Schema
   , description          :: Maybe (TaggedText "SchemaDescription")
   , enum                 :: Maybe Enum
   , example              :: Maybe JSON.Value
-  , exclusiveMaximum     :: Maybe Bool
-  , exclusiveMinimum     :: Maybe Bool
+  , exclusiveMaximum     :: Maybe Scientific
+  , exclusiveMinimum     :: Maybe Scientific
   , format               :: Maybe Format
   , items                :: Maybe (ReferenceOr Schema)
   , maxItems             :: Maybe (TaggedNatural "MaxItems")
