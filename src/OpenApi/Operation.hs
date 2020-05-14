@@ -19,7 +19,7 @@ data Operation = Operation
   , requestBody :: Maybe (ReferenceOr RequestBody)
   , responses   :: Responses
   , summary     :: Maybe (TaggedText "OperationSummary")
-  , tags        :: [TagName]
+  , tags        :: Maybe [TagName]
   }
   deriving anyclass JSON.ToJSON
   deriving stock    (Eq, Generic, Show)
