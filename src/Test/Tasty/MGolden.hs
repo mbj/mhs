@@ -8,6 +8,7 @@ import Data.Eq (Eq, (==))
 import Data.Foldable (traverse_)
 import Data.Function (($), (.))
 import Data.Functor ((<$>))
+import Data.Int (Int)
 import Data.Maybe
 import Data.Ord (Ord)
 import Data.Proxy (Proxy(..))
@@ -18,9 +19,9 @@ import Data.Typeable (Typeable)
 import System.FilePath (FilePath)
 import System.IO (IO)
 import Test.Tasty
-import Test.Tasty.ConsoleFormat
 import Test.Tasty.Options
 import Test.Tasty.Providers
+import Test.Tasty.Providers.ConsoleFormat
 import Text.Show (Show)
 
 import qualified Data.Algorithm.Diff as Diff
@@ -90,7 +91,8 @@ updateExpected Golden{..} actual = do
 printDetails :: Golden -> Text -> Text -> ResultDetailsPrinter
 printDetails Golden{..} expected actual = ResultDetailsPrinter print
   where
-    print formatter
+    print :: Int -> (ConsoleFormat -> IO () -> IO ()) -> IO ()
+    print _indent formatter
       = traverse_ printDiff
       $ Diff.getDiff actualLines expectedLines
       where
