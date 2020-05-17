@@ -24,7 +24,7 @@ testFormat :: TestTree
 testFormat = testCase "diff format" $ do
   ioRef <- newIORef id
   runPrinter $ printDetails (fakePutStrLn ioRef) "foo\nbar" "foo\nbaz"
-  assertEqual "expected diff format" [" foo", "+baz", "-bar"] =<< readPuts ioRef
+  assertEqual "expected diff format" [" foo", "-bar", "+baz"] =<< readPuts ioRef
 
 fakePutStrLn :: IORef ([Text] -> [Text]) -> Text -> IO ()
 fakePutStrLn ioRef text =

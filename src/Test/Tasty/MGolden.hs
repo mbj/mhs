@@ -94,19 +94,21 @@ printDetails putStrLn expected actual = ResultDetailsPrinter print
     print :: Int -> (ConsoleFormat -> IO () -> IO ()) -> IO ()
     print _indent formatter
       = traverse_ printDiff
-      $ Diff.getDiff (Text.lines actual) (Text.lines expected)
+      $ Diff.getGroupedDiff (Text.lines expected) (Text.lines actual)
       where
-        printDiff :: Diff.Diff Text -> IO ()
+        printDiff :: Diff.Diff [Text] -> IO ()
         printDiff = \case
-          (Diff.Both   line _) -> printLine ' ' neutralFormat line
-          (Diff.First  line)   -> printLine '+' addFormat line
-          (Diff.Second line)   -> printLine '-' removeFormat line
+          (Diff.Both   line _) -> printLines ' ' neutralFormat line
+          (Diff.First  line)   -> printLines '-' removeFormat line
+          (Diff.Second line)   -> printLines '+' addFormat line
 
-        printLine :: Char -> ConsoleFormat -> Text -> IO ()
-        printLine prefix format line
+        printLines :: Char -> ConsoleFormat -> [Text] -> IO ()
+        printLines prefix format lines
           = formatter format
-          . putStrLn
-          $ Text.singleton prefix <> line
+          $ traverse_ printLine lines
+          where
+            printLine :: Text -> IO ()
+            printLine line = putStrLn $ Text.singleton prefix <> line
 
 addFormat :: ConsoleFormat
 addFormat = okFormat
