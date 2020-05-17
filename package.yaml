@@ -50,7 +50,7 @@ tests:
     - -threaded
     - -with-rtsopts=-N
     dependencies:
-    - hlint ^>= 2.2
+    - hlint
 
   golden:
     main:          test/Test.hs

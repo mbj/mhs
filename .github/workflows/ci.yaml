@@ -1,18 +1,17 @@
 name: CI
 
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+on: push
 
 jobs:
   ci:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    env:
+      STACK_YAML: stack-${{ matrix.ghc }}.yaml
     strategy:
+      fail-fast: false
       matrix:
-        ghc: ['8.8']
-        os: [ubuntu-latest, macOS-latest, windows-latest]
+        ghc: ['8.6', '8.8']
+        os: [ubuntu-latest, macOS-latest]
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-haskell@v1.1
@@ -20,19 +19,18 @@ jobs:
         enable-stack: true
         ghc-version: ${{ matrix.ghc }}
         stack-version: '2.3'
+    - name: Setup stack
+      run: |
+        stack config set install-ghc false
+        stack config set system-ghc true
     - name: Cache
       uses: actions/cache@v1
       with:
         path: ~/.stack
-        key: ${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('stack.yaml') }}-${{ hashFiles('**/*.cabal') }}
+        key: a-${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('stack.yaml') }}-${{ hashFiles('**/*.cabal') }}
         restore-keys: |
-          ${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('stack.yaml') }}-
-          ${{ matrix.os }}-${{ matrix.ghc }}-
-          ${{ matrix.os }}-
-    - name: Configure stack
-      run: |
-        echo 'install-ghc: false' >> ~/.stack/config.yaml
-        echo 'system-ghc: true' >> ~/.stack/config.yaml
+          a-${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('stack.yaml') }}-
+          a-${{ matrix.os }}-${{ matrix.ghc }}-
     - name: Install dependencies
       run: stack build --test --only-dependencies
     - name: Build
