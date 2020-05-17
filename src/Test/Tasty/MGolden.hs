@@ -1,7 +1,7 @@
 module Test.Tasty.MGolden (Mode(..), goldenTest, printDetails) where
 
 import Control.Applicative (empty)
-import Prelude.Compat hiding (print, putStrLn)
+import Prelude hiding (print, putStrLn)
 import Data.Foldable (traverse_)
 import Data.Proxy (Proxy(..))
 import Data.Text (Text)
