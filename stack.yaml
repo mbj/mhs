@@ -1,4 +1,4 @@
-resolver: lts-15.12
+resolver: lts-15.13
 extra-deps:
 - git: https://github.com/feuerbach/tasty
   commit: 2ff2bda960061226d73b0b166006aff6ea6c04da
