@@ -5,18 +5,12 @@
 
 packages:
 - completed:
-    subdir: core
-    name: tasty
-    version: '1.3'
-    git: https://github.com/feuerbach/tasty
+    hackage: tasty-1.3.1@sha256:01e35c97f7ee5ccbc28f21debea02a38cd010d53b4c3087f5677c5d06617a507,2520
     pantry-tree:
       size: 1804
-      sha256: 667a5985f2b859c6958441bb633de6fa17c2df421e44887bc6c7342146433fa6
-    commit: 2ff2bda960061226d73b0b166006aff6ea6c04da
+      sha256: 6150ec5094fe321150b1263bc751c1a85b22be766053fb4648115d8c02b2064b
   original:
-    subdir: core
-    git: https://github.com/feuerbach/tasty
-    commit: 2ff2bda960061226d73b0b166006aff6ea6c04da
+    hackage: tasty-1.3.1@sha256:01e35c97f7ee5ccbc28f21debea02a38cd010d53b4c3087f5677c5d06617a507,2520
 snapshots:
 - completed:
     size: 496112
