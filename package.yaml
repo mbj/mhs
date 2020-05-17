@@ -1,7 +1,7 @@
 name:        tasty-mgolden
 version:     0.0.0.1
 github:      mbj/tasty-mgolden
-description: An alternative golden testing provider for tasty
+description: Golden testing provider for tasty with muti-line diff output
 license:     BSD3
 author:      Markus Schirp <mbj@schirp-dso.com>
 
