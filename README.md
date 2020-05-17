@@ -18,11 +18,9 @@ But for that reason can also offer more ergonomic defaults for its core use case
 Golden testing for `IO Text` actions. Where:
 
 * The text value is assuemd to contain multiple lines.
-* The expectation failures can be rendered nicely in multi unified line diffs.
-
-This package relies on the `Diff` package and integrates the newer
-detailed result printer API in tasty to output the multi line diffs via the tasty
-console formatter abstraction. You'll get a colored multi line diff. Currently without line markers
+* The expectation failures can be rendered nicely in multi line diffs.
+* The diff lines are colored via the tasty infrastructure
+* The diff rendering is not done via the external `diff` command, but uses the `Diff` package.
 
 Expectation diffs are rendered like developers are used to:
 
@@ -96,7 +94,7 @@ All 2 tests passed (0.00s)
 PRs on  these are welcome.
 
 * Improve the multi line diff reporting to only show a
-  minimal context not all contexts.
+  minimal context around the changed hunks.
 * Add line markers in unified diff format.
 * Change to `pathtype` from `filepath`
 * Future? Upstream this to `tasty-golden` ?
