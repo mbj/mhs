@@ -1,8 +1,6 @@
-resolver: lts-15.12
+resolver: lts-15.13
 extra-deps:
-- git: https://github.com/mbj/source-constraints
-  commit: 882efed7bef03fcc92985b1e76c0056731739e82
-- git: https://github.com/mbj/tasty
-  commit: 6b884dc97902feaf6e81ad46f3cc905eb122e5d6
+- git: https://github.com/feuerbach/tasty
+  commit: 2ff2bda960061226d73b0b166006aff6ea6c04da
   subdirs:
   - core

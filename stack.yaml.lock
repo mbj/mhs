@@ -5,32 +5,21 @@
 
 packages:
 - completed:
-    name: source-constraints
-    version: 0.0.1
-    git: https://github.com/mbj/source-constraints
-    pantry-tree:
-      size: 1218
-      sha256: 15f5a909b3a193e309e37a0e4ce87c6bf7f1d048e8db7d621ecbaaef4ed51f63
-    commit: 882efed7bef03fcc92985b1e76c0056731739e82
-  original:
-    git: https://github.com/mbj/source-constraints
-    commit: 882efed7bef03fcc92985b1e76c0056731739e82
-- completed:
     subdir: core
     name: tasty
-    version: 1.2.3
-    git: https://github.com/mbj/tasty
+    version: '1.3'
+    git: https://github.com/feuerbach/tasty
     pantry-tree:
-      size: 1793
-      sha256: 9a78c93658061fa5d6d1655faf5532d64abe61c1f7eed389ddc61d922525761a
-    commit: 6b884dc97902feaf6e81ad46f3cc905eb122e5d6
+      size: 1804
+      sha256: 667a5985f2b859c6958441bb633de6fa17c2df421e44887bc6c7342146433fa6
+    commit: 2ff2bda960061226d73b0b166006aff6ea6c04da
   original:
     subdir: core
-    git: https://github.com/mbj/tasty
-    commit: 6b884dc97902feaf6e81ad46f3cc905eb122e5d6
+    git: https://github.com/feuerbach/tasty
+    commit: 2ff2bda960061226d73b0b166006aff6ea6c04da
 snapshots:
 - completed:
-    size: 494635
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/15/12.yaml
-    sha256: a71c4293d8f461f455ff0d9815dfe4ab2f1adacd7e0bbc9a218f46ced8c4929a
-  original: lts-15.12
+    size: 496112
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/15/13.yaml
+    sha256: 75a1a0f870e1876898b117b0e443f911b3fa2985bfabb53158c81ab5765beda5
+  original: lts-15.13

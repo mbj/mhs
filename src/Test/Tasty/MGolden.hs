@@ -1,4 +1,4 @@
-module Test.Tasty.MGolden (Mode(..), goldenTest) where
+module Test.Tasty.MGolden (Mode(..), goldenTest, printDetails) where
 
 import Control.Applicative (empty, pure)
 import Control.Monad ((=<<))
@@ -8,6 +8,7 @@ import Data.Eq (Eq, (==))
 import Data.Foldable (traverse_)
 import Data.Function (($), (.))
 import Data.Functor ((<$>))
+import Data.Int (Int)
 import Data.Maybe
 import Data.Ord (Ord)
 import Data.Proxy (Proxy(..))
@@ -18,9 +19,9 @@ import Data.Typeable (Typeable)
 import System.FilePath (FilePath)
 import System.IO (IO)
 import Test.Tasty
-import Test.Tasty.ConsoleFormat
 import Test.Tasty.Options
 import Test.Tasty.Providers
+import Test.Tasty.Providers.ConsoleFormat
 import Text.Show (Show)
 
 import qualified Data.Algorithm.Diff as Diff
@@ -80,23 +81,21 @@ mismatch :: OptionSet -> Golden -> Text -> Text -> IO Result
 mismatch options golden expected actual =
   if shouldUpdate options
     then updateExpected golden actual
-    else pure . testFailedDetails empty $ printDetails golden expected actual
+    else pure . testFailedDetails empty $ printDetails Text.putStrLn expected actual
 
 updateExpected :: Golden -> Text -> IO Result
 updateExpected Golden{..} actual = do
   Text.writeFile expectedPath actual
   pure $ testPassed "UPDATE"
 
-printDetails :: Golden -> Text -> Text -> ResultDetailsPrinter
-printDetails Golden{..} expected actual = ResultDetailsPrinter print
+printDetails :: (Text -> IO ()) -> Text -> Text -> ResultDetailsPrinter
+printDetails putStrLn expected actual = ResultDetailsPrinter print
   where
-    print formatter
+    print :: Int -> (ConsoleFormat -> IO () -> IO ()) -> IO ()
+    print _indent formatter
       = traverse_ printDiff
-      $ Diff.getDiff actualLines expectedLines
+      $ Diff.getDiff (Text.lines actual) (Text.lines expected)
       where
-        actualLines :: [Text]
-        actualLines = Text.lines actual
-
         printDiff :: Diff.Diff Text -> IO ()
         printDiff = \case
           (Diff.Both   line _) -> printLine ' ' neutralFormat line
@@ -106,11 +105,8 @@ printDetails Golden{..} expected actual = ResultDetailsPrinter print
         printLine :: Char -> ConsoleFormat -> Text -> IO ()
         printLine prefix format line
           = formatter format
-          $ Text.putStrLn
+          . putStrLn
           $ Text.singleton prefix <> line
-
-        expectedLines :: [Text]
-        expectedLines = Text.lines expected
 
 addFormat :: ConsoleFormat
 addFormat = okFormat
