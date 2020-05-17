@@ -1,28 +1,15 @@
 module Test.Tasty.MGolden (Mode(..), goldenTest, printDetails) where
 
-import Control.Applicative (empty, pure)
-import Control.Monad ((=<<))
-import Data.Bool (Bool)
-import Data.Char (Char)
-import Data.Eq (Eq, (==))
+import Control.Applicative (empty)
+import Prelude.Compat hiding (print, putStrLn)
 import Data.Foldable (traverse_)
-import Data.Function (($), (.))
-import Data.Functor ((<$>))
-import Data.Int (Int)
-import Data.Maybe
-import Data.Ord (Ord)
 import Data.Proxy (Proxy(..))
-import Data.Semigroup ((<>))
-import Data.String (String)
 import Data.Text (Text)
 import Data.Typeable (Typeable)
-import System.FilePath (FilePath)
-import System.IO (IO)
 import Test.Tasty
 import Test.Tasty.Options
 import Test.Tasty.Providers
 import Test.Tasty.Providers.ConsoleFormat
-import Text.Show (Show)
 
 import qualified Data.Algorithm.Diff as Diff
 import qualified Data.Text           as Text
@@ -103,9 +90,9 @@ printDetails putStrLn expected actual = ResultDetailsPrinter print
           (Diff.Second line)   -> printLines '+' addFormat line
 
         printLines :: Char -> ConsoleFormat -> [Text] -> IO ()
-        printLines prefix format lines
+        printLines prefix format lines'
           = formatter format
-          $ traverse_ printLine lines
+          $ traverse_ printLine lines'
           where
             printLine :: Text -> IO ()
             printLine line = putStrLn $ Text.singleton prefix <> line
@@ -129,7 +116,7 @@ tryRead path =
     handler
   where
     handler :: Error.IOError -> IO (Maybe Text)
-    handler error =
-      if Error.isDoesNotExistError error
+    handler error' =
+      if Error.isDoesNotExistError error'
         then pure empty
-        else Error.ioError error
+        else Error.ioError error'
