@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 50424d82ab16cba47bf72804e4c5b770e0f0d083cc3dbf5d8e2abe75686efba7
+-- hash: 241fc08db16ecd283c07a95a96c2798dda84abb2f4c120c9547a1735c1fdad42
 
 name:           tasty-mgolden
 version:        0.0.1
@@ -86,7 +86,7 @@ test-suite hlint
     , base >=4.12 && <=4.15
     , base-compat >=0.9.0
     , filepath >=1.4.2 && <1.5
-    , hlint >=2.2 && <2.3
+    , hlint
     , tasty >=1.3.1 && <1.4
     , text >=1.2 && <1.3
   default-language: Haskell2010
