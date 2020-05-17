@@ -1,3 +1,9 @@
+{- | Golden testing provider for 'tasty'
+
+This module implements the [golden testing pattern](https://ro-che.info/articles/2017-12-04-golden-tests).
+
+-}
+
 module Test.Tasty.MGolden (Mode(..), goldenTest, printDetails) where
 
 import Control.Applicative (empty)
@@ -16,7 +22,10 @@ import qualified Data.Text           as Text
 import qualified Data.Text.IO        as Text
 import qualified System.IO.Error     as Error
 
-data Mode = RunTest | UpdateExpected
+-- | Golden test run mode
+data Mode
+  = RunTest         -- ^ Run the tests, error (with diff) on actual vs expectation mismatch
+  | UpdateExpected  -- ^ Run the tests, update the expectation on actual vs expectation mismatch
   deriving stock (Eq, Ord, Typeable, Show)
 
 instance IsOption Mode where
@@ -40,7 +49,12 @@ instance IsTest Golden where
   run options golden _callback = runGolden golden options
   testOptions = pure . pure $ Option (Proxy :: Proxy Mode)
 
-goldenTest :: String -> FilePath -> IO Text -> TestTree
+-- | Define a golden test
+goldenTest
+  :: String   -- ^ Name of the  test
+  -> FilePath -- ^ Path of the expectation file
+  -> IO Text  -- ^ Test action
+  -> TestTree
 goldenTest name expectedPath action = singleTest name Golden{..}
 
 runGolden :: Golden -> OptionSet -> IO Result
