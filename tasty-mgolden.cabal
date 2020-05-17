@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 241fc08db16ecd283c07a95a96c2798dda84abb2f4c120c9547a1735c1fdad42
+-- hash: 241c06e71c35241a4773d5e11370819a70482c9c880bc9153a48cec648d0690a
 
 name:           tasty-mgolden
 version:        0.0.1
@@ -34,7 +34,6 @@ library
   build-depends:
       Diff ==0.3.4 || >=0.4 && <0.5
     , base >=4.12 && <=4.15
-    , base-compat >=0.9.0
     , filepath >=1.4.2 && <1.5
     , tasty >=1.3.1 && <1.4
     , text >=1.2 && <1.3
@@ -47,7 +46,6 @@ executable tasty-mgolden-example
   build-depends:
       Diff ==0.3.4 || >=0.4 && <0.5
     , base >=4.12 && <=4.15
-    , base-compat >=0.9.0
     , filepath >=1.4.2 && <1.5
     , tasty >=1.3.1 && <1.4
     , tasty-expected-failure
@@ -64,7 +62,6 @@ test-suite golden
   build-depends:
       Diff ==0.3.4 || >=0.4 && <0.5
     , base >=4.12 && <=4.15
-    , base-compat >=0.9.0
     , filepath >=1.4.2 && <1.5
     , tasty >=1.3.1 && <1.4
     , tasty-expected-failure
@@ -84,7 +81,6 @@ test-suite hlint
   build-depends:
       Diff ==0.3.4 || >=0.4 && <0.5
     , base >=4.12 && <=4.15
-    , base-compat >=0.9.0
     , filepath >=1.4.2 && <1.5
     , hlint
     , tasty >=1.3.1 && <1.4
