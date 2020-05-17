@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 818b34dd16ec04aaac8bf7ef47197fd740e6a821b34f053c0114126781c74b1a
+-- hash: 50424d82ab16cba47bf72804e4c5b770e0f0d083cc3dbf5d8e2abe75686efba7
 
 name:           tasty-mgolden
 version:        0.0.1
@@ -15,7 +15,7 @@ author:         Markus Schirp <mbj@schirp-dso.com>
 maintainer:     Markus Schirp <mbj@schirp-dso.com>
 license:        BSD3
 license-file:   LICENSE
-tested-with:    GHC == 8.6.5, GHC == 8.8.3
+tested-with:    GHC == 8.6.5 , GHC == 8.8.3
 build-type:     Simple
 
 source-repository head
@@ -36,7 +36,7 @@ library
     , base >=4.12 && <=4.15
     , base-compat >=0.9.0
     , filepath >=1.4.2 && <1.5
-    , tasty >=1.3 && <1.4
+    , tasty >=1.3.1 && <1.4
     , text >=1.2 && <1.3
   default-language: Haskell2010
 
@@ -49,7 +49,7 @@ executable tasty-mgolden-example
     , base >=4.12 && <=4.15
     , base-compat >=0.9.0
     , filepath >=1.4.2 && <1.5
-    , tasty >=1.3 && <1.4
+    , tasty >=1.3.1 && <1.4
     , tasty-expected-failure
     , tasty-hunit
     , tasty-mgolden
@@ -66,7 +66,7 @@ test-suite golden
     , base >=4.12 && <=4.15
     , base-compat >=0.9.0
     , filepath >=1.4.2 && <1.5
-    , tasty >=1.3 && <1.4
+    , tasty >=1.3.1 && <1.4
     , tasty-expected-failure
     , tasty-hunit
     , tasty-mgolden
@@ -87,6 +87,6 @@ test-suite hlint
     , base-compat >=0.9.0
     , filepath >=1.4.2 && <1.5
     , hlint >=2.2 && <2.3
-    , tasty >=1.3 && <1.4
+    , tasty >=1.3.1 && <1.4
     , text >=1.2 && <1.3
   default-language: Haskell2010
