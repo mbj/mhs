@@ -91,7 +91,7 @@ All 2 tests passed (0.00s)
 
 ### TODOs
 
-PRs on  these are welcome.
+PRs on these are welcome.
 
 * Improve the multi line diff reporting to only show a
   minimal context around the changed hunks.
