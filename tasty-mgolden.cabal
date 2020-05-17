@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: dc8328f2190e1309acb51172611879e207bbe3037afc89094a678d358284901a
+-- hash: 818b34dd16ec04aaac8bf7ef47197fd740e6a821b34f053c0114126781c74b1a
 
 name:           tasty-mgolden
 version:        0.0.1
@@ -15,6 +15,7 @@ author:         Markus Schirp <mbj@schirp-dso.com>
 maintainer:     Markus Schirp <mbj@schirp-dso.com>
 license:        BSD3
 license-file:   LICENSE
+tested-with:    GHC == 8.6.5, GHC == 8.8.3
 build-type:     Simple
 
 source-repository head
@@ -33,6 +34,7 @@ library
   build-depends:
       Diff ==0.3.4 || >=0.4 && <0.5
     , base >=4.12 && <=4.15
+    , base-compat >=0.9.0
     , filepath >=1.4.2 && <1.5
     , tasty >=1.3 && <1.4
     , text >=1.2 && <1.3
@@ -45,6 +47,7 @@ executable tasty-mgolden-example
   build-depends:
       Diff ==0.3.4 || >=0.4 && <0.5
     , base >=4.12 && <=4.15
+    , base-compat >=0.9.0
     , filepath >=1.4.2 && <1.5
     , tasty >=1.3 && <1.4
     , tasty-expected-failure
@@ -61,6 +64,7 @@ test-suite golden
   build-depends:
       Diff ==0.3.4 || >=0.4 && <0.5
     , base >=4.12 && <=4.15
+    , base-compat >=0.9.0
     , filepath >=1.4.2 && <1.5
     , tasty >=1.3 && <1.4
     , tasty-expected-failure
@@ -80,6 +84,7 @@ test-suite hlint
   build-depends:
       Diff ==0.3.4 || >=0.4 && <0.5
     , base >=4.12 && <=4.15
+    , base-compat >=0.9.0
     , filepath >=1.4.2 && <1.5
     , hlint >=2.2 && <2.3
     , tasty >=1.3 && <1.4
