@@ -94,13 +94,13 @@ printDetails putStrLn expected actual = ResultDetailsPrinter print
     print :: Int -> (ConsoleFormat -> IO () -> IO ()) -> IO ()
     print _indent formatter
       = traverse_ printDiff
-      $ Diff.getGroupedDiff (Text.lines actual) (Text.lines expected)
+      $ Diff.getGroupedDiff (Text.lines expected) (Text.lines actual)
       where
         printDiff :: Diff.Diff [Text] -> IO ()
         printDiff = \case
           (Diff.Both   line _) -> printLines ' ' neutralFormat line
-          (Diff.First  line)   -> printLines '+' addFormat line
-          (Diff.Second line)   -> printLines '-' removeFormat line
+          (Diff.First  line)   -> printLines '-' removeFormat line
+          (Diff.Second line)   -> printLines '+' addFormat line
 
         printLines :: Char -> ConsoleFormat -> [Text] -> IO ()
         printLines prefix format lines
