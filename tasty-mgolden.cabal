@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c8b0fae4072978174274e27d9ba77cb99aef154f47cdcf624ee585cbbcd1e382
+-- hash: dc8328f2190e1309acb51172611879e207bbe3037afc89094a678d358284901a
 
 name:           tasty-mgolden
 version:        0.0.1
@@ -38,6 +38,21 @@ library
     , text >=1.2 && <1.3
   default-language: Haskell2010
 
+executable tasty-mgolden-example
+  main-is: example/Test.hs
+  default-extensions: DerivingStrategies LambdaCase NoImplicitPrelude OverloadedStrings RecordWildCards StrictData ImplicitPrelude
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -funbox-strict-fields -rtsopts -threaded -with-rtsopts=-N -Wno-implicit-prelude
+  build-depends:
+      Diff ==0.3.4 || >=0.4 && <0.5
+    , base >=4.12 && <=4.15
+    , filepath >=1.4.2 && <1.5
+    , tasty >=1.3 && <1.4
+    , tasty-expected-failure
+    , tasty-hunit
+    , tasty-mgolden
+    , text >=1.2 && <1.3
+  default-language: Haskell2010
+
 test-suite golden
   type: exitcode-stdio-1.0
   main-is: test/Test.hs
@@ -52,6 +67,7 @@ test-suite golden
     , tasty-hunit
     , tasty-mgolden
     , text >=1.2 && <1.3
+    , typed-process
   default-language: Haskell2010
 
 test-suite hlint

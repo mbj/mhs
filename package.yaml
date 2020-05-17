@@ -60,3 +60,20 @@ tests:
     - tasty-expected-failure
     - tasty-hunit
     - tasty-mgolden
+    - typed-process
+
+executables:
+  tasty-mgolden-example:
+    main:          example/Test.hs
+    other-modules: []
+    default-extensions:
+    - ImplicitPrelude
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -with-rtsopts=-N
+    - -Wno-implicit-prelude
+    dependencies:
+    - tasty-expected-failure
+    - tasty-hunit
+    - tasty-mgolden
