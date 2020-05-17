@@ -1,5 +1,5 @@
 name:        tasty-mgolden
-version:     0.0.0.1
+version:     0.0.1
 github:      mbj/tasty-mgolden
 description: Golden testing provider for tasty with muti-line diff output
 license:     BSD3
