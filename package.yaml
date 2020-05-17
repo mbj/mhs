@@ -1,5 +1,5 @@
 name:        tasty-mgolden
-version:     0.0.0.1
+version:     0.0.1
 github:      mbj/tasty-mgolden
 description: Golden testing provider for tasty with muti-line diff output
 license:     BSD3
@@ -56,6 +56,23 @@ tests:
     - -rtsopts
     - -threaded
     - -with-rtsopts=-N
+    dependencies:
+    - tasty-expected-failure
+    - tasty-hunit
+    - tasty-mgolden
+    - typed-process
+
+executables:
+  tasty-mgolden-example:
+    main:          example/Test.hs
+    other-modules: []
+    default-extensions:
+    - ImplicitPrelude
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -with-rtsopts=-N
+    - -Wno-implicit-prelude
     dependencies:
     - tasty-expected-failure
     - tasty-hunit
