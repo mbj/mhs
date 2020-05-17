@@ -5,17 +5,6 @@
 
 packages:
 - completed:
-    name: source-constraints
-    version: 0.0.1
-    git: https://github.com/mbj/source-constraints
-    pantry-tree:
-      size: 1218
-      sha256: 15f5a909b3a193e309e37a0e4ce87c6bf7f1d048e8db7d621ecbaaef4ed51f63
-    commit: 882efed7bef03fcc92985b1e76c0056731739e82
-  original:
-    git: https://github.com/mbj/source-constraints
-    commit: 882efed7bef03fcc92985b1e76c0056731739e82
-- completed:
     subdir: core
     name: tasty
     version: '1.3'
