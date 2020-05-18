@@ -51,7 +51,8 @@ when:
   - condition: flag(development)
     then:
       ghc-options: -Werror
-    else: {}
+    else:
+      ghc-options: -Wwarn
 
 tests:
   hlint:
