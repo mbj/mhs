@@ -1,14 +1,10 @@
-resolver: lts-15.12
+resolver: lts-15.13
 extra-deps:
+- tasty-1.3.1@sha256:01e35c97f7ee5ccbc28f21debea02a38cd010d53b4c3087f5677c5d06617a507,2520
+- tasty-mgolden-0.0.1@sha256:07fadb592cde353c386c5f38cff75539a5675e9350776ed6f4f0a70247427a78,4214
 - git: https://github.com/mbj/devtools-hs
-  commit: b758778b0097eb3580a3d4ab6c02dce2db61cd08
+  commit: a584eaaf9291a6211ecb16ca37f9e31ea830c015
 - git: https://github.com/mbj/mprelude
   commit: 2624d58e5560eb974515f6052737b1a3f674c742
 - git: https://github.com/mbj/source-constraints
   commit: c0eaebc9dc0fdc08f95c3daaf7eeb1ea2010f415
-- git: https://github.com/mbj/tasty
-  commit: 6b884dc97902feaf6e81ad46f3cc905eb122e5d6
-  subdirs:
-  - core
-- git: https://github.com/mbj/tasty-mgolden
-  commit: 3bdcddb38d1d2005a205fb4c1d35e88bc3f3f432
