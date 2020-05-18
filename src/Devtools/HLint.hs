@@ -8,11 +8,12 @@ import Data.String (String)
 import Data.Typeable (Typeable)
 import System.IO
 
-import qualified Data.Foldable                    as Foldable
-import qualified Language.Haskell.HLint4          as HLint
-import qualified System.Console.CmdArgs.Verbosity as CmdArgs
-import qualified Test.Tasty                       as Tasty
-import qualified Test.Tasty.Providers             as Tasty
+import qualified Data.Foldable                      as Foldable
+import qualified Language.Haskell.HLint4            as HLint
+import qualified System.Console.CmdArgs.Verbosity   as CmdArgs
+import qualified Test.Tasty                         as Tasty
+import qualified Test.Tasty.Providers               as Tasty
+import qualified Test.Tasty.Providers.ConsoleFormat as Tasty
 
 newtype HLintTest = HLintTest [String]
   deriving stock Typeable
@@ -32,7 +33,9 @@ runHLintTest arguments = do
     then Tasty.testPassed empty
     else Tasty.testFailedDetails empty
       . Tasty.ResultDetailsPrinter
-      . const $ runHLintVerbose arguments
+      . const
+      . const
+      $ runHLintVerbose arguments
 
 -- Run HLint (again) but with output enabled.
 -- There is no good public API in HLint to render the output.
