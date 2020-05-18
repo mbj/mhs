@@ -1,10 +1,10 @@
-cabal-version: 1.12
+cabal-version: 1.18
 
 -- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e4c5b3bd31a278700368fd88f0680bf44bebc943630afe0e6c01bdc095db8619
+-- hash: e9770eb29d62267c2125ac48f69bc4bc4159f4a97a127d5e0ea6a3b63ed1a94b
 
 name:           tasty-mgolden
 version:        0.0.1
@@ -20,6 +20,8 @@ license:        BSD3
 license-file:   LICENSE
 tested-with:    GHC ==8.6.5 || ==8.8.3
 build-type:     Simple
+extra-doc-files:
+    README.md
 
 source-repository head
   type: git
