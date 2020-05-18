@@ -4,18 +4,21 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 241c06e71c35241a4773d5e11370819a70482c9c880bc9153a48cec648d0690a
+-- hash: cfaa670f7422a23efa25a559f0fe1859c528bc6eef1bf748006a1961f1f5d36f
 
 name:           tasty-mgolden
 version:        0.0.1
-description:    Golden testing provider for tasty with muti-line diff output
+synopsis:       Golden testing provider for tasty with muti-line diff output
+description:    Please visit the README at <https://github.com/mbj/tasty-mgolden#readme>
+                for usage information.
+category:       Testing
 homepage:       https://github.com/mbj/tasty-mgolden#readme
 bug-reports:    https://github.com/mbj/tasty-mgolden/issues
 author:         Markus Schirp <mbj@schirp-dso.com>
 maintainer:     Markus Schirp <mbj@schirp-dso.com>
 license:        BSD3
 license-file:   LICENSE
-tested-with:    GHC == 8.6.5 , GHC == 8.8.3
+tested-with:    GHC == 8.6.5 GHC == 8.8.3
 build-type:     Simple
 
 source-repository head

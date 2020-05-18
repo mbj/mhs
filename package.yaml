@@ -1,11 +1,14 @@
 name:        tasty-mgolden
 version:     0.0.1
 github:      mbj/tasty-mgolden
-description: Golden testing provider for tasty with muti-line diff output
+synopsis:    Golden testing provider for tasty with muti-line diff output
 license:     BSD3
 author:      Markus Schirp <mbj@schirp-dso.com>
-tested-with:  GHC == 8.6.5
-            , GHC == 8.8.3
+category:    Testing
+tested-with: GHC == 8.6.5 GHC == 8.8.3
+description: |
+  Please visit the README at <https://github.com/mbj/tasty-mgolden#readme>
+  for usage information.
 
 dependencies:
 - Diff        == 0.3.4 || ^>= 0.4
