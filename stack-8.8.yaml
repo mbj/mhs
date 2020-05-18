@@ -1,3 +1,6 @@
 resolver: lts-15.13
 extra-deps:
 - tasty-1.3.1@sha256:01e35c97f7ee5ccbc28f21debea02a38cd010d53b4c3087f5677c5d06617a507,2520
+flags:
+  tasty-mgolden:
+    development: true
