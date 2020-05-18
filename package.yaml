@@ -5,7 +5,7 @@ synopsis:    Golden testing provider for tasty with muti-line diff output
 license:     BSD3
 author:      Markus Schirp <mbj@schirp-dso.com>
 category:    Testing
-tested-with: GHC == 8.6.5 GHC == 8.8.3
+tested-with: GHC ==8.6.5 || ==8.8.3
 description: |
   Please visit the README at <https://github.com/mbj/tasty-mgolden#readme>
   for usage information.
@@ -16,6 +16,12 @@ dependencies:
 - filepath    ^>= 1.4.2
 - tasty       ^>= 1.3.1
 - text        ^>= 1.2
+
+flags:
+  development:
+    description: Run GHC with development flags
+    default: false
+    manual: true
 
 library:
   source-dirs: src
@@ -41,6 +47,12 @@ ghc-options:
 - -Wmonomorphism-restriction
 - -Wredundant-constraints
 - -funbox-strict-fields
+
+when:
+  - condition: flag(development)
+    then:
+      ghc-options: -Werror
+    else: {}
 
 tests:
   hlint:
