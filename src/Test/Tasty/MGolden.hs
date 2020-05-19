@@ -2,6 +2,8 @@
 
 This module implements the [golden testing pattern](https://ro-che.info/articles/2017-12-04-golden-tests).
 
+Please refer to the [README.md](README.md) for usage instructions.
+
 -}
 
 module Test.Tasty.MGolden (Mode(..), goldenTest, printDetails) where
@@ -89,7 +91,12 @@ updateExpected Golden{..} actual = do
   Text.writeFile expectedPath actual
   pure $ testPassed "UPDATE"
 
-printDetails :: (Text -> IO ()) -> Text -> Text -> ResultDetailsPrinter
+-- | Golden test diff details printer
+printDetails
+  :: (Text -> IO ()) -- ^ line printer
+  -> Text            -- ^ expected text
+  -> Text            -- ^ actual (observed) text
+  -> ResultDetailsPrinter
 printDetails putStrLn expected actual = ResultDetailsPrinter print
   where
     print :: Int -> (ConsoleFormat -> IO () -> IO ()) -> IO ()
