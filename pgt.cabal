@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 8ab97f536f303ae27a242548543291bce869f4980ac86914eef2c67d442f8c34
+-- hash: deeb713add566f4c7e8598c5b6a1c2bf8c9b9f4d8fd679318ddbe6ca87032dc7
 
 name:           pgt
 version:        0.0.1
@@ -48,8 +48,8 @@ library
     , ordered-containers >=0.2 && <0.3
     , pathtype >=0.8.1 && <0.9
     , source-constraints >=0.0.1 && <0.1
-    , tasty >=1.2 && <1.3
-    , tasty-mgolden >=0.0.0.1 && <0.1
+    , tasty >=1.3.1 && <1.4
+    , tasty-mgolden >=0.0.1 && <0.1
     , text >=1.2 && <1.3
     , text-conversions >=0.3 && <0.4
     , typed-process >=0.2 && <0.3
@@ -80,8 +80,8 @@ executable pgt
     , pathtype >=0.8.1 && <0.9
     , pgt
     , source-constraints >=0.0.1 && <0.1
-    , tasty >=1.2 && <1.3
-    , tasty-mgolden >=0.0.0.1 && <0.1
+    , tasty >=1.3.1 && <1.4
+    , tasty-mgolden >=0.0.1 && <0.1
     , text >=1.2 && <1.3
     , text-conversions >=0.3 && <0.4
     , typed-process >=0.2 && <0.3
@@ -112,8 +112,8 @@ test-suite test
     , pathtype >=0.8.1 && <0.9
     , pgt
     , source-constraints >=0.0.1 && <0.1
-    , tasty >=1.2 && <1.3
-    , tasty-mgolden >=0.0.0.1 && <0.1
+    , tasty >=1.3.1 && <1.4
+    , tasty-mgolden >=0.0.1 && <0.1
     , text >=1.2 && <1.3
     , text-conversions >=0.3 && <0.4
     , typed-process >=0.2 && <0.3
