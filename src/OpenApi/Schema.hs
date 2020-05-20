@@ -34,13 +34,7 @@ instance JSON.ToJSON AdditionalProperties where
     AdditionalPropertiesBool bool     -> JSON.toJSON bool
     AdditionalPropertiesSchema schema -> JSON.toJSON schema
 
-newtype Properties = Properties (Map PropertyName (ReferenceOr Schema))
-  deriving anyclass JSON.ToJSON
-  deriving stock    (Eq, Generic, Show)
-
-instance JSON.FromJSON Properties where
-  parseJSON = genericParseJSON
-
+type Properties = Map PropertyName (ReferenceOr Schema)
 
 data Schema = Schema
   { additionalProperties :: Maybe AdditionalProperties

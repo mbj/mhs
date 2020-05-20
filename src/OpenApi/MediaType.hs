@@ -8,7 +8,7 @@ import OpenApi.Schema
 import qualified Data.Aeson as JSON
 
 newtype MediaType = MediaType
-  { schema :: ReferenceOr Schema }
+  { schema :: Maybe (ReferenceOr Schema) }
   deriving anyclass JSON.ToJSON
   deriving stock    (Eq, Generic, Show)
 

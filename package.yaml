@@ -18,6 +18,7 @@ dependencies:
 - exceptions           ^>= 0.10
 - http-types           ^>= 0.12
 - mprelude             ^>= 0.0.1
+- mtl                  ^>= 2.2
 - pathtype             ^>= 0.8
 - scientific           ^>= 0.3
 - source-constraints   ^>= 0.0.1

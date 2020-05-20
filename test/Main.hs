@@ -102,7 +102,7 @@ parseResponses :: TestTree
         response = Response
           { description = TaggedText "some-description"
           , headers     = empty
-          , content     = Map.empty
+          , content     = pure Map.empty
           }
 
     responsesJSON :: JSON.Value

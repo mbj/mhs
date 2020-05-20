@@ -11,7 +11,7 @@ import OpenApi.TaggedText
 import qualified Data.Aeson as JSON
 
 data Response = Response
-  { content     :: Map MediaTypeQuery MediaType
+  { content     :: Maybe (Map MediaTypeQuery MediaType)
   , description :: TaggedText "ResponseDescription"
   , headers     :: Maybe (Map Text ResponseHeader)
   }

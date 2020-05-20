@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 56e0b3d87e8719fd669b4e5c5b2e759ce70c75987d26eb91f088f62bdac96af3
+-- hash: ebd5031a5ec1070bac947084f1748c47ad7dfe6f8d1aa9875b26b36814ac110b
 
 name:           openapi
 version:        0.0.0.1
@@ -42,6 +42,7 @@ library
       OpenApi.Reference
       OpenApi.ReferenceOr
       OpenApi.RequestBody
+      OpenApi.Resolver
       OpenApi.Response
       OpenApi.ResponseHeader
       OpenApi.Responses
@@ -51,6 +52,7 @@ library
       OpenApi.Server
       OpenApi.Tag
       OpenApi.TaggedText
+      OpenApi.Validation
   other-modules:
       Paths_openapi
   hs-source-dirs:
@@ -67,6 +69,7 @@ library
     , exceptions >=0.10 && <0.11
     , http-types >=0.12 && <0.13
     , mprelude >=0.0.1 && <0.1
+    , mtl >=2.2 && <2.3
     , pathtype >=0.8 && <0.9
     , scientific >=0.3 && <0.4
     , source-constraints >=0.0.1 && <0.1
@@ -94,6 +97,7 @@ test-suite tasty
     , exceptions >=0.10 && <0.11
     , http-types >=0.12 && <0.13
     , mprelude >=0.0.1 && <0.1
+    , mtl >=2.2 && <2.3
     , openapi
     , pathtype >=0.8 && <0.9
     , scientific >=0.3 && <0.4

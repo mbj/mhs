@@ -28,6 +28,9 @@ instance ToText PathSegment where
 newtype PathTemplate = PathTemplate [PathSegment]
   deriving stock (Eq, Ord, Show)
 
+instance ToText PathTemplate where
+  toText (PathTemplate segments) = Text.intercalate "/" $ toText <$> segments
+
 instance JSON.FromJSON PathTemplate where
   parseJSON = JSON.withText "path item" parsePathTemplateText
 
