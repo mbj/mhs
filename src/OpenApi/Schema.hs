@@ -61,6 +61,7 @@ data Schema = Schema
   , minItems             :: Maybe (TaggedNatural "MinLength")
   , minLength            :: Maybe (TaggedNatural "MinLength")
   , minimum              :: Maybe Scientific
+  , multipleOf           :: Maybe Scientific
   , not                  :: Maybe (ReferenceOr Schema)
   , nullable             :: Maybe Bool
   , oneOf                :: Maybe [ReferenceOr Schema]
