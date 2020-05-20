@@ -17,7 +17,7 @@ data OpenApi = OpenApi
   , info       :: Info
   , openapi    :: TaggedText "OpenApiVersion"
   , paths      :: Paths
-  , security   :: Maybe SecurityRequirement
+  , security   :: Maybe [SecurityRequirement]
   , servers    :: Maybe [Server]
   , tags       :: Maybe [Tag]
   , xTagGroups :: Maybe JSON.Value
