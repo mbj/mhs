@@ -5,6 +5,7 @@ import OpenApi.Info
 import OpenApi.JSON
 import OpenApi.Paths
 import OpenApi.Prelude
+import OpenApi.SecurityRequirement
 import OpenApi.Server
 import OpenApi.Tag
 import OpenApi.TaggedText
@@ -16,6 +17,7 @@ data OpenApi = OpenApi
   , info       :: Info
   , openapi    :: TaggedText "OpenApiVersion"
   , paths      :: Paths
+  , security   :: Maybe SecurityRequirement
   , servers    :: Maybe [Server]
   , tags       :: Maybe [Tag]
   , xTagGroups :: Maybe JSON.Value

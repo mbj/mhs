@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 69122d1dca640da4ad1bc5713fc55e5c5ca83693eabbf9d8857eb31feff4a811
+-- hash: 56e0b3d87e8719fd669b4e5c5b2e759ce70c75987d26eb91f088f62bdac96af3
 
 name:           openapi
 version:        0.0.0.1
@@ -46,6 +46,7 @@ library
       OpenApi.ResponseHeader
       OpenApi.Responses
       OpenApi.Schema
+      OpenApi.SecurityRequirement
       OpenApi.SecurityScheme
       OpenApi.Server
       OpenApi.Tag
