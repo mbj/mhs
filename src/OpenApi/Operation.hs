@@ -3,7 +3,7 @@ module OpenApi.Operation where
 import OpenApi.JSON
 import OpenApi.Parameter
 import OpenApi.Prelude
-import OpenApi.Reference
+import OpenApi.ReferenceOr
 import OpenApi.RequestBody
 import OpenApi.Responses
 import OpenApi.Tag

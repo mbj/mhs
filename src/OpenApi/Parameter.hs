@@ -2,7 +2,8 @@ module OpenApi.Parameter where
 
 import OpenApi.JSON
 import OpenApi.Prelude
-import OpenApi.Reference
+import OpenApi.Referencable
+import OpenApi.ReferenceOr
 import OpenApi.Schema
 import OpenApi.TaggedText
 

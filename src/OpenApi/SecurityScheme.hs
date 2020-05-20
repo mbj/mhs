@@ -2,7 +2,7 @@ module OpenApi.SecurityScheme where
 
 import OpenApi.JSON
 import OpenApi.Prelude
-import OpenApi.Reference
+import OpenApi.Referencable
 
 import qualified Data.Aeson      as JSON
 import qualified Data.Map.Strict as Map
@@ -30,8 +30,8 @@ data SecurityScheme = SecurityScheme
   deriving stock (Eq, Generic, Show)
 
 instance Referencable SecurityScheme where
-  targetName    = "Security Scheme"
   referencePath = ["components", "securitySchemes"]
+  targetName    = "Security Scheme"
 
 instance JSON.FromJSON SecurityScheme where
   parseJSON = parseRenamed $ Map.singleton "type'" "type"

@@ -4,7 +4,7 @@ import OpenApi.JSON
 import OpenApi.MediaType
 import OpenApi.MediaTypeQuery
 import OpenApi.Prelude
-import OpenApi.Reference
+import OpenApi.Referencable
 import OpenApi.ResponseHeader
 import OpenApi.TaggedText
 

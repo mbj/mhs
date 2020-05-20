@@ -1,9 +1,11 @@
 module OpenApi.Schema where
 
+
 import Data.Scientific (Scientific)
 import OpenApi.JSON
 import OpenApi.Prelude
-import OpenApi.Reference
+import OpenApi.Referencable
+import OpenApi.ReferenceOr
 import OpenApi.TaggedText
 
 import qualified Data.Aeson       as JSON

@@ -6,7 +6,7 @@ import Data.Maybe (catMaybes)
 import Data.Traversable (traverse)
 import OpenApi.HTTP
 import OpenApi.Prelude
-import OpenApi.Reference
+import OpenApi.ReferenceOr
 import OpenApi.Response
 
 import qualified Data.Aeson                as JSON
