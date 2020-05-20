@@ -1,4 +1,4 @@
-module OpenApi.OpenApi where
+module OpenApi.OpenApi (OpenApi(..)) where
 
 import OpenApi.Components
 import OpenApi.Info
@@ -18,8 +18,14 @@ data OpenApi = OpenApi
   , paths      :: Paths
   , servers    :: Maybe [Server]
   , tags       :: Maybe [Tag]
+  , xTagGroups :: Maybe JSON.Value
   }
   deriving stock (Eq, Generic, Show)
 
+jsonRenames :: Map String String
+jsonRenames =
+  [ ("xTagGroups", "x-tag-groups")
+  ]
+
 instance JSON.FromJSON OpenApi where
-  parseJSON = genericParseJSON
+  parseJSON = parseRenamed jsonRenames
