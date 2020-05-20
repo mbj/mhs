@@ -1,4 +1,4 @@
-module OpenApi.Info where
+module OpenApi.Info (Info(..)) where
 
 import OpenApi.Contact
 import OpenApi.JSON
@@ -13,8 +13,14 @@ data Info = Info
   , termsOfService :: Maybe (TaggedText "InfoTermsOfService")
   , title          :: TaggedText "InfoTitle"
   , version        :: Maybe (TaggedText "InfoVersion")
+  , xLogo          :: Maybe JSON.Value
   }
   deriving stock (Eq, Generic, Show)
 
+jsonRenames :: Map String String
+jsonRenames =
+  [ ("xLogo", "x-logo")
+  ]
+
 instance JSON.FromJSON Info where
-  parseJSON = genericParseJSON
+  parseJSON = parseRenamed jsonRenames

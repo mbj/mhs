@@ -1,9 +1,11 @@
 module OpenApi.Schema where
 
+
 import Data.Scientific (Scientific)
 import OpenApi.JSON
 import OpenApi.Prelude
-import OpenApi.Reference
+import OpenApi.Referencable
+import OpenApi.ReferenceOr
 import OpenApi.TaggedText
 
 import qualified Data.Aeson       as JSON
@@ -32,13 +34,7 @@ instance JSON.ToJSON AdditionalProperties where
     AdditionalPropertiesBool bool     -> JSON.toJSON bool
     AdditionalPropertiesSchema schema -> JSON.toJSON schema
 
-newtype Properties = Properties (Map PropertyName (ReferenceOr Schema))
-  deriving anyclass JSON.ToJSON
-  deriving stock    (Eq, Generic, Show)
-
-instance JSON.FromJSON Properties where
-  parseJSON = genericParseJSON
-
+type Properties = Map PropertyName (ReferenceOr Schema)
 
 data Schema = Schema
   { additionalProperties :: Maybe AdditionalProperties
@@ -59,6 +55,7 @@ data Schema = Schema
   , minItems             :: Maybe (TaggedNatural "MinLength")
   , minLength            :: Maybe (TaggedNatural "MinLength")
   , minimum              :: Maybe Scientific
+  , multipleOf           :: Maybe Scientific
   , not                  :: Maybe (ReferenceOr Schema)
   , nullable             :: Maybe Bool
   , oneOf                :: Maybe [ReferenceOr Schema]

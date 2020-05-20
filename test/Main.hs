@@ -2,7 +2,7 @@ import Data.HashMap.Strict (HashMap)
 import Data.Maybe (catMaybes)
 import OpenApi.Paths
 import OpenApi.Prelude
-import OpenApi.Reference
+import OpenApi.ReferenceOr
 import OpenApi.Response
 import OpenApi.Responses
 import OpenApi.Schema
@@ -102,7 +102,7 @@ parseResponses :: TestTree
         response = Response
           { description = TaggedText "some-description"
           , headers     = empty
-          , content     = Map.empty
+          , content     = pure Map.empty
           }
 
     responsesJSON :: JSON.Value

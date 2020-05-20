@@ -4,14 +4,14 @@ import OpenApi.JSON
 import OpenApi.MediaType
 import OpenApi.MediaTypeQuery
 import OpenApi.Prelude
-import OpenApi.Reference
+import OpenApi.Referencable
 import OpenApi.ResponseHeader
 import OpenApi.TaggedText
 
 import qualified Data.Aeson as JSON
 
 data Response = Response
-  { content     :: Map MediaTypeQuery MediaType
+  { content     :: Maybe (Map MediaTypeQuery MediaType)
   , description :: TaggedText "ResponseDescription"
   , headers     :: Maybe (Map Text ResponseHeader)
   }

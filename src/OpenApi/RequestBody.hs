@@ -4,7 +4,7 @@ import OpenApi.JSON
 import OpenApi.MediaType
 import OpenApi.MediaTypeQuery
 import OpenApi.Prelude
-import OpenApi.Reference
+import OpenApi.Referencable
 import OpenApi.TaggedText
 
 import qualified Data.Aeson as JSON

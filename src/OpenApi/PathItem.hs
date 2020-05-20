@@ -4,7 +4,7 @@ import OpenApi.JSON
 import OpenApi.Operation
 import OpenApi.Parameter
 import OpenApi.Prelude
-import OpenApi.Reference
+import OpenApi.ReferenceOr
 
 import qualified Data.Aeson as JSON
 
