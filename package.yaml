@@ -4,10 +4,8 @@ github:  mbj/pgt
 license: BSD3
 
 extra-source-files:
-- examples/failure.expected
-- examples/failure.sql
-- examples/success.expected
-- examples/success.sql
+- examples/*.sql
+- examples/*.sql.expected
 
 dependencies:
 - base                 ^>= 4.13

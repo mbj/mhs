@@ -89,7 +89,7 @@ mkGolden config test@Test{..}
   $ captureTest config test
 
 expectedFileName :: Test -> Path.RelFile
-expectedFileName Test{..} = Path.replaceExtension path ".expected"
+expectedFileName Test{..} = Path.addExtension path ".expected"
 
 captureTest :: forall m . MonadUnliftIO m => Config -> Test -> m Text
 captureTest config
