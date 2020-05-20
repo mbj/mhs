@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: deeb713add566f4c7e8598c5b6a1c2bf8c9b9f4d8fd679318ddbe6ca87032dc7
+-- hash: 306660cccb1651da465b5b52263fb87b3ddc7e37b94462e0da2878ca9b3febb4
 
 name:           pgt
 version:        0.0.1
@@ -14,10 +14,13 @@ license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
-    examples/failure.expected
     examples/failure.sql
-    examples/success.expected
     examples/success.sql
+    examples/write-1.sql
+    examples/write-2.sql
+    examples/success.sql.expected
+    examples/write-1.sql.expected
+    examples/write-2.sql.expected
 
 source-repository head
   type: git
