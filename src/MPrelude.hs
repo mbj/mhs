@@ -14,6 +14,7 @@ import Control.Monad as Exports
   , (<=<)
   , (=<<)
   , (>>)
+  , (>>=)
   , void
   )
 
