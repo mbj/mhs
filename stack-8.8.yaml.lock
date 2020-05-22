@@ -5,16 +5,30 @@
 
 packages:
 - completed:
+    hackage: tasty-1.3.1@sha256:01e35c97f7ee5ccbc28f21debea02a38cd010d53b4c3087f5677c5d06617a507,2520
+    pantry-tree:
+      size: 1804
+      sha256: 6150ec5094fe321150b1263bc751c1a85b22be766053fb4648115d8c02b2064b
+  original:
+    hackage: tasty-1.3.1@sha256:01e35c97f7ee5ccbc28f21debea02a38cd010d53b4c3087f5677c5d06617a507,2520
+- completed:
+    hackage: tasty-mgolden-0.0.1@sha256:07fadb592cde353c386c5f38cff75539a5675e9350776ed6f4f0a70247427a78,4214
+    pantry-tree:
+      size: 338
+      sha256: 9cd24c3a02396dd93ed7d57df1d9668a2377d128e413db5ff89d82ffdfc830fa
+  original:
+    hackage: tasty-mgolden-0.0.1@sha256:07fadb592cde353c386c5f38cff75539a5675e9350776ed6f4f0a70247427a78,4214
+- completed:
     name: devtools
     version: 0.0.0.1
     git: https://github.com/mbj/devtools-hs
     pantry-tree:
-      size: 735
-      sha256: 5bcc213530b4dc66fd3eccaaee8014a75414d645c83148fba0d12af2459b5945
-    commit: db02e6f80f27cb672b919e5ab078ebdfad996f3b
+      size: 784
+      sha256: 06c3122cd2163bf1e1b697ecf34f0efb72dd3b583dcb0c680f77e842101fb2d0
+    commit: a584eaaf9291a6211ecb16ca37f9e31ea830c015
   original:
     git: https://github.com/mbj/devtools-hs
-    commit: db02e6f80f27cb672b919e5ab078ebdfad996f3b
+    commit: a584eaaf9291a6211ecb16ca37f9e31ea830c015
 - completed:
     name: source-constraints
     version: 0.0.1
@@ -26,33 +40,9 @@ packages:
   original:
     git: https://github.com/mbj/source-constraints
     commit: 6957db606a5a4906b9e55af4e803859d19900478
-- completed:
-    subdir: core
-    name: tasty
-    version: 1.2.3
-    git: https://github.com/mbj/tasty
-    pantry-tree:
-      size: 1793
-      sha256: 9a78c93658061fa5d6d1655faf5532d64abe61c1f7eed389ddc61d922525761a
-    commit: 6b884dc97902feaf6e81ad46f3cc905eb122e5d6
-  original:
-    subdir: core
-    git: https://github.com/mbj/tasty
-    commit: 6b884dc97902feaf6e81ad46f3cc905eb122e5d6
-- completed:
-    name: tasty-mgolden
-    version: 0.0.0.1
-    git: https://github.com/mbj/tasty-mgolden
-    pantry-tree:
-      size: 614
-      sha256: 5c2e91025ecdd6c49c7dfdb691cc51287df5dabc41d49f53b0eb2eefb50a744c
-    commit: 68e10ddcd37aa872c9d0cd57a1665d09ac4ddbc0
-  original:
-    git: https://github.com/mbj/tasty-mgolden
-    commit: 68e10ddcd37aa872c9d0cd57a1665d09ac4ddbc0
 snapshots:
 - completed:
-    size: 494635
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/15/12.yaml
-    sha256: a71c4293d8f461f455ff0d9815dfe4ab2f1adacd7e0bbc9a218f46ced8c4929a
-  original: lts-15.12
+    size: 496112
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/15/13.yaml
+    sha256: 75a1a0f870e1876898b117b0e443f911b3fa2985bfabb53158c81ab5765beda5
+  original: lts-15.13
