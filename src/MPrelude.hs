@@ -53,8 +53,10 @@ import Data.Foldable as Exports
 
 import Data.Function as Exports
   ( ($)
+  , (&)
   , (.)
   , const
+  , flip
   )
 
 import Data.Functor as Exports
