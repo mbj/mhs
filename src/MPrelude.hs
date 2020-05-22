@@ -105,6 +105,10 @@ import Data.Tuple as Exports
   ( uncurry
   )
 
+import Numeric.Natural as Exports
+  ( Natural
+  )
+
 import System.IO as Exports
   ( IO
   )
