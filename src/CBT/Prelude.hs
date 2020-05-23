@@ -1,6 +1,5 @@
 module CBT.Prelude (module Exports, module MPrelude, debug, log) where
 
-import Control.Monad ((>>=))
 import Control.Monad.IO.Unlift as Exports (MonadUnliftIO)
 import MPrelude
 
