@@ -5,6 +5,6 @@ extra-deps:
 - git: https://github.com/mbj/devtools-hs
   commit: a584eaaf9291a6211ecb16ca37f9e31ea830c015
 - git: https://github.com/mbj/mprelude
-  commit: 7a8ec019187646e40562fe3d698c6c4237d9ab1b
+  commit: cb36c6d93fd5270a79d7f3aec8f8736e69afc72b
 - git: https://github.com/mbj/source-constraints
   commit: c0eaebc9dc0fdc08f95c3daaf7eeb1ea2010f415

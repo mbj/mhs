@@ -62,7 +62,7 @@ integer-logarithms 1.0.3
 libyaml 0.1.2
 memory 0.15.0
 mono-traversable 1.0.15.1
-mprelude 0.0.1
+mprelude 0.1.0
 mtl 2.2.2
 network-info 0.2.0.10
 old-locale 1.0.0.7
