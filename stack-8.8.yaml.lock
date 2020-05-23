@@ -31,15 +31,15 @@ packages:
     commit: a584eaaf9291a6211ecb16ca37f9e31ea830c015
 - completed:
     name: mprelude
-    version: 0.0.1
+    version: 0.1.0
     git: https://github.com/mbj/mprelude
     pantry-tree:
       size: 615
-      sha256: 101aa090a477e73eeccb0da434113211535aebe5b335a31afd0ee4a67ee31ee1
-    commit: 7a8ec019187646e40562fe3d698c6c4237d9ab1b
+      sha256: 1304d1f1b497251c297d5f2a0b08dcb2725167bf3c23b68c09927f8c750731c5
+    commit: cb36c6d93fd5270a79d7f3aec8f8736e69afc72b
   original:
     git: https://github.com/mbj/mprelude
-    commit: 7a8ec019187646e40562fe3d698c6c4237d9ab1b
+    commit: cb36c6d93fd5270a79d7f3aec8f8736e69afc72b
 - completed:
     name: source-constraints
     version: 0.0.1
