@@ -11,10 +11,11 @@ license:     BSD3
 dependencies:
 - base                 >= 4.12 && ^>= 4.13
 - bytestring           ^>= 0.10
-- containers           ^>= 0.6
 - cbt                  == 0.0.1
+- containers           ^>= 0.6
 - cryptonite           >= 0.25 && ^>= 0.26
 - mprelude             ^>= 0.0.1
+- network              ^>= 3.1
 - pathtype             ^>= 0.8
 - source-constraints   ^>= 0.0.1
 - template-haskell     >= 2.14 && ^>= 2.15
@@ -66,7 +67,7 @@ library:
   - DBT.Postgresql
 
 tests:
-  devtools:
+  test:
     main: test/Test.hs
     ghc-options:
     - -rtsopts
@@ -76,4 +77,4 @@ tests:
     - dbt
     - devtools
     - tasty
-    - tasty-hunit
+    - tasty-mgolden

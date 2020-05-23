@@ -8,6 +8,7 @@ import qualified CBT.Backend
 import qualified CBT.Backend        as CBT (Backend)
 import qualified CBT.TH
 import qualified DBT.Postgresql     as Postgresql
+import qualified DBT.Wait           as Wait
 import qualified Data.Text          as Text
 import qualified Data.Text.Encoding as Text
 import qualified System.Path        as Path
@@ -30,18 +31,10 @@ class CBT.Backend b => Backend b where
     :: MonadIO m
     => CBT.ContainerName
     -> m Postgresql.ClientConfig
-  getClientConfig containerName = do
-    hostPort <- pure <$> getHostPort @b containerName
-    password <- pure <$> getMasterPassword @b containerName
-
-    pure Postgresql.ClientConfig
-      { databaseName = Postgresql.DatabaseName "postgres"
-      , hostName     = localhost
-      , sslMode      = empty
-      , sslRootCert  = empty
-      , userName     = masterUserName
-      , ..
-      }
+  getClientConfig containerName =
+    mkClientConfig
+      <$> getHostPort @b containerName
+      <*> getMasterPassword @b containerName
 
   startDatabaseContainer
     :: MonadIO m
@@ -57,8 +50,13 @@ class CBT.Backend b => Backend b where
     -> (Postgresql.ClientConfig -> m a)
     -> m a
   withDatabaseContainer containerName action =
-    CBT.withContainer buildDefinition (containerDefinition containerName) $
-      action =<< getClientConfig @b containerName
+    CBT.withContainer buildDefinition (containerDefinition containerName) $ do
+      hostPort <- getHostPort       @b containerName
+      password <- getMasterPassword @b containerName
+
+      waitForPort hostPort
+
+      action $ mkClientConfig hostPort password
 
 instance Backend 'CBT.Docker
 instance Backend 'CBT.Podman
@@ -80,6 +78,34 @@ pgMasterPasswordAbs = pgHome </> Path.relFile "master-password.txt"
 
 masterUserName :: Postgresql.UserName
 masterUserName = Postgresql.UserName "postgres"
+
+mkClientConfig
+  :: Postgresql.HostPort
+  -> Postgresql.Password
+  -> Postgresql.ClientConfig
+mkClientConfig hostPort password =
+  Postgresql.ClientConfig
+    { databaseName = Postgresql.DatabaseName "postgres"
+    , hostName     = localhost
+    , hostPort     = pure hostPort
+    , password     = pure password
+    , sslMode      = empty
+    , sslRootCert  = empty
+    , userName     = masterUserName
+    , ..
+    }
+
+waitForPort :: MonadIO m => Postgresql.HostPort -> m ()
+waitForPort hostPort
+  = Wait.wait
+  $ Wait.Config
+  { prefix      = "[DBT]"
+  , maxAttempts = 100
+  , waitTime    = 100000  -- 100ms
+  , printStatus = debug
+  , hostName    = localhost
+  , ..
+  }
 
 #ifndef __HLINT__
 buildDefinition :: CBT.BuildDefinition

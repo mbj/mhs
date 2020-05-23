@@ -1,14 +1,11 @@
-{-# LANGUAGE AllowAmbiguousTypes #-}
 module DBT where
 
 import DBT.Prelude
 
 import qualified CBT
 import qualified CBT.Backend
-import qualified DBT.Backend          as Backend
-import qualified DBT.Postgresql       as Postgresql
-import qualified System.Environment   as Environment
-import qualified System.Process.Typed as Process
+import qualified DBT.Backend    as Backend
+import qualified DBT.Postgresql as Postgresql
 
 withDatabaseContainer
   :: MonadUnliftIO m
@@ -43,14 +40,3 @@ stopDatabaseContainer containerName = do
   case implementation of
     CBT.Docker -> CBT.Backend.stop @'CBT.Docker containerName
     CBT.Podman -> CBT.Backend.stop @'CBT.Podman containerName
-
-withDatabaseEnv
-  :: MonadUnliftIO m
-  => CBT.Prefix
-  -> Process.ProcessConfig () () ()
-  -> m ()
-withDatabaseEnv prefix proc =
-  withDatabaseContainer prefix $ \config -> do
-    environment <- liftIO Environment.getEnvironment
-    Process.runProcess_ $ Process.setEnv (environment <> Postgresql.toEnv config) proc
-
