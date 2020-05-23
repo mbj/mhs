@@ -5,43 +5,33 @@
 
 packages:
 - completed:
+    hackage: tasty-1.3.1@sha256:01e35c97f7ee5ccbc28f21debea02a38cd010d53b4c3087f5677c5d06617a507,2520
+    pantry-tree:
+      size: 1804
+      sha256: 6150ec5094fe321150b1263bc751c1a85b22be766053fb4648115d8c02b2064b
+  original:
+    hackage: tasty-1.3.1@sha256:01e35c97f7ee5ccbc28f21debea02a38cd010d53b4c3087f5677c5d06617a507,2520
+- completed:
+    hackage: tasty-mgolden-0.0.1@sha256:07fadb592cde353c386c5f38cff75539a5675e9350776ed6f4f0a70247427a78,4214
+    pantry-tree:
+      size: 338
+      sha256: 9cd24c3a02396dd93ed7d57df1d9668a2377d128e413db5ff89d82ffdfc830fa
+  original:
+    hackage: tasty-mgolden-0.0.1@sha256:07fadb592cde353c386c5f38cff75539a5675e9350776ed6f4f0a70247427a78,4214
+- completed:
     name: devtools
     version: 0.0.0.1
     git: https://github.com/mbj/devtools-hs
     pantry-tree:
-      size: 735
-      sha256: 5bcc213530b4dc66fd3eccaaee8014a75414d645c83148fba0d12af2459b5945
-    commit: db02e6f80f27cb672b919e5ab078ebdfad996f3b
+      size: 784
+      sha256: 06c3122cd2163bf1e1b697ecf34f0efb72dd3b583dcb0c680f77e842101fb2d0
+    commit: a584eaaf9291a6211ecb16ca37f9e31ea830c015
   original:
     git: https://github.com/mbj/devtools-hs
-    commit: db02e6f80f27cb672b919e5ab078ebdfad996f3b
-- completed:
-    subdir: core
-    name: tasty
-    version: 1.2.3
-    git: https://github.com/mbj/tasty
-    pantry-tree:
-      size: 1793
-      sha256: 9a78c93658061fa5d6d1655faf5532d64abe61c1f7eed389ddc61d922525761a
-    commit: 6b884dc97902feaf6e81ad46f3cc905eb122e5d6
-  original:
-    subdir: core
-    git: https://github.com/mbj/tasty
-    commit: 6b884dc97902feaf6e81ad46f3cc905eb122e5d6
-- completed:
-    name: tasty-mgolden
-    version: 0.0.0.1
-    git: https://github.com/mbj/tasty-mgolden
-    pantry-tree:
-      size: 614
-      sha256: 6b61b18e32b308e153f836600cf3f038d06a0d01d3bf3e23fd8d6d244a3bacc4
-    commit: 3bdcddb38d1d2005a205fb4c1d35e88bc3f3f432
-  original:
-    git: https://github.com/mbj/tasty-mgolden
-    commit: 3bdcddb38d1d2005a205fb4c1d35e88bc3f3f432
+    commit: a584eaaf9291a6211ecb16ca37f9e31ea830c015
 snapshots:
 - completed:
-    size: 494635
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/15/12.yaml
-    sha256: a71c4293d8f461f455ff0d9815dfe4ab2f1adacd7e0bbc9a218f46ced8c4929a
-  original: lts-15.12
+    size: 496112
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/15/13.yaml
+    sha256: 75a1a0f870e1876898b117b0e443f911b3fa2985bfabb53158c81ab5765beda5
+  original: lts-15.13
