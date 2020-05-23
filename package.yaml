@@ -67,7 +67,7 @@ library:
   - DBT.Postgresql
 
 tests:
-  devtools:
+  test:
     main: test/Test.hs
     ghc-options:
     - -rtsopts
@@ -77,5 +77,4 @@ tests:
     - dbt
     - devtools
     - tasty
-    - tasty-hunit
     - tasty-mgolden

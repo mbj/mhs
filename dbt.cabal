@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 8d25c678e0822cbc63087a508e1e147d77995ddfaa984233399f726812a94490
+-- hash: e67699b387c1aaf8edf2cf9789b31f6efac26bf507d333cdb3194bb6b788640e
 
 name:           dbt
 version:        0.0.0.1
@@ -54,7 +54,7 @@ library
     , unliftio-core >=0.1 && <0.2
   default-language: Haskell2010
 
-test-suite devtools
+test-suite test
   type: exitcode-stdio-1.0
   main-is: test/Test.hs
   other-modules:
@@ -74,7 +74,6 @@ test-suite devtools
     , pathtype >=0.8 && <0.9
     , source-constraints >=0.0.1 && <0.1
     , tasty
-    , tasty-hunit
     , tasty-mgolden
     , template-haskell >=2.14 && >=2.15 && <2.16
     , text >=1.2 && <1.3
