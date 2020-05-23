@@ -103,6 +103,10 @@ import Data.Text.Conversions as Exports
   , toText
   )
 
+import Data.Traversable as Exports
+  ( traverse
+  )
+
 import Data.Tuple as Exports
   ( uncurry
   )
