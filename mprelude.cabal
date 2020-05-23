@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b97d3b37a2dd948ab061667c3f8289553efedcc0ff7a9d70fb410d8e96a8d030
+-- hash: 1bfc0d54eabeec5db7d82969dea63d4b9fce5c5b588492615cf5fcc8e4c2a7b0
 
 name:           mprelude
-version:        0.0.1
+version:        0.0.2
 description:    Please see the README on Github at <https://github.com/mbj/mprelude#readme>
 homepage:       https://github.com/mbj/mprelude#readme
 bug-reports:    https://github.com/mbj/mprelude/issues
