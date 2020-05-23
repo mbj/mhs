@@ -49,6 +49,7 @@ import Data.Eq as Exports
 
 import Data.Foldable as Exports
   ( Foldable
+  , traverse_
   )
 
 import Data.Function as Exports
