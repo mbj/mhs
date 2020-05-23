@@ -49,6 +49,7 @@ import Data.Eq as Exports
 
 import Data.Foldable as Exports
   ( Foldable
+  , traverse_
   )
 
 import Data.Function as Exports
@@ -101,6 +102,10 @@ import Data.Text.Conversions as Exports
   ( ToText
   , convertText
   , toText
+  )
+
+import Data.Traversable as Exports
+  ( traverse
   )
 
 import Data.Tuple as Exports
