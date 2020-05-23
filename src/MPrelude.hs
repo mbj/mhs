@@ -107,6 +107,19 @@ import Data.Tuple as Exports
   ( uncurry
   )
 
+import GHC.Enum as Exports
+  ( Bounded
+  , Enum
+  , maxBound
+  , minBound
+  )
+
+import GHC.Num as Exports
+  ( Num
+  , (*)
+  , (+)
+  )
+
 import Numeric.Natural as Exports
   ( Natural
   )
