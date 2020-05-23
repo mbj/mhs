@@ -14,6 +14,7 @@ import Control.Monad as Exports
   , (<=<)
   , (=<<)
   , (>>)
+  , (>>=)
   , void
   )
 
@@ -52,8 +53,10 @@ import Data.Foldable as Exports
 
 import Data.Function as Exports
   ( ($)
+  , (&)
   , (.)
   , const
+  , flip
   )
 
 import Data.Functor as Exports
@@ -102,6 +105,10 @@ import Data.Text.Conversions as Exports
 
 import Data.Tuple as Exports
   ( uncurry
+  )
+
+import Numeric.Natural as Exports
+  ( Natural
   )
 
 import System.IO as Exports
