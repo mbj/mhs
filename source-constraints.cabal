@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 047073e87f732843c92274c06af98a7c06a79a914f8fc73fece6377214eddddf
+-- hash: f2edd20f7604be62e7bced6a0a286375d0263416489f25bab63ba7c4d9844813
 
 name:           source-constraints
 version:        0.0.1
@@ -30,6 +30,11 @@ source-repository head
   type: git
   location: https://github.com/mbj/source-constraints
 
+flag development
+  description: Run GHC with development flags
+  manual: True
+  default: False
+
 library
   exposed-modules:
       SourceConstraints
@@ -39,7 +44,7 @@ library
   hs-source-dirs:
       src
   default-extensions: DerivingStrategies GeneralizedNewtypeDeriving LambdaCase NoImplicitPrelude OverloadedStrings RecordWildCards ScopedTypeVariables Strict
-  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction
+  ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction
   build-depends:
       attoparsec >=0.13 && <0.14
     , base >=4.13 && <4.14
@@ -48,6 +53,10 @@ library
     , ghc >=8.8 && <8.9
     , syb >=0.7 && <0.8
     , text >=1.2 && <1.3
+  if flag(development)
+    ghc-options: -Werror
+  else
+    ghc-options: -Wwarn
   default-language: Haskell2010
 
 test-suite hspec
@@ -56,7 +65,7 @@ test-suite hspec
   hs-source-dirs:
       test
   default-extensions: DerivingStrategies GeneralizedNewtypeDeriving LambdaCase NoImplicitPrelude OverloadedStrings RecordWildCards ScopedTypeVariables Strict
-  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -rtsopts -threaded -with-rtsopts=-N
+  ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       attoparsec >=0.13 && <0.14
     , base >=4.13 && <4.14
@@ -69,4 +78,8 @@ test-suite hspec
     , source-constraints
     , syb >=0.7 && <0.8
     , text >=1.2 && <1.3
+  if flag(development)
+    ghc-options: -Werror
+  else
+    ghc-options: -Wwarn
   default-language: Haskell2010

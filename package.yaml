@@ -18,6 +18,12 @@ dependencies:
 - syb        ^>= 0.7
 - text       ^>= 1.2
 
+flags:
+  development:
+    description: Run GHC with development flags
+    default: false
+    manual: true
+
 extra-source-files:
 - test/LocalModuleExplicitImport.hs
 - test/MissingDerivingStrategy.hs
@@ -29,7 +35,6 @@ extra-source-files:
 ghc-options:
 - -Wall
 - -Wcompat
-- -Werror
 - -Widentities
 - -Wimplicit-prelude
 - -Wincomplete-record-updates
@@ -37,6 +42,13 @@ ghc-options:
 - -Wmissing-exported-signatures
 - -Wmissing-local-signatures
 - -Wmonomorphism-restriction
+
+when:
+  - condition: flag(development)
+    then:
+      ghc-options: -Werror
+    else:
+      ghc-options: -Wwarn
 
 default-extensions:
 - DerivingStrategies
