@@ -17,7 +17,7 @@ dependencies:
 - containers           ^>= 0.6
 - exceptions           ^>= 0.10
 - http-types           ^>= 0.12
-- mprelude             ^>= 0.0.1
+- mprelude             ^>= 0.1.0
 - mtl                  ^>= 2.2
 - pathtype             ^>= 0.8
 - scientific           ^>= 0.3
@@ -72,7 +72,7 @@ tests:
     source-dirs:   test
     other-modules: []
     dependencies:
-    - devtools
+    - devtools ^>= 0.0.1
     - openapi
     - tasty
     - tasty-hunit
