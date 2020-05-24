@@ -1,10 +1,7 @@
 module Devtools.Dependencies (testTree) where
 
-import Data.Function ((.))
-import Data.Functor ((<$>))
-import Data.Text (Text)
 import Data.Tuple (fst)
-import System.IO (IO)
+import Devtools.Prelude
 
 import qualified Data.ByteString.Lazy  as LBS
 import qualified Data.Text.Encoding    as Text
