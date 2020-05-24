@@ -3,7 +3,7 @@ module OpenApi.Schema where
 
 import Data.Scientific (Scientific)
 import OpenApi.JSON
-import OpenApi.Prelude
+import OpenApi.Prelude hiding (Enum)
 import OpenApi.Referencable
 import OpenApi.ReferenceOr
 import OpenApi.TaggedText

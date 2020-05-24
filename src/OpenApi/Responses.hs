@@ -3,7 +3,6 @@ module OpenApi.Responses where
 import Control.Applicative ((<*))
 import Data.Aeson ((.:?))
 import Data.Maybe (catMaybes)
-import Data.Traversable (traverse)
 import OpenApi.HTTP
 import OpenApi.Prelude
 import OpenApi.ReferenceOr

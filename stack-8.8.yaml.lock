@@ -5,6 +5,27 @@
 
 packages:
 - completed:
+    hackage: devtools-0.0.1@sha256:6cc09d6568954a5c60dbd2428c2a62bfaa92e0ccdd05148c77234f21cf3971c5,4181
+    pantry-tree:
+      size: 452
+      sha256: e56b8d3db8f6a92452e1d58f8912ce1feb712b832f6b4e85a771c22f1c3e0c09
+  original:
+    hackage: devtools-0.0.1@sha256:6cc09d6568954a5c60dbd2428c2a62bfaa92e0ccdd05148c77234f21cf3971c5,4181
+- completed:
+    hackage: mprelude-0.1.0@sha256:73336894a0addfeef076678bcc2e13dce800f66fcf1c67c72bf25184ecac3fab,2974
+    pantry-tree:
+      size: 265
+      sha256: 2516a863930d5172d3092a2309a3fa507c995f586d56f319780c2bad6c27726e
+  original:
+    hackage: mprelude-0.1.0@sha256:73336894a0addfeef076678bcc2e13dce800f66fcf1c67c72bf25184ecac3fab,2974
+- completed:
+    hackage: source-constraints-0.0.1@sha256:abdda6ca3d942c81d61ed4374dbc0eee21e9c074da3f17b25d434c2d55df2acc,2979
+    pantry-tree:
+      size: 767
+      sha256: 838aa22a00a46a7a469cce9d4049acd8c94ed9c1e8c0eeb898a6d8e67bdd6818
+  original:
+    hackage: source-constraints-0.0.1@sha256:abdda6ca3d942c81d61ed4374dbc0eee21e9c074da3f17b25d434c2d55df2acc,2979
+- completed:
     hackage: tasty-1.3.1@sha256:01e35c97f7ee5ccbc28f21debea02a38cd010d53b4c3087f5677c5d06617a507,2520
     pantry-tree:
       size: 1804
@@ -29,42 +50,9 @@ packages:
   original:
     git: https://github.com/bos/aeson
     commit: f439b22b9cfc3527ee1a3088928bcfe56eefa26e
-- completed:
-    name: devtools
-    version: 0.0.0.1
-    git: https://github.com/mbj/devtools-hs
-    pantry-tree:
-      size: 784
-      sha256: 06c3122cd2163bf1e1b697ecf34f0efb72dd3b583dcb0c680f77e842101fb2d0
-    commit: a584eaaf9291a6211ecb16ca37f9e31ea830c015
-  original:
-    git: https://github.com/mbj/devtools-hs
-    commit: a584eaaf9291a6211ecb16ca37f9e31ea830c015
-- completed:
-    name: mprelude
-    version: 0.0.1
-    git: https://github.com/mbj/mprelude
-    pantry-tree:
-      size: 607
-      sha256: 80c57e4e2022bb181cc6207f8159c30274a3df0b6f0e2b2fec6dcf0952b5010c
-    commit: 047f2c93e59123af2572c8bbafc0b617ef2fc530
-  original:
-    git: https://github.com/mbj/mprelude
-    commit: 047f2c93e59123af2572c8bbafc0b617ef2fc530
-- completed:
-    name: source-constraints
-    version: 0.0.1
-    git: https://github.com/mbj/source-constraints
-    pantry-tree:
-      size: 1218
-      sha256: 15f5a909b3a193e309e37a0e4ce87c6bf7f1d048e8db7d621ecbaaef4ed51f63
-    commit: 882efed7bef03fcc92985b1e76c0056731739e82
-  original:
-    git: https://github.com/mbj/source-constraints
-    commit: 882efed7bef03fcc92985b1e76c0056731739e82
 snapshots:
 - completed:
-    size: 494635
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/15/12.yaml
-    sha256: a71c4293d8f461f455ff0d9815dfe4ab2f1adacd7e0bbc9a218f46ced8c4929a
-  original: lts-15.12
+    size: 496112
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/15/13.yaml
+    sha256: 75a1a0f870e1876898b117b0e443f911b3fa2985bfabb53158c81ab5765beda5
+  original: lts-15.13

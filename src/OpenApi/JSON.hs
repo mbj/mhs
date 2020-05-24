@@ -7,7 +7,6 @@ module OpenApi.JSON
   )
 where
 
-import GHC.Enum (Bounded, Enum, minBound)
 import GHC.Generics (Rep)
 import OpenApi.Prelude
 
