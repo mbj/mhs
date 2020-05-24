@@ -8,6 +8,9 @@ copyright:   2018 Markus Schirp
 category:    CodeQuality
 github:      mbj/source-constraints
 license:     BSD3
+description: |
+  Please visit the README at <https://github.com/mbj/source-constraints#readme>
+  for usage information.
 
 dependencies:
 - attoparsec ^>= 0.13
@@ -17,6 +20,15 @@ dependencies:
 - ghc        ^>= 8.8
 - syb        ^>= 0.7
 - text       ^>= 1.2
+
+extra-doc-files:
+- README.md
+
+flags:
+  development:
+    description: Run GHC with development flags
+    default: false
+    manual: true
 
 extra-source-files:
 - test/LocalModuleExplicitImport.hs
@@ -29,7 +41,6 @@ extra-source-files:
 ghc-options:
 - -Wall
 - -Wcompat
-- -Werror
 - -Widentities
 - -Wimplicit-prelude
 - -Wincomplete-record-updates
@@ -37,6 +48,13 @@ ghc-options:
 - -Wmissing-exported-signatures
 - -Wmissing-local-signatures
 - -Wmonomorphism-restriction
+
+when:
+  - condition: flag(development)
+    then:
+      ghc-options: -Werror
+    else:
+      ghc-options: -Wwarn
 
 default-extensions:
 - DerivingStrategies
