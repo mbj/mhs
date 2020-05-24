@@ -4,13 +4,20 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5cb61e974088285a251deb8560b6b2871947c9ef04027b2df74a46a755e610a3
+-- hash: fddaf50a9b2c96b5aac6153df7a8f0039cb094b9f153e2a2099daa6a993ef5e6
 
 name:           mprelude
 version:        0.1.0
-description:    Please see the README on Github at <https://github.com/mbj/mprelude#readme>
+synopsis:       A minimalish prelude.
+description:    Prelude extracted from observing NoImplicitPrelude using
+                projects by https://github.com/mbj.
+                .
+                Idea is to not design a prelude, but to observe one by
+                deduplicating repeated imports cross a larger project space.
+category:       prelude
 homepage:       https://github.com/mbj/mprelude#readme
 bug-reports:    https://github.com/mbj/mprelude/issues
+maintainer:     Markus Schirp <mbj@schirp-dso.com>
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple

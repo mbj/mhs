@@ -1,8 +1,16 @@
 name:        mprelude
 version:     0.1.0
 github:      mbj/mprelude
-description: Please see the README on Github at <https://github.com/mbj/mprelude#readme>
+category:    prelude
+synopsis:    A minimalish prelude.
+maintainer:  Markus Schirp <mbj@schirp-dso.com>
 license:     BSD3
+description: |
+  Prelude extracted from observing NoImplicitPrelude using
+  projects by https://github.com/mbj.
+
+  Idea is to not design a prelude, but to observe one by
+  deduplicating repeated imports cross a larger project space.
 
 dependencies:
 - base               > 4.12 && < 14.15
