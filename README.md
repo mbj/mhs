@@ -2,4 +2,5 @@
 
 # devtools
 
-Haskell development tooling.
+Experimental. Haskell development tooling.
+This project tries to deduplicate setup of development tools.

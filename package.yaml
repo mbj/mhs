@@ -1,9 +1,13 @@
 name:        devtools
 version:     0.0.0.1
 github:      mbj/devtools-hs
-description: Haskell development tooling
+synopsis:    Haskell development tool agregate
+category:    Testing
 author:      Markus Schirp <mbj@schirp-dso.com>
 license:     BSD3
+description: |
+  An attempt to group development that would typically run on CI / local
+  into one tasty interface.
 
 dependencies:
 - Diff               > 0.3 && < 0.5
@@ -21,6 +25,9 @@ dependencies:
 
 library:
   source-dirs: src
+
+extra-doc-files:
+- README.md
 
 default-extensions:
 - DerivingStrategies

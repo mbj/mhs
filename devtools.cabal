@@ -1,14 +1,17 @@
-cabal-version: 1.12
+cabal-version: 1.18
 
 -- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d5022725c43f0d195b80f1edaab1eb15fa6b8c0eae7f323fc6a1104f60f7347f
+-- hash: 88314cc5d813b0e8cf630e1483c26bfbd1d7e9b805c173f565ee85d2387d1af4
 
 name:           devtools
 version:        0.0.0.1
-description:    Haskell development tooling
+synopsis:       Haskell development tool agregate
+description:    An attempt to group development that would typically run on CI / local
+                into one tasty interface.
+category:       Testing
 homepage:       https://github.com/mbj/devtools-hs#readme
 bug-reports:    https://github.com/mbj/devtools-hs/issues
 author:         Markus Schirp <mbj@schirp-dso.com>
@@ -16,6 +19,8 @@ maintainer:     Markus Schirp <mbj@schirp-dso.com>
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
+extra-doc-files:
+    README.md
 
 source-repository head
   type: git
