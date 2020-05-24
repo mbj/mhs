@@ -18,6 +18,12 @@ dependencies:
 - text               ^>= 1.2
 - text-conversions   ^>= 0.3
 
+flags:
+  development:
+    description: Run GHC with development flags
+    default: false
+    manual: true
+
 library:
   source-dirs: src
 
@@ -43,7 +49,6 @@ default-extensions:
 ghc-options:
 - -Wall
 - -Wcompat
-- -Werror
 - -Widentities
 - -Wimplicit-prelude
 - -Wincomplete-record-updates
@@ -54,6 +59,13 @@ ghc-options:
 - -Wredundant-constraints
 - -fplugin=SourceConstraints
 - -funbox-strict-fields
+
+when:
+  - condition: flag(development)
+    then:
+      ghc-options: -Werror
+    else:
+      ghc-options: -Wwarn
 
 tests:
   devtools:

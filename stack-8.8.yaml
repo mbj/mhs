@@ -6,3 +6,6 @@ extra-deps:
   commit: a584eaaf9291a6211ecb16ca37f9e31ea830c015
 - git: https://github.com/mbj/source-constraints
   commit: 6957db606a5a4906b9e55af4e803859d19900478
+flags:
+  mprelude:
+    development: true
