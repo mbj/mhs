@@ -1,10 +1,10 @@
-cabal-version: 1.12
+cabal-version: 1.18
 
 -- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: bc38395de5748675c0e1af1d841b5b7c83a30efa65dfcf346fcd7a66178653fb
+-- hash: 0aa41f3aa33d83b40b847d55b5c0478fd12f6114d80c218e6241eab77dce0dc2
 
 name:           mprelude
 version:        0.1.0
@@ -21,6 +21,8 @@ maintainer:     Markus Schirp <mbj@schirp-dso.com>
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
+extra-doc-files:
+    README.md
 
 source-repository head
   type: git

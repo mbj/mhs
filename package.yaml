@@ -24,6 +24,9 @@ flags:
     default: false
     manual: true
 
+extra-doc-files:
+- README.md
+
 library:
   source-dirs: src
 
