@@ -5,6 +5,8 @@ on: push
 jobs:
   ci:
     runs-on: ${{ matrix.os }}
+    env:
+      STACK_YAML: stack-${{ matrix.ghc }}.yaml
     strategy:
       fail-fast: false
       matrix:
