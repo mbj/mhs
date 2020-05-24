@@ -1,25 +1,39 @@
 name:        devtools
 version:     0.0.0.1
 github:      mbj/devtools-hs
-description: Haskell development tooling
+synopsis:    Haskell development tool agregate
+category:    Testing
 author:      Markus Schirp <mbj@schirp-dso.com>
 license:     BSD3
+description: |
+  An attempt to group development that would typically run on CI / local
+  into one tasty interface.
 
 dependencies:
 - Diff               > 0.3 && < 0.5
 - base               > 4.12 && < 4.14
-- cmdargs            ^>= 0.10.20
 - bytestring         ^>= 0.10
+- cmdargs            ^>= 0.10.20
 - filepath           ^>= 1.4
 - hlint              > 2.1 && < 3
-- source-constraints >= 0.0.0.1 && < 0.1
+- mprelude           ^>= 0.1.0
+- source-constraints ^>= 0.0.1
 - tasty              ^>= 1.3.1
 - tasty-mgolden      ^>= 0.0.1
 - text               ^>= 1.2
 - typed-process      ^>= 0.2
 
+flags:
+  development:
+    description: Run GHC with development flags
+    default: false
+    manual: true
+
 library:
   source-dirs: src
+
+extra-doc-files:
+- README.md
 
 default-extensions:
 - DerivingStrategies
@@ -32,7 +46,6 @@ default-extensions:
 ghc-options:
 - -Wall
 - -Wcompat
-- -Werror
 - -Widentities
 - -Wimplicit-prelude
 - -Wincomplete-record-updates
@@ -44,6 +57,13 @@ ghc-options:
 - -fplugin=SourceConstraints
 - -funbox-strict-fields
 - -optP-Wno-nonportable-include-path
+
+when:
+  - condition: flag(development)
+    then:
+      ghc-options: -Werror
+    else:
+      ghc-options: -Wwarn
 
 executables:
   devtools: &devtools

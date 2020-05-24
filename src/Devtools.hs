@@ -1,9 +1,7 @@
 module Devtools (Config(..), defaultConfig, defaultMain, main, testTree) where
 
-import Control.Applicative (empty)
-import Data.Function (($))
-import Data.String (String)
-import System.IO (IO, putStrLn)
+import Devtools.Prelude
+import System.IO (putStrLn)
 
 import qualified Devtools.Dependencies as Dependencies
 import qualified Devtools.HLint        as HLint
