@@ -1,8 +1,9 @@
 module Devtools.Dependencies (testTree) where
 
-import Data.Function (($), (.))
+import Data.Function ((.))
 import Data.Functor ((<$>))
 import Data.Text (Text)
+import Data.Tuple (fst)
 import System.IO (IO)
 
 import qualified Data.ByteString.Lazy  as LBS
@@ -24,5 +25,4 @@ testTree =
 
     readDependencies :: IO LBS.ByteString
     readDependencies
-      = Process.readProcessStdout_
-      $ Process.proc "stack" ["ls", "dependencies", "--test"]
+      = fst <$> Process.readProcess_ (Process.proc "stack" ["ls", "dependencies", "--test"])
