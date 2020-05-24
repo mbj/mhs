@@ -34,7 +34,7 @@ data-default-instances-dlist 0.0.1
 data-default-instances-old-locale 0.0.1
 dbt 0.0.0.1
 deepseq 1.4.4.0
-devtools 0.0.0.1
+devtools 0.0.1
 directory 1.3.6.0
 dlist 0.8.0.8
 entropy 0.4.1.6
@@ -63,8 +63,9 @@ integer-logarithms 1.0.3
 libyaml 0.1.2
 memory 0.15.0
 mono-traversable 1.0.15.1
-mprelude 0.0.1
+mprelude 0.1.0
 mtl 2.2.2
+network 3.1.1.1
 network-info 0.2.0.10
 old-locale 1.0.0.7
 optparse-applicative 0.15.1.0
