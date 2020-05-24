@@ -1,12 +1,9 @@
 resolver: lts-15.13
 extra-deps:
+- devtools-0.0.1@sha256:6cc09d6568954a5c60dbd2428c2a62bfaa92e0ccdd05148c77234f21cf3971c5,4181
+- mprelude-0.1.0@sha256:73336894a0addfeef076678bcc2e13dce800f66fcf1c67c72bf25184ecac3fab,2974
+- source-constraints-0.0.1@sha256:abdda6ca3d942c81d61ed4374dbc0eee21e9c074da3f17b25d434c2d55df2acc,2979
 - tasty-1.3.1@sha256:01e35c97f7ee5ccbc28f21debea02a38cd010d53b4c3087f5677c5d06617a507,2520
 - tasty-mgolden-0.0.1@sha256:07fadb592cde353c386c5f38cff75539a5675e9350776ed6f4f0a70247427a78,4214
 - git: https://github.com/mbj/cbt
-  commit: 51a90eb0a1e18427cab0e481bcef83ff66c39fb3
-- git: https://github.com/mbj/devtools-hs
-  commit: a584eaaf9291a6211ecb16ca37f9e31ea830c015
-- git: https://github.com/mbj/mprelude
-  commit: 7a8ec019187646e40562fe3d698c6c4237d9ab1b
-- git: https://github.com/mbj/source-constraints
-  commit: c0eaebc9dc0fdc08f95c3daaf7eeb1ea2010f415
+  commit: 7a1c6500ad9342dbf365f95b688feccf5c35afb9
