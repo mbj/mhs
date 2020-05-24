@@ -8,6 +8,9 @@ copyright:   2018 Markus Schirp
 category:    CodeQuality
 github:      mbj/source-constraints
 license:     BSD3
+description: |
+  Please visit the README at <https://github.com/mbj/source-constraints#readme>
+  for usage information.
 
 dependencies:
 - attoparsec ^>= 0.13

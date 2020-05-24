@@ -4,11 +4,13 @@ cabal-version: 1.18
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b7f80065f4d1508955cf67135ab0c769fc7687a4156e80a735981e1096e4f810
+-- hash: 91a3bc64301e8157e58aa102b9090a7175351884011c0df8480f6971486b3ba3
 
 name:           source-constraints
 version:        0.0.1
 synopsis:       Source constraints GHC plugin
+description:    Please visit the README at <https://github.com/mbj/source-constraints#readme>
+                for usage information.
 category:       CodeQuality
 homepage:       https://github.com/mbj/source-constraints#readme
 bug-reports:    https://github.com/mbj/source-constraints/issues
