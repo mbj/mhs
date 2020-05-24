@@ -18,6 +18,9 @@ dependencies:
 - syb        ^>= 0.7
 - text       ^>= 1.2
 
+extra-doc-files:
+- README.md
+
 flags:
   development:
     description: Run GHC with development flags

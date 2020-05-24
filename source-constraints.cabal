@@ -1,10 +1,10 @@
-cabal-version: 1.12
+cabal-version: 1.18
 
 -- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f2edd20f7604be62e7bced6a0a286375d0263416489f25bab63ba7c4d9844813
+-- hash: b7f80065f4d1508955cf67135ab0c769fc7687a4156e80a735981e1096e4f810
 
 name:           source-constraints
 version:        0.0.1
@@ -25,6 +25,8 @@ extra-source-files:
     test/UnsortedIEThingWith.hs
     test/UnsortedImportStatement.hs
     test/UnsortedMultipleDeriving.hs
+extra-doc-files:
+    README.md
 
 source-repository head
   type: git
