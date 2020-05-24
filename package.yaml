@@ -14,7 +14,7 @@ dependencies:
 - cbt                  == 0.0.1
 - containers           ^>= 0.6
 - cryptonite           >= 0.25 && ^>= 0.26
-- mprelude             ^>= 0.0.1
+- mprelude             ^>= 0.1.0
 - network              ^>= 3.1
 - pathtype             ^>= 0.8
 - source-constraints   ^>= 0.0.1
@@ -75,6 +75,6 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - dbt
-    - devtools
+    - devtools ^>= 0.0.1
     - tasty
     - tasty-mgolden
