@@ -11,7 +11,7 @@ module StackDeploy.Parameters
   )
 where
 
-import Control.Lens ((&), (?~), view)
+import Control.Lens ((?~), view)
 import Data.HashMap.Strict (HashMap)
 import Data.Hashable (Hashable)
 import Data.Set (Set)
