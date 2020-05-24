@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 0ae0616165c0d9109b07b13b7f517357017cbfa801996b79897cd3e441109306
+-- hash: c9315a9045517f6d5d6d1bb848620695b62430391d92c3827d90b42b3fd19024
 
 name:           cbt
 version:        0.0.1
@@ -66,12 +66,12 @@ test-suite test
     , bytestring >=0.10 && <0.11
     , cbt
     , cryptonite >=0.25 && >=0.26 && <0.27
-    , devtools
+    , devtools >=0.0.1 && <0.1
     , mprelude >=0.1 && <0.2
     , pathtype >=0.8 && <0.9
     , source-constraints >=0.0.1 && <0.1
     , tar >=0.5 && <0.6
-    , tasty
+    , tasty >=1.3.1 && <1.4
     , tasty-hunit
     , template-haskell >=2.14 && >=2.15 && <2.16
     , text >=1.2 && <1.3
