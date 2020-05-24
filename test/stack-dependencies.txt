@@ -33,7 +33,7 @@ data-default-instances-containers 0.0.1
 data-default-instances-dlist 0.0.1
 data-default-instances-old-locale 0.0.1
 deepseq 1.4.4.0
-devtools 0.0.0.1
+devtools 0.0.1
 directory 1.3.6.0
 dlist 0.8.0.8
 entropy 0.4.1.6
