@@ -1,7 +1,6 @@
 module StackDeploy.CLI (parserInfo, stackName) where
 
-import Control.Lens ((&), (.~), view)
-import Control.Monad (mapM_)
+import Control.Lens ((.~), view)
 import Data.Conduit ((.|), runConduit)
 import Options.Applicative hiding (value)
 import StackDeploy.AWS
@@ -18,7 +17,6 @@ import qualified Data.Attoparsec.Text                           as Text
 import qualified Data.ByteString.Lazy                           as LBS
 import qualified Data.Char                                      as Char
 import qualified Data.Conduit.Combinators                       as Conduit
-import qualified Data.Foldable                                  as Foldable
 import qualified Data.Text.Encoding                             as Text
 import qualified Data.Text.IO                                   as Text
 import qualified Network.AWS                                    as AWS
@@ -102,7 +100,7 @@ parserInfo instanceSpecProvider = wrapHelper commands "stack commands"
 
     outputs :: InstanceSpec.Name -> m ExitCode
     outputs name = do
-      mapM_ printOutput =<< (view CF.sOutputs <$> getExistingStack name)
+      traverse_ printOutput =<< (view CF.sOutputs <$> getExistingStack name)
       success
       where
         printOutput :: CF.Output -> m ()
@@ -118,14 +116,14 @@ parserInfo instanceSpecProvider = wrapHelper commands "stack commands"
 
     listTemplates :: m ExitCode
     listTemplates = do
-      Foldable.mapM_
+      traverse_
         (liftIO . Text.putStrLn . toText . Template.name)
         (toList templateProvider)
       success
 
     listSpecs :: m ExitCode
     listSpecs = do
-      Foldable.mapM_
+      traverse_
         (liftIO . Text.putStrLn . toText . InstanceSpec.name)
         (toList instanceSpecProvider)
       success
