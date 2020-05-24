@@ -4,7 +4,7 @@ module PGT.Selector (Selector(..), expand) where
 
 import Data.Functor (fmap)
 import Data.Set.Ordered (OSet, (|<>))
-import Data.Traversable (Traversable, traverse)
+import Data.Traversable (Traversable)
 import PGT
 import PGT.Prelude
 import System.Path ((</>))
