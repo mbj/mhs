@@ -43,7 +43,6 @@ ghc-options:
 
 default-extensions:
 - AllowAmbiguousTypes
-- CPP
 - DataKinds
 - DerivingStrategies
 - DuplicateRecordFields
