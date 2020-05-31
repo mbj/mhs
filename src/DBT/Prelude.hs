@@ -11,6 +11,9 @@ log :: forall a m . (MonadIO m, ToText a) => a -> m ()
 log = liftIO . Text.hPutStrLn IO.stderr . convertText
 
 debug :: forall a m . (MonadIO m, ToText a) => a -> m ()
-debug message =
+debug = onDebug . log
+
+onDebug :: MonadIO m => m () -> m ()
+onDebug action =
   liftIO (Environment.lookupEnv "DBT_DEBUG")
-    >>= maybe (pure ()) (const (log message))
+    >>= maybe (pure ()) (const action)
