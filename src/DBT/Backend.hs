@@ -107,10 +107,8 @@ waitForPort hostPort
   , ..
   }
 
-#ifndef __HLINT__
 buildDefinition :: CBT.BuildDefinition
 buildDefinition = $$(CBT.TH.readDockerfile (CBT.Prefix "cbt") (Path.file "Dockerfile"))
-#endif
 
 postgresqlDefinition
   :: CBT.ContainerName

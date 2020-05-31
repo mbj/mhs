@@ -17,7 +17,7 @@ main
 
 devtoolsConfig :: Devtools.Config
 devtoolsConfig = Devtools.defaultConfig
-  { Devtools.hlintArguments = ["-XTypeApplications"] }
+  { Devtools.hlintArguments = ["-XTemplateHaskell", "-XTypeApplications"] }
 
 testDB :: Postgresql.ClientConfig -> Tasty.TestTree
 testDB clientConfig

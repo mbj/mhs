@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e1deaa577cb4ee3c6a7d6f1c324ec211deb0d4b00753bbd3041661e010dc8090
+-- hash: ae5a0f09e0a293aa1dd10c5d9d86d35f0b8e95f872a8dd72434d436f93b3f251
 
 name:           dbt
 version:        0.0.0.1
@@ -34,7 +34,7 @@ library
       Paths_dbt
   hs-source-dirs:
       src
-  default-extensions: AllowAmbiguousTypes CPP DataKinds DerivingStrategies DuplicateRecordFields GeneralizedNewtypeDeriving KindSignatures LambdaCase NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TypeApplications
+  default-extensions: AllowAmbiguousTypes DataKinds DerivingStrategies DuplicateRecordFields GeneralizedNewtypeDeriving KindSignatures LambdaCase NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TypeApplications
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
       base >=4.12 && >=4.13 && <4.14
@@ -59,7 +59,7 @@ test-suite test
   main-is: test/Test.hs
   other-modules:
       Paths_dbt
-  default-extensions: AllowAmbiguousTypes CPP DataKinds DerivingStrategies DuplicateRecordFields GeneralizedNewtypeDeriving KindSignatures LambdaCase NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TypeApplications
+  default-extensions: AllowAmbiguousTypes DataKinds DerivingStrategies DuplicateRecordFields GeneralizedNewtypeDeriving KindSignatures LambdaCase NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TypeApplications
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       base >=4.12 && >=4.13 && <4.14
