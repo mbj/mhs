@@ -19,8 +19,9 @@ data Config = Config
   , hostName    :: Postgresql.HostName
   , hostPort    :: Postgresql.HostPort
   , maxAttempts :: Natural
-  , waitTime    :: Natural
+  , onFail      :: forall m . MonadIO m => m ()
   , printStatus :: forall a m . (ToText a, MonadIO m) => a -> m ()
+  , waitTime    :: Natural
   }
 
 wait :: MonadIO m => Config -> m ()
@@ -52,7 +53,7 @@ wait Config{..} = liftIO $ do
       where
         attempt :: Natural -> IO ()
         attempt count = if count == maxAttempts
-          then giveUp
+          then onFail >> giveUp
           else do
             success <- runConnectionTest
             unless success $ threadDelay waitTime' >> attempt (succ count)
