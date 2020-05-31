@@ -1,4 +1,4 @@
-module CBT.Prelude (module Exports, module MPrelude, debug, log) where
+module CBT.Prelude (module Exports, module MPrelude, debug, log, onDebug) where
 
 import Control.Monad.IO.Unlift as Exports (MonadUnliftIO)
 import MPrelude
@@ -11,6 +11,9 @@ log :: forall a m . (MonadIO m, ToText a) => a -> m ()
 log = liftIO . Text.hPutStrLn IO.stderr . convertText
 
 debug :: forall a m . (MonadIO m, ToText a) => a -> m ()
-debug message =
+debug = onDebug . log
+
+onDebug :: MonadIO m => m () -> m ()
+onDebug action =
   liftIO (Environment.lookupEnv "CBT_DEBUG")
-    >>= maybe (pure ()) (const (log message))
+    >>= maybe (pure ()) (const action)

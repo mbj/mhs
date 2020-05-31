@@ -44,6 +44,14 @@ class Backend (b :: Implementation) where
 
     unless exists (build @b buildDefinition)
 
+  printLogs :: MonadIO m => ContainerName -> m ()
+  printLogs containerName
+    = runProcess_
+    $ backendProc @b
+    [ "logs"
+    , convertText containerName
+    ]
+
   status :: MonadIO m => ContainerName -> m Status
   status containerName
     = mapStatus <$> runProcess proc
