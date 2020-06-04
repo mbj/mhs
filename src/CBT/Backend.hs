@@ -48,7 +48,17 @@ class Backend (b :: Implementation) where
   printLogs containerName
     = runProcess_
     $ backendProc @b
-    [ "logs"
+    [ "container"
+    , "logs"
+    , convertText containerName
+    ]
+
+  printInspect :: MonadIO m => ContainerName -> m ()
+  printInspect containerName
+    = runProcess_
+    $ backendProc @b
+    [ "container"
+    , "inspect"
     , convertText containerName
     ]
 

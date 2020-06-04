@@ -8,6 +8,7 @@ module CBT
   , buildRun
   , getImplementation
   , nextContainerName
+  , printInspect
   , printLogs
   , readContainerFile
   , removeContainer
@@ -99,6 +100,16 @@ printLogs containerName = do
   case implementation of
     Docker -> CBT.Backend.printLogs @'Docker containerName
     Podman -> CBT.Backend.printLogs @'Podman containerName
+
+printInspect
+  :: MonadIO m
+  => ContainerName
+  -> m ()
+printInspect containerName = do
+  implementation <- getImplementation
+  case implementation of
+    Docker -> CBT.Backend.printInspect @'Docker containerName
+    Podman -> CBT.Backend.printInspect @'Podman containerName
 
 getImplementation :: forall m . MonadIO m => m Implementation
 getImplementation =
