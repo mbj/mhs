@@ -104,7 +104,7 @@ waitForPort containerName hostPort
   , waitTime    = 100000  -- 100ms
   , printStatus = debug
   , hostName    = localhost
-  , onFail      = CBT.printLogs containerName
+  , onFail      = CBT.printInspect containerName >> CBT.printLogs containerName
   , ..
   }
 
