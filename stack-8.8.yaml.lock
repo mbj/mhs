@@ -44,12 +44,12 @@ packages:
     version: 0.0.1
     git: https://github.com/mbj/cbt
     pantry-tree:
-      size: 958
-      sha256: d14f48c33f890266c762b3d41322e6832d10ac20ddf01adc0f6f781b6a896cce
-    commit: 5b05243284c2d0a03fca3591aa723a84b1214575
+      size: 957
+      sha256: 494dc42b211b7e2ba83a2e047005261926213b0b307befa9d78f7fa9e799f470
+    commit: 3850ac2f81075901f5498bd0bd20887e20cbdb6f
   original:
     git: https://github.com/mbj/cbt
-    commit: 5b05243284c2d0a03fca3591aa723a84b1214575
+    commit: 3850ac2f81075901f5498bd0bd20887e20cbdb6f
 snapshots:
 - completed:
     size: 496112
