@@ -106,6 +106,7 @@ class Backend (b :: Implementation) where
   removeContainer :: MonadIO m => ContainerName -> m ()
   removeContainer containerName
     = runProcess_
+    . silenceStdout
     $ backendProc @b
     [ "container"
     , "rm"
@@ -115,6 +116,7 @@ class Backend (b :: Implementation) where
   stop :: MonadIO m => ContainerName -> m ()
   stop containerName
     = runProcess_
+    . silenceStdout
     $ backendProc @b ["stop", convertText containerName]
 
   withContainer
