@@ -44,8 +44,8 @@ setupSchema pgConfig = do
       [ "--no-password"
       , "--no-psqlrc"
       , "--no-readline"
-      , "--set"
-      , "ON_ERROR_STOP=1"
+      , "--quiet"
+      , "--set", "ON_ERROR_STOP=1"
       ]
 
 selectors :: [PGT.Selector]
