@@ -13,9 +13,13 @@ data Detach         = Detach | Foreground
 data Implementation = Docker | Podman
 data Remove         = Remove | NoRemove
 
+data Verbosity = Verbose | Quiet
+  deriving stock Lift
+
 data BuildDefinition = BuildDefinition
   { content   :: DockerfileContent
   , imageName :: ImageName
+  , verbosity :: Verbosity
   }
   deriving stock Lift
 

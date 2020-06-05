@@ -23,5 +23,6 @@ fromDockerfileContents prefix content =
       [ convertText prefix
       , convertText . show . Hash.hashWith Hash.SHA3_256 . Text.encodeUtf8 $ toText content
       ]
+    , verbosity = Quiet
     , ..
     }
