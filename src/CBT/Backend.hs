@@ -82,12 +82,6 @@ class Backend (b :: Implementation) where
   buildRun buildDefinition containerDefinition =
     buildIfAbsent @b buildDefinition >> run @b containerDefinition
 
-  runCapture :: forall m . MonadIO m => ContainerDefinition -> m LBS.ByteString
-  runCapture containerDefinition@ContainerDefinition{..} = do
-    (exitCode, output) <- readProcessStdout $ runProc @b containerDefinition
-    handleFailure @b containerDefinition exitCode
-    pure output
-
   run :: forall m . MonadIO m => ContainerDefinition -> m ()
   run containerDefinition@ContainerDefinition{..}
     = handleFailure @b containerDefinition =<< runProcess (runProc @b containerDefinition)
@@ -287,12 +281,6 @@ runProcess_
   => Process.ProcessConfig stdin stdout stderr
   -> m ()
 runProcess_ proc = procRun proc Process.runProcess_
-
-readProcessStdout
-  :: forall m stdin stdout stderr . MonadIO m
-  => Process.ProcessConfig stdin stdout stderr
-  -> m (Exit.ExitCode, LBS.ByteString)
-readProcessStdout proc = procRun proc Process.readProcessStdout
 
 readProcessStdout_
   :: forall m stdin stdout stderr . MonadIO m
