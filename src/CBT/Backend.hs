@@ -135,7 +135,7 @@ runProc
   :: forall b . Backend b
   => ContainerDefinition
   -> Proc
-runProc ContainerDefinition{..} = backendProc @b containerArguments
+runProc ContainerDefinition{..} = detachSilence $ backendProc @b containerArguments
   where
     containerArguments :: [String]
     containerArguments = mconcat
@@ -182,6 +182,12 @@ runProc ContainerDefinition{..} = backendProc @b containerArguments
         detachFlag = case detach of
           Detach     -> ["--detach"]
           Foreground -> []
+
+    detachSilence :: Proc -> Proc
+    detachSilence =
+      case detach of
+        Detach -> silenceStdout
+        _      -> identity
 
 instance Backend 'Podman where
   binaryName = "podman"
