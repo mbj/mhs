@@ -33,8 +33,8 @@ container
         { detach           = CBT.Foreground
         , imageName        = (CBT.imageName :: CBT.BuildDefinition -> CBT.ImageName) buildDefinition
         , mounts           = []
-        , programArguments = ["hello-world"]
-        , programName      = "echo"
+        , programArguments = []
+        , programName      = "true"
         , publishPorts     = []
         , remove           = CBT.NoRemove
         , removeOnRunFail  = CBT.Remove

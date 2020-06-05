@@ -70,23 +70,18 @@ class Backend (b :: Implementation) where
         Exit.ExitSuccess -> Running
         _                -> Absent
 
-      proc = silence $ backendProc @b ["container", "inspect", convertText containerName]
+      proc = silenceStdout $ backendProc @b ["container", "inspect", convertText containerName]
 
   build :: forall m . MonadIO m => BuildDefinition -> m ()
   build BuildDefinition{..}
     = runProcess_
-    $ Process.setStdin (Process.byteStringInput . LBS.fromStrict . Text.encodeUtf8 $ toText content)
+    . setVerbosity verbosity
+    . Process.setStdin (Process.byteStringInput . LBS.fromStrict . Text.encodeUtf8 $ toText content)
     $ Process.proc (binaryName @b) ["build", "--tag", convertText imageName, "-"]
 
   buildRun :: MonadIO m => BuildDefinition -> ContainerDefinition -> m ()
   buildRun buildDefinition containerDefinition =
     buildIfAbsent @b buildDefinition >> run @b containerDefinition
-
-  runCapture :: forall m . MonadIO m => ContainerDefinition -> m LBS.ByteString
-  runCapture containerDefinition@ContainerDefinition{..} = do
-    (exitCode, output) <- readProcessStdout $ runProc @b containerDefinition
-    handleFailure @b containerDefinition exitCode
-    pure output
 
   run :: forall m . MonadIO m => ContainerDefinition -> m ()
   run containerDefinition@ContainerDefinition{..}
@@ -111,6 +106,7 @@ class Backend (b :: Implementation) where
   removeContainer :: MonadIO m => ContainerName -> m ()
   removeContainer containerName
     = runProcess_
+    . silenceStdout
     $ backendProc @b
     [ "container"
     , "rm"
@@ -120,6 +116,7 @@ class Backend (b :: Implementation) where
   stop :: MonadIO m => ContainerName -> m ()
   stop containerName
     = runProcess_
+    . silenceStdout
     $ backendProc @b ["stop", convertText containerName]
 
   withContainer
@@ -131,14 +128,14 @@ class Backend (b :: Implementation) where
   withContainer buildDefinition containerDefinition@ContainerDefinition{..} =
     Exception.bracket_ (buildRun @b buildDefinition containerDefinition) (stop @b containerName)
 
-backendProc :: forall b . Backend b => [String] -> Process.ProcessConfig () () ()
+backendProc :: forall b . Backend b => [String] -> Proc
 backendProc = Process.proc (binaryName @b)
 
 runProc
   :: forall b . Backend b
   => ContainerDefinition
-  -> Process.ProcessConfig () () ()
-runProc ContainerDefinition{..} = backendProc @b containerArguments
+  -> Proc
+runProc ContainerDefinition{..} = detachSilence $ backendProc @b containerArguments
   where
     containerArguments :: [String]
     containerArguments = mconcat
@@ -185,6 +182,12 @@ runProc ContainerDefinition{..} = backendProc @b containerArguments
         detachFlag = case detach of
           Detach     -> ["--detach"]
           Foreground -> []
+
+    detachSilence :: Proc -> Proc
+    detachSilence =
+      case detach of
+        Detach -> silenceStdout
+        _      -> identity
 
 instance Backend 'Podman where
   binaryName = "podman"
@@ -242,7 +245,7 @@ instance Backend 'Docker where
   testImageExists BuildDefinition{..} = exitBool <$> runProcess process
     where
       process
-        = silence
+        = silenceStdout
         $ Process.proc (binaryName @'Docker)
         [ "inspect"
         , "--type", "image"
@@ -250,11 +253,21 @@ instance Backend 'Docker where
         , convertText imageName
         ]
 
+type Proc = Process.ProcessConfig () () ()
 
-silence :: Process.ProcessConfig () () () -> Process.ProcessConfig () () ()
-silence
-  = Process.setStderr Process.nullStream
-  . Process.setStdout Process.nullStream
+setVerbosity :: Verbosity -> Proc -> Proc
+setVerbosity = \case
+  Quiet -> silence
+  _     -> identity
+
+silenceStderr :: Proc -> Proc
+silenceStderr = Process.setStderr Process.nullStream
+
+silenceStdout :: Proc -> Proc
+silenceStdout = Process.setStdout Process.nullStream
+
+silence :: Proc -> Proc
+silence = silenceStdout . silenceStderr
 
 mkTemplate :: String -> String
 mkTemplate exp = mconcat ["{{", exp, "}}"]
@@ -287,12 +300,6 @@ runProcess_
   => Process.ProcessConfig stdin stdout stderr
   -> m ()
 runProcess_ proc = procRun proc Process.runProcess_
-
-readProcessStdout
-  :: forall m stdin stdout stderr . MonadIO m
-  => Process.ProcessConfig stdin stdout stderr
-  -> m (Exit.ExitCode, LBS.ByteString)
-readProcessStdout proc = procRun proc Process.readProcessStdout
 
 readProcessStdout_
   :: forall m stdin stdout stderr . MonadIO m
