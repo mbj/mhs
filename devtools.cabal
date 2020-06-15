@@ -4,7 +4,7 @@ cabal-version: 1.18
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 28f0b2dd9ab8fad70261ddc0bc6fc074f72800cb12ac29b00e9055bdd91c4bd1
+-- hash: e3328fb56e563671ba16b7ed7b623459b1dfedb7ff34fa7bf38f4a5edb16d3cf
 
 name:           devtools
 version:        0.0.1
@@ -49,7 +49,7 @@ library
     , bytestring >=0.10 && <0.11
     , cmdargs >=0.10.20 && <0.11
     , filepath >=1.4 && <1.5
-    , hlint >2.1 && <3
+    , hlint >3.1 && <4
     , mprelude >=0.1.0 && <0.2
     , source-constraints >=0.0.1 && <0.1
     , tasty >=1.3.1 && <1.4
@@ -75,7 +75,7 @@ executable devtools
     , cmdargs >=0.10.20 && <0.11
     , devtools
     , filepath >=1.4 && <1.5
-    , hlint >2.1 && <3
+    , hlint >3.1 && <4
     , mprelude >=0.1.0 && <0.2
     , source-constraints >=0.0.1 && <0.1
     , tasty >=1.3.1 && <1.4
@@ -102,7 +102,7 @@ test-suite devtools-test
     , cmdargs >=0.10.20 && <0.11
     , devtools
     , filepath >=1.4 && <1.5
-    , hlint >2.1 && <3
+    , hlint >3.1 && <4
     , mprelude >=0.1.0 && <0.2
     , source-constraints >=0.0.1 && <0.1
     , tasty >=1.3.1 && <1.4

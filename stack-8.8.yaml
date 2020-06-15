@@ -1,4 +1,4 @@
-resolver: lts-15.13
+resolver: lts-16.0
 extra-deps:
 - mprelude-0.1.0@sha256:73336894a0addfeef076678bcc2e13dce800f66fcf1c67c72bf25184ecac3fab,2974
 - source-constraints-0.0.1@sha256:abdda6ca3d942c81d61ed4374dbc0eee21e9c074da3f17b25d434c2d55df2acc,2979
