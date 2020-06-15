@@ -9,7 +9,7 @@ import Data.Typeable (Typeable)
 import System.IO
 
 import qualified Data.Foldable                      as Foldable
-import qualified Language.Haskell.HLint4            as HLint
+import qualified Language.Haskell.HLint             as HLint
 import qualified System.Console.CmdArgs.Verbosity   as CmdArgs
 import qualified Test.Tasty                         as Tasty
 import qualified Test.Tasty.Providers               as Tasty
