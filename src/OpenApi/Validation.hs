@@ -20,10 +20,10 @@ import OpenApi.Response
 import OpenApi.Responses
 import OpenApi.Schema
 
-import qualified Data.Foldable as Foldable
-import qualified Data.List     as List
-import qualified Data.Map      as Map
-import qualified Data.Set      as Set
+import qualified Data.Foldable   as Foldable
+import qualified Data.List       as List
+import qualified Data.Map.Strict as Map
+import qualified Data.Set        as Set
 
 data Flag = Flag
   { path    :: [Text]
