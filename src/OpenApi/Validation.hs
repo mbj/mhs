@@ -1,8 +1,10 @@
 module OpenApi.Validation (Flag(..), validate) where
 
+import Control.Monad (unless)
 import Control.Monad.Identity (Identity, runIdentity)
 import Control.Monad.Reader (ReaderT, ask, local, runReaderT)
 import Control.Monad.Writer.Strict (WriterT, execWriterT, tell)
+import Data.Maybe (isJust)
 import Data.Set (Set)
 import OpenApi.Components
 import OpenApi.MediaType
@@ -56,6 +58,10 @@ visit name validator = push name . validator
 
 visitMaybe :: Text -> (a -> Validator ()) -> Maybe a -> Validator ()
 visitMaybe name validator = maybe (pure ()) (visit name validator)
+
+visitPresent :: Text -> Maybe a -> (a -> Validator ()) -> Validator ()
+visitPresent name value validator =
+  maybe (addFlag $ "missing: " <> name) (visit name validator) value
 
 visitComponents :: Components -> Validator ()
 visitComponents Components{..} = do
@@ -134,6 +140,24 @@ visitSchema schema@Schema{..} = do
   visitMaybe "allOf" (visitList $ visitReferenceOr visitSchema) allOf
   visitMaybe "anyOf" (visitList $ visitReferenceOr visitSchema) anyOf
   visitMaybe "oneOf" (visitList $ visitReferenceOr visitSchema) oneOf
+  visitMaybe "discriminator" (visitDiscriminator schema) discriminator
+
+visitDiscriminator :: Schema -> Discriminator -> Validator ()
+visitDiscriminator Schema{..} Discriminator{..} = do
+  unless (isJust anyOf || isJust oneOf || isJust allOf)
+    $ addFlag @Text "Discriminator used on schema without allOf anyOf or oneOf"
+  traverse_ (traverse_ $ visitDiscriminatorMappingKey propertyName) (Map.toList <$> mapping)
+
+visitDiscriminatorMappingKey :: PropertyName -> (DiscriminatorKey, Reference Schema) -> Validator ()
+visitDiscriminatorMappingKey propertyName (key, reference)
+  = push (toText key)
+  . validateReference reference
+  $ \Schema{..} -> visitPresent "properties" properties
+  $ \map ->
+    maybe
+      (addFlag $ "missing property: " <> toText propertyName)
+      (const $ pure ())
+      (Map.lookup propertyName map)
 
 visitType :: Schema -> Type -> Validator ()
 visitType schema = \case
@@ -174,15 +198,15 @@ visitReferenceOr
   -> ReferenceOr a
   -> Validator ()
 visitReferenceOr validator = \case
-  ReferenceTo reference -> validateReference validator reference
+  ReferenceTo reference -> validateReference reference validator
   Literal value         -> validator value
 
 validateReference
   :: Resolver a
-  => (a -> Validator ())
-  -> Reference a
+  => Reference a
+  -> (a -> Validator ())
   -> Validator ()
-validateReference validator reference = do
+validateReference reference validator = do
   Context{..} <- ask
   either addFlag validator $ resolve spec reference
 
