@@ -1,10 +1,10 @@
 module OpenApi.Schema where
 
-
 import Data.Scientific (Scientific)
 import OpenApi.JSON
 import OpenApi.Prelude hiding (Enum)
 import OpenApi.Referencable
+import OpenApi.Reference
 import OpenApi.ReferenceOr
 import OpenApi.TaggedText
 
@@ -43,6 +43,7 @@ data Schema = Schema
   , default'             :: Maybe JSON.Value
   , deprecated           :: Maybe Bool
   , description          :: Maybe (TaggedText "SchemaDescription")
+  , discriminator        :: Maybe Discriminator
   , enum                 :: Maybe Enum
   , example              :: Maybe JSON.Value
   , exclusiveMaximum     :: Maybe Scientific
@@ -93,6 +94,15 @@ instance JSON.ToJSON Schema where
 
 data Type = Array | Boolean | Integer | Number | Object | String
   deriving stock (Eq, GHC.Bounded, GHC.Enum, Show)
+
+type DiscriminatorKey = TaggedText "DiscriminatorKey"
+
+data Discriminator = Discriminator
+  { mapping      :: Maybe (Map DiscriminatorKey (Reference Schema))
+  , propertyName :: PropertyName
+  }
+  deriving anyclass (JSON.FromJSON, JSON.ToJSON)
+  deriving stock (Eq, Generic, Show)
 
 instance ToText Type where
   toText = \case
