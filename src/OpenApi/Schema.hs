@@ -1,6 +1,5 @@
 module OpenApi.Schema where
 
-
 import Data.Scientific (Scientific)
 import OpenApi.JSON
 import OpenApi.Prelude hiding (Enum)
