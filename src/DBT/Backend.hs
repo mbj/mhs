@@ -142,7 +142,7 @@ containerDefinition containerName
   where
     deamonize value = value
       { CBT.detach          = CBT.Detach
-      , CBT.publishPorts    = [CBT.PublishPort{container = port, host = port}]
+      , CBT.publishPorts    = [CBT.PublishPort{container = port, host = empty}]
       , CBT.remove          = CBT.Remove
       , CBT.removeOnRunFail = CBT.Remove
       }
