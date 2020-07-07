@@ -1,5 +1,3 @@
-{-# LANGUAGE InstanceSigs #-}
-
 module CBT.Backend (Backend(..)) where
 
 import CBT.Prelude
