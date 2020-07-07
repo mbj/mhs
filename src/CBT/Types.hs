@@ -46,7 +46,7 @@ newtype ContainerName = ContainerName Text
 
 data PublishPort = PublishPort
   { container :: Port
-  , host      :: Port
+  , host      :: Maybe Port
   }
 
 newtype Port = Port { unPort :: Word16 }

@@ -159,7 +159,7 @@ runProc ContainerDefinition{..} = detachSilence $ backendProc @b containerArgume
         mkPublish :: PublishPort -> [String]
         mkPublish PublishPort{..} = ["--publish", "127.0.0.1:" <> hostPort <> ":" <> containerPort]
           where
-            hostPort      = toPort host
+            hostPort      = maybe "" toPort host
             containerPort = toPort container
 
             toPort (Port port) = show port
