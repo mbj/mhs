@@ -4,10 +4,10 @@ cabal-version: 1.18
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e3328fb56e563671ba16b7ed7b623459b1dfedb7ff34fa7bf38f4a5edb16d3cf
+-- hash: 353e800bec8f8bcf8c2e723523e5571ffebdd3522b4c6ec7ea7de99fc71c20ee
 
 name:           devtools
-version:        0.0.1
+version:        0.0.2
 synopsis:       Haskell development tool agregate
 description:    An attempt to group development that would typically run on CI / local
                 into one tasty interface.
