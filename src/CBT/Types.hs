@@ -35,7 +35,7 @@ data ContainerDefinition = ContainerDefinition
   , mounts           :: [Mount]
   , programArguments :: [String]
   , programName      :: String
-  , publishPorts     :: [Port]
+  , publishPorts     :: [PublishPort]
   , remove           :: Remove
   , removeOnRunFail  :: Remove
   , workDir          :: Path.AbsDir
@@ -43,6 +43,11 @@ data ContainerDefinition = ContainerDefinition
 
 newtype ContainerName = ContainerName Text
   deriving newtype ToText
+
+data PublishPort = PublishPort
+  { container :: Port
+  , host      :: Port
+  }
 
 newtype Port = Port { unPort :: Word16 }
 
