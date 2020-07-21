@@ -1,4 +1,4 @@
-resolver: lts-16.6
+resolver: lts-16.8
 extra-deps:
 - devtools-0.0.2@sha256:1d45dd4790d6caec9b4121ad829ccdf0e3b93c1797d53fb1535770a879a3493e,4181
 - mprelude-0.1.0@sha256:73336894a0addfeef076678bcc2e13dce800f66fcf1c67c72bf25184ecac3fab,2974
