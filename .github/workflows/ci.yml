@@ -53,8 +53,8 @@ jobs:
           stack-work-${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('**/stack.yaml*') }}-
           stack-work-${{ matrix.os }}-${{ matrix.ghc }}-
     - name: Build
-      run: stack build --copy-bins --no-run-tests --system-ghc --test
+      run: stack build --copy-bins --fast --no-run-tests --system-ghc --test
     - name: Verify Generated Files
       run: git diff --exit-code
     - name: Test
-      run: stack test --system-ghc
+      run: stack test --fast --system-ghc
