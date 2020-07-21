@@ -30,7 +30,7 @@ jobs:
           TS="$(git log --max-count 1 --format='%ct' -- "$filename")"
           touch -mt "$(date --date="@$TS" '+%Y%m%d%H%M.%S')" -- "$filename"
         done
-    - uses: actions/setup-haskell@v1
+    - uses: actions/setup-haskell@v1.1
       with:
         enable-stack: true
         ghc-version: ${{ matrix.ghc }}
