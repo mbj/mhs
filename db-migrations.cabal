@@ -1,0 +1,72 @@
+cabal-version: 1.18
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: d385a1e1254b1c98d3c02a6a78c294d310abc0f50f2e4b26184580836302e032
+
+name:           db-migrations
+version:        0.0.0.1
+description:    Please see the README on GitHub at <https://github.com/mbj/db-migrations#readme>
+homepage:       https://github.com/mbj/db-migrations#readme
+bug-reports:    https://github.com/mbj/db-migrations/issues
+author:         Markus Schirp
+maintainer:     mbj@schirp-dso.com
+copyright:      2020 Markus Schirp
+license:        AllRightsReserved
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    test/stack-dependencies.txt
+extra-doc-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/mbj/db-migrations
+
+library
+  exposed-modules:
+      Lib
+  other-modules:
+      Paths_db_migrations
+  hs-source-dirs:
+      src
+  default-extensions: NoImplicitPrelude
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields
+  build-depends:
+      base
+    , mprelude
+    , source-constraints
+  default-language: Haskell2010
+
+executable db-migrations
+  main-is: Main.hs
+  other-modules:
+      Paths_db_migrations
+  hs-source-dirs:
+      app
+  default-extensions: NoImplicitPrelude
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base
+    , db-migrations
+    , mprelude
+    , source-constraints
+  default-language: Haskell2010
+
+test-suite devtools
+  type: exitcode-stdio-1.0
+  main-is: test/Devtools.hs
+  other-modules:
+      Paths_db_migrations
+  default-extensions: NoImplicitPrelude
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -rtsopts -threaded -with-rtsopts=-N
+  build-depends:
+      base
+    , devtools
+    , mprelude
+    , source-constraints
+  default-language: Haskell2010

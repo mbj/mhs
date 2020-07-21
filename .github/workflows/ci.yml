@@ -1,0 +1,60 @@
+name: CI
+
+on: push
+
+jobs:
+  base:
+    name: Base steps
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Check Whitespace
+      run: git diff --check -- HEAD~1
+  haskell:
+    name: Haskell steps
+    needs: base
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        ghc: ['8.8']
+        os: [ubuntu-latest]
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # fetch all history w/timestamps
+    - name: Normalize file timestamps to allow caching
+      run: |
+        git ls-tree -r --name-only -- HEAD | while read -r filename; do
+          TS="$(git log --max-count 1 --format='%ct' -- "$filename")"
+          touch -mt "$(date --date="@$TS" '+%Y%m%d%H%M.%S')" -- "$filename"
+        done
+    - uses: actions/setup-haskell@v1
+      with:
+        enable-stack: true
+        ghc-version: ${{ matrix.ghc }}
+        stack-version: 'latest'
+    - name: Cache ~/.stack
+      uses: actions/cache@v2
+      with:
+        path: ~/.stack
+        key: stack-${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('**/stack.yaml*') }}-${{ hashFiles('**/*.cabal') }}
+        restore-keys: |
+          stack-${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('**/stack.yaml*') }}-
+          stack-${{ matrix.os }}-${{ matrix.ghc }}-
+    - name: Cache .stack-work
+      uses: actions/cache@v2
+      with:
+        path: '**/.stack-work'
+        key: stack-work-${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('**/stack.yaml*') }}-${{ hashFiles('**/*.cabal') }}-${{ hashFiles('**/*.hs') }}
+        restore-keys: |
+          stack-work-${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('**/stack.yaml*') }}-${{ hashFiles('**/*.cabal') }}-
+          stack-work-${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('**/stack.yaml*') }}-
+          stack-work-${{ matrix.os }}-${{ matrix.ghc }}-
+    - name: Build
+      run: stack build --copy-bins --no-run-tests --system-ghc --test
+    - name: Verify Generated Files
+      run: git diff --exit-code
+    - name: Test
+      run: stack test --system-ghc
