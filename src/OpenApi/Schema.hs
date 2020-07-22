@@ -46,8 +46,8 @@ data Schema = Schema
   , discriminator        :: Maybe Discriminator
   , enum                 :: Maybe Enum
   , example              :: Maybe JSON.Value
-  , exclusiveMaximum     :: Maybe Scientific
-  , exclusiveMinimum     :: Maybe Scientific
+  , exclusiveMaximum     :: Maybe Bool
+  , exclusiveMinimum     :: Maybe Bool
   , format               :: Maybe Format
   , items                :: Maybe (ReferenceOr Schema)
   , maxItems             :: Maybe (TaggedNatural "MaxItems")
