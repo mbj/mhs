@@ -6,7 +6,13 @@ Please refer to the [README.md](README.md) for usage instructions.
 
 -}
 
-module Test.Tasty.MGolden (Mode(..), goldenTest, printDetails) where
+module Test.Tasty.MGolden
+  ( Mode(..)
+  , diffTest
+  , goldenTest
+  , printDetails
+  )
+where
 
 import Control.Applicative (empty)
 import Prelude hiding (print, putStrLn)
@@ -51,6 +57,13 @@ instance IsTest Golden where
   run options golden _callback = runGolden golden options
   testOptions = pure . pure $ Option (Proxy :: Proxy Mode)
 
+newtype DiffTest = DiffTest (IO (Text, Text))
+  deriving stock Typeable
+
+instance IsTest DiffTest where
+  run options test _callback = runDiffTest test options
+  testOptions = pure empty
+
 -- | Define a golden test
 goldenTest
   :: String   -- ^ Name of the  test
@@ -58,6 +71,21 @@ goldenTest
   -> IO Text  -- ^ Test action
   -> TestTree
 goldenTest name expectedPath action = singleTest name Golden{..}
+
+-- | Define a diff test
+diffTest
+  :: String          -- ^ Name of the test
+  -> IO (Text, Text) -- ^ action to produce expectation
+  -> TestTree
+diffTest name = singleTest name . DiffTest
+
+runDiffTest :: DiffTest -> OptionSet -> IO Result
+runDiffTest (DiffTest expectation) _options = do
+  (expected, actual) <- expectation
+
+  if expected == actual
+    then pure $ testPassed empty
+    else pure . testFailedDetails empty $ printDetails Text.putStrLn expected actual
 
 runGolden :: Golden -> OptionSet -> IO Result
 runGolden golden@Golden{..} options = do
