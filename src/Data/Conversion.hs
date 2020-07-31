@@ -2,26 +2,40 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Data.Conversion where
 
-import Control.Applicative
-import Control.Bool (guard')
-import Control.Exception (Exception)
-import Control.Monad (MonadPlus(..))
-import Control.Monad.Catch (MonadThrow, throwM)
-import Control.Monad.Except (MonadError, throwError)
-import Data.Int (Int16, Int32, Int64, Int8)
-import Data.Text (Text)
-import Data.Typeable (Typeable)
-import Data.Word (Word16, Word32, Word64, Word8)
-import Numeric.Natural (Natural)
-import Prelude hiding (max, min)
+import           Control.Applicative
+import           Control.Bool                   ( guard' )
+import           Control.Exception              ( Exception )
+import           Control.Monad                  ( MonadPlus(..) )
+import           Control.Monad.Catch            ( MonadThrow
+                                                , throwM
+                                                )
+import           Control.Monad.Except           ( MonadError
+                                                , throwError
+                                                )
+import           Data.Int                       ( Int16
+                                                , Int32
+                                                , Int64
+                                                , Int8
+                                                )
+import           Data.Text                      ( Text )
+import           Data.Typeable                  ( Typeable )
+import           Data.Word                      ( Word16
+                                                , Word32
+                                                , Word64
+                                                , Word8
+                                                )
+import           Numeric.Natural                ( Natural )
+import           Prelude                 hiding ( max
+                                                , min
+                                                )
 
-import qualified Data.ByteString            as BS
-import qualified Data.ByteString.Lazy       as LBS
-import qualified Data.Text                  as Text
-import qualified Data.Text.Encoding         as Text
-import qualified Data.Text.Lazy             as Text.Lazy
-import qualified GHC.Show                   as Show
-import qualified Language.Haskell.TH.Syntax as TH
+import qualified Data.ByteString               as BS
+import qualified Data.ByteString.Lazy          as LBS
+import qualified Data.Text                     as Text
+import qualified Data.Text.Encoding            as Text
+import qualified Data.Text.Lazy                as Text.Lazy
+import qualified GHC.Show                      as Show
+import qualified Language.Haskell.TH.Syntax    as TH
 
 data BoundError a b = (Bounded b, Show a, Show b) => BoundError a
 
@@ -72,8 +86,7 @@ instance (MonadError (UserBoundError Word16 Natural) m) => Conversion (m Natural
   convert = convertErrorFromIntegral
 
 instance (MonadError (UserBoundError Integer Text) m) => Conversion (m Natural) Integer where
-  convert value
-    = maybe (throwError $ UserBoundError value "0" "Natural") pure
+  convert value = maybe (throwError $ UserBoundError value "0" "Natural") pure
     $ checkedFromIntegral value
 
 instance (MonadError (UserBoundError Natural Int) m) => Conversion (m Int) Natural where
@@ -137,32 +150,36 @@ instance Conversion String Text where
   convert = Text.unpack
 
 convertErrorFromNatural
-  :: forall a m. (Integral a, Bounded a, MonadError (UserBoundError Natural a) m)
+  :: forall a m
+   . (Integral a, Bounded a, MonadError (UserBoundError Natural a) m)
   => Natural
   -> m a
-convertErrorFromNatural value
-  = maybe (throwError $ UserBoundError value minBound maxBound) pure
-  $ checkedFromIntegral value
+convertErrorFromNatural value =
+  maybe (throwError $ UserBoundError value minBound maxBound) pure
+    $ checkedFromIntegral value
 
 convertErrorFromIntegral
-  :: forall a m . (Integral a, Bounded a, MonadError (UserBoundError a Natural) m)
+  :: forall a m
+   . (Integral a, Bounded a, MonadError (UserBoundError a Natural) m)
   => a
   -> m Natural
-convertErrorFromIntegral value
-  = maybe (throwError $ UserBoundError value 0 maxBound') pure
-  $ checkedFromIntegral value
-  where
-    maxBound' :: Natural
-    maxBound' = fromIntegral $ maxBound @a
+convertErrorFromIntegral value =
+  maybe (throwError $ UserBoundError value 0 maxBound') pure
+    $ checkedFromIntegral value
+ where
+  maxBound' :: Natural
+  maxBound' = fromIntegral $ maxBound @a
 
 convertBoundedFromIntegral
-  :: forall a b m.
-  ( Integral a
-  , Show a, Show b
-  , Num b, Bounded b
-  , Conversion a b
-  , MonadError (BoundError a b) m
-  )
+  :: forall a b m
+   . ( Integral a
+     , Show a
+     , Show b
+     , Num b
+     , Bounded b
+     , Conversion a b
+     , MonadError (BoundError a b) m
+     )
   => a
   -> m b
 convertBoundedFromIntegral value =
@@ -171,13 +188,11 @@ convertBoundedFromIntegral value =
     else throwError $ BoundError value
 
 checkedFromIntegral
-  :: forall a b m. (MonadPlus m, Integral a, Integral b)
-  => a
-  -> m b
+  :: forall a b m . (MonadPlus m, Integral a, Integral b) => a -> m b
 checkedFromIntegral value = guard' (fromIntegral converted == value) converted
-  where
-    converted :: b
-    converted = fromIntegral value
+ where
+  converted :: b
+  converted = fromIntegral value
 
 convertEither :: forall b a e . (Conversion (Either e b) a) => a -> Either e b
 convertEither = convert
@@ -185,26 +200,39 @@ convertEither = convert
 convertUnsafe :: forall b a e . (Conversion (Either e b) a, Show e) => a -> b
 convertUnsafe = either (error . show) id . convertEither @b @a @e
 
-convertThrow :: forall b a e m . (Conversion (Either e b) a, Exception e, MonadThrow m) => a -> m b
+convertThrow
+  :: forall b a e m
+   . (Conversion (Either e b) a, Exception e, MonadThrow m)
+  => a
+  -> m b
 convertThrow = either throwM pure . convertEither @b @a @e
 
-convertFail :: forall b a e m . (Conversion (Either e b) a, Show e, MonadFail m) => a -> m b
+convertFail
+  :: forall b a e m
+   . (Conversion (Either e b) a, Show e, MonadFail m)
+  => a
+  -> m b
 convertFail = either (fail . show) pure . convertEither @b @a @e
 
-convertMaybe :: forall b a e. (Conversion (Either e b) a) => a -> Maybe b
+convertMaybe :: forall b a e . (Conversion (Either e b) a) => a -> Maybe b
 convertMaybe = either (const empty) pure . convertEither @b @a @e
 
 boundError :: forall a b . (Show a, Show b) => a -> b -> b -> String
-boundError value min max
-  = "Value should be between "
-  <> show min
-  <> " and "
-  <> show max
-  <> " but was "
-  <> show value
+boundError value min max =
+  "Value should be between "
+    <> show min
+    <> " and "
+    <> show max
+    <> " but was "
+    <> show value
 
-mkTH :: forall a b e . (TH.Lift b, Exception e, Conversion (Either e b) a) => a -> TH.Q (TH.TExp b)
-mkTH input = TH.TExp <$> either (fail . show) (TH.lift @b) (convertThrow @b @a @e input)
+mkTH
+  :: forall a b e
+   . (TH.Lift b, Exception e, Conversion (Either e b) a)
+  => a
+  -> TH.Q (TH.TExp b)
+mkTH input =
+  TH.TExp <$> either (fail . show) (TH.lift @b) (convertThrow @b @a @e input)
 
 toText :: forall a . (Conversion Text a) => a -> Text
 toText = convert @Text

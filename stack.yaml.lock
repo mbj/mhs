@@ -18,6 +18,31 @@ packages:
       sha256: 838aa22a00a46a7a469cce9d4049acd8c94ed9c1e8c0eeb898a6d8e67bdd6818
   original:
     hackage: source-constraints-0.0.1@sha256:abdda6ca3d942c81d61ed4374dbc0eee21e9c074da3f17b25d434c2d55df2acc,2979
+- completed:
+    hackage: tasty-1.3.1@sha256:01e35c97f7ee5ccbc28f21debea02a38cd010d53b4c3087f5677c5d06617a507,2520
+    pantry-tree:
+      size: 1804
+      sha256: 6150ec5094fe321150b1263bc751c1a85b22be766053fb4648115d8c02b2064b
+  original:
+    hackage: tasty-1.3.1@sha256:01e35c97f7ee5ccbc28f21debea02a38cd010d53b4c3087f5677c5d06617a507,2520
+- completed:
+    hackage: tasty-mgolden-0.0.1@sha256:07fadb592cde353c386c5f38cff75539a5675e9350776ed6f4f0a70247427a78,4214
+    pantry-tree:
+      size: 338
+      sha256: 9cd24c3a02396dd93ed7d57df1d9668a2377d128e413db5ff89d82ffdfc830fa
+  original:
+    hackage: tasty-mgolden-0.0.1@sha256:07fadb592cde353c386c5f38cff75539a5675e9350776ed6f4f0a70247427a78,4214
+- completed:
+    name: devtools
+    version: 0.0.2
+    git: https://github.com/mbj/devtools-hs.git
+    pantry-tree:
+      size: 1037
+      sha256: 3daa0b43313fc8e50478ea97ab7f586a470ff798a7a39f614ca5bdf40ea2972f
+    commit: 16455d5d938032362ddabe1437e5bc6407c32836
+  original:
+    git: https://github.com/mbj/devtools-hs.git
+    commit: 16455d5d938032362ddabe1437e5bc6407c32836
 snapshots:
 - completed:
     size: 531701

@@ -2,14 +2,14 @@
 --
 module Data.Conversion.FromType where
 
-import Data.Conversion
-import Data.Kind (Type)
-import Data.Proxy (Proxy (..))
-import Data.Text (Text)
-import GHC.TypeLits hiding (natVal)
-import GHC.TypeNats (natVal)
-import Numeric.Natural (Natural)
-import Prelude
+import           Data.Conversion
+import           Data.Kind                      ( Type )
+import           Data.Proxy                     ( Proxy(..) )
+import           Data.Text                      ( Text )
+import           GHC.TypeLits            hiding ( natVal )
+import           GHC.TypeNats                   ( natVal )
+import           Numeric.Natural                ( Natural )
+import           Prelude
 
 class FromType a (b :: Type) where
   fromType :: b

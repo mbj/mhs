@@ -9,6 +9,7 @@ dependencies:
 - base
 - bytestring
 - control-bool
+- devtools
 - exceptions
 - mtl
 - source-constraints
@@ -58,3 +59,13 @@ default-extensions:
 
 library:
   source-dirs: src
+
+tests:
+  test:
+    main: test/Test.hs
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -with-rtsopts=-N
+    dependencies:
+    - conversion
