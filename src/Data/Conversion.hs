@@ -205,3 +205,6 @@ boundError value min max
 
 mkTH :: forall a b e . (TH.Lift b, Exception e, Conversion (Either e b) a) => a -> TH.Q (TH.TExp b)
 mkTH input = TH.TExp <$> either (fail . show) (TH.lift @b) (convertThrow @b @a @e input)
+
+toText :: forall a . (Conversion Text a) => a -> Text
+toText = convert @Text
