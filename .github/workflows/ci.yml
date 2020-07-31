@@ -1,0 +1,51 @@
+name: CI
+
+on: push
+
+jobs:
+  base:
+    name: Base steps
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 2  # fetch HEAD~1..HEAD
+    - name: Check Whitespace
+      run: git diff --check HEAD~1 --
+  ci:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    env:
+      CBT_DEBUG:   'true'
+      CBT_BACKEND: docker
+      DBT_DEBUG:   'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        ghc: ['8.8']
+        os: [ubuntu-latest]
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # fetch all history w/timestamps
+    - name: Normalize file timestamps to allow caching
+      run: |
+        git ls-tree -r --name-only HEAD | while read -r filename; do
+          TS="$(git log -1 --format="%ct" -- "${filename}")"
+          touch "${filename}" -mt "$(date --date="@$TS" "+%Y%m%d%H%M.%S")"
+        done
+    - uses: actions/setup-haskell@v1
+      with:
+        enable-stack: true
+        ghc-version: ${{ matrix.ghc }}
+        stack-version: '2.3'
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+        path: ~/.stack
+        key: g-${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('**/stack.yaml*') }}-${{ hashFiles('**/*.cabal') }}
+        restore-keys: |
+          g-${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('**/stack.yaml*') }}-
+          g-${{ matrix.os }}-${{ matrix.ghc }}-
+    - name: Build
+      run: stack build --system-ghc --fast --test --copy-bins --test-arguments='--hide-successes'
