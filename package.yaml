@@ -9,7 +9,7 @@ github:      mbj/stack-deploy
 license:     BSD3
 
 dependencies:
-- aeson                   ^>= 1.4
+- aeson                   >= 1.4 || ^>= 1.5
 - aeson-pretty            ^>= 0.8
 - amazonka                == 1.6.1
 - amazonka-cloudformation == 1.6.1
