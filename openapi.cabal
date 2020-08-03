@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 06c1c82e9cc3710d8fa8c91d44de6a4bd2b0aa71c2824c2bad2baf404d90c4a2
+-- hash: d5b73ce2afbf3d9c1e7f3ec434305d3eb591b68ccc55b9e0f3bf7fe73727f725
 
 name:           openapi
 version:        0.0.0.1
@@ -60,7 +60,7 @@ library
   default-extensions: AllowAmbiguousTypes DataKinds DeriveAnyClass DeriveGeneric DerivingStrategies DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving KindSignatures LambdaCase NoImplicitPrelude OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables Strict TupleSections TypeApplications
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -fplugin=SourceConstraints
   build-depends:
-      aeson (>=1.4 && <1.5) && >=1.4.7.0
+      aeson (>=1.4 && <1.5) && <=1.5
     , attoparsec >=0.13 && <0.14
     , base >4.12 && <14.15
     , bytestring >=0.10 && <0.11
@@ -87,7 +87,7 @@ test-suite tasty
   default-extensions: AllowAmbiguousTypes DataKinds DeriveAnyClass DeriveGeneric DerivingStrategies DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving KindSignatures LambdaCase NoImplicitPrelude OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables Strict TupleSections TypeApplications
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -fplugin=SourceConstraints
   build-depends:
-      aeson (>=1.4 && <1.5) && >=1.4.7.0
+      aeson (>=1.4 && <1.5) && <=1.5
     , attoparsec >=0.13 && <0.14
     , base >4.12 && <14.15
     , bytestring >=0.10 && <0.11
