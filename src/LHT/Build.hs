@@ -41,6 +41,7 @@ prefix = CBT.Prefix "lht"
 #ifndef __HLINT__
 buildDefinition :: CBT.BuildDefinition
 buildDefinition = $$(CBT.TH.readDockerfile (CBT.Prefix "lht") $ Path.file "Dockerfile")
+  { CBT.verbosity = CBT.Verbose }
 #endif
 
 build :: forall m . MonadUnliftIO m => Config -> m Executable
