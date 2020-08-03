@@ -64,6 +64,7 @@ library:
   - CBT
   - CBT.Backend
   - CBT.TH
+  - CBT.Types
 
 tests:
   test:

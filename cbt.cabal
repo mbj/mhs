@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c9315a9045517f6d5d6d1bb848620695b62430391d92c3827d90b42b3fd19024
+-- hash: 5ffea66fd53154b39e31a85d80d04a44eb9497ef7b1dd1ae97aa7b6d9c53baeb
 
 name:           cbt
 version:        0.0.1
@@ -27,11 +27,11 @@ library
       CBT
       CBT.Backend
       CBT.TH
+      CBT.Types
   other-modules:
       CBT.Backend.Tar
       CBT.BuildDefinition
       CBT.Prelude
-      CBT.Types
       Paths_cbt
   hs-source-dirs:
       src
