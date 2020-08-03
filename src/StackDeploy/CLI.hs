@@ -1,9 +1,17 @@
-module StackDeploy.CLI (parserInfo, stackName) where
+module StackDeploy.CLI
+  ( main
+  , parserInfo
+  , run
+  , stackName
+  )
+where
 
 import Control.Lens ((.~), view)
+import Control.Monad (join)
 import Data.Conduit ((.|), runConduit)
 import Options.Applicative hiding (value)
 import StackDeploy.AWS
+import StackDeploy.Environment
 import StackDeploy.Events
 import StackDeploy.IO
 import StackDeploy.Parameters
@@ -11,7 +19,7 @@ import StackDeploy.Prelude
 import StackDeploy.Stack
 import StackDeploy.Types
 import StackDeploy.Wait
-import System.Exit (ExitCode(..))
+import System.Exit (ExitCode(..), exitWith)
 
 import qualified Data.Attoparsec.Text                           as Text
 import qualified Data.ByteString.Lazy                           as LBS
@@ -23,11 +31,15 @@ import qualified Network.AWS                                    as AWS
 import qualified Network.AWS.CloudFormation.CancelUpdateStack   as CF
 import qualified Network.AWS.CloudFormation.DescribeStackEvents as CF
 import qualified Network.AWS.CloudFormation.Types               as CF
+import qualified Options.Applicative                            as Options
 import qualified StackDeploy.InstanceSpec                       as InstanceSpec
 import qualified StackDeploy.Template                           as Template
+import qualified StackDeploy.Template.Code                      as Template.Code
+import qualified System.Environment
+import qualified System.IO                                      as IO
 
 parserInfo
-  :: forall m . MonadAWS m
+  :: forall m . (MonadAWS m, StackDeployEnv m)
   => InstanceSpec.Provider
   -> ParserInfo (m ExitCode)
 parserInfo instanceSpecProvider = wrapHelper commands "stack commands"
@@ -193,3 +205,23 @@ templateName = Template.mkName <$> argument str (metavar "TEMPLATE")
 
 parameters :: Parser Parameters
 parameters = fromList <$> many parameter
+
+run :: forall m . (MonadAWS m, StackDeployEnv m) => [String] -> m ExitCode
+run arguments = do
+  setupStdoutBuffer
+  join
+    . liftIO
+    . Options.handleParseResult
+    $ Options.execParserPure Options.defaultPrefs parser arguments
+  where
+    parser :: Options.ParserInfo (m ExitCode)
+    parser = parserInfo [InstanceSpec.mk (InstanceSpec.mkName "code") Template.Code.template]
+
+    setupStdoutBuffer :: m ()
+    setupStdoutBuffer = liftIO $ IO.hSetBuffering IO.stdout IO.LineBuffering
+
+main :: IO ()
+main = do
+  args     <- System.Environment.getArgs
+  exitCode <- withAWS . runEnvironment defaultEnvironment $ run args
+  exitWith exitCode

@@ -8,6 +8,7 @@ alex 3.2.5
 amazonka 1.6.1
 amazonka-cloudformation 1.6.1
 amazonka-core 1.6.1
+amazonka-s3 1.6.1
 ansi-terminal 0.10.3
 ansi-wl-pprint 0.6.9
 array 0.5.4.0
