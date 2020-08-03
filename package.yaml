@@ -9,7 +9,7 @@ github:      mbj/openapi
 license:     BSD3
 
 dependencies:
-- aeson                ^>= 1.4 && >= 1.4.7.0
+- aeson                ^>= 1.4 && <= 1.5
 - attoparsec           ^>= 0.13
 - base                 > 4.12 && < 14.15
 - bytestring           ^>= 0.10
