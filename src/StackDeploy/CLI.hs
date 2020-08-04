@@ -27,7 +27,7 @@ import qualified StackDeploy.InstanceSpec                       as InstanceSpec
 import qualified StackDeploy.Template                           as Template
 
 parserInfo
-  :: forall m r . (AWSConstraint r m, MonadAWS m)
+  :: forall m . MonadAWS m
   => InstanceSpec.Provider
   -> ParserInfo (m ExitCode)
 parserInfo instanceSpecProvider = wrapHelper commands "stack commands"
