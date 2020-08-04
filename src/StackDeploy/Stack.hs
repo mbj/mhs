@@ -45,7 +45,7 @@ data OperationFields a = OperationFields
   }
 
 perform
-  :: forall m r . (AWSConstraint r m, MonadAWS m)
+  :: forall m . MonadAWS m
   => Operation
   -> m RemoteOperationResult
 perform = \case
@@ -233,7 +233,7 @@ getExistingStack name = maybe failMissingRequested pure =<< doRequest
     describeSpecificStack = set CF.dStackName (pure $ toText name) CF.describeStacks
 
 getExistingStackId
-  :: forall m r . (AWSConstraint r m, MonadAWS m)
+  :: forall m . MonadAWS m
   => InstanceSpec.Name
   -> m Id
 getExistingStackId = idFromStack <=< getExistingStack
@@ -252,7 +252,7 @@ getOutput name key = do
     failStack message
       = liftIO . fail . convertText $ "Stack: " <> convertText name <> " " <> message
 
-stackNames :: (AWSConstraint r m, MonadAWS m) => ConduitT () InstanceSpec.Name m ()
+stackNames :: MonadAWS m => ConduitT () InstanceSpec.Name m ()
 stackNames =
   listResource CF.describeStacks CF.dsrsStacks .| map (InstanceSpec.mkName . view CF.sStackName)
 

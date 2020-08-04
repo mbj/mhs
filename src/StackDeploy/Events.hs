@@ -37,7 +37,7 @@ defaultPoll stackId = Poll
 --
 -- Apply action for each event related to the remote operation.
 pollEvents
-  :: forall m r . (AWSConstraint r m, MonadAWS m)
+  :: forall m . MonadAWS m
   => Poll
   -> (CF.StackEvent -> m ())
   -> m (Maybe CF.StackEvent)
@@ -48,7 +48,7 @@ pollEvents poll@Poll{..} eventAction = runConduit events
 
 -- | Conduit polling for new stack events
 allEvents
-  :: forall m r . (AWSConstraint r m, MonadAWS m)
+  :: forall m . MonadAWS m
   => Poll
   -> ConduitT () CF.StackEvent m ()
 allEvents Poll{..} =
@@ -94,7 +94,7 @@ allEvents Poll{..} =
       pure events
 
 stackEvents
-  :: forall m r . (AWSConstraint r m, MonadAWS m)
+  :: forall m . MonadAWS m
   => Id
   -> ConduitT () CF.StackEvent m ()
 stackEvents stackId = listResource req CF.dsersStackEvents

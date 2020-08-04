@@ -15,7 +15,7 @@ import qualified Network.AWS.CloudFormation.Types as CF
 --
 -- Apply action for each event related to the remote operation.
 waitForAccept
-  :: forall m r . (AWSConstraint r m, MonadAWS m)
+  :: forall m . MonadAWS m
   => RemoteOperation
   -> (CF.StackEvent -> m ())
   -> m RemoteOperationResult

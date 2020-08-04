@@ -30,10 +30,10 @@ type Provider = Provider.Provider InstanceSpec
 
 data InstanceSpec = InstanceSpec
   { capabilities  :: [CF.Capability]
-  , envParameters :: forall m r . (AWSConstraint r m, MonadAWS m) => m Parameters
-  , envRoleARN    :: forall m r . (AWSConstraint r m, MonadAWS m) => Maybe (m RoleARN)
+  , envParameters :: forall m . MonadAWS m => m Parameters
+  , envRoleARN    :: forall m . MonadAWS m => Maybe (m RoleARN)
   , name          :: Name
-  , onSuccess     :: forall m r . (AWSConstraint r m, MonadAWS m) => m ()
+  , onSuccess     :: forall m . MonadAWS m => m ()
   , parameters    :: Parameters
   , roleARN       :: Maybe RoleARN
   , template      :: Template
@@ -43,7 +43,7 @@ instance Provider.HasName InstanceSpec where
   name = name
 
 get
-  :: forall m r . (AWSConstraint r m, MonadAWS m)
+  :: forall m . MonadAWS m
   => Provider
   -> Name
   -> Parameters
