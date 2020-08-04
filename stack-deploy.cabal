@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c9e103c6dac1a586e153d0a8ea9e371ad747f2580337c5770a9d168a31b4ab2e
+-- hash: aef403296715f853096e9678c698891937d7e02f61c800c85e9f3a10c9120fee
 
 name:           stack-deploy
 version:        0.0.0.1
@@ -45,7 +45,7 @@ library
   default-extensions: DeriveAnyClass DeriveGeneric DerivingStrategies DuplicateRecordFields FlexibleContexts FlexibleInstances GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables Strict TypeFamilies
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields
   build-depends:
-      aeson >=1.4 && <1.5
+      aeson >=1.4 || >=1.5 && <1.6
     , aeson-pretty >=0.8 && <0.9
     , amazonka ==1.6.1
     , amazonka-cloudformation ==1.6.1
@@ -82,7 +82,7 @@ test-suite devtools
   default-extensions: DeriveAnyClass DeriveGeneric DerivingStrategies DuplicateRecordFields FlexibleContexts FlexibleInstances GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables Strict TypeFamilies
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      aeson >=1.4 && <1.5
+      aeson >=1.4 || >=1.5 && <1.6
     , aeson-pretty >=0.8 && <0.9
     , amazonka ==1.6.1
     , amazonka-cloudformation ==1.6.1
