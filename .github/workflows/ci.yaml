@@ -6,6 +6,7 @@ jobs:
   ci:
     runs-on: ${{ matrix.os }}
     env:
+      CBT_BACKEND: docker
       STACK_YAML: stack-${{ matrix.ghc }}.yaml
     strategy:
       fail-fast: false
