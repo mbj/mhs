@@ -1,4 +1,4 @@
-FROM alpine:3.11
+FROM alpine:3.12
 
 # Setup for userns mapped single user
 RUN echo $'build:x:0:0:build:/opt/build:/bin/ash\n\
@@ -34,7 +34,7 @@ RUN apk add                  \
   --no-cache                 \
   --                         \
   curl                       \
-  ghc@edge=8.8.3-r0          \
+  ghc                        \
   git                        \
   libpq@mbj=12.2-r0          \
   libffi@edge                \

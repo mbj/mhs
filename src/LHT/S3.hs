@@ -6,7 +6,6 @@ module LHT.S3
 
 import Control.Monad (unless)
 import Control.Monad.Catch (catchIf)
-import Control.Monad.Trans.AWS (AWSConstraint)
 import LHT.Prelude
 
 import qualified Data.Text.IO              as Text
@@ -27,12 +26,12 @@ data TargetObject = TargetObject
 objectKeyText :: TargetObject -> Text
 objectKeyText TargetObject{objectKey = S3.ObjectKey text} = text
 
-syncTarget :: (AWSConstraint r m, AWS.MonadAWS m) => TargetObject -> m ()
+syncTarget :: AWS.MonadAWS m => TargetObject -> m ()
 syncTarget TargetObject{..} =
   putIfAbsent bucketName objectKey object (liftIO $ Text.putStrLn message)
 
 testObjectExists
-  :: (AWSConstraint r m, AWS.MonadAWS m)
+  :: AWS.MonadAWS m
   => S3.BucketName
   -> S3.ObjectKey
   -> m Bool
@@ -51,7 +50,7 @@ testObjectExists bucketName objectKey =
     isNotFoundError _ = False
 
 putIfAbsent
-  :: (AWSConstraint r m, AWS.MonadAWS m)
+  :: AWS.MonadAWS m
   => S3.BucketName
   -> S3.ObjectKey
   -> AWS.HashedBody
