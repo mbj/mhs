@@ -1,5 +1,6 @@
 module StackDeploy.Stack
-  ( finalMessage
+  ( StackDeployEnv
+  , finalMessage
   , getExistingStack
   , getExistingStackId
   , getOutput
@@ -14,26 +15,32 @@ import Control.Exception.Base (AssertionFailed(AssertionFailed))
 import Control.Lens (Lens', set, view)
 import Data.Conduit (ConduitT, (.|), runConduit)
 import Data.Conduit.Combinators (find, map)
+import Data.Int (Int)
 import Data.Time.Format (defaultTimeLocale, formatTime)
 import StackDeploy.AWS
+import StackDeploy.Environment
 import StackDeploy.IO
 import StackDeploy.InstanceSpec (InstanceSpec(..))
 import StackDeploy.Prelude
 import StackDeploy.Types
 import StackDeploy.Wait
 
+import qualified Data.ByteString                           as BS
 import qualified Data.ByteString.Lazy                      as LBS
 import qualified Data.Foldable                             as Foldable
 import qualified Data.Text                                 as Text
 import qualified Data.Text.Encoding                        as Text
+import qualified Data.Text.IO                              as Text
 import qualified Network.AWS                               as AWS
 import qualified Network.AWS.CloudFormation.CreateStack    as CF
 import qualified Network.AWS.CloudFormation.DeleteStack    as CF
 import qualified Network.AWS.CloudFormation.DescribeStacks as CF
 import qualified Network.AWS.CloudFormation.Types          as CF
 import qualified Network.AWS.CloudFormation.UpdateStack    as CF
+import qualified Network.AWS.S3.Types                      as S3
 import qualified StackDeploy.InstanceSpec                  as InstanceSpec
 import qualified StackDeploy.Parameters                    as Parameters
+import qualified StackDeploy.S3                            as S3
 import qualified StackDeploy.Template                      as Template
 
 data OperationFields a = OperationFields
@@ -42,10 +49,11 @@ data OperationFields a = OperationFields
   , parametersField   :: Lens' a [CF.Parameter]
   , roleARNField      :: Lens' a (Maybe Text)
   , templateBodyField :: Lens' a (Maybe Text)
+  , templateURLField  :: Lens' a (Maybe Text)
   }
 
 perform
-  :: forall m . MonadAWS m
+  :: forall m . (MonadAWS m, StackDeployEnv m)
   => Operation
   -> m RemoteOperationResult
 perform = \case
@@ -72,17 +80,16 @@ perform = \case
       waitFor RemoteOperation{..}
       where
         doCreate :: Token -> m (AWS.Rs CF.CreateStack)
-        doCreate token
-          = AWS.send
-          . configureStack operationFields instanceSpec token
-          . CF.createStack
-          $ toText name
+        doCreate token =
+          prepareOperation operationFields instanceSpec token (CF.createStack $ toText name)
+            >>= AWS.send
 
         operationFields = OperationFields
           { capabilitiesField = CF.csCapabilities
           , parametersField   = CF.csParameters
           , roleARNField      = CF.csRoleARN
           , templateBodyField = CF.csTemplateBody
+          , templateURLField  = CF.csTemplateURL
           , tokenField        = CF.csClientRequestToken
           }
 
@@ -109,11 +116,9 @@ perform = \case
           (const $ pure RemoteOperationSuccess)
       where
         doUpdate :: m ()
-        doUpdate = void
-          . AWS.send
-          . configureStack operationFields instanceSpec token
-          . CF.updateStack
-          $ toText stackId
+        doUpdate =
+          prepareOperation operationFields instanceSpec token (CF.updateStack $ toText stackId)
+            >>= void . AWS.send
 
         isNoUpdateError
           ( AWS.ServiceError
@@ -131,6 +136,7 @@ perform = \case
           , parametersField   = CF.usParameters
           , roleARNField      = CF.usRoleARN
           , templateBodyField = CF.usTemplateBody
+          , templateURLField  = CF.usTemplateURL
           , tokenField        = CF.usClientRequestToken
           }
 
@@ -233,7 +239,7 @@ getExistingStack name = maybe failMissingRequested pure =<< doRequest
     describeSpecificStack = set CF.dStackName (pure $ toText name) CF.describeStacks
 
 getExistingStackId
-  :: forall m . MonadAWS m
+  :: MonadAWS m
   => InstanceSpec.Name
   -> m Id
 getExistingStackId = idFromStack <=< getExistingStack
@@ -256,23 +262,57 @@ stackNames :: MonadAWS m => ConduitT () InstanceSpec.Name m ()
 stackNames =
   listResource CF.describeStacks CF.dsrsStacks .| map (InstanceSpec.mkName . view CF.sStackName)
 
-configureStack
-  :: OperationFields a
+prepareOperation
+  :: forall m a . (MonadAWS m, StackDeployEnv m)
+  => OperationFields a
   -> InstanceSpec
   -> Token
   -> a
-  -> a
-configureStack OperationFields{..} InstanceSpec{..} token
-  = set     capabilitiesField capabilities
+  -> m a
+prepareOperation OperationFields{..} InstanceSpec{..} token
+  = setTemplateBody
+  . set     capabilitiesField capabilities
   . set     parametersField   (Parameters.cfParameters parameters)
   . set     roleARNField      (toText <$> roleARN)
-  . setText templateBodyField templateBody
   . setText tokenField        token
   where
-    templateBody
-      = Text.decodeUtf8
-      . LBS.toStrict
-      $ Template.encode template
+
+    setTemplateBody :: a -> m a
+    setTemplateBody request =
+      if BS.length templateBodyBS <= maxBytes
+        then pure $ setText templateBodyField templateBody request
+        else s3Template request
+
+    s3Template :: a -> m a
+    s3Template request = do
+      getEnvironment
+        >>= maybe failMissingTemplateBucket (doUpload request =<<) . getTemplateBucketName
+
+    doUpload :: a -> S3.BucketName -> m a
+    doUpload request bucketName@(S3.BucketName bucketNameText) = do
+      S3.syncTarget targetObject
+      pure $ setText templateURLField s3URL request
+      where
+        s3URL = "https://" <> bucketNameText <> ".s3.amazonaws.com/" <> S3.targetObjectKeyText targetObject
+
+        targetObject =
+          (S3.hashedTargetObject bucketName (toText name) "json" templateBodyBS)
+            { S3.uploadCallback = liftIO . Text.putStrLn . ("Uploading template: " <>)
+            }
+
+    failMissingTemplateBucket :: m a
+    failMissingTemplateBucket
+      = liftIO
+      $ fail
+      $ "Template is bigger than "
+      <> show maxBytes
+      <> " cloudformation requires to read the template via an S3 object but the environment specifies none"
+
+    maxBytes :: Int
+    maxBytes = 51200
+
+    templateBody   = Text.decodeUtf8 templateBodyBS
+    templateBodyBS = LBS.toStrict $ Template.encode template
 
 setText :: (Applicative f, ToText b) => Lens' a (f Text) -> b -> a -> a
 setText field value = set field (pure $ toText value)
