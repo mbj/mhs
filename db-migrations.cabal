@@ -4,7 +4,7 @@ cabal-version: 1.18
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d385a1e1254b1c98d3c02a6a78c294d310abc0f50f2e4b26184580836302e032
+-- hash: f4b3997ce5532c871691a549afa3d9931ca564f8d4bc228bec530f9790a02b12
 
 name:           db-migrations
 version:        0.0.0.1
@@ -29,6 +29,7 @@ source-repository head
 
 library
   exposed-modules:
+      Database.Migration.Prelude
       Lib
   other-modules:
       Paths_db_migrations
@@ -38,8 +39,12 @@ library
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields
   build-depends:
       base
+    , conversion
     , mprelude
     , source-constraints
+    , text
+    , unliftio
+    , unliftio-core
   default-language: Haskell2010
 
 executable db-migrations
@@ -52,9 +57,13 @@ executable db-migrations
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base
+    , conversion
     , db-migrations
     , mprelude
     , source-constraints
+    , text
+    , unliftio
+    , unliftio-core
   default-language: Haskell2010
 
 test-suite devtools
@@ -66,7 +75,11 @@ test-suite devtools
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       base
+    , conversion
     , devtools
     , mprelude
     , source-constraints
+    , text
+    , unliftio
+    , unliftio-core
   default-language: Haskell2010

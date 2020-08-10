@@ -39,6 +39,17 @@ packages:
       sha256: 9cd24c3a02396dd93ed7d57df1d9668a2377d128e413db5ff89d82ffdfc830fa
   original:
     hackage: tasty-mgolden-0.0.1@sha256:07fadb592cde353c386c5f38cff75539a5675e9350776ed6f4f0a70247427a78,4214
+- completed:
+    name: conversion
+    version: 0.0.1
+    git: https://github.com/mbj/conversions
+    pantry-tree:
+      size: 586
+      sha256: 063289f4dda4a06e60c6eafbf4573c1794f2106a58076e2407545a79e866688c
+    commit: 810a0c64b435df6074199a1f84d9c8701aea6a9d
+  original:
+    git: https://github.com/mbj/conversions
+    commit: 810a0c64b435df6074199a1f84d9c8701aea6a9d
 snapshots:
 - completed:
     size: 532379

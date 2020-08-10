@@ -16,8 +16,12 @@ extra-source-files:
 
 dependencies:
 - base
+- conversion
 - mprelude
 - source-constraints
+- text
+- unliftio
+- unliftio-core
 
 ghc-options:
 - -Wall
