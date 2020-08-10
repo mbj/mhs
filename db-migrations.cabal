@@ -4,7 +4,7 @@ cabal-version: 1.18
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 868277d8c77fc666d7549fd6877eb52b0864ae42c688d96490ee0744a8df3a8f
+-- hash: d655d3809e8eaa01ca1c55ed9ef9411c5e3b6ec047b4b4973622e685fe159228
 
 name:           db-migrations
 version:        0.0.0.1
@@ -30,6 +30,7 @@ source-repository head
 library
   exposed-modules:
       Database.Migration
+      Database.Migration.CLI
       Database.Migration.Connection
       Database.Migration.Prelude
       Lib
@@ -51,6 +52,7 @@ library
     , hasql-transaction
     , memory
     , mprelude
+    , optparse-applicative
     , pathtype
     , source-constraints
     , text
@@ -80,6 +82,7 @@ executable db-migrations
     , hasql-transaction
     , memory
     , mprelude
+    , optparse-applicative
     , pathtype
     , source-constraints
     , text
@@ -108,6 +111,7 @@ test-suite devtools
     , hasql-transaction
     , memory
     , mprelude
+    , optparse-applicative
     , pathtype
     , source-constraints
     , text

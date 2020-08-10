@@ -26,6 +26,7 @@ dependencies:
 - hasql-transaction
 - memory
 - mprelude
+- optparse-applicative
 - pathtype
 - source-constraints
 - text
