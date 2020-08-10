@@ -4,7 +4,7 @@ cabal-version: 1.18
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2b88bca0c0737a46c17f599660f971ba41a6588bee50d70be54c861ff60d60ae
+-- hash: 868277d8c77fc666d7549fd6877eb52b0864ae42c688d96490ee0744a8df3a8f
 
 name:           db-migrations
 version:        0.0.0.1
@@ -30,13 +30,14 @@ source-repository head
 library
   exposed-modules:
       Database.Migration
+      Database.Migration.Connection
       Database.Migration.Prelude
       Lib
   other-modules:
       Paths_db_migrations
   hs-source-dirs:
       src
-  default-extensions: DerivingStrategies DuplicateRecordFields NoImplicitPrelude OverloadedStrings RecordWildCards TypeApplications
+  default-extensions: DerivingStrategies DuplicateRecordFields NoImplicitPrelude OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables TypeApplications
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields
   build-depends:
       base
@@ -64,7 +65,7 @@ executable db-migrations
       Paths_db_migrations
   hs-source-dirs:
       app
-  default-extensions: DerivingStrategies DuplicateRecordFields NoImplicitPrelude OverloadedStrings RecordWildCards TypeApplications
+  default-extensions: DerivingStrategies DuplicateRecordFields NoImplicitPrelude OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables TypeApplications
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base
@@ -92,7 +93,7 @@ test-suite devtools
   main-is: test/Devtools.hs
   other-modules:
       Paths_db_migrations
-  default-extensions: DerivingStrategies DuplicateRecordFields NoImplicitPrelude OverloadedStrings RecordWildCards TypeApplications
+  default-extensions: DerivingStrategies DuplicateRecordFields NoImplicitPrelude OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables TypeApplications
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       base

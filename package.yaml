@@ -53,7 +53,9 @@ default-extensions:
 - DuplicateRecordFields
 - NoImplicitPrelude
 - OverloadedStrings
+- RankNTypes
 - RecordWildCards
+- ScopedTypeVariables
 - TypeApplications
 
 library:
