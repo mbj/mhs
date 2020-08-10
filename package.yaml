@@ -16,8 +16,23 @@ extra-source-files:
 
 dependencies:
 - base
+- bytestring
+- control-bool
+- conversion
+- cryptonite
+- dbt
+- hasql
+- hasql-th
+- hasql-transaction
+- memory
 - mprelude
+- optparse-applicative
+- pathtype
 - source-constraints
+- text
+- typed-process
+- unliftio
+- unliftio-core
 
 ghc-options:
 - -Wall
@@ -35,7 +50,14 @@ ghc-options:
 - -funbox-strict-fields
 
 default-extensions:
+- DerivingStrategies
+- DuplicateRecordFields
 - NoImplicitPrelude
+- OverloadedStrings
+- RankNTypes
+- RecordWildCards
+- ScopedTypeVariables
+- TypeApplications
 
 library:
   source-dirs: src

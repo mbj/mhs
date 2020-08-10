@@ -4,7 +4,7 @@ cabal-version: 1.18
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d385a1e1254b1c98d3c02a6a78c294d310abc0f50f2e4b26184580836302e032
+-- hash: d655d3809e8eaa01ca1c55ed9ef9411c5e3b6ec047b4b4973622e685fe159228
 
 name:           db-migrations
 version:        0.0.0.1
@@ -29,17 +29,36 @@ source-repository head
 
 library
   exposed-modules:
+      Database.Migration
+      Database.Migration.CLI
+      Database.Migration.Connection
+      Database.Migration.Prelude
       Lib
   other-modules:
       Paths_db_migrations
   hs-source-dirs:
       src
-  default-extensions: NoImplicitPrelude
+  default-extensions: DerivingStrategies DuplicateRecordFields NoImplicitPrelude OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables TypeApplications
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields
   build-depends:
       base
+    , bytestring
+    , control-bool
+    , conversion
+    , cryptonite
+    , dbt
+    , hasql
+    , hasql-th
+    , hasql-transaction
+    , memory
     , mprelude
+    , optparse-applicative
+    , pathtype
     , source-constraints
+    , text
+    , typed-process
+    , unliftio
+    , unliftio-core
   default-language: Haskell2010
 
 executable db-migrations
@@ -48,13 +67,28 @@ executable db-migrations
       Paths_db_migrations
   hs-source-dirs:
       app
-  default-extensions: NoImplicitPrelude
+  default-extensions: DerivingStrategies DuplicateRecordFields NoImplicitPrelude OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables TypeApplications
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base
+    , bytestring
+    , control-bool
+    , conversion
+    , cryptonite
     , db-migrations
+    , dbt
+    , hasql
+    , hasql-th
+    , hasql-transaction
+    , memory
     , mprelude
+    , optparse-applicative
+    , pathtype
     , source-constraints
+    , text
+    , typed-process
+    , unliftio
+    , unliftio-core
   default-language: Haskell2010
 
 test-suite devtools
@@ -62,11 +96,26 @@ test-suite devtools
   main-is: test/Devtools.hs
   other-modules:
       Paths_db_migrations
-  default-extensions: NoImplicitPrelude
+  default-extensions: DerivingStrategies DuplicateRecordFields NoImplicitPrelude OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables TypeApplications
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       base
+    , bytestring
+    , control-bool
+    , conversion
+    , cryptonite
+    , dbt
     , devtools
+    , hasql
+    , hasql-th
+    , hasql-transaction
+    , memory
     , mprelude
+    , optparse-applicative
+    , pathtype
     , source-constraints
+    , text
+    , typed-process
+    , unliftio
+    , unliftio-core
   default-language: Haskell2010

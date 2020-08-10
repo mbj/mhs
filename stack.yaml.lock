@@ -12,12 +12,40 @@ packages:
   original:
     hackage: devtools-0.0.2@sha256:1d45dd4790d6caec9b4121ad829ccdf0e3b93c1797d53fb1535770a879a3493e,4181
 - completed:
+    hackage: fast-builder-0.1.2.0@sha256:d01db8a5f1ac262e2db0375c47e46660c67ad4145bef64cc7303ade096e461ee,2801
+    pantry-tree:
+      size: 1058
+      sha256: b38174b316e6609a6a45da8989470556c8450e87f60f294ed709dc50d905de67
+  original:
+    hackage: fast-builder-0.1.2.0@sha256:d01db8a5f1ac262e2db0375c47e46660c67ad4145bef64cc7303ade096e461ee,2801
+- completed:
+    hackage: hasql-th-0.4.0.8@sha256:e77af01c354fcebb0fc8358a4bb2f7b361329bce28f783d8d6b17fbd5fa43279,2245
+    pantry-tree:
+      size: 864
+      sha256: d3975fb5fdfc16c22ae5296a1d720ffa4cfc3661117d7eba0ad1232e4be527d6
+  original:
+    hackage: hasql-th-0.4.0.8@sha256:e77af01c354fcebb0fc8358a4bb2f7b361329bce28f783d8d6b17fbd5fa43279,2245
+- completed:
+    hackage: headed-megaparsec-0.1.0.4@sha256:2888428f8cee84088b196639a2b5d7741d98caaeaa7a68662e54031f0dbf4655,1569
+    pantry-tree:
+      size: 383
+      sha256: 8babe7ad5e12f6569cf0bd7cac342b6f1a1669643469383e41137c61499e2120
+  original:
+    hackage: headed-megaparsec-0.1.0.4@sha256:2888428f8cee84088b196639a2b5d7741d98caaeaa7a68662e54031f0dbf4655,1569
+- completed:
     hackage: mprelude-0.1.0@sha256:73336894a0addfeef076678bcc2e13dce800f66fcf1c67c72bf25184ecac3fab,2974
     pantry-tree:
       size: 265
       sha256: 2516a863930d5172d3092a2309a3fa507c995f586d56f319780c2bad6c27726e
   original:
     hackage: mprelude-0.1.0@sha256:73336894a0addfeef076678bcc2e13dce800f66fcf1c67c72bf25184ecac3fab,2974
+- completed:
+    hackage: postgresql-syntax-0.3.0.2@sha256:f676be8eaade863bd5ea0a3bd0a60c05e0bf0c324a0cb2e05355fe684b879418,4169
+    pantry-tree:
+      size: 1141
+      sha256: 9aefa646bdcd3b6187b4076392dcb90d40b3b40fb10e08eea6592be364a8c6cb
+  original:
+    hackage: postgresql-syntax-0.3.0.2@sha256:f676be8eaade863bd5ea0a3bd0a60c05e0bf0c324a0cb2e05355fe684b879418,4169
 - completed:
     hackage: source-constraints-0.0.1@sha256:abdda6ca3d942c81d61ed4374dbc0eee21e9c074da3f17b25d434c2d55df2acc,2979
     pantry-tree:
@@ -39,9 +67,42 @@ packages:
       sha256: 9cd24c3a02396dd93ed7d57df1d9668a2377d128e413db5ff89d82ffdfc830fa
   original:
     hackage: tasty-mgolden-0.0.1@sha256:07fadb592cde353c386c5f38cff75539a5675e9350776ed6f4f0a70247427a78,4214
+- completed:
+    name: cbt
+    version: 0.0.1
+    git: https://github.com/mbj/cbt
+    pantry-tree:
+      size: 958
+      sha256: 306e96d0d5767a7595f3db5792fb348a7321b5faea2042d7c0c8be343e005ba0
+    commit: 260fa9ca59d0a4c269c7885fb2ee4699c47d6254
+  original:
+    git: https://github.com/mbj/cbt
+    commit: 260fa9ca59d0a4c269c7885fb2ee4699c47d6254
+- completed:
+    name: conversion
+    version: 0.0.1
+    git: https://github.com/mbj/conversions
+    pantry-tree:
+      size: 586
+      sha256: 063289f4dda4a06e60c6eafbf4573c1794f2106a58076e2407545a79e866688c
+    commit: 810a0c64b435df6074199a1f84d9c8701aea6a9d
+  original:
+    git: https://github.com/mbj/conversions
+    commit: 810a0c64b435df6074199a1f84d9c8701aea6a9d
+- completed:
+    name: dbt
+    version: 0.0.0.1
+    git: https://github.com/mbj/dbt
+    pantry-tree:
+      size: 1052
+      sha256: 28823fe444222e288301cd7529b52365d5e3f5819c29010fdaad2bfdc0879a4c
+    commit: 1e533f9d0c6f84605f970ca31f85d8edf02f6f1b
+  original:
+    git: https://github.com/mbj/dbt
+    commit: 1e533f9d0c6f84605f970ca31f85d8edf02f6f1b
 snapshots:
 - completed:
-    size: 531718
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/6.yaml
-    sha256: 230a7266fc11f76222bd3bb68e9503ed11d553060a752f164bff6753ed03e271
-  original: lts-16.6
+    size: 532379
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/8.yaml
+    sha256: 2ad3210d2ad35f3176005d68369a18e4d984517bfaa2caade76f28ed0b2e0521
+  original: lts-16.8
