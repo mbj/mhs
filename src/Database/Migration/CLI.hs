@@ -10,66 +10,58 @@ import qualified Hasql.Session                 as Hasql
 
 parserInfo
   :: forall m . MonadUnliftIO m
-  => m Postgresql.ClientConfig
+  => ((Postgresql.ClientConfig -> m ()) -> m ())
   -> ParserInfo (m ())
-parserInfo getConfig = wrapHelper commands "migration commands"
+parserInfo withConfig = wrapHelper commands "migration commands"
   where
     commands :: Parser (m ())
     commands = hsubparser
       $  mkCommand
          "apply"
-         (applyMigration getConfig)
+         (applyMigration withConfig)
          "Apply pending DB migrations"
-      <>  mkCommand
+      <> mkCommand
          "apply-dry"
-         (withConnection getConfig Migration.dryApply)
+         (withConnection withConfig Migration.dryApply)
          "Show pending migrations that would be applied"
       <> mkCommand
          "new"
-         (withConnection getConfig Migration.new)
+         (withConnection withConfig Migration.new)
          "Create new migration file"
       <> mkCommand
          "status"
-         (withConnection getConfig Migration.status)
+         (withConnection withConfig Migration.status)
          "Show DB migration status"
       <> mkCommand
          "setup"
-         (withConnection getConfig Migration.setup)
+         (withConnection withConfig Migration.setup)
          "Setup DB migrations, create schema_migrations table"
       <> mkCommand
          "dump-schema"
-         (withConfig getConfig Migration.dumpSchema)
+         (withConfig $ liftIO . Migration.dumpSchema)
          ("Dump database schema to " <> Migration.schemaFileString)
       <> mkCommand
          "load-schema"
-         (withConnection getConfig Migration.loadSchema)
+         (withConnection withConfig Migration.loadSchema)
          ("Load database schema from " <> Migration.schemaFileString)
 
 applyMigration
   :: MonadUnliftIO m
-  => m Postgresql.ClientConfig
+  => ((Postgresql.ClientConfig -> m ()) -> m ())
   -> m ()
-applyMigration getConfig = do
-  config <- getConfig
-  liftIO $ do
+applyMigration withConfig = do
+  withConfig $ \config -> liftIO $ do
     Database.withConnection config $ eitherFail <=< Hasql.run Migration.apply
     Migration.dumpSchema config
 
 withConnection
   :: MonadUnliftIO m
-  => m Postgresql.ClientConfig
+  => ((Postgresql.ClientConfig -> m a) -> m a)
   -> Hasql.Session a
   -> m a
-withConnection getConfig session = do
-  config <- getConfig
-  liftIO $ Database.withConnection config $ eitherFail <=< Hasql.run session
-
-withConfig
-  :: MonadUnliftIO m
-  => m Postgresql.ClientConfig
-  -> (Postgresql.ClientConfig -> IO a)
-  -> m a
-withConfig getConfig action' = (liftIO . action') =<< getConfig
+withConnection withConfig session =
+  withConfig $ \config ->
+    liftIO $ Database.withConnection config $ eitherFail <=< Hasql.run session
 
 wrapHelper :: Parser b -> String -> ParserInfo b
 wrapHelper parser desc = info parser $ progDesc desc
