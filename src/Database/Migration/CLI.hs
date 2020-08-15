@@ -9,12 +9,11 @@ import qualified Database.Migration.Connection as Database
 import qualified Hasql.Session                 as Hasql
 
 parserInfo
-  :: forall m . MonadUnliftIO m
-  => ((Postgresql.ClientConfig -> m ()) -> m ())
-  -> ParserInfo (m ())
+  :: ((Postgresql.ClientConfig -> IO ()) -> IO ())
+  -> ParserInfo (IO ())
 parserInfo withConfig = wrapHelper commands "migration commands"
   where
-    commands :: Parser (m ())
+    commands :: Parser (IO ())
     commands = hsubparser
       $  mkCommand
          "apply"
@@ -46,19 +45,17 @@ parserInfo withConfig = wrapHelper commands "migration commands"
          ("Load database schema from " <> Migration.schemaFileString)
 
 applyMigration
-  :: MonadUnliftIO m
-  => ((Postgresql.ClientConfig -> m ()) -> m ())
-  -> m ()
+  :: ((Postgresql.ClientConfig -> IO ()) -> IO ())
+  -> IO ()
 applyMigration withConfig = do
   withConfig $ \config -> liftIO $ do
     Database.withConnection config $ eitherFail <=< Hasql.run Migration.apply
     Migration.dumpSchema config
 
 withConnection
-  :: MonadUnliftIO m
-  => ((Postgresql.ClientConfig -> m a) -> m a)
+  :: ((Postgresql.ClientConfig -> IO a) -> IO a)
   -> Hasql.Session a
-  -> m a
+  -> IO a
 withConnection withConfig session =
   withConfig $ \config ->
     liftIO $ Database.withConnection config $ eitherFail <=< Hasql.run session
