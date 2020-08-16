@@ -10,7 +10,7 @@ import qualified Data.List           as List
 
 newtype Name a = Name Text
   deriving newtype (Hashable, ToText)
-  deriving stock   (Eq, Ord)
+  deriving stock   (Eq, Ord, Show)
 
 newtype Provider a = Provider (HashMap (Name a) a)
 
