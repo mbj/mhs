@@ -1,6 +1,6 @@
 name:        db-migrations
 description: Please see the README on GitHub at <https://github.com/mbj/db-migrations#readme>
-version:     0.0.0.1
+version:     0.0.1
 github:      mbj/db-migrations
 license:     AllRightsReserved
 author:      Markus Schirp

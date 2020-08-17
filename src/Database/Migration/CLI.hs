@@ -1,4 +1,4 @@
-module Database.Migration.CLI (parserInfo) where
+module Database.Migration.CLI (WithClientConfig, parserInfo) where
 
 import Database.Migration.Prelude
 import Options.Applicative
@@ -8,57 +8,57 @@ import qualified Database.Migration            as Migration
 import qualified Database.Migration.Connection as Database
 import qualified Hasql.Session                 as Hasql
 
-parserInfo
-  :: ((Postgresql.ClientConfig -> IO ()) -> IO ())
-  -> ParserInfo (IO ())
-parserInfo withConfig = wrapHelper commands "migration commands"
+type WithClientConfig = ((Postgresql.ClientConfig -> IO ()) -> IO ())
+
+parserInfo :: ParserInfo (WithClientConfig -> IO ())
+parserInfo = wrapHelper commands "migration commands"
   where
-    commands :: Parser (IO ())
+    commands :: Parser (WithClientConfig -> IO ())
     commands = hsubparser
       $  mkCommand
          "apply"
-         (applyMigration withConfig)
+         applyMigration
          "Apply pending DB migrations"
       <> mkCommand
          "apply-dry"
-         (withConnection withConfig Migration.dryApply)
+         (withConnection Migration.dryApply)
          "Show pending migrations that would be applied"
       <> mkCommand
          "new"
-         (withConnection withConfig Migration.new)
+         (withConnection Migration.new)
          "Create new migration file"
       <> mkCommand
          "status"
-         (withConnection withConfig Migration.status)
+         (withConnection Migration.status)
          "Show DB migration status"
       <> mkCommand
          "setup"
-         (withConnection withConfig Migration.setup)
+         (withConnection Migration.setup)
          "Setup DB migrations, create schema_migrations table"
       <> mkCommand
          "dump-schema"
-         (withConfig $ liftIO . Migration.dumpSchema)
+         (\withConfig -> withConfig Migration.dumpSchema)
          ("Dump database schema to " <> Migration.schemaFileString)
       <> mkCommand
          "load-schema"
-         (withConnection withConfig Migration.loadSchema)
+         (withConnection Migration.loadSchema)
          ("Load database schema from " <> Migration.schemaFileString)
 
 applyMigration
-  :: ((Postgresql.ClientConfig -> IO ()) -> IO ())
+  :: WithClientConfig
   -> IO ()
 applyMigration withConfig = do
-  withConfig $ \config -> liftIO $ do
+  withConfig $ \config -> do
     Database.withConnection config $ eitherFail <=< Hasql.run Migration.apply
     Migration.dumpSchema config
 
 withConnection
-  :: ((Postgresql.ClientConfig -> IO a) -> IO a)
-  -> Hasql.Session a
-  -> IO a
-withConnection withConfig session =
+  :: Hasql.Session ()
+  -> WithClientConfig
+  -> IO ()
+withConnection session withConfig =
   withConfig $ \config ->
-    liftIO $ Database.withConnection config $ eitherFail <=< Hasql.run session
+    Database.withConnection config $ eitherFail <=< Hasql.run session
 
 wrapHelper :: Parser b -> String -> ParserInfo b
 wrapHelper parser desc = info parser $ progDesc desc
