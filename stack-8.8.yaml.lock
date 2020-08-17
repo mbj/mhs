@@ -5,13 +5,6 @@
 
 packages:
 - completed:
-    hackage: devtools-0.0.1@sha256:6cc09d6568954a5c60dbd2428c2a62bfaa92e0ccdd05148c77234f21cf3971c5,4181
-    pantry-tree:
-      size: 452
-      sha256: e56b8d3db8f6a92452e1d58f8912ce1feb712b832f6b4e85a771c22f1c3e0c09
-  original:
-    hackage: devtools-0.0.1@sha256:6cc09d6568954a5c60dbd2428c2a62bfaa92e0ccdd05148c77234f21cf3971c5,4181
-- completed:
     hackage: mprelude-0.1.0@sha256:73336894a0addfeef076678bcc2e13dce800f66fcf1c67c72bf25184ecac3fab,2974
     pantry-tree:
       size: 265
@@ -45,14 +38,25 @@ packages:
     git: https://github.com/mbj/cbt
     pantry-tree:
       size: 958
-      sha256: 7059ec3ff89338c8079f25c7907fc918e225a95ad4af21e2cc26126ef108802c
-    commit: 4ed3ede24beed00650f5ff16e4ff5da335878473
+      sha256: e6e278d94ac6a1590b1b917e09885a64d56abee3a4013a5d73feb6c1d40a7620
+    commit: dfc089ca44a741e3fa110743067e1242f9e2ddca
   original:
     git: https://github.com/mbj/cbt
-    commit: 4ed3ede24beed00650f5ff16e4ff5da335878473
+    commit: dfc089ca44a741e3fa110743067e1242f9e2ddca
+- completed:
+    name: devtools
+    version: 0.0.2
+    git: https://github.com/mbj/devtools-hs
+    pantry-tree:
+      size: 854
+      sha256: e4bc6805ed070dc18b959afe482bfe507c76d49f8a032dc94c85f6d8e48615ed
+    commit: 10f26caa2dcaf8323bcf81880baf65dbbdf42658
+  original:
+    git: https://github.com/mbj/devtools-hs
+    commit: 10f26caa2dcaf8323bcf81880baf65dbbdf42658
 snapshots:
 - completed:
-    size: 496112
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/15/13.yaml
-    sha256: 75a1a0f870e1876898b117b0e443f911b3fa2985bfabb53158c81ab5765beda5
-  original: lts-15.13
+    size: 532383
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/10.yaml
+    sha256: 469d781ab6d2a4eceed6b31b6e4ec842dcd3cd1d11577972e86902603dce24df
+  original: lts-16.10
