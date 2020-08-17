@@ -169,7 +169,7 @@ printEvent event = do
 
     physicalResourceId =
       fromMaybe
-        "[unknown-pysical-resource-id]"
+        "[unknown-physical-resource-id]"
         (view CF.sePhysicalResourceId event)
 
     resourceType =
