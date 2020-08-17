@@ -85,7 +85,7 @@ wait Config{..} = liftIO $ do
               logPrefix $ "TCP connect failed " <> show exception
               pure False
 
-    resolve = listToMaybe <$> getAddrInfo >>= maybe failLookup pure
+    resolve = getAddrInfo >>= maybe failLookup pure . listToMaybe
       where
         getAddrInfo =
           Socket.getAddrInfo
