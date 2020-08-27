@@ -109,7 +109,7 @@ waitForPort containerName hostPort
   }
 
 buildDefinition :: CBT.BuildDefinition
-buildDefinition = $$(CBT.TH.readDockerfile (CBT.Prefix "cbt") (Path.file "Dockerfile"))
+buildDefinition = $$(CBT.TH.readDockerfile (CBT.Prefix "dbt") (Path.file "Dockerfile"))
 
 postgresqlDefinition
   :: CBT.ContainerName
