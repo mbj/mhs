@@ -54,9 +54,11 @@ class CBT.Backend b => Backend b where
       hostPort <- getHostPort       @b containerName
       password <- getMasterPassword @b containerName
 
-      waitForPort containerName hostPort
+      let config = mkClientConfig hostPort password
 
-      action $ mkClientConfig hostPort password
+      waitForPort containerName config
+
+      action config
 
 instance Backend 'CBT.Docker
 instance Backend 'CBT.Podman
@@ -95,15 +97,14 @@ mkClientConfig hostPort password =
     , ..
     }
 
-waitForPort :: MonadIO m => CBT.ContainerName -> Postgresql.HostPort -> m ()
-waitForPort containerName hostPort
+waitForPort :: MonadIO m => CBT.ContainerName -> Postgresql.ClientConfig -> m ()
+waitForPort containerName clientConfig
   = Wait.wait
   $ Wait.Config
   { prefix      = "[DBT]"
   , maxAttempts = 100
   , waitTime    = 100000  -- 100ms
   , printStatus = debug
-  , hostName    = localhost
   , onFail      = CBT.printInspect containerName >> CBT.printLogs containerName
   , ..
   }
