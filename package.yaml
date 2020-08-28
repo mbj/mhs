@@ -14,6 +14,7 @@ dependencies:
 - cbt                  == 0.0.1
 - containers           ^>= 0.6
 - cryptonite           >= 0.25 && ^>= 0.26
+- hasql                ^>= 1.4
 - mprelude             ^>= 0.1.0
 - network              ^>= 3.1
 - pathtype             ^>= 0.8
@@ -63,6 +64,7 @@ library:
   source-dirs: src
   exposed-modules:
   - DBT
+  - DBT.Connection
   - DBT.Postgresql
 
 tests:
