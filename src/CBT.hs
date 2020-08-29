@@ -18,6 +18,7 @@ where
 
 import CBT.Backend (Backend)
 import CBT.BuildDefinition
+import CBT.Environment
 import CBT.Prelude
 import CBT.Types
 
@@ -28,7 +29,7 @@ import qualified System.Environment as Environment
 import qualified System.Path        as Path
 
 withContainer
-  :: MonadUnliftIO m
+  :: HasEnvironment m
   => BuildDefinition
   -> ContainerDefinition
   -> m a
@@ -40,7 +41,7 @@ withContainer buildDefinition containerDefinition action = do
     Podman -> CBT.Backend.withContainer @'Podman buildDefinition containerDefinition action
 
 build
-  :: MonadIO m
+  :: HasEnvironment m
   => BuildDefinition
   -> m ()
 build buildDefinition = do
@@ -50,7 +51,7 @@ build buildDefinition = do
     Podman -> CBT.Backend.build @'Podman buildDefinition
 
 buildRun
-  :: MonadIO m
+  :: HasEnvironment m
   => BuildDefinition
   -> ContainerDefinition
   -> m ()
@@ -61,7 +62,7 @@ buildRun buildDefinition containerDefinition = do
     Podman -> CBT.Backend.buildRun @'Podman buildDefinition containerDefinition
 
 buildIfAbsent
-  :: MonadUnliftIO m
+  :: HasEnvironment m
   => BuildDefinition
   -> m ()
 buildIfAbsent buildDefinition = do
@@ -71,7 +72,7 @@ buildIfAbsent buildDefinition = do
     Podman -> CBT.Backend.buildIfAbsent @'Podman buildDefinition
 
 readContainerFile
-  :: MonadIO m
+  :: HasEnvironment m
   => ContainerName
   -> Path.AbsFile
   -> m BS.ByteString
@@ -82,7 +83,7 @@ readContainerFile containerName path = do
     Podman -> CBT.Backend.readContainerFile @'Podman containerName path
 
 removeContainer
-  :: MonadIO m
+  :: HasEnvironment m
   => ContainerName
   -> m ()
 removeContainer containerName = do
@@ -92,7 +93,7 @@ removeContainer containerName = do
     Podman -> CBT.Backend.removeContainer @'Podman containerName
 
 printLogs
-  :: MonadIO m
+  :: HasEnvironment m
   => ContainerName
   -> m ()
 printLogs containerName = do
@@ -102,7 +103,7 @@ printLogs containerName = do
     Podman -> CBT.Backend.printLogs @'Podman containerName
 
 printInspect
-  :: MonadIO m
+  :: HasEnvironment m
   => ContainerName
   -> m ()
 printInspect containerName = do
@@ -111,7 +112,7 @@ printInspect containerName = do
     Docker -> CBT.Backend.printInspect @'Docker containerName
     Podman -> CBT.Backend.printInspect @'Podman containerName
 
-getImplementation :: forall m . MonadIO m => m Implementation
+getImplementation :: forall m . HasEnvironment m => m Implementation
 getImplementation =
   maybe discover fromEnv =<< liftIO (Environment.lookupEnv "CBT_BACKEND")
   where
@@ -132,7 +133,7 @@ getImplementation =
         (podman <|> docker)
 
 try
-  :: forall (b :: Implementation) m . (Backend b, MonadIO m)
+  :: forall (b :: Implementation) m . (Backend b, HasEnvironment m)
   => Implementation
   -> m (Maybe Implementation)
 try implementation = do

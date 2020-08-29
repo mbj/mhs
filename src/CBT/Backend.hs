@@ -1,5 +1,6 @@
 module CBT.Backend (Backend(..)) where
 
+import CBT.Environment
 import CBT.Prelude
 import CBT.Types
 import Control.Exception (Exception)
@@ -30,19 +31,19 @@ instance Show ContainerRunFailure where
 
 class Backend (b :: Implementation) where
   binaryName        :: String
-  getHostPort       :: MonadIO m => ContainerName -> Port -> m Port
-  testImageExists   :: MonadIO m => BuildDefinition -> m Bool
+  getHostPort       :: HasEnvironment m => ContainerName -> Port -> m Port
+  testImageExists   :: HasEnvironment m => BuildDefinition -> m Bool
 
-  available :: MonadIO m => m Bool
+  available :: HasEnvironment m => m Bool
   available = isJust <$> liftIO (Path.findExecutable (binaryName @b))
 
-  buildIfAbsent :: MonadIO m => BuildDefinition -> m ()
+  buildIfAbsent :: HasEnvironment m => BuildDefinition -> m ()
   buildIfAbsent buildDefinition@BuildDefinition{..} = do
     exists <- testImageExists @b buildDefinition
 
     unless exists (build @b buildDefinition)
 
-  printLogs :: MonadIO m => ContainerName -> m ()
+  printLogs :: HasEnvironment m => ContainerName -> m ()
   printLogs containerName
     = runProcess_
     $ backendProc @b
@@ -51,7 +52,7 @@ class Backend (b :: Implementation) where
     , convertText containerName
     ]
 
-  printInspect :: MonadIO m => ContainerName -> m ()
+  printInspect :: HasEnvironment m => ContainerName -> m ()
   printInspect containerName
     = runProcess_
     $ backendProc @b
@@ -60,7 +61,7 @@ class Backend (b :: Implementation) where
     , convertText containerName
     ]
 
-  status :: MonadIO m => ContainerName -> m Status
+  status :: HasEnvironment m => ContainerName -> m Status
   status containerName
     = mapStatus <$> runProcess proc
     where
@@ -70,22 +71,22 @@ class Backend (b :: Implementation) where
 
       proc = silenceStdout $ backendProc @b ["container", "inspect", convertText containerName]
 
-  build :: forall m . MonadIO m => BuildDefinition -> m ()
+  build :: forall m . HasEnvironment m => BuildDefinition -> m ()
   build BuildDefinition{..}
     = runProcess_
     . setVerbosity verbosity
     . Process.setStdin (Process.byteStringInput . LBS.fromStrict . Text.encodeUtf8 $ toText content)
     $ Process.proc (binaryName @b) ["build", "--tag", convertText imageName, "-"]
 
-  buildRun :: MonadIO m => BuildDefinition -> ContainerDefinition -> m ()
+  buildRun :: HasEnvironment m => BuildDefinition -> ContainerDefinition -> m ()
   buildRun buildDefinition containerDefinition =
     buildIfAbsent @b buildDefinition >> run @b containerDefinition
 
-  run :: forall m . MonadIO m => ContainerDefinition -> m ()
+  run :: forall m . HasEnvironment m => ContainerDefinition -> m ()
   run containerDefinition@ContainerDefinition{..}
     = handleFailure @b containerDefinition =<< runProcess (runProc @b containerDefinition)
 
-  readContainerFile :: forall m . MonadIO m => ContainerName -> Path.AbsFile -> m BS.ByteString
+  readContainerFile :: forall m . HasEnvironment m => ContainerName -> Path.AbsFile -> m BS.ByteString
   readContainerFile containerName path = do
     tar <- readProcessStdout_ proc
     maybe notFound (pure . LBS.toStrict) . Tar.findEntry tar $ Path.takeFileName path
@@ -101,7 +102,7 @@ class Backend (b :: Implementation) where
         , "-"
         ]
 
-  removeContainer :: MonadIO m => ContainerName -> m ()
+  removeContainer :: HasEnvironment m => ContainerName -> m ()
   removeContainer containerName
     = runProcess_
     . silenceStdout
@@ -111,14 +112,14 @@ class Backend (b :: Implementation) where
     , convertText containerName
     ]
 
-  stop :: MonadIO m => ContainerName -> m ()
+  stop :: HasEnvironment m => ContainerName -> m ()
   stop containerName
     = runProcess_
     . silenceStdout
     $ backendProc @b ["stop", convertText containerName]
 
   withContainer
-    :: MonadUnliftIO m
+    :: (HasEnvironment m, MonadUnliftIO m)
     => BuildDefinition
     -> ContainerDefinition
     -> m a
@@ -286,39 +287,39 @@ exitBool = \case
   Exit.ExitSuccess -> True
   _                -> False
 
-parsePort :: forall m a . (MonadIO m, ToText a, Show a) => a -> m Port
+parsePort :: forall m a . (HasEnvironment m, ToText a, Show a) => a -> m Port
 parsePort input = maybe failParse (pure . Port) . readMaybe $ convertText input
   where
     failParse :: m Port
     failParse = liftIO . fail $ "Cannot parse PostgresqlPort from input: " <> show input
 
 runProcess
-  :: forall m stdin stdout stderr . MonadIO m
+  :: forall m stdin stdout stderr . HasEnvironment m
   => Process.ProcessConfig stdin stdout stderr
   -> m Exit.ExitCode
 runProcess proc = procRun proc Process.runProcess
 
 runProcess_
-  :: forall m stdin stdout stderr . MonadIO m
+  :: forall m stdin stdout stderr . HasEnvironment m
   => Process.ProcessConfig stdin stdout stderr
   -> m ()
 runProcess_ proc = procRun proc Process.runProcess_
 
 readProcessStdout_
-  :: forall m stdin stdout stderr . MonadIO m
+  :: forall m stdin stdout stderr . HasEnvironment m
   => Process.ProcessConfig stdin stdout stderr
   -> m LBS.ByteString
 readProcessStdout_ proc = procRun proc Process.readProcessStdout_
 
 procRun
-  :: forall m a stdin stdout stderr . MonadIO m
+  :: forall m a stdin stdout stderr . WithLog m
   => Process.ProcessConfig stdin stdout stderr
   -> (Process.ProcessConfig stdin stdout stderr -> IO a)
   -> m a
-procRun proc action = debug (show proc) >> liftIO (action proc)
+procRun proc action = logDebug (show proc) >> liftIO (action proc)
 
 handleFailure
-  :: forall b m . (Backend b, MonadIO m)
+  :: forall b m . (Backend b, HasEnvironment m)
   => ContainerDefinition
   -> Exit.ExitCode -> m ()
 handleFailure containerDefinition@ContainerDefinition{..} = \case
@@ -330,7 +331,7 @@ handleFailure containerDefinition@ContainerDefinition{..} = \case
     Exception.throwIO $ ContainerRunFailure containerDefinition
 
 captureText
-  :: MonadIO m
+  :: HasEnvironment m
   => Process.ProcessConfig stdin stdout stderr
   -> m Text
 captureText proc

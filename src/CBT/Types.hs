@@ -42,7 +42,7 @@ data ContainerDefinition = ContainerDefinition
   }
 
 newtype ContainerName = ContainerName Text
-  deriving newtype ToText
+  deriving (Conversion Text) via Text
 
 data PublishPort = PublishPort
   { container :: Port
@@ -51,24 +51,23 @@ data PublishPort = PublishPort
 
 newtype Port = Port { unPort :: Word16 }
 
-instance ToText Port where
-  toText (Port port) = convertText $ show port
+instance Conversion Text Port where
+  convert (Port port) = convertText $ show port
 
 newtype DockerfileContent = DockerfileContent Text
-  deriving newtype ToText
+  deriving (Conversion Text) via Text
   deriving stock Lift
 
 newtype Prefix = Prefix Text
-  deriving newtype ToText
+  deriving (Conversion Text) via Text
   deriving stock Lift
 
 newtype ImageName = ImageName Text
-  deriving newtype ToText
+  deriving (Conversion Text) via Text
   deriving stock Lift
 
 data Status = Running | Absent
   deriving stock Show
 
-instance ToText Status where
-  toText = convertText . show
-
+instance Conversion Text Status where
+  convert = convertText . show
