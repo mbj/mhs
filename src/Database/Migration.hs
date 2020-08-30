@@ -64,10 +64,10 @@ status :: Hasql.Session ()
 status = do
   applied <- readAppliedMigrations
 
-  log @Text $ "Applied migrations: " <> show (Foldable.length applied)
+  log $ "Applied migrations: " <> show (Foldable.length applied)
 
   liftIO $ do
-    Foldable.traverse_ (log @Text . show) applied
+    Foldable.traverse_ (log . show) applied
 
     Foldable.traverse_ printMigrationFile =<<
       newMigrations applied <$> readMigrationFiles
@@ -95,7 +95,7 @@ loadSchema = do
 apply :: Hasql.Session ()
 apply = do
   migrations <- getNewMigrations
-  log @Text $ "Applying " <> show (Foldable.length migrations) <> " pending migrations"
+  log $ "Applying " <> show (Foldable.length migrations) <> " pending migrations"
   Foldable.traverse_ applyMigration migrations
 
 new :: Hasql.Session ()
