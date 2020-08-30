@@ -4,7 +4,7 @@ cabal-version: 1.18
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 866c23bc66ba42061185ce290462bc1afac3468642236a6291b133b53ec8b62e
+-- hash: 87d87a6f8b35fce2aff5c84ba7bc1234ccba20b4c3eada9cfb7c450f7a2c4b80
 
 name:           db-migrations
 version:        0.0.1
@@ -33,7 +33,6 @@ library
       Database.Migration.CLI
       Database.Migration.Connection
       Database.Migration.Prelude
-      Lib
   other-modules:
       Paths_db_migrations
   hs-source-dirs:
@@ -46,36 +45,6 @@ library
     , control-bool
     , conversion
     , cryptonite
-    , dbt
-    , hasql
-    , hasql-th
-    , hasql-transaction
-    , memory
-    , mprelude
-    , optparse-applicative
-    , pathtype
-    , source-constraints
-    , text
-    , typed-process
-    , unliftio
-    , unliftio-core
-  default-language: Haskell2010
-
-executable db-migrations
-  main-is: Main.hs
-  other-modules:
-      Paths_db_migrations
-  hs-source-dirs:
-      app
-  default-extensions: DerivingStrategies DuplicateRecordFields NoImplicitPrelude OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables TypeApplications
-  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -threaded -rtsopts -with-rtsopts=-N
-  build-depends:
-      base
-    , bytestring
-    , control-bool
-    , conversion
-    , cryptonite
-    , db-migrations
     , dbt
     , hasql
     , hasql-th

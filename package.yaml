@@ -62,17 +62,6 @@ default-extensions:
 library:
   source-dirs: src
 
-executables:
-  db-migrations:
-    main:         Main.hs
-    source-dirs:  app
-    ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
-    dependencies:
-    - db-migrations
-
 tests:
   devtools:
     main:         test/Devtools.hs
