@@ -11,7 +11,6 @@ module PGT
   )
 where
 
-import Control.Monad.IO.Unlift (MonadUnliftIO)
 import PGT.Prelude
 import System.Posix.Types (ProcessID)
 import UnliftIO.Exception (bracket)
