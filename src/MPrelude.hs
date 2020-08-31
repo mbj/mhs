@@ -70,7 +70,11 @@ import Data.Function as Exports
 
 import Data.Functor as Exports
   ( Functor
+  , ($>)
+  , (<$)
   , (<$>)
+  , (<&>)
+  , fmap
   )
 
 import Data.Maybe as Exports
