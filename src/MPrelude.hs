@@ -110,12 +110,6 @@ import Data.Text as Exports
   ( Text
   )
 
-import Data.Text.Conversions as Exports
-  ( ToText
-  , convertText
-  , toText
-  )
-
 import Data.Traversable as Exports
   ( traverse
   )

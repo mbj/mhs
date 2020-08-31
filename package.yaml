@@ -1,5 +1,5 @@
 name:        mprelude
-version:     0.1.1
+version:     0.2.0
 github:      mbj/mprelude
 category:    prelude
 synopsis:    A minimalish prelude.
@@ -16,7 +16,6 @@ dependencies:
 - base               > 4.12 && < 14.15
 - source-constraints ^>= 0.0.1
 - text               ^>= 1.2
-- text-conversions   ^>= 0.3
 - unliftio-core      ^>= 0.1
 
 flags:
