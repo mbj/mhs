@@ -6,15 +6,15 @@
 packages:
 - completed:
     name: devtools
-    version: 0.0.2
+    version: 0.0.3
     git: https://github.com/mbj/devtools-hs.git
     pantry-tree:
       size: 854
-      sha256: 29d367bb6b7031f7c9fa38158f9ed8d0c2bb09d7b0fd15a3d8092e9cc0853d09
-    commit: aa80fd7a6d2554874b1c6a8b27e9f0d8bc2c0f97
+      sha256: 2a53db92348dcd274a7271f80063f094d719a5f694a37d431c1b42496ba6186b
+    commit: 4efe9e4ee9523bdf70f6588c36936fc64e3bd5c6
   original:
     git: https://github.com/mbj/devtools-hs.git
-    commit: aa80fd7a6d2554874b1c6a8b27e9f0d8bc2c0f97
+    commit: 4efe9e4ee9523bdf70f6588c36936fc64e3bd5c6
 - completed:
     hackage: source-constraints-0.0.1@sha256:abdda6ca3d942c81d61ed4374dbc0eee21e9c074da3f17b25d434c2d55df2acc,2979
     pantry-tree:
