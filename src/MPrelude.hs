@@ -131,6 +131,10 @@ import GHC.Enum as Exports
   , minBound
   )
 
+import GHC.Generics as Exports
+  ( Generic
+  )
+
 import GHC.Num as Exports
   ( Num
   , (*)
