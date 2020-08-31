@@ -5,13 +5,6 @@
 
 packages:
 - completed:
-    hackage: mprelude-0.1.0@sha256:73336894a0addfeef076678bcc2e13dce800f66fcf1c67c72bf25184ecac3fab,2974
-    pantry-tree:
-      size: 265
-      sha256: 2516a863930d5172d3092a2309a3fa507c995f586d56f319780c2bad6c27726e
-  original:
-    hackage: mprelude-0.1.0@sha256:73336894a0addfeef076678bcc2e13dce800f66fcf1c67c72bf25184ecac3fab,2974
-- completed:
     hackage: source-constraints-0.0.1@sha256:abdda6ca3d942c81d61ed4374dbc0eee21e9c074da3f17b25d434c2d55df2acc,2979
     pantry-tree:
       size: 767
@@ -32,6 +25,17 @@ packages:
       sha256: 9cd24c3a02396dd93ed7d57df1d9668a2377d128e413db5ff89d82ffdfc830fa
   original:
     hackage: tasty-mgolden-0.0.1@sha256:07fadb592cde353c386c5f38cff75539a5675e9350776ed6f4f0a70247427a78,4214
+- completed:
+    name: mprelude
+    version: 0.2.0
+    git: https://github.com/mbj/mprelude.git
+    pantry-tree:
+      size: 615
+      sha256: 04b8c3e76d3af67f9c25b584ad8f4101b122bbab06542991fc44b4110b2bdc49
+    commit: 7b7cd748eb29e6df1392175eb8920ef7bb74b6ac
+  original:
+    git: https://github.com/mbj/mprelude.git
+    commit: 7b7cd748eb29e6df1392175eb8920ef7bb74b6ac
 snapshots:
 - completed:
     size: 532381
