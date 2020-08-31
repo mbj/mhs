@@ -6,6 +6,7 @@ import System.Path ((</>))
 import qualified CBT
 import qualified CBT.Backend
 import qualified CBT.Backend        as CBT (Backend)
+import qualified CBT.Environment    as CBT
 import qualified CBT.TH
 import qualified DBT.Postgresql     as Postgresql
 import qualified DBT.Wait           as Wait
@@ -14,13 +15,13 @@ import qualified Data.Text.Encoding as Text
 import qualified System.Path        as Path
 
 class CBT.Backend b => Backend b where
-  getHostPort :: MonadIO m => CBT.ContainerName -> m Postgresql.HostPort
+  getHostPort :: CBT.HasEnvironment m => CBT.ContainerName -> m Postgresql.HostPort
   getHostPort containerName
     =   Postgresql.HostPort
     .   CBT.unPort
     <$> CBT.Backend.getHostPort @b containerName containerPort
 
-  getMasterPassword :: MonadIO m => CBT.ContainerName -> m Postgresql.Password
+  getMasterPassword :: CBT.HasEnvironment m => CBT.ContainerName -> m Postgresql.Password
   getMasterPassword containerName =
     Postgresql.Password . rstrip . Text.decodeUtf8 <$>
       CBT.Backend.readContainerFile @b containerName pgMasterPasswordAbs
@@ -28,7 +29,7 @@ class CBT.Backend b => Backend b where
       rstrip = Text.dropWhileEnd (== '\n')
 
   getClientConfig
-    :: MonadIO m
+    :: CBT.HasEnvironment m
     => CBT.ContainerName
     -> m Postgresql.ClientConfig
   getClientConfig containerName =
@@ -37,7 +38,7 @@ class CBT.Backend b => Backend b where
       <*> getMasterPassword @b containerName
 
   startDatabaseContainer
-    :: MonadIO m
+    :: CBT.HasEnvironment m
     => CBT.ContainerName
     -> m Postgresql.ClientConfig
   startDatabaseContainer containerName = do
@@ -45,7 +46,7 @@ class CBT.Backend b => Backend b where
     getClientConfig @b containerName
 
   withDatabaseContainer
-    :: MonadUnliftIO m
+    :: CBT.HasEnvironment m
     => CBT.ContainerName
     -> (Postgresql.ClientConfig -> m a)
     -> m a
@@ -97,14 +98,13 @@ mkClientConfig hostPort password =
     , ..
     }
 
-waitForPort :: MonadIO m => CBT.ContainerName -> Postgresql.ClientConfig -> m ()
+waitForPort :: CBT.HasEnvironment m => CBT.ContainerName -> Postgresql.ClientConfig -> m ()
 waitForPort containerName clientConfig
   = Wait.wait
   $ Wait.Config
   { prefix      = "[DBT]"
   , maxAttempts = 100
   , waitTime    = 100000  -- 100ms
-  , printStatus = debug
   , onFail      = CBT.printInspect containerName >> CBT.printLogs containerName
   , ..
   }

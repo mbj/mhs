@@ -6,7 +6,6 @@ module DBT.Connection
 where
 
 import DBT.Prelude
-import Data.Functor (fmap)
 
 import qualified DBT.Postgresql     as Postgresql
 import qualified Data.ByteString    as BS
@@ -77,8 +76,8 @@ data Parameter = Parameter
   , value :: Text
   }
 
-instance ToText Parameter where
-  toText Parameter{..} = name <> "='" <> toText (escape $ convertText value) <> "'"
+instance Conversion Text Parameter where
+  convert Parameter{..} = name <> "='" <> toText (escape $ convertText value) <> "'"
     where
       escape []     = []
       escape (x:xs) = case x of
