@@ -4,24 +4,24 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 
-name:           conversion
+name:           conversions
 version:        0.0.2
 synopsis:       Injective explicit total and partial conversions
-homepage:       https://github.com/mbj/conversion#readme
-bug-reports:    https://github.com/mbj/conversion/issues
+homepage:       https://github.com/mbj/conversions#readme
+bug-reports:    https://github.com/mbj/conversions/issues
 maintainer:     Markus Schirp mbj@schirp-ds.com, Allan Lukwago <epicallan.al@gmail.com>
 build-type:     Simple
 
 source-repository head
   type: git
-  location: https://github.com/mbj/conversion
+  location: https://github.com/mbj/conversions
 
 library
   exposed-modules:
-      Data.Conversion
-      Data.Conversion.FromType
+      Data.Conversions
+      Data.Conversions.FromType
   other-modules:
-      Paths_conversion
+      Paths_conversions
   hs-source-dirs:
       src
   default-extensions:
@@ -64,7 +64,7 @@ test-suite test
   type: exitcode-stdio-1.0
   main-is: test/Test.hs
   other-modules:
-      Paths_conversion
+      Paths_conversions
   default-extensions:
       AllowAmbiguousTypes
       ConstraintKinds
@@ -93,7 +93,7 @@ test-suite test
       base
     , bytestring
     , control-bool
-    , conversion
+    , conversions
     , devtools
     , exceptions
     , mtl

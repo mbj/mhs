@@ -1,6 +1,6 @@
 {-# LANGUAGE DefaultSignatures #-}
 {-# LANGUAGE UndecidableInstances #-}
-module Data.Conversion where
+module Data.Conversions where
 
 import           Control.Applicative
 import           Control.Bool                   ( guard' )

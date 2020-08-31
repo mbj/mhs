@@ -1,8 +1,8 @@
-name:       conversion
+name:       conversions
 synopsis:   Injective explicit total and partial conversions
-homepage:   https://github.com/mbj/conversion#readme
+homepage:   https://github.com/mbj/conversions#readme
 maintainer: Markus Schirp mbj@schirp-ds.com, Allan Lukwago <epicallan.al@gmail.com>
-github:     mbj/conversion
+github:     mbj/conversions
 version:    0.0.2
 
 dependencies:
@@ -68,4 +68,4 @@ tests:
     - -threaded
     - -with-rtsopts=-N
     dependencies:
-    - conversion
+    - conversions

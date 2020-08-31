@@ -1,8 +1,8 @@
 -- | Conversions from type-level values
 --
-module Data.Conversion.FromType where
+module Data.Conversions.FromType where
 
-import           Data.Conversion
+import           Data.Conversions
 import           Data.Kind                      ( Type )
 import           Data.Proxy                     ( Proxy(..) )
 import           Data.Text                      ( Text )
