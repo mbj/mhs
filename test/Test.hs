@@ -1,6 +1,7 @@
 import MPrelude
 
 import qualified CBT
+import qualified CBT.Environment      as CBT
 import qualified DBT
 import qualified DBT.Postgresql       as Postgresql
 import qualified Data.Text.IO         as Text
@@ -16,15 +17,16 @@ main = do
   Text.putStrLn ""
   success <- PGT.expand selectors
 
-  DBT.withDatabaseContainer (CBT.Prefix "pgt") $ \pgConfig -> do
-    let adminConfig = pgConfig { Postgresql.databaseName = Postgresql.DatabaseName "template1" }
-    setupSchema adminConfig
-    config <- PGT.configure adminConfig empty
-    Tasty.defaultMain $
-      Tasty.testGroup ""
-        [ devtools
-        , PGT.testTree config success
-        ]
+  CBT.runDefaultEnvironment $
+    DBT.withDatabaseContainer (CBT.Prefix "pgt") $ \pgConfig -> do
+      let adminConfig = pgConfig { Postgresql.databaseName = Postgresql.DatabaseName "template1" }
+      liftIO $ setupSchema adminConfig
+      config <- PGT.configure adminConfig empty
+      liftIO . Tasty.defaultMain $
+        Tasty.testGroup ""
+          [ devtools
+          , PGT.testTree config success
+          ]
 
 devtools :: Tasty.TestTree
 devtools = Devtools.testTree Devtools.defaultConfig

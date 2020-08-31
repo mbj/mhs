@@ -5,19 +5,26 @@
 
 packages:
 - completed:
-    hackage: devtools-0.0.1@sha256:6cc09d6568954a5c60dbd2428c2a62bfaa92e0ccdd05148c77234f21cf3971c5,4181
+    hackage: conversions-0.0.3@sha256:4adcd605bc4ee3b351359852bebfb4e7032966d93bf5200c56884c0103b7a6d0,3399
+    pantry-tree:
+      size: 250
+      sha256: 13b4efb98beb55c6939375a3cb4c6861ac02b31c27ee1659d8e5ac6a54c55902
+  original:
+    hackage: conversions-0.0.3@sha256:4adcd605bc4ee3b351359852bebfb4e7032966d93bf5200c56884c0103b7a6d0,3399
+- completed:
+    hackage: devtools-0.0.3@sha256:7187fd0e44fcbb401b367e2ee8627b3c6a6bb1e05fcd8f3fbeccf69f771787cc,4181
     pantry-tree:
       size: 452
-      sha256: e56b8d3db8f6a92452e1d58f8912ce1feb712b832f6b4e85a771c22f1c3e0c09
+      sha256: 3af775bf631610214642c7c2be8ec3f8116db8fc25fa2d77feb11562540ce36a
   original:
-    hackage: devtools-0.0.1@sha256:6cc09d6568954a5c60dbd2428c2a62bfaa92e0ccdd05148c77234f21cf3971c5,4181
+    hackage: devtools-0.0.3@sha256:7187fd0e44fcbb401b367e2ee8627b3c6a6bb1e05fcd8f3fbeccf69f771787cc,4181
 - completed:
-    hackage: mprelude-0.1.0@sha256:73336894a0addfeef076678bcc2e13dce800f66fcf1c67c72bf25184ecac3fab,2974
+    hackage: mprelude-0.2.0@sha256:e3d29aafb109029d85fb39f608f916d5e4268ce0d9069831e2ab251747b6e37b,2968
     pantry-tree:
       size: 265
-      sha256: 2516a863930d5172d3092a2309a3fa507c995f586d56f319780c2bad6c27726e
+      sha256: fc84d143b0e35f4d44b17947f70912abc9af97de2f88b9185af12d84df07ed76
   original:
-    hackage: mprelude-0.1.0@sha256:73336894a0addfeef076678bcc2e13dce800f66fcf1c67c72bf25184ecac3fab,2974
+    hackage: mprelude-0.2.0@sha256:e3d29aafb109029d85fb39f608f916d5e4268ce0d9069831e2ab251747b6e37b,2968
 - completed:
     hackage: source-constraints-0.0.1@sha256:abdda6ca3d942c81d61ed4374dbc0eee21e9c074da3f17b25d434c2d55df2acc,2979
     pantry-tree:
@@ -41,29 +48,29 @@ packages:
     hackage: tasty-mgolden-0.0.1@sha256:07fadb592cde353c386c5f38cff75539a5675e9350776ed6f4f0a70247427a78,4214
 - completed:
     name: cbt
-    version: 0.0.1
+    version: 0.1.0
     git: https://github.com/mbj/cbt
     pantry-tree:
-      size: 958
-      sha256: 7059ec3ff89338c8079f25c7907fc918e225a95ad4af21e2cc26126ef108802c
-    commit: 4ed3ede24beed00650f5ff16e4ff5da335878473
+      size: 1021
+      sha256: 91d5e431231535d768a1b538a612a8af774c541fbd3dfd42430ed3e10d5e9f25
+    commit: 63b89753a3a0939420774debf5555a8678600436
   original:
     git: https://github.com/mbj/cbt
-    commit: 4ed3ede24beed00650f5ff16e4ff5da335878473
+    commit: 63b89753a3a0939420774debf5555a8678600436
 - completed:
     name: dbt
-    version: 0.0.0.1
+    version: 0.1.0
     git: https://github.com/mbj/dbt
     pantry-tree:
-      size: 1052
-      sha256: 891c2c2922ba113b1b4e88e355439ff77e52c5c7cae25efa664549fce35b0fac
-    commit: 83a8502662a89cabce2e76f52d78f9874c64d73b
+      size: 1114
+      sha256: 94474f026f2e91164d910d014fd0fca023ead17b93340f854ee4670c70c86370
+    commit: 861b3dde81b979a32004c439433c0b771e36bc6f
   original:
     git: https://github.com/mbj/dbt
-    commit: 83a8502662a89cabce2e76f52d78f9874c64d73b
+    commit: 861b3dde81b979a32004c439433c0b771e36bc6f
 snapshots:
 - completed:
-    size: 496112
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/15/13.yaml
-    sha256: 75a1a0f870e1876898b117b0e443f911b3fa2985bfabb53158c81ab5765beda5
-  original: lts-15.13
+    size: 532381
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/11.yaml
+    sha256: 1f43c4ad661a114a4f9dd4580988f30da1208d844c097714f5867c52a02e0aa1
+  original: lts-16.11
