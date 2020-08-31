@@ -12,6 +12,9 @@ import           Control.Monad.Catch            ( MonadThrow
 import           Control.Monad.Except           ( MonadError
                                                 , throwError
                                                 )
+import           Data.Coerce                    ( Coercible
+                                                , coerce
+                                                )
 import           Data.Int                       ( Int16
                                                 , Int32
                                                 , Int64
@@ -55,8 +58,8 @@ instance (Show a, Show b, Typeable a, Typeable b) => Exception (UserBoundError a
 class Conversion b a where
   convert :: a -> b
 
-  default convert :: (Integral a, Num b) => a -> b
-  convert = fromIntegral
+  default convert :: (Coercible a b) => a -> b
+  convert = coerce
 
 instance (MonadError (UserBoundError Int Natural) m) => Conversion (m Natural) Int where
   convert = convertErrorFromIntegral
@@ -104,17 +107,29 @@ instance (MonadError (UserBoundError Natural Int64) m) => Conversion (m Int64) N
 instance Conversion a a where
   convert = id
 
-instance Conversion Integer Int
+instance Conversion Integer Int where
+  convert = fromIntegral
 
-instance Conversion Integer Word32
-instance Conversion Integer Word16
-instance Conversion Integer Word8
+instance Conversion Integer Word32 where
+  convert = fromIntegral
 
-instance Conversion Natural Word32
-instance Conversion Natural Word16
-instance Conversion Natural Word8
+instance Conversion Integer Word16 where
+  convert = fromIntegral
 
-instance Conversion Integer Natural
+instance Conversion Integer Word8 where
+  convert = fromIntegral
+
+instance Conversion Natural Word32 where
+  convert = fromIntegral
+
+instance Conversion Natural Word16 where
+  convert = fromIntegral
+
+instance Conversion Natural Word8 where
+  convert = fromIntegral
+
+instance Conversion Integer Natural where
+  convert = fromIntegral
 
 instance (MonadError (BoundError Integer Int) m) => Conversion (m Int) Integer where
   convert = convertBoundedFromIntegral
