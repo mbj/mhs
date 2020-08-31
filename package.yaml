@@ -1,5 +1,5 @@
 name:        cbt
-version:     0.0.1
+version:     0.1.0
 synopsis:    A container backend toolkit
 homepage:    https://github.com/mbj/cbt
 author:      Markus Schirp
@@ -11,8 +11,11 @@ license:     BSD3
 dependencies:
 - base               >= 4.12 && ^>= 4.13
 - bytestring         ^>= 0.10
+- co-log             ^>= 0.4
+- conversions        ^>= 0.0.3
 - cryptonite         >= 0.25 && ^>= 0.26
-- mprelude           ^>= 0.1
+- mprelude           ^>= 0.2
+- mtl                ^>= 2.2
 - pathtype           ^>= 0.8
 - source-constraints ^>= 0.0.1
 - tar                ^>= 0.5
@@ -42,27 +45,34 @@ ghc-options:
 
 default-extensions:
 - AllowAmbiguousTypes
+- ConstraintKinds
 - DataKinds
 - DerivingStrategies
+- DerivingVia
 - DuplicateRecordFields
+- FlexibleContexts
 - GeneralizedNewtypeDeriving
 - KindSignatures
 - LambdaCase
+- MultiParamTypeClasses
 - NoImplicitPrelude
 - NumericUnderscores
 - OverloadedLists
 - OverloadedStrings
+- RankNTypes
 - RecordWildCards
 - ScopedTypeVariables
 - StrictData
 - TemplateHaskell
 - TypeApplications
+- ViewPatterns
 
 library:
   source-dirs: src
   exposed-modules:
   - CBT
   - CBT.Backend
+  - CBT.Environment
   - CBT.TH
   - CBT.Types
 
@@ -75,6 +85,6 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - cbt
-    - devtools ^>= 0.0.1
+    - devtools ^>= 0.0.3
     - tasty    ^>= 1.3.1
     - tasty-hunit

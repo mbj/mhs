@@ -5,19 +5,26 @@
 
 packages:
 - completed:
-    hackage: devtools-0.0.2@sha256:1d45dd4790d6caec9b4121ad829ccdf0e3b93c1797d53fb1535770a879a3493e,4181
+    hackage: conversions-0.0.3@sha256:4adcd605bc4ee3b351359852bebfb4e7032966d93bf5200c56884c0103b7a6d0,3399
+    pantry-tree:
+      size: 250
+      sha256: 13b4efb98beb55c6939375a3cb4c6861ac02b31c27ee1659d8e5ac6a54c55902
+  original:
+    hackage: conversions-0.0.3
+- completed:
+    hackage: devtools-0.0.3@sha256:7187fd0e44fcbb401b367e2ee8627b3c6a6bb1e05fcd8f3fbeccf69f771787cc,4181
     pantry-tree:
       size: 452
-      sha256: ed222384cd4846721097e96cf353846e3dfdce899c9f05b8b5a922e6575c330c
+      sha256: 3af775bf631610214642c7c2be8ec3f8116db8fc25fa2d77feb11562540ce36a
   original:
-    hackage: devtools-0.0.2@sha256:1d45dd4790d6caec9b4121ad829ccdf0e3b93c1797d53fb1535770a879a3493e,4181
+    hackage: devtools-0.0.3@sha256:7187fd0e44fcbb401b367e2ee8627b3c6a6bb1e05fcd8f3fbeccf69f771787cc,4181
 - completed:
-    hackage: mprelude-0.1.0@sha256:73336894a0addfeef076678bcc2e13dce800f66fcf1c67c72bf25184ecac3fab,2974
+    hackage: mprelude-0.2.0@sha256:e3d29aafb109029d85fb39f608f916d5e4268ce0d9069831e2ab251747b6e37b,2968
     pantry-tree:
       size: 265
-      sha256: 2516a863930d5172d3092a2309a3fa507c995f586d56f319780c2bad6c27726e
+      sha256: fc84d143b0e35f4d44b17947f70912abc9af97de2f88b9185af12d84df07ed76
   original:
-    hackage: mprelude-0.1.0@sha256:73336894a0addfeef076678bcc2e13dce800f66fcf1c67c72bf25184ecac3fab,2974
+    hackage: mprelude-0.2.0@sha256:e3d29aafb109029d85fb39f608f916d5e4268ce0d9069831e2ab251747b6e37b,2968
 - completed:
     hackage: source-constraints-0.0.1@sha256:abdda6ca3d942c81d61ed4374dbc0eee21e9c074da3f17b25d434c2d55df2acc,2979
     pantry-tree:
@@ -41,7 +48,7 @@ packages:
     hackage: tasty-mgolden-0.0.1@sha256:07fadb592cde353c386c5f38cff75539a5675e9350776ed6f4f0a70247427a78,4214
 snapshots:
 - completed:
-    size: 531701
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/4.yaml
-    sha256: d6119cdacc6d6b39c0bb8f6e11e8db6a21e92a38552e0d553414ba346592b53f
-  original: lts-16.4
+    size: 532381
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/11.yaml
+    sha256: 1f43c4ad661a114a4f9dd4580988f30da1208d844c097714f5867c52a02e0aa1
+  original: lts-16.11
