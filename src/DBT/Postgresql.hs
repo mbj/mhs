@@ -26,35 +26,35 @@ import qualified Data.Map.Strict    as Map
 import qualified System.Environment as System
 
 newtype DatabaseName = DatabaseName Text
-  deriving newtype ToText
+  deriving (Conversion Text) via Text
   deriving stock Show
 
 newtype UserName = UserName Text
-  deriving newtype ToText
+  deriving (Conversion Text) via Text
   deriving stock Show
 
 newtype Password = Password Text
-  deriving newtype ToText
+  deriving (Conversion Text) via Text
 
 instance Show Password where
   show _password = "(Password [redacted])"
 
 newtype HostName = HostName Text
-  deriving newtype ToText
+  deriving (Conversion Text) via Text
   deriving stock Show
 
 newtype HostPort = HostPort { unPort :: Word16 }
   deriving stock Show
 
-instance ToText HostPort where
-  toText (HostPort port) = convertText $ show port
+instance Conversion Text HostPort where
+  convert (HostPort port) = convertText $ show port
 
 newtype SSLMode = SSLMode Text
-  deriving newtype ToText
+  deriving (Conversion Text) via Text
   deriving stock Show
 
 newtype SSLRootCert = SSLRootCert Text
-  deriving newtype ToText
+  deriving (Conversion Text) via Text
   deriving stock Show
 
 data ClientConfig = ClientConfig

@@ -1,7 +1,7 @@
-module DBT.Prelude (module Exports, module MPrelude, debug, log) where
+module DBT.Prelude (module Exports, debug, log) where
 
-import Control.Monad.IO.Unlift as Exports (MonadUnliftIO)
-import MPrelude
+import Data.Conversions as Exports
+import MPrelude         as Exports
 
 import qualified Data.Text.IO       as Text
 import qualified System.Environment as Environment

@@ -9,45 +9,45 @@ import Data.Int (Int)
 import GHC.Enum (succ)
 import GHC.Real (fromIntegral)
 
+import qualified CBT.Environment  as CBT
 import qualified DBT.Postgresql   as Postgresql
 import qualified Hasql.Connection as Hasql
 
 data Config = Config
   { clientConfig :: Postgresql.ClientConfig
   , maxAttempts  :: Natural
-  , onFail       :: forall m . MonadIO m => m ()
+  , onFail       :: forall m . CBT.HasEnvironment m => m ()
   , prefix       :: String
-  , printStatus  :: forall a m . (ToText a, MonadIO m) => a -> m ()
   , waitTime     :: Natural
   }
 
-wait :: MonadIO m => Config -> m ()
-wait Config{clientConfig = clientConfig@Postgresql.ClientConfig{..}, ..} = liftIO $
+wait :: forall m . CBT.HasEnvironment m => Config -> m ()
+wait Config{clientConfig = clientConfig@Postgresql.ClientConfig{..}, ..} =
   start =<< effectiveWaitTime
   where
-    failPrefix :: String -> IO a
-    failPrefix message = fail $ prefix <> (' ':message)
+    failPrefix :: String -> m a
+    failPrefix message = liftIO $ fail $ prefix <> (' ':message)
 
-    effectiveWaitTime :: IO Int
+    effectiveWaitTime :: m Int
     effectiveWaitTime =
       if waitTime <= fromIntegral (maxBound @Int)
         then pure $ fromIntegral waitTime
         else failPrefix $ "Cannot convert waitTime: " <> show waitTime <> " to Int"
 
-    start :: Int -> IO ()
+    start :: Int -> m ()
     start waitTime' = attempt 1
       where
-        attempt :: Natural -> IO ()
+        attempt :: Natural -> m ()
         attempt count =
           either (onError count) pure =<< (liftIO . withConnectionEither clientConfig $ const $ pure ())
 
-        onError :: Natural -> Hasql.ConnectionError -> IO ()
+        onError :: Natural -> Hasql.ConnectionError -> m ()
         onError attempts error =
           if attempts == maxAttempts
             then do
               onFail
               failPrefix $ "Giving up connection, last error: " <> show error
             else do
-              printStatus $ "Retrying failed connection attempt from error: " <> show error
-              threadDelay waitTime'
+              CBT.logDebug $ "Retrying failed connection attempt from error: " <> show error
+              liftIO $ threadDelay waitTime'
               attempt $ succ attempts

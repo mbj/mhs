@@ -4,11 +4,12 @@ import DBT.Prelude
 
 import qualified CBT
 import qualified CBT.Backend
-import qualified DBT.Backend    as Backend
-import qualified DBT.Postgresql as Postgresql
+import qualified CBT.Environment as CBT
+import qualified DBT.Backend     as Backend
+import qualified DBT.Postgresql  as Postgresql
 
 withDatabaseContainer
-  :: MonadUnliftIO m
+  :: CBT.HasEnvironment m
   => CBT.Prefix
   -> (Postgresql.ClientConfig -> m a)
   -> m a
@@ -20,7 +21,7 @@ withDatabaseContainer prefix action = do
     CBT.Podman -> Backend.withDatabaseContainer @'CBT.Podman containerName action
 
 startDatabaseContainer
-  :: MonadIO m
+  :: CBT.HasEnvironment m
   => CBT.Prefix
   -> m (CBT.ContainerName, Postgresql.ClientConfig)
 startDatabaseContainer prefix = do
@@ -32,7 +33,7 @@ startDatabaseContainer prefix = do
   pure (containerName, config)
 
 stopDatabaseContainer
-  :: MonadIO m
+  :: CBT.HasEnvironment m
   => CBT.ContainerName
   -> m ()
 stopDatabaseContainer containerName = do

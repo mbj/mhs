@@ -1,5 +1,5 @@
 name:        dbt
-version:     0.0.0.1
+version:     0.1.0
 synopsis:    A database toolkit
 homepage:    https://github.com/mbj/dbt
 author:      Markus Schirp
@@ -11,11 +11,12 @@ license:     BSD3
 dependencies:
 - base                 >= 4.12 && ^>= 4.13
 - bytestring           ^>= 0.10
-- cbt                  == 0.0.1
+- cbt                  ^>= 0.1.0
 - containers           ^>= 0.6
+- conversions          ^>= 0.0.3
 - cryptonite           >= 0.25 && ^>= 0.26
 - hasql                ^>= 1.4
-- mprelude             ^>= 0.1.0
+- mprelude             ^>= 0.2.0
 - network              ^>= 3.1
 - pathtype             ^>= 0.8
 - source-constraints   ^>= 0.0.1
@@ -46,10 +47,13 @@ default-extensions:
 - AllowAmbiguousTypes
 - DataKinds
 - DerivingStrategies
+- DerivingVia
 - DuplicateRecordFields
+- FlexibleContexts
 - GeneralizedNewtypeDeriving
 - KindSignatures
 - LambdaCase
+- MultiParamTypeClasses
 - NoImplicitPrelude
 - NumericUnderscores
 - OverloadedLists
@@ -76,6 +80,6 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - dbt
-    - devtools ^>= 0.0.1
+    - devtools ^>= 0.0.3
     - tasty
     - tasty-mgolden

@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e4e09aab13357a41a23837ffa466a92e5788e4a288062ba4d9522ed3375337aa
+-- hash: 15372ab8d9a0f558c8ba6ca2474586da5b881e4fced2d457f7ed073573639095
 
 name:           dbt
-version:        0.0.0.1
+version:        0.1.0
 synopsis:       A database toolkit
 homepage:       https://github.com/mbj/dbt
 bug-reports:    https://github.com/mbj/dbt/issues
@@ -35,16 +35,17 @@ library
       Paths_dbt
   hs-source-dirs:
       src
-  default-extensions: AllowAmbiguousTypes DataKinds DerivingStrategies DuplicateRecordFields GeneralizedNewtypeDeriving KindSignatures LambdaCase NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TypeApplications
+  default-extensions: AllowAmbiguousTypes DataKinds DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving KindSignatures LambdaCase MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TypeApplications
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
       base >=4.12 && >=4.13 && <4.14
     , bytestring >=0.10 && <0.11
-    , cbt ==0.0.1
+    , cbt >=0.1.0 && <0.2
     , containers >=0.6 && <0.7
+    , conversions >=0.0.3 && <0.1
     , cryptonite >=0.25 && >=0.26 && <0.27
     , hasql >=1.4 && <1.5
-    , mprelude >=0.1.0 && <0.2
+    , mprelude >=0.2.0 && <0.3
     , network >=3.1 && <3.2
     , pathtype >=0.8 && <0.9
     , source-constraints >=0.0.1 && <0.1
@@ -61,18 +62,19 @@ test-suite test
   main-is: test/Test.hs
   other-modules:
       Paths_dbt
-  default-extensions: AllowAmbiguousTypes DataKinds DerivingStrategies DuplicateRecordFields GeneralizedNewtypeDeriving KindSignatures LambdaCase NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TypeApplications
+  default-extensions: AllowAmbiguousTypes DataKinds DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving KindSignatures LambdaCase MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TypeApplications
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       base >=4.12 && >=4.13 && <4.14
     , bytestring >=0.10 && <0.11
-    , cbt ==0.0.1
+    , cbt >=0.1.0 && <0.2
     , containers >=0.6 && <0.7
+    , conversions >=0.0.3 && <0.1
     , cryptonite >=0.25 && >=0.26 && <0.27
     , dbt
-    , devtools >=0.0.1 && <0.1
+    , devtools >=0.0.3 && <0.1
     , hasql >=1.4 && <1.5
-    , mprelude >=0.1.0 && <0.2
+    , mprelude >=0.2.0 && <0.3
     , network >=3.1 && <3.2
     , pathtype >=0.8 && <0.9
     , source-constraints >=0.0.1 && <0.1
