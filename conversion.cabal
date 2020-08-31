@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           conversion
-version:        0.0.1
+version:        0.0.2
 synopsis:       Injective explicit total and partial conversions
 homepage:       https://github.com/mbj/conversion#readme
 bug-reports:    https://github.com/mbj/conversion/issues

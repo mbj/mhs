@@ -3,7 +3,7 @@ synopsis:   Injective explicit total and partial conversions
 homepage:   https://github.com/mbj/conversion#readme
 maintainer: Markus Schirp mbj@schirp-ds.com, Allan Lukwago <epicallan.al@gmail.com>
 github:     mbj/conversion
-version:    0.0.1
+version:    0.0.2
 
 dependencies:
 - base

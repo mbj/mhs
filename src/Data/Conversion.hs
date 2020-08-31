@@ -164,6 +164,8 @@ instance Conversion Text String where
 instance Conversion String Text where
   convert = Text.unpack
 
+type ToText a = Conversion Text a
+
 convertErrorFromNatural
   :: forall a m
    . (Integral a, Bounded a, MonadError (UserBoundError Natural a) m)
@@ -249,5 +251,5 @@ mkTH
 mkTH input =
   TH.TExp <$> either (fail . show) (TH.lift @b) (convertThrow @b @a @e input)
 
-toText :: forall a . (Conversion Text a) => a -> Text
-toText = convert @Text
+toText :: ToText a => a -> Text
+toText = convert
