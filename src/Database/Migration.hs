@@ -1,7 +1,8 @@
 {-# LANGUAGE QuasiQuotes #-}
 
 module Database.Migration
-  ( apply
+  ( LogInfo
+  , apply
   , dryApply
   , dumpSchema
   , loadSchema
@@ -52,29 +53,31 @@ data MigrationFile = MigrationFile
   , sql    :: ByteString
   }
 
-dryApply :: Hasql.Session ()
-dryApply = do
+type LogInfo = (forall a . (ToText a) => a -> IO ())
+
+dryApply :: LogInfo -> Hasql.Session ()
+dryApply logInfo = do
   files <- getNewMigrations
 
   if Foldable.null files
-    then log @Text "No new migrations to apply"
-    else Foldable.traverse_ (liftIO . printMigrationFile) files
+    then liftIO $ logInfo @Text "No new migrations to apply"
+    else Foldable.traverse_ (liftIO . printMigrationFile logInfo) files
 
-status :: Hasql.Session ()
-status = do
+status :: LogInfo -> Hasql.Session ()
+status logInfo = do
   applied <- readAppliedMigrations
 
-  log @Text $ "Applied migrations: " <> show (Foldable.length applied)
+  liftIO . logInfo $ "Applied migrations: " <> show (Foldable.length applied)
 
   liftIO $ do
-    Foldable.traverse_ (log @Text . show) applied
+    Foldable.traverse_ (logInfo . show) applied
 
-    Foldable.traverse_ printMigrationFile =<<
+    Foldable.traverse_ (printMigrationFile logInfo) =<<
       newMigrations applied <$> readMigrationFiles
 
-dumpSchema :: Postgresql.ClientConfig -> IO ()
-dumpSchema config = do
-  log $ "Writing schema to " <> schemaFileString
+dumpSchema :: LogInfo -> Postgresql.ClientConfig -> IO ()
+dumpSchema logInfo config = do
+  logInfo $ "Writing schema to " <> schemaFileString
   env <- Environment.getEnvironment
   schema <- Process.readProcessStdout_
     . Process.setEnv (env <> Postgresql.toEnv config)
@@ -84,29 +87,29 @@ dumpSchema config = do
     $ Process.proc "pg_dump" ["--data-only", "--inserts", "--table=schema_migrations"]
   LBS.writeFile schemaFileString $ schema <> migrations
 
-loadSchema :: Hasql.Session ()
-loadSchema = do
-  log $ "Loading schema from " <> schemaFileString
+loadSchema :: LogInfo -> Hasql.Session ()
+loadSchema logInfo = do
+  liftIO . logInfo $ "Loading schema from " <> schemaFileString
   Transaction.transaction
     Transaction.Serializable
     Transaction.Write =<<
       Transaction.sql <$> liftIO (BS.readFile schemaFileString)
 
-apply :: Hasql.Session ()
-apply = do
+apply :: LogInfo -> Hasql.Session ()
+apply logInfo = do
   migrations <- getNewMigrations
-  log @Text $ "Applying " <> show (Foldable.length migrations) <> " pending migrations"
-  Foldable.traverse_ applyMigration migrations
+  liftIO . logInfo $ "Applying " <> show (Foldable.length migrations) <> " pending migrations"
+  Foldable.traverse_ (applyMigration logInfo) migrations
 
-new :: Hasql.Session ()
-new = do
+new :: LogInfo -> Hasql.Session ()
+new logInfo = do
   applied <- max . fmap appliedIndex <$> readAppliedMigrations
   files   <- max . fmap fileIndex    <$> liftIO readMigrationFiles
 
   let index = succ $ max [applied, files]
       file  = Path.toString $ migrationDir </> Path.relFile (show index) <.> ".sql"
 
-  log $ "Creating new migration file: " <> file
+  liftIO . logInfo $ "Creating new migration file: " <> file
 
   liftIO $ do
     Path.createDirectoryIfMissing True migrationDir
@@ -127,12 +130,12 @@ setup = Hasql.sql
       )
   |]
 
-printMigrationFile :: MigrationFile -> IO ()
-printMigrationFile MigrationFile{..} = log $ Path.toString path
+printMigrationFile :: LogInfo -> MigrationFile -> IO ()
+printMigrationFile logInfo MigrationFile{..} = logInfo $ Path.toString path
 
-applyMigration :: MigrationFile -> Hasql.Session ()
-applyMigration MigrationFile{..} = do
-  log $ "Applying migration: " <> Path.toString path
+applyMigration :: LogInfo -> MigrationFile -> Hasql.Session ()
+applyMigration logInfo MigrationFile{..} = do
+  liftIO . logInfo $ "Applying migration: " <> Path.toString path
   Transaction.transaction Transaction.Serializable Transaction.Write $ do
     Transaction.sql sql
 
@@ -144,7 +147,8 @@ applyMigration MigrationFile{..} = do
         VALUES
           ($1 :: bytea, $2 :: int8)
       |]
-  log @Text "Success"
+
+  liftIO $ logInfo @Text "Success"
 
 readAppliedMigrations :: Hasql.Session [AppliedMigration]
 readAppliedMigrations = do
