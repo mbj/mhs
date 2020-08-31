@@ -6,15 +6,16 @@ github:     mbj/conversions
 version:    0.0.2
 
 dependencies:
-- base
-- bytestring
-- control-bool
-- devtools
-- exceptions
-- mtl
-- source-constraints
-- template-haskell
-- text
+- base               > 4.12 && < 4.15
+- bytestring         ^>= 0.10
+- control-bool       ^>= 0.2
+- devtools           ^>= 0.0.2
+- exceptions         ^>= 0.10
+- mtl                ^>= 2.2
+- source-constraints ^>= 0.0.1
+- template-haskell   ^>= 2.15
+- text               ^>= 1.2
+- unliftio-core      ^>= 0.1
 
 ghc-options:
 - -Wall
