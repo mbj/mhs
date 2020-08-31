@@ -17,6 +17,12 @@ dependencies:
 - text               ^>= 1.2
 - unliftio-core      ^>= 0.1
 
+flags:
+  development:
+    description: Run GHC with development flags
+    default: false
+    manual: true
+
 ghc-options:
 - -Wall
 - -Wcompat
@@ -60,6 +66,13 @@ default-extensions:
 
 library:
   source-dirs: src
+
+when:
+  - condition: flag(development)
+    then:
+      ghc-options: -Werror
+    else:
+      ghc-options: -Wwarn
 
 tests:
   test:
