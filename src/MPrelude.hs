@@ -40,6 +40,10 @@ import Data.Bool as Exports
   , otherwise
   )
 
+import Data.Coerce as Exports
+  ( coerce
+  )
+
 import Data.Either as Exports
   ( Either(Left, Right)
   , either
