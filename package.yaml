@@ -17,6 +17,7 @@ dependencies:
 - source-constraints ^>= 0.0.1
 - text               ^>= 1.2
 - text-conversions   ^>= 0.3
+- unliftio-core      ^>= 0.1
 
 flags:
   development:

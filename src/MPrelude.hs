@@ -28,6 +28,10 @@ import Control.Monad.IO.Class as Exports
   , liftIO
   )
 
+import Control.Monad.IO.Unlift  as Exports
+  ( MonadUnliftIO
+  )
+
 import Data.Bool as Exports
   ( Bool(..)
   , (&&)
