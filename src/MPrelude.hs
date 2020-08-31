@@ -28,12 +28,20 @@ import Control.Monad.IO.Class as Exports
   , liftIO
   )
 
+import Control.Monad.IO.Unlift  as Exports
+  ( MonadUnliftIO
+  )
+
 import Data.Bool as Exports
   ( Bool(..)
   , (&&)
   , (||)
   , not
   , otherwise
+  )
+
+import Data.Coerce as Exports
+  ( coerce
   )
 
 import Data.Either as Exports
@@ -62,7 +70,11 @@ import Data.Function as Exports
 
 import Data.Functor as Exports
   ( Functor
+  , ($>)
+  , (<$)
   , (<$>)
+  , (<&>)
+  , fmap
   )
 
 import Data.Maybe as Exports
@@ -117,6 +129,10 @@ import GHC.Enum as Exports
   , Enum
   , maxBound
   , minBound
+  )
+
+import GHC.Generics as Exports
+  ( Generic
   )
 
 import GHC.Num as Exports

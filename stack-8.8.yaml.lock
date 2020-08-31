@@ -5,6 +5,13 @@
 
 packages:
 - completed:
+    hackage: devtools-0.0.2@sha256:1d45dd4790d6caec9b4121ad829ccdf0e3b93c1797d53fb1535770a879a3493e,4181
+    pantry-tree:
+      size: 452
+      sha256: ed222384cd4846721097e96cf353846e3dfdce899c9f05b8b5a922e6575c330c
+  original:
+    hackage: devtools-0.0.2@sha256:1d45dd4790d6caec9b4121ad829ccdf0e3b93c1797d53fb1535770a879a3493e,4181
+- completed:
     hackage: source-constraints-0.0.1@sha256:abdda6ca3d942c81d61ed4374dbc0eee21e9c074da3f17b25d434c2d55df2acc,2979
     pantry-tree:
       size: 767
@@ -25,20 +32,9 @@ packages:
       sha256: 9cd24c3a02396dd93ed7d57df1d9668a2377d128e413db5ff89d82ffdfc830fa
   original:
     hackage: tasty-mgolden-0.0.1@sha256:07fadb592cde353c386c5f38cff75539a5675e9350776ed6f4f0a70247427a78,4214
-- completed:
-    name: devtools
-    version: 0.0.0.1
-    git: https://github.com/mbj/devtools-hs
-    pantry-tree:
-      size: 784
-      sha256: 06c3122cd2163bf1e1b697ecf34f0efb72dd3b583dcb0c680f77e842101fb2d0
-    commit: a584eaaf9291a6211ecb16ca37f9e31ea830c015
-  original:
-    git: https://github.com/mbj/devtools-hs
-    commit: a584eaaf9291a6211ecb16ca37f9e31ea830c015
 snapshots:
 - completed:
-    size: 496112
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/15/13.yaml
-    sha256: 75a1a0f870e1876898b117b0e443f911b3fa2985bfabb53158c81ab5765beda5
-  original: lts-15.13
+    size: 532381
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/11.yaml
+    sha256: 1f43c4ad661a114a4f9dd4580988f30da1208d844c097714f5867c52a02e0aa1
+  original: lts-16.11
