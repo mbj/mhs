@@ -1,9 +1,10 @@
+github:     mbj/conversions
+homepage:   https://github.com/mbj/conversions#readme
+license:    MIT
+maintainer: Markus Schirp mbj@schirp-ds.com, Allan Lukwago <epicallan.al@gmail.com>
 name:       conversions
 synopsis:   Injective explicit total and partial conversions
-homepage:   https://github.com/mbj/conversions#readme
-maintainer: Markus Schirp mbj@schirp-ds.com, Allan Lukwago <epicallan.al@gmail.com>
-github:     mbj/conversions
-version:    0.0.2
+version:    0.0.3
 
 dependencies:
 - base               > 4.12 && < 4.15

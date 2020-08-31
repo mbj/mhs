@@ -166,6 +166,9 @@ instance Conversion String Text where
 
 type ToText a = Conversion Text a
 
+convertText :: forall a b . (Conversion Text a, Conversion b Text) => a -> b
+convertText = convert @b . convert @Text
+
 convertErrorFromNatural
   :: forall a m
    . (Integral a, Bounded a, MonadError (UserBoundError Natural a) m)

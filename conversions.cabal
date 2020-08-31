@@ -5,11 +5,12 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           conversions
-version:        0.0.2
+version:        0.0.3
 synopsis:       Injective explicit total and partial conversions
 homepage:       https://github.com/mbj/conversions#readme
 bug-reports:    https://github.com/mbj/conversions/issues
 maintainer:     Markus Schirp mbj@schirp-ds.com, Allan Lukwago <epicallan.al@gmail.com>
+license:        MIT
 build-type:     Simple
 
 source-repository head
