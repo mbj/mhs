@@ -21,8 +21,8 @@ import qualified StackDeploy.Provider             as Provider
 import qualified StackDeploy.Template             as Template
 
 newtype RoleARN = RoleARN Text
-  deriving newtype ToText
-  deriving stock   Eq
+  deriving (Conversion Text) via Text
+  deriving stock Eq
 
 type Name = Provider.Name InstanceSpec
 

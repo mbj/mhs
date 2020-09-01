@@ -27,12 +27,13 @@ import qualified Network.AWS.CloudFormation.Types as CF
 import qualified Stratosphere
 
 newtype ParameterName = ParameterName Text
-  deriving newtype (Hashable, ToText)
-  deriving stock   (Eq, Ord)
+  deriving (Conversion Text) via Text
+  deriving newtype (Hashable)
+  deriving stock (Eq, Ord)
 
 newtype ParameterValue = ParameterValue Text
-  deriving newtype ToText
-  deriving stock   Eq
+  deriving (Conversion Text) via Text
+  deriving stock Eq
 
 data Parameter
   = Parameter ParameterName ParameterValue
