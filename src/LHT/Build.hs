@@ -13,6 +13,7 @@ import LHT.Prelude
 import System.Path ((</>))
 
 import qualified CBT
+import qualified CBT.Environment       as CBT
 import qualified CBT.TH
 import qualified Data.Foldable         as Foldable
 import qualified System.Path           as Path
@@ -21,10 +22,10 @@ import qualified System.Posix.Files    as Files
 import qualified UnliftIO.Exception    as Exception
 
 newtype PackageName = PackageName Text
-  deriving newtype ToText
+  deriving (Conversion Text) via Text
 
 newtype TargetName = TargetName Text
-  deriving newtype ToText
+  deriving (Conversion Text) via Text
 
 data Flag = Flag PackageName Text
 
@@ -44,12 +45,12 @@ buildDefinition = $$(CBT.TH.readDockerfile (CBT.Prefix "lht") $ Path.file "Docke
   { CBT.verbosity = CBT.Verbose }
 #endif
 
-build :: forall m . MonadUnliftIO m => Config -> m Executable
+build :: CBT.HasEnvironment m => Config -> m Executable
 build config@Config{..} =
   withBuildContainer config $ \containerName ->
     Executable <$> CBT.readContainerFile containerName (containerHomePath </> executablePath)
 
-withBuildContainer :: MonadUnliftIO m => Config -> (CBT.ContainerName -> m a) -> m a
+withBuildContainer :: CBT.HasEnvironment m => Config -> (CBT.ContainerName -> m a) -> m a
 withBuildContainer Config{..} action = do
   containerName <- CBT.nextContainerName prefix
 
