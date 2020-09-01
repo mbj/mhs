@@ -104,8 +104,8 @@ data Discriminator = Discriminator
   deriving anyclass (JSON.FromJSON, JSON.ToJSON)
   deriving stock (Eq, Generic, Show)
 
-instance ToText Type where
-  toText = \case
+instance Conversion Text Type where
+  convert = \case
     Array   -> "array"
     Boolean -> "boolean"
     Integer -> "integer"
@@ -128,8 +128,8 @@ data Format
   | UnixTime
   deriving stock (Eq, Show)
 
-instance ToText Format where
-  toText = \case
+instance Conversion Text Format where
+  convert = \case
     CustomFormat format -> format
     UnixTime            -> "unix-time"
 

@@ -67,5 +67,5 @@ instance JSON.ToJSON Responses where
 newtype ResponseStatusPattern = ResponseStatusExact HTTP.Status
   deriving stock (Eq, Ord, Show)
 
-instance ToText ResponseStatusPattern where
-  toText = convertText . show
+instance Conversion Text ResponseStatusPattern where
+  convert = convertText . show

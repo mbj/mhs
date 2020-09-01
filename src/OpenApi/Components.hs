@@ -13,12 +13,12 @@ import OpenApi.SecurityScheme
 import qualified Data.Aeson as JSON
 
 newtype ComponentName a = ComponentName Text
+  deriving (Conversion Text) via Text
   deriving newtype
     ( JSON.FromJSON
     , JSON.FromJSONKey
     , JSON.ToJSON
     , JSON.ToJSONKey
-    , ToText
     )
   deriving stock (Eq, Ord, Show)
 
