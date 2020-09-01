@@ -20,12 +20,13 @@ dependencies:
 - bytestring              ^>= 0.10
 - conduit                 ^>= 1.3
 - containers              ^>= 0.6
+- conversions             ^>= 0.0.3
 - exceptions              ^>= 0.10
 - filepath                ^>= 1.4
 - hashable                >= 1.2 && ^>= 1.3
 - http-types              ^>= 0.12
 - lens                    >= 4.17 && ^>= 4.18
-- mprelude                ^>= 0.1.0
+- mprelude                ^>= 0.2.0
 - mtl                     ^>= 2.2
 - optparse-applicative    >= 0.14 && ^>= 0.15
 - random                  ^>= 1.1
@@ -60,6 +61,7 @@ default-extensions:
 - DeriveAnyClass
 - DeriveGeneric
 - DerivingStrategies
+- DerivingVia
 - DuplicateRecordFields
 - FlexibleContexts
 - FlexibleInstances
@@ -100,4 +102,4 @@ tests:
     - -threaded
     - -with-rtsopts=-N
     dependencies:
-    - devtools ^>= 0.0.1
+    - devtools ^>= 0.0.3

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 20f22fb573e471971cabf48a99f7861aa2df39a047f29496470271ea46ab902c
+-- hash: 1edab59e242030e1041eebc6ab8de8261a5401e4774f95d9524e84ded90e1524
 
 name:           stack-deploy
 version:        0.0.0.1
@@ -44,7 +44,7 @@ library
       Paths_stack_deploy
   hs-source-dirs:
       src
-  default-extensions: DeriveAnyClass DeriveGeneric DerivingStrategies DuplicateRecordFields FlexibleContexts FlexibleInstances GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables Strict TypeFamilies
+  default-extensions: DeriveAnyClass DeriveGeneric DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts FlexibleInstances GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables Strict TypeFamilies
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields
   build-depends:
       aeson >=1.4 || >=1.5 && <1.6
@@ -58,12 +58,13 @@ library
     , bytestring >=0.10 && <0.11
     , conduit >=1.3 && <1.4
     , containers >=0.6 && <0.7
+    , conversions >=0.0.3 && <0.1
     , exceptions >=0.10 && <0.11
     , filepath >=1.4 && <1.5
     , hashable >=1.2 && >=1.3 && <1.4
     , http-types >=0.12 && <0.13
     , lens >=4.17 && >=4.18 && <4.19
-    , mprelude >=0.1.0 && <0.2
+    , mprelude >=0.2.0 && <0.3
     , mtl >=2.2 && <2.3
     , optparse-applicative >=0.14 && >=0.15 && <0.16
     , random >=1.1 && <1.2
@@ -85,7 +86,7 @@ test-suite devtools
   main-is: test/Devtools.hs
   other-modules:
       Paths_stack_deploy
-  default-extensions: DeriveAnyClass DeriveGeneric DerivingStrategies DuplicateRecordFields FlexibleContexts FlexibleInstances GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables Strict TypeFamilies
+  default-extensions: DeriveAnyClass DeriveGeneric DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts FlexibleInstances GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables Strict TypeFamilies
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       aeson >=1.4 || >=1.5 && <1.6
@@ -99,13 +100,14 @@ test-suite devtools
     , bytestring >=0.10 && <0.11
     , conduit >=1.3 && <1.4
     , containers >=0.6 && <0.7
-    , devtools >=0.0.1 && <0.1
+    , conversions >=0.0.3 && <0.1
+    , devtools >=0.0.3 && <0.1
     , exceptions >=0.10 && <0.11
     , filepath >=1.4 && <1.5
     , hashable >=1.2 && >=1.3 && <1.4
     , http-types >=0.12 && <0.13
     , lens >=4.17 && >=4.18 && <4.19
-    , mprelude >=0.1.0 && <0.2
+    , mprelude >=0.2.0 && <0.3
     , mtl >=2.2 && <2.3
     , optparse-applicative >=0.14 && >=0.15 && <0.16
     , random >=1.1 && <1.2

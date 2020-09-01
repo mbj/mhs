@@ -10,7 +10,7 @@ import qualified Data.Text.Encoding               as Text
 import qualified System.Random                    as Random
 
 newtype Id = Id Text
-  deriving newtype ToText
+  deriving (Conversion Text) via Text
 
 data Operation
   = OpCreate InstanceSpec
@@ -25,7 +25,7 @@ data RemoteOperation = RemoteOperation
 data RemoteOperationResult = RemoteOperationFailure | RemoteOperationSuccess
 
 newtype Token = Token Text
-  deriving newtype ToText
+  deriving (Conversion Text) via Text
 
 verb :: Operation -> Text
 verb = \case
