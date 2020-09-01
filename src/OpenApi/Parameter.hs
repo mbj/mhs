@@ -43,8 +43,8 @@ instance JSON.FromJSON ParameterLocation where
 instance JSON.ToJSON ParameterLocation where
   toJSON = JSON.toJSON . toText
 
-instance ToText ParameterLocation where
-  toText = \case
+instance Conversion Text ParameterLocation where
+  convert = \case
     Cookie -> "cookie"
     Header -> "header"
     Path   -> "path"
@@ -61,9 +61,8 @@ instance JSON.FromJSON ParameterStyle where
 instance JSON.ToJSON ParameterStyle where
   toJSON = JSON.toJSON . toText
 
-instance ToText ParameterStyle where
-  toText = \case
+instance Conversion Text ParameterStyle where
+  convert = \case
     DeepObject -> "deepObject"
     Form       -> "form"
     Simple     -> "simple"
-

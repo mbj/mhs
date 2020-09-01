@@ -3,7 +3,6 @@ module OpenApi.Paths where
 import Control.Applicative ((*>), (<*))
 import Data.Char (Char)
 import Data.Foldable (any)
-import Data.Functor (($>))
 import OpenApi.Parameter
 import OpenApi.PathItem
 import OpenApi.Prelude
@@ -20,16 +19,16 @@ type Paths = Map PathTemplate PathItem
 data PathSegment = PathSegmentStatic Text | PathSegmentDynamic ParameterName
   deriving stock (Eq, Ord, Show)
 
-instance ToText PathSegment where
-  toText = \case
+instance Conversion Text PathSegment where
+  convert = \case
     PathSegmentDynamic parameterName -> "{" <> convertText parameterName <> "}"
     PathSegmentStatic text -> text
 
 newtype PathTemplate = PathTemplate [PathSegment]
   deriving stock (Eq, Ord, Show)
 
-instance ToText PathTemplate where
-  toText (PathTemplate segments) = Text.intercalate "/" $ toText <$> segments
+instance Conversion Text PathTemplate where
+  convert (PathTemplate segments) = Text.intercalate "/" $ toText <$> segments
 
 instance JSON.FromJSON PathTemplate where
   parseJSON = JSON.withText "path item" parsePathTemplateText

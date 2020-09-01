@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d5b73ce2afbf3d9c1e7f3ec434305d3eb591b68ccc55b9e0f3bf7fe73727f725
+-- hash: 47f01daecbeafc37c4a6dab560b6d57deeada95f709ecd3fa225361728ac03c5
 
 name:           openapi
 version:        0.0.0.1
@@ -57,18 +57,19 @@ library
       Paths_openapi
   hs-source-dirs:
       src
-  default-extensions: AllowAmbiguousTypes DataKinds DeriveAnyClass DeriveGeneric DerivingStrategies DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving KindSignatures LambdaCase NoImplicitPrelude OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables Strict TupleSections TypeApplications
+  default-extensions: AllowAmbiguousTypes DataKinds DeriveAnyClass DeriveGeneric DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving KindSignatures LambdaCase MultiParamTypeClasses NoImplicitPrelude OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables Strict TupleSections TypeApplications
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -fplugin=SourceConstraints
   build-depends:
-      aeson (>=1.4 && <1.5) && <=1.5
+      aeson >=1.5 && <1.6
     , attoparsec >=0.13 && <0.14
     , base >4.12 && <14.15
     , bytestring >=0.10 && <0.11
     , conduit >=1.3 && <1.4
     , containers >=0.6 && <0.7
+    , conversions >=0.0.3 && <0.1
     , exceptions >=0.10 && <0.11
     , http-types >=0.12 && <0.13
-    , mprelude >=0.1.0 && <0.2
+    , mprelude >=0.2.0 && <0.3
     , mtl >=2.2 && <2.3
     , pathtype >=0.8 && <0.9
     , scientific >=0.3 && <0.4
@@ -84,19 +85,20 @@ test-suite tasty
   main-is: Main.hs
   hs-source-dirs:
       test
-  default-extensions: AllowAmbiguousTypes DataKinds DeriveAnyClass DeriveGeneric DerivingStrategies DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving KindSignatures LambdaCase NoImplicitPrelude OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables Strict TupleSections TypeApplications
+  default-extensions: AllowAmbiguousTypes DataKinds DeriveAnyClass DeriveGeneric DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving KindSignatures LambdaCase MultiParamTypeClasses NoImplicitPrelude OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables Strict TupleSections TypeApplications
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -fplugin=SourceConstraints
   build-depends:
-      aeson (>=1.4 && <1.5) && <=1.5
+      aeson >=1.5 && <1.6
     , attoparsec >=0.13 && <0.14
     , base >4.12 && <14.15
     , bytestring >=0.10 && <0.11
     , conduit >=1.3 && <1.4
     , containers >=0.6 && <0.7
-    , devtools >=0.0.1 && <0.1
+    , conversions >=0.0.3 && <0.1
+    , devtools >=0.0.3 && <0.1
     , exceptions >=0.10 && <0.11
     , http-types >=0.12 && <0.13
-    , mprelude >=0.1.0 && <0.2
+    , mprelude >=0.2.0 && <0.3
     , mtl >=2.2 && <2.3
     , openapi
     , pathtype >=0.8 && <0.9

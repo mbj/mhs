@@ -7,8 +7,8 @@ import qualified Data.Aeson as JSON
 import qualified Data.Text  as Text
 
 newtype Reference a = Reference Text
-  deriving newtype ToText
-  deriving stock   (Eq, Show)
+  deriving (Conversion Text) via Text
+  deriving stock (Eq, Show)
 
 instance Referencable a => JSON.ToJSON (Reference a) where
   toJSON (Reference name) = JSON.toJSON $ prefix @a <> name

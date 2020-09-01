@@ -9,15 +9,16 @@ github:      mbj/openapi
 license:     BSD3
 
 dependencies:
-- aeson                ^>= 1.4 && <= 1.5
+- aeson                ^>= 1.5
 - attoparsec           ^>= 0.13
 - base                 > 4.12 && < 14.15
 - bytestring           ^>= 0.10
 - conduit              ^>= 1.3
 - containers           ^>= 0.6
+- conversions          ^>= 0.0.3
 - exceptions           ^>= 0.10
 - http-types           ^>= 0.12
-- mprelude             ^>= 0.1.0
+- mprelude             ^>= 0.2.0
 - mtl                  ^>= 2.2
 - pathtype             ^>= 0.8
 - scientific           ^>= 0.3
@@ -48,11 +49,13 @@ default-extensions:
 - DeriveAnyClass
 - DeriveGeneric
 - DerivingStrategies
+- DerivingVia
 - DuplicateRecordFields
 - FlexibleContexts
 - GeneralizedNewtypeDeriving
 - KindSignatures
 - LambdaCase
+- MultiParamTypeClasses
 - NoImplicitPrelude
 - OverloadedLists
 - OverloadedStrings
@@ -72,7 +75,7 @@ tests:
     source-dirs:   test
     other-modules: []
     dependencies:
-    - devtools ^>= 0.0.1
+    - devtools ^>= 0.0.3
     - openapi
     - tasty
     - tasty-hunit
