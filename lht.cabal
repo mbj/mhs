@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f8cb33fc2ca90a6b1927b4036317e662d2a18d30e55074b62fe202a6857120e9
+-- hash: aea05cd689e83365bfd72d1a91e910854ddfe307805c8a659175a8a52a0552f3
 
 name:           lht
 version:        0.0.0.1
@@ -29,7 +29,6 @@ library
       LHT.Build
       LHT.Deploy
       LHT.Executable
-      LHT.RDS
       LHT.S3
       LHT.Zip
   other-modules:

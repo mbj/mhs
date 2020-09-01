@@ -80,7 +80,6 @@ library:
   - LHT.Build
   - LHT.Deploy
   - LHT.Executable
-  - LHT.RDS
   - LHT.S3
   - LHT.Zip
 
