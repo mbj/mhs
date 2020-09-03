@@ -14,13 +14,13 @@ mkName :: Val Text -> Val Text
 mkName name = Join "-" [awsStackName, name]
 
 awsAccountId :: Val Text
-awsAccountId = Ref "AWS::AccountId"
+awsAccountId = toRef AccountId
 
 awsRegion :: Val Text
-awsRegion = Ref "AWS::Region"
+awsRegion = toRef Region
 
 awsStackName :: Val Text
-awsStackName = Ref "AWS::StackName"
+awsStackName = toRef StackName
 
 getAtt :: Text -> Resource -> Val Text
 getAtt name item = GetAtt (itemName item) name
@@ -94,3 +94,18 @@ fetchOutput stack soutput =
       = fail
       . convertText
       $ "Stack: " <> view CF.sStackName stack <> " " <> message
+
+-- See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/pseudo-parameter-reference.html
+data PseudoParameter a
+  = AccountId
+  | NoValue
+  | NotificationARNs
+  | Partition
+  | Region
+  | StackId
+  | StackName
+  | URLSuffix
+  deriving stock Show
+
+instance ToRef (PseudoParameter a) Text where
+  toRef = Ref . convert . (<>) "AWS::" . show

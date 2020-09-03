@@ -188,7 +188,7 @@ parameterReader = eitherReader (Text.parseOnly parser . convertText)
     parser = do
       name <- ParameterName . convertText <$> Text.many1 (Text.satisfy allowChar)
       Text.skip (== ':')
-      value <- ParameterValue . convertText <$> Text.many1 Text.anyChar
+      value <- ParameterValue . convertText <$> Text.many' Text.anyChar
       void Text.endOfInput
 
       pure $ Parameter name value
