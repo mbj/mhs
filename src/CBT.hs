@@ -12,6 +12,7 @@ module CBT
   , printLogs
   , readContainerFile
   , removeContainer
+  , runReadStdout
   , withContainer
   )
 where
@@ -60,6 +61,16 @@ buildRun buildDefinition containerDefinition = do
   case implementation of
     Docker -> CBT.Backend.buildRun @'Docker buildDefinition containerDefinition
     Podman -> CBT.Backend.buildRun @'Podman buildDefinition containerDefinition
+
+runReadStdout
+  :: HasEnvironment m
+  => ContainerDefinition
+  -> m BS.ByteString
+runReadStdout containerDefinition = do
+  implementation <- getImplementation
+  case implementation of
+    Docker -> CBT.Backend.runReadStdout @'Docker containerDefinition
+    Podman -> CBT.Backend.runReadStdout @'Podman containerDefinition
 
 buildIfAbsent
   :: HasEnvironment m
