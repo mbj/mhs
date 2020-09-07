@@ -83,8 +83,15 @@ class Backend (b :: Implementation) where
     buildIfAbsent @b buildDefinition >> run @b containerDefinition
 
   run :: forall m . HasEnvironment m => ContainerDefinition -> m ()
-  run containerDefinition@ContainerDefinition{..}
-    = handleFailure @b containerDefinition =<< runProcess (runProc @b containerDefinition)
+  run containerDefinition@ContainerDefinition{..} =
+    handleFailure @b containerDefinition () =<< runProcess (runProc @b containerDefinition)
+
+  runReadStdout :: forall m . HasEnvironment m => ContainerDefinition -> m BS.ByteString
+  runReadStdout containerDefinition = do
+    (exitCode, output) <- readProcessStdout $ runProc @b containerDefinition'
+    handleFailure @b containerDefinition (convert output) exitCode
+    where
+      containerDefinition' = containerDefinition { detach = Foreground }
 
   readContainerFile :: forall m . HasEnvironment m => ContainerName -> Path.AbsFile -> m BS.ByteString
   readContainerFile containerName path = do
@@ -311,6 +318,12 @@ readProcessStdout_
   -> m LBS.ByteString
 readProcessStdout_ proc = procRun proc Process.readProcessStdout_
 
+readProcessStdout
+  :: forall m stdin stdout stderr . HasEnvironment m
+  => Process.ProcessConfig stdin stdout stderr
+  -> m (Exit.ExitCode, LBS.ByteString)
+readProcessStdout proc = procRun proc Process.readProcessStdout
+
 procRun
   :: forall m a stdin stdout stderr . WithLog m
   => Process.ProcessConfig stdin stdout stderr
@@ -319,11 +332,13 @@ procRun
 procRun proc action = logDebug (show proc) >> liftIO (action proc)
 
 handleFailure
-  :: forall b m . (Backend b, HasEnvironment m)
+  :: forall b m a . (Backend b, HasEnvironment m)
   => ContainerDefinition
-  -> Exit.ExitCode -> m ()
-handleFailure containerDefinition@ContainerDefinition{..} = \case
-  Exit.ExitSuccess -> pure ()
+  -> a
+  -> Exit.ExitCode
+  -> m a
+handleFailure containerDefinition@ContainerDefinition{..} value = \case
+  Exit.ExitSuccess -> pure value
   _ -> do
     case (remove, removeOnRunFail) of
       (NoRemove, Remove) -> removeContainer @b containerName
