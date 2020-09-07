@@ -1,6 +1,7 @@
 module DBT.Prelude (module Exports, debug, log) where
 
 import Data.Conversions as Exports
+import GHC.Records      as Exports (getField)
 import MPrelude         as Exports
 
 import qualified Data.Text.IO       as Text
