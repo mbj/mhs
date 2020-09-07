@@ -1,4 +1,11 @@
-module DBT where
+module DBT
+  ( Backend.buildDefinition
+  , imageName
+  , startDatabaseContainer
+  , stopDatabaseContainer
+  , withDatabaseContainer
+  )
+where
 
 import DBT.Prelude
 
@@ -7,6 +14,9 @@ import qualified CBT.Backend
 import qualified CBT.Environment as CBT
 import qualified DBT.Backend     as Backend
 import qualified DBT.Postgresql  as Postgresql
+
+imageName :: CBT.ImageName
+imageName = getField @"imageName" Backend.buildDefinition
 
 withDatabaseContainer
   :: CBT.HasEnvironment m
@@ -41,6 +51,3 @@ stopDatabaseContainer containerName = do
   case implementation of
     CBT.Docker -> CBT.Backend.stop @'CBT.Docker containerName
     CBT.Podman -> CBT.Backend.stop @'CBT.Podman containerName
-
-imageName :: CBT.ImageName
-imageName = getField @"imageName" Backend.buildDefinition
