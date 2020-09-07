@@ -41,3 +41,6 @@ stopDatabaseContainer containerName = do
   case implementation of
     CBT.Docker -> CBT.Backend.stop @'CBT.Docker containerName
     CBT.Podman -> CBT.Backend.stop @'CBT.Podman containerName
+
+imageName :: CBT.ImageName
+imageName = getField @"imageName" Backend.buildDefinition

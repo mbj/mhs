@@ -1,4 +1,8 @@
-module DBT.Backend (Backend(..)) where
+module DBT.Backend
+  ( Backend(..)
+  , buildDefinition
+  )
+where
 
 import DBT.Prelude
 import System.Path ((</>))
