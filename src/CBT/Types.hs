@@ -3,6 +3,7 @@
 module CBT.Types where
 
 import CBT.Prelude
+import Data.Hashable (Hashable)
 import Data.Word (Word16)
 import Instances.TH.Lift ()
 import Language.Haskell.TH.Syntax (Lift)
@@ -64,7 +65,8 @@ newtype Prefix = Prefix Text
 
 newtype ImageName = ImageName Text
   deriving (Conversion Text) via Text
-  deriving stock Lift
+  deriving newtype (Hashable)
+  deriving stock   (Eq, Lift, Show)
 
 data Status = Running | Absent
   deriving stock Show
