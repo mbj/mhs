@@ -1,86 +1,82 @@
+{-# LANGUAGE MonoLocalBinds #-}
+
 module CBT.Environment
   ( Environment(..)
-  , HasEnvironment(..)
-  , WithLog
-  , defaultEnvironment
-  , logDebug
-  , logError
-  , logInfo
+  , HasEnvironment
+  , IOEnvironment
+  , getEnvironment
+  , newDefaultEnvironment
+  , onDebug
   , runDefaultEnvironment
   , runEnvironment
   )
 where
 
+import CBT.IncrementalState
 import CBT.Prelude
+import CBT.Types
 import Control.Monad.IO.Unlift (MonadUnliftIO(..), wrappedWithRunInIO)
-import Control.Monad.Reader (MonadReader, MonadTrans, ReaderT, ask, runReaderT)
+import Control.Monad.Reader (MonadReader, ReaderT, ask, runReaderT)
+import Control.Monad.Trans.Class (MonadTrans(lift))
 import Data.Maybe (isJust)
-import GHC.Stack (HasCallStack, callStack, withFrozenCallStack)
 
+import qualified CBT.IncrementalState as IncrementalState
 import qualified Colog
-import qualified System.Environment as Environment
+import qualified System.Environment   as Environment
 
-data Environment = Environment
-  { logAction :: forall m . MonadIO m => Colog.LogAction m Colog.Message
-  , debug     :: Bool
+type IOEnvironment = Environment (App IO)
+
+data Environment m = Environment
+  { debug     :: Bool
+  , builds    :: IncrementalState ImageName
+  , logAction :: Colog.LogAction m Colog.Message
   }
 
-type WithLog m = (HasEnvironment m, HasCallStack)
+instance MonadIO m => Colog.HasLog (Environment m) Colog.Message m where
+  getLogAction                        = logAction
+  setLogAction logAction' environment = environment { logAction = logAction' }
 
-class MonadUnliftIO m => HasEnvironment m where
-  getEnvironment :: m Environment
-
-defaultEnvironment :: Environment
-defaultEnvironment = Environment
-  { debug     = False
-  , logAction = Colog.richMessageAction
-  }
-
-newtype AppT m a = App { runAppT :: ReaderT Environment m a }
+newtype App m a = App { runApp :: ReaderT (Environment (App m)) m a }
   deriving newtype
-    ( Functor
-    , Applicative
+    ( Applicative
+    , Functor
     , Monad
     , MonadIO
-    , MonadReader Environment
-    , MonadTrans
+    , MonadReader (Environment (App m))
     )
 
-instance MonadUnliftIO m => MonadUnliftIO (AppT m) where
-  withRunInIO = wrappedWithRunInIO App runAppT
+instance MonadTrans App where
+  lift = App . lift
 
-instance MonadUnliftIO m => HasEnvironment (AppT m) where
+class (MonadUnliftIO m, MonadReader (Environment m) m, Colog.HasLog (Environment m) Colog.Message m) => HasEnvironment m where
+  getEnvironment :: m (Environment m)
+
+instance MonadUnliftIO m => MonadUnliftIO (App m) where
+  withRunInIO = wrappedWithRunInIO App runApp
+
+instance MonadUnliftIO m => HasEnvironment (App m) where
   getEnvironment = ask
 
-runEnvironment :: forall m a . MonadIO m => Environment -> AppT m a -> m a
-runEnvironment environment action =
-  runReaderT (runAppT action) =<< addDebug
-  where
-    addDebug :: m Environment
-    addDebug = do
-      debug <- isJust <$> liftIO (Environment.lookupEnv "CBT_DEBUG")
-      pure $ environment { debug = debug }
+newDefaultEnvironment :: MonadUnliftIO m => m (Environment (App m))
+newDefaultEnvironment = do
+  debug  <- isJust <$> liftIO (Environment.lookupEnv "CBT_DEBUG")
+  builds <- IncrementalState.new
+  pure $ Environment
+    { logAction = Colog.richMessageAction
+    , ..
+    }
 
-runDefaultEnvironment :: MonadIO m => AppT m a -> m a
-runDefaultEnvironment = runEnvironment defaultEnvironment
-
-logMessage :: HasEnvironment m => Colog.Message -> m ()
-logMessage message = do
+onDebug :: HasEnvironment m => m () -> m ()
+onDebug action = do
   Environment{..} <- getEnvironment
-  runLogAction (Colog.cfilter ((||) debug . (/=) Colog.Debug . Colog.msgSeverity) logAction) message
+  if debug
+    then action
+    else pure ()
 
-runLogAction :: Colog.LogAction m message -> message -> m ()
-runLogAction (Colog.LogAction action) = action
+runEnvironment :: Environment (App m) -> App m a -> m a
+runEnvironment environment app = runReaderT (runApp app) environment
 
-logM :: forall a m . (WithLog m, ToText a) => Colog.Severity -> a -> m ()
-logM msgSeverity (toText -> msgText) =
-  withFrozenCallStack (logMessage Colog.Msg { msgStack = callStack, .. })
-
-logDebug :: forall a m . (WithLog m, ToText a)  => a -> m ()
-logDebug = withFrozenCallStack (logM Colog.Debug)
-
-logError :: forall a m . (WithLog m, ToText a) => a -> m ()
-logError = withFrozenCallStack (logM Colog.Error)
-
-logInfo :: forall a m . (WithLog m, ToText a) => a -> m ()
-logInfo = withFrozenCallStack (logM Colog.Info)
+runDefaultEnvironment :: MonadUnliftIO m => App m a -> m a
+runDefaultEnvironment app = do
+  environment <- newDefaultEnvironment
+  runEnvironment environment app

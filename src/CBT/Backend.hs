@@ -10,6 +10,8 @@ import Data.Monoid (mconcat)
 import Text.Read (readMaybe)
 
 import qualified CBT.Backend.Tar       as Tar
+import qualified CBT.IncrementalState  as IncrementalState
+import qualified Colog
 import qualified Data.ByteString       as BS
 import qualified Data.ByteString.Lazy  as LBS
 import qualified Data.List             as List
@@ -73,10 +75,19 @@ class Backend (b :: Implementation) where
 
   build :: forall m . HasEnvironment m => BuildDefinition -> m ()
   build BuildDefinition{..}
-    = runProcess_
-    . setVerbosity verbosity
-    . Process.setStdin (Process.byteStringInput . LBS.fromStrict . Text.encodeUtf8 $ toText content)
-    $ Process.proc (binaryName @b) ["build", "--tag", convertText imageName, "-"]
+    = do
+      Environment{..} <- getEnvironment
+      IncrementalState.runBuild builds imageName
+        . fmap fromExit
+        . runProcess
+        . setVerbosity verbosity
+        . Process.setStdin (Process.byteStringInput . LBS.fromStrict . Text.encodeUtf8 $ toText content)
+        $ Process.proc (binaryName @b) ["build", "--tag", convertText imageName, "-"]
+    where
+      fromExit :: Exit.ExitCode -> IncrementalState.Result
+      fromExit = \case
+        Exit.ExitSuccess -> IncrementalState.Success
+        _                -> IncrementalState.Failure
 
   buildRun :: HasEnvironment m => BuildDefinition -> ContainerDefinition -> m ()
   buildRun buildDefinition containerDefinition =
@@ -325,11 +336,11 @@ readProcessStdout
 readProcessStdout proc = procRun proc Process.readProcessStdout
 
 procRun
-  :: forall m a stdin stdout stderr . WithLog m
+  :: forall m a stdin stdout stderr . HasEnvironment m
   => Process.ProcessConfig stdin stdout stderr
   -> (Process.ProcessConfig stdin stdout stderr -> IO a)
   -> m a
-procRun proc action = logDebug (show proc) >> liftIO (action proc)
+procRun proc action = onDebug (Colog.logDebug . convert $ show proc) >> liftIO (action proc)
 
 handleFailure
   :: forall b m a . (Backend b, HasEnvironment m)

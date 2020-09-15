@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e5c081a8cdd8596227c32e307342cb14e92c61dc437072397625096c0e2215e2
+-- hash: 87f573763a99264397aa9716a7ccf65556731c8b43706e5f58772ebe779445f8
 
 name:           cbt
 version:        0.1.0
@@ -27,6 +27,7 @@ library
       CBT
       CBT.Backend
       CBT.Environment
+      CBT.IncrementalState
       CBT.TH
       CBT.Types
   other-modules:
@@ -36,14 +37,16 @@ library
       Paths_cbt
   hs-source-dirs:
       src
-  default-extensions: AllowAmbiguousTypes ConstraintKinds DataKinds DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving KindSignatures LambdaCase MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TypeApplications ViewPatterns
+  default-extensions: AllowAmbiguousTypes ConstraintKinds DataKinds DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts FlexibleInstances GeneralizedNewtypeDeriving InstanceSigs KindSignatures LambdaCase MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TupleSections TypeApplications TypeSynonymInstances ViewPatterns
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
       base >=4.12 && >=4.13 && <4.14
     , bytestring >=0.10 && <0.11
     , co-log >=0.4 && <0.5
+    , co-log-core >=0.2 && <0.3
     , conversions >=0.0.3 && <0.1
     , cryptonite >=0.25 && >=0.26 && <0.27
+    , hashable >=1.3 && <1.4
     , mprelude >=0.2 && <0.3
     , mtl >=2.2 && <2.3
     , pathtype >=0.8 && <0.9
@@ -52,9 +55,11 @@ library
     , template-haskell >=2.14 && >=2.15 && <2.16
     , text >=1.2 && <1.3
     , th-lift-instances >=0.1 && <0.2
+    , transformers >=0.5 && <0.6
     , typed-process >=0.2 && <0.3
     , unliftio >=0.2 && <0.3
     , unliftio-core >=0.1 && <0.2
+    , unordered-containers >=0.2 && <0.3
     , uuid >=1.3 && <1.4
   default-language: Haskell2010
 
@@ -63,16 +68,18 @@ test-suite test
   main-is: test/Test.hs
   other-modules:
       Paths_cbt
-  default-extensions: AllowAmbiguousTypes ConstraintKinds DataKinds DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving KindSignatures LambdaCase MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TypeApplications ViewPatterns
+  default-extensions: AllowAmbiguousTypes ConstraintKinds DataKinds DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts FlexibleInstances GeneralizedNewtypeDeriving InstanceSigs KindSignatures LambdaCase MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TupleSections TypeApplications TypeSynonymInstances ViewPatterns
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       base >=4.12 && >=4.13 && <4.14
     , bytestring >=0.10 && <0.11
     , cbt
     , co-log >=0.4 && <0.5
+    , co-log-core >=0.2 && <0.3
     , conversions >=0.0.3 && <0.1
     , cryptonite >=0.25 && >=0.26 && <0.27
     , devtools >=0.0.3 && <0.1
+    , hashable >=1.3 && <1.4
     , mprelude >=0.2 && <0.3
     , mtl >=2.2 && <2.3
     , pathtype >=0.8 && <0.9
@@ -83,8 +90,10 @@ test-suite test
     , template-haskell >=2.14 && >=2.15 && <2.16
     , text >=1.2 && <1.3
     , th-lift-instances >=0.1 && <0.2
+    , transformers >=0.5 && <0.6
     , typed-process >=0.2 && <0.3
     , unliftio >=0.2 && <0.3
     , unliftio-core >=0.1 && <0.2
+    , unordered-containers >=0.2 && <0.3
     , uuid >=1.3 && <1.4
   default-language: Haskell2010
