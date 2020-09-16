@@ -12,6 +12,7 @@ dependencies:
 - base                 >= 4.12 && ^>= 4.13
 - bytestring           ^>= 0.10
 - cbt                  ^>= 0.1.0
+- co-log               ^>= 0.4
 - containers           ^>= 0.6
 - conversions          ^>= 0.0.3
 - cryptonite           >= 0.25 && ^>= 0.26
