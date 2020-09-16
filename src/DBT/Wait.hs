@@ -10,6 +10,7 @@ import GHC.Enum (succ)
 import GHC.Real (fromIntegral)
 
 import qualified CBT.Environment  as CBT
+import qualified Colog
 import qualified DBT.Postgresql   as Postgresql
 import qualified Hasql.Connection as Hasql
 
@@ -48,6 +49,6 @@ wait Config{clientConfig = clientConfig@Postgresql.ClientConfig{..}, ..} =
               onFail
               failPrefix $ "Giving up connection, last error: " <> show error
             else do
-              CBT.logDebug $ "Retrying failed connection attempt from error: " <> show error
+              Colog.logDebug . convert $ "Retrying failed connection attempt from error: " <> show error
               liftIO $ threadDelay waitTime'
               attempt $ succ attempts
