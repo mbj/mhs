@@ -7,6 +7,6 @@ extra-deps:
 - tasty-1.3.1@sha256:01e35c97f7ee5ccbc28f21debea02a38cd010d53b4c3087f5677c5d06617a507,2520
 - tasty-mgolden-0.0.1@sha256:07fadb592cde353c386c5f38cff75539a5675e9350776ed6f4f0a70247427a78,4214
 - git: https://github.com/mbj/cbt
-  commit: 63b89753a3a0939420774debf5555a8678600436
+  commit: a406e2ad4b5d2bb05ef5cdd029e0879e94731f25
 - git: https://github.com/mbj/dbt
-  commit: 861b3dde81b979a32004c439433c0b771e36bc6f
+  commit: 32bd5359d9c3bf858ccdebbe223a2ef1f949ec3a
