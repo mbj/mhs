@@ -1,6 +1,5 @@
 module CBT.IncrementalState
   ( IncrementalState
-  , Result(..)
   , new
   , runBuild
   )
@@ -15,54 +14,62 @@ import qualified Colog
 import qualified Data.HashMap.Strict as HashMap
 import qualified UnliftIO.MVar       as MVar
 
-type StateMap a = HashMap a (MVar Result)
+type StateMap key error success = HashMap key (MVar (Either error success))
 
-newtype IncrementalState a = IncrementalState (MVar (StateMap a))
+newtype IncrementalState key error success = IncrementalState (MVar (StateMap key error success))
 
-data Result = Success | Failure
+type Key key = (Eq key, Hashable key, Show key)
 
-type Key a = (Eq a, Hashable a, Show a)
-
-new :: (Key a , MonadUnliftIO m) => m (IncrementalState a)
+new :: (Key key , MonadUnliftIO m) => m (IncrementalState key error success)
 new = IncrementalState <$> MVar.newMVar []
 
-data Action = Run (MVar Result) | Wait (MVar Result)
+data Action error success = Run (MVar (Either error success)) | Wait (MVar (Either error success))
 
 runBuild
-  :: forall m env a . (MonadUnliftIO m, Colog.WithLog env Colog.Message m, Key a)
-  => IncrementalState a
-  -> a
-  -> m Result
-  -> m ()
+  :: forall m env key error success . (MonadUnliftIO m, Colog.WithLog env Colog.Message m, Key key, Show error)
+  => IncrementalState key error success
+  -> key
+  -> m (Either error success)
+  -> m (Either error success)
 runBuild (IncrementalState state) key buildAction = do
   MVar.modifyMVar state process >>= \case
-    Run build  -> MVar.putMVar build =<< buildWithLog
-    Wait build -> waitResult         =<< (logWait >> MVar.readMVar build)
+    Run build  -> buildWithLog build
+    Wait build -> waitWithLog build
   where
-    waitResult :: Result -> m ()
-    waitResult = \case
-      Failure -> error                    $ "Build of " <> show key <> " failed in other thread"
-      Success -> Colog.logDebug . convert $ "Build of " <> show key <> " succeeded in other thread"
+    waitWithLog :: MVar (Either error success) -> m (Either error success)
+    waitWithLog build = do
+      Colog.logDebug . convert $ "Waiting for build: " <> show key
+      result <- MVar.readMVar build
 
-    logWait :: m ()
-    logWait = Colog.logDebug . convert $ "Waiting for build: " <> show key
+      either
+        (Colog.logError . convert . (("Build of " <> show key <> " failed: ") <>) . show)
+        (const $ Colog.logDebug . convert $ "Build of " <> show key <> " succeeded in other thread")
+        result
 
-    buildWithLog = do
+      pure result
+
+    buildWithLog :: MVar (Either error success) -> m (Either error success)
+    buildWithLog build = do
       Colog.logDebug . convert $ "Starting to build: " <> show key
-      output <- buildAction
+      result <- buildAction
+      MVar.putMVar build result
       Colog.logDebug . convert $ "Finished building: " <> show key
-      pure output
+      pure result
 
-    process :: StateMap a -> m (StateMap a, Action)
+    process
+      :: StateMap key error success
+      -> m (StateMap key error success, Action error success)
     process map = maybe (newBuild map) (waitBuild map) (HashMap.lookup key map)
 
-    error :: String -> m ()
-    error message = Colog.logError (convert message) >> liftIO (fail message)
-
-    newBuild :: StateMap a -> m (StateMap a, Action)
+    newBuild
+      :: StateMap key error success
+      -> m (StateMap key error success, Action error success)
     newBuild map = do
       build <- MVar.newEmptyMVar
       pure (HashMap.insert key build map, Run build)
 
-    waitBuild :: StateMap a -> MVar Result -> m (StateMap a, Action)
+    waitBuild
+      :: StateMap key error success
+      -> MVar (Either error success)
+      -> m (StateMap key error success, Action error success)
     waitBuild map build = pure (map, Wait build)

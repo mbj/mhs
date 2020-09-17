@@ -2,16 +2,20 @@
 
 module CBT
   ( module CBT.BuildDefinition
+  , module CBT.Environment
   , module CBT.Types
   , build
   , buildIfAbsent
   , buildRun
+  , commit
   , getImplementation
   , nextContainerName
   , printInspect
   , printLogs
   , readContainerFile
   , removeContainer
+  , runLockedBuild
+  , runLockedBuildThrow
   , runReadStdout
   , withContainer
   )
@@ -24,13 +28,15 @@ import CBT.Prelude
 import CBT.Types
 
 import qualified CBT.Backend
+import qualified CBT.IncrementalState
 import qualified Data.ByteString    as BS
 import qualified Data.UUID.V4       as UUID
 import qualified System.Environment as Environment
 import qualified System.Path        as Path
+import qualified UnliftIO.Exception as Exception
 
 withContainer
-  :: HasEnvironment m
+  :: WithEnv m env
   => BuildDefinition
   -> ContainerDefinition
   -> m a
@@ -42,7 +48,7 @@ withContainer buildDefinition containerDefinition action = do
     Podman -> CBT.Backend.withContainer @'Podman buildDefinition containerDefinition action
 
 build
-  :: HasEnvironment m
+  :: WithEnv m env
   => BuildDefinition
   -> m ()
 build buildDefinition = do
@@ -52,7 +58,7 @@ build buildDefinition = do
     Podman -> CBT.Backend.build @'Podman buildDefinition
 
 buildRun
-  :: HasEnvironment m
+  :: WithEnv m env
   => BuildDefinition
   -> ContainerDefinition
   -> m ()
@@ -63,7 +69,7 @@ buildRun buildDefinition containerDefinition = do
     Podman -> CBT.Backend.buildRun @'Podman buildDefinition containerDefinition
 
 runReadStdout
-  :: HasEnvironment m
+  :: WithEnv m env
   => ContainerDefinition
   -> m BS.ByteString
 runReadStdout containerDefinition = do
@@ -73,7 +79,7 @@ runReadStdout containerDefinition = do
     Podman -> CBT.Backend.runReadStdout @'Podman containerDefinition
 
 buildIfAbsent
-  :: HasEnvironment m
+  :: WithEnv m env
   => BuildDefinition
   -> m ()
 buildIfAbsent buildDefinition = do
@@ -83,7 +89,7 @@ buildIfAbsent buildDefinition = do
     Podman -> CBT.Backend.buildIfAbsent @'Podman buildDefinition
 
 readContainerFile
-  :: HasEnvironment m
+  :: WithEnv m env
   => ContainerName
   -> Path.AbsFile
   -> m BS.ByteString
@@ -94,7 +100,7 @@ readContainerFile containerName path = do
     Podman -> CBT.Backend.readContainerFile @'Podman containerName path
 
 removeContainer
-  :: HasEnvironment m
+  :: WithEnv m env
   => ContainerName
   -> m ()
 removeContainer containerName = do
@@ -103,8 +109,19 @@ removeContainer containerName = do
     Docker -> CBT.Backend.removeContainer @'Docker containerName
     Podman -> CBT.Backend.removeContainer @'Podman containerName
 
+commit
+  :: WithEnv m env
+  => ContainerName
+  -> ImageName
+  -> m ()
+commit containerName imageName = do
+  implementation <- getImplementation
+  case implementation of
+    Docker -> CBT.Backend.commit @'Docker containerName imageName
+    Podman -> CBT.Backend.commit @'Podman containerName imageName
+
 printLogs
-  :: HasEnvironment m
+  :: WithEnv m env
   => ContainerName
   -> m ()
 printLogs containerName = do
@@ -114,7 +131,7 @@ printLogs containerName = do
     Podman -> CBT.Backend.printLogs @'Podman containerName
 
 printInspect
-  :: HasEnvironment m
+  :: WithEnv m env
   => ContainerName
   -> m ()
 printInspect containerName = do
@@ -123,7 +140,7 @@ printInspect containerName = do
     Docker -> CBT.Backend.printInspect @'Docker containerName
     Podman -> CBT.Backend.printInspect @'Podman containerName
 
-getImplementation :: forall m . HasEnvironment m => m Implementation
+getImplementation :: forall m env . WithEnv m env => m Implementation
 getImplementation =
   maybe discover fromEnv =<< liftIO (Environment.lookupEnv "CBT_BACKEND")
   where
@@ -143,8 +160,24 @@ getImplementation =
         pure
         (podman <|> docker)
 
+runLockedBuild
+  :: WithEnv m env
+  => ImageName
+  -> m (Either ImageBuildError ())
+  -> m (Either ImageBuildError ())
+runLockedBuild imageName buildAction = do
+  Environment{..} <- getEnvironment
+  CBT.IncrementalState.runBuild builds imageName buildAction
+
+runLockedBuildThrow
+  :: WithEnv m env
+  => ImageName
+  -> m (Either ImageBuildError ())
+  -> m ()
+runLockedBuildThrow image action = either Exception.throwIO pure =<< runLockedBuild image action
+
 try
-  :: forall (b :: Implementation) m . (Backend b, HasEnvironment m)
+  :: forall (b :: Implementation) m env . (Backend b, WithEnv m env)
   => Implementation
   -> m (Maybe Implementation)
 try implementation = do
