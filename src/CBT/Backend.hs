@@ -87,8 +87,7 @@ class Backend (b :: Implementation) where
   build BuildDefinition{..}
     = do
       Environment{..} <- getEnvironment
-      void
-        . IncrementalState.runBuild builds imageName
+      IncrementalState.runBuildThrow builds imageName
         . fmap fromExit
         . runProcess
         . setVerbosity verbosity
