@@ -8,7 +8,7 @@ import Data.Text.Encoding (decodeUtf8)
 import LHT.Executable
 import LHT.Prelude
 
-import qualified CBT.Environment       as CBT
+import qualified CBT
 import qualified LHT.Build             as Build
 import qualified LHT.S3                as S3
 import qualified LHT.Zip               as Zip
@@ -17,7 +17,7 @@ import qualified Network.AWS.Data.Body as AWS
 import qualified Network.AWS.S3.Types  as S3
 
 buildTargetObject
-  :: CBT.HasEnvironment m
+  :: CBT.WithEnv m env
   => Build.Config
   -> S3.BucketName
   -> m S3.TargetObject

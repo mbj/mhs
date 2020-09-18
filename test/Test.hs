@@ -1,6 +1,6 @@
 import MPrelude
 
-import qualified CBT.Environment       as CBT
+import qualified CBT
 import qualified Control.Exception     as Exception
 import qualified Data.Elf              as ELF
 import qualified Data.Foldable         as Foldable
@@ -21,7 +21,7 @@ main =
 testBuild :: Tasty.TestTree
 testBuild =
   Tasty.testCase "test-build" $ do
-    executable <- withCurrentDirectory (Path.relDir "example") . CBT.runDefaultEnvironment $
+    executable <- withCurrentDirectory (Path.relDir "example") . CBT.runDefaultEnvironmentLog $
       LHT.Build.un <$> LHT.Build.build config
 
     Tasty.assertBool

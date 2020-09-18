@@ -13,7 +13,6 @@ import LHT.Prelude
 import System.Path ((</>))
 
 import qualified CBT
-import qualified CBT.Environment       as CBT
 import qualified CBT.TH
 import qualified Data.Foldable         as Foldable
 import qualified System.Path           as Path
@@ -45,12 +44,19 @@ buildDefinition = $$(CBT.TH.readDockerfile (CBT.Prefix "lht") $ Path.file "Docke
   { CBT.verbosity = CBT.Verbose }
 #endif
 
-build :: CBT.HasEnvironment m => Config -> m Executable
+build
+  :: CBT.WithEnv m env
+  => Config
+  -> m Executable
 build config@Config{..} =
   withBuildContainer config $ \containerName ->
     Executable <$> CBT.readContainerFile containerName (containerHomePath </> executablePath)
 
-withBuildContainer :: CBT.HasEnvironment m => Config -> (CBT.ContainerName -> m a) -> m a
+withBuildContainer
+  :: CBT.WithEnv m env
+  => Config
+  -> (CBT.ContainerName -> m a)
+  -> m a
 withBuildContainer Config{..} action = do
   containerName <- CBT.nextContainerName prefix
 
