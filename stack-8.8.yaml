@@ -15,5 +15,6 @@ extra-deps:
   - amazonka-cloudformation
 - git: https://github.com/mbj/cbt
   commit: edc33496e9c8433d87353aefc1c2dae60d536006
+ghc-options:
   amazonka-cloudformation: -O0
   amazonka-s3:             -O0
