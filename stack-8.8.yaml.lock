@@ -52,22 +52,22 @@ packages:
     git: https://github.com/mbj/cbt
     pantry-tree:
       size: 1089
-      sha256: c005a91bcbad8abffc101d4c6151d9bbfbb410e62222fec60bf5b3668930bc76
-    commit: a406e2ad4b5d2bb05ef5cdd029e0879e94731f25
+      sha256: e3e59e1d424b22b98a4e0b1da402590c5faf3d325d9a2ea9cd0e036fd10e53ed
+    commit: edc33496e9c8433d87353aefc1c2dae60d536006
   original:
     git: https://github.com/mbj/cbt
-    commit: a406e2ad4b5d2bb05ef5cdd029e0879e94731f25
+    commit: edc33496e9c8433d87353aefc1c2dae60d536006
 - completed:
     name: dbt
     version: 0.1.0
     git: https://github.com/mbj/dbt
     pantry-tree:
       size: 1114
-      sha256: bc54a0794c30ea818c178a86af924eb0ad1d354c5fe7f54792a60627c6f2a120
-    commit: 32bd5359d9c3bf858ccdebbe223a2ef1f949ec3a
+      sha256: c5b340c97f22fcdc826a362b2ebf38f118f1134c93777571f0c58fa80e63aa88
+    commit: 8dd7580e5af68e2b4a3d9f4034cf3918f1b723a1
   original:
     git: https://github.com/mbj/dbt
-    commit: 32bd5359d9c3bf858ccdebbe223a2ef1f949ec3a
+    commit: 8dd7580e5af68e2b4a3d9f4034cf3918f1b723a1
 snapshots:
 - completed:
     size: 532381

@@ -1,7 +1,6 @@
 import MPrelude
 
 import qualified CBT
-import qualified CBT.Environment      as CBT
 import qualified DBT
 import qualified DBT.Postgresql       as Postgresql
 import qualified Data.Text.IO         as Text
@@ -17,7 +16,7 @@ main = do
   Text.putStrLn ""
   success <- PGT.expand selectors
 
-  CBT.runDefaultEnvironment $
+  CBT.runDefaultEnvironmentLog $
     DBT.withDatabaseContainer (CBT.Prefix "pgt") $ \pgConfig -> do
       let adminConfig = pgConfig { Postgresql.databaseName = Postgresql.DatabaseName "template1" }
       liftIO $ setupSchema adminConfig
