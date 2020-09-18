@@ -2,10 +2,9 @@ import MPrelude
 import Test.Tasty.HUnit
 
 import qualified CBT
-import qualified CBT.Environment as CBT
 import qualified Devtools
-import qualified System.Path     as Path
-import qualified Test.Tasty      as Tasty
+import qualified System.Path as Path
+import qualified Test.Tasty  as Tasty
 
 main :: IO ()
 main
@@ -19,7 +18,7 @@ devtoolsConfig = Devtools.defaultConfig
 image :: Tasty.TestTree
 image
   = testCase "image" . void
-  . CBT.runDefaultEnvironment
+  . CBT.runDefaultEnvironmentLog
   . CBT.buildIfAbsent
   $ CBT.fromDockerfileContents
     (CBT.Prefix "cbt-test")
@@ -29,7 +28,7 @@ container :: Tasty.TestTree
 container
   = testCase "container" . void $ do
     containerName <- CBT.nextContainerName prefix
-    CBT.runDefaultEnvironment $
+    CBT.runDefaultEnvironmentLog $
       CBT.withContainer
         buildDefinition
         CBT.ContainerDefinition

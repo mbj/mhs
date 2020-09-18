@@ -3,6 +3,7 @@
 module CBT.Types where
 
 import CBT.Prelude
+import Control.Exception (Exception)
 import Data.Hashable (Hashable)
 import Data.Word (Word16)
 import Instances.TH.Lift ()
@@ -73,3 +74,8 @@ data Status = Running | Absent
 
 instance Conversion Text Status where
   convert = convertText . show
+
+newtype ImageBuildError = ImageBuildError Text
+  deriving stock Show
+
+instance Exception ImageBuildError
