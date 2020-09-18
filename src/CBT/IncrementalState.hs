@@ -2,16 +2,19 @@ module CBT.IncrementalState
   ( IncrementalState
   , new
   , runBuild
+  , runBuildThrow
   )
 where
 
 import CBT.Prelude
+import Control.Exception (Exception)
 import Data.HashMap.Strict (HashMap)
 import Data.Hashable (Hashable)
 import UnliftIO.MVar (MVar)
 
 import qualified Colog
 import qualified Data.HashMap.Strict as HashMap
+import qualified UnliftIO.Exception  as Exception
 import qualified UnliftIO.MVar       as MVar
 
 type StateMap key error success = HashMap key (MVar (Either error success))
@@ -24,6 +27,14 @@ new :: (Key key , MonadUnliftIO m) => m (IncrementalState key error success)
 new = IncrementalState <$> MVar.newMVar []
 
 data Action error success = Run (MVar (Either error success)) | Wait (MVar (Either error success))
+
+runBuildThrow
+  :: forall m env key error success . (MonadUnliftIO m, Colog.WithLog env Colog.Message m, Key key, Exception error)
+  => IncrementalState key error success
+  -> key
+  -> m (Either error success)
+  -> m success
+runBuildThrow state key buildAction = either Exception.throwIO pure =<< runBuild state key buildAction
 
 runBuild
   :: forall m env key error success . (MonadUnliftIO m, Colog.WithLog env Colog.Message m, Key key, Show error)
