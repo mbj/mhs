@@ -1,4 +1,4 @@
-resolver: lts-16.11
+resolver: lts-16.15
 extra-deps:
 - amazonka-1.6.1@sha256:d863557379350ed6bbb91187abeb8c349a654f60b140d138710486f58ae7c476,3536
 - amazonka-core-1.6.1@sha256:9bc59ce403c6eeba3b3eaf3f10e5f0b6a33b6edbbf8f6de0dd6f4c67b86fa698,5135
@@ -14,7 +14,7 @@ extra-deps:
   subdirs:
   - amazonka-cloudformation
 - git: https://github.com/mbj/cbt
-  commit: edc33496e9c8433d87353aefc1c2dae60d536006
+  commit: 2196db80d0690ca59c4f11a4e8396e80b43a21c7
 ghc-options:
   amazonka-cloudformation: -O0
   amazonka-s3:             -O0

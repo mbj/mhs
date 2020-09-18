@@ -86,14 +86,14 @@ packages:
     git: https://github.com/mbj/cbt
     pantry-tree:
       size: 1089
-      sha256: e3e59e1d424b22b98a4e0b1da402590c5faf3d325d9a2ea9cd0e036fd10e53ed
-    commit: edc33496e9c8433d87353aefc1c2dae60d536006
+      sha256: 274c7ce9833ab9264645e0fe636ac9dac3aa8fd76e4fdeb8e90b46961f3d429c
+    commit: 2196db80d0690ca59c4f11a4e8396e80b43a21c7
   original:
     git: https://github.com/mbj/cbt
-    commit: edc33496e9c8433d87353aefc1c2dae60d536006
+    commit: 2196db80d0690ca59c4f11a4e8396e80b43a21c7
 snapshots:
 - completed:
-    size: 532381
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/11.yaml
-    sha256: 1f43c4ad661a114a4f9dd4580988f30da1208d844c097714f5867c52a02e0aa1
-  original: lts-16.11
+    size: 532380
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/15.yaml
+    sha256: 3b5f2a699aa5ed3abbc30410062bf743926f0868ce3eeb5655370c6c6cc1a9f4
+  original: lts-16.15
