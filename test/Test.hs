@@ -1,7 +1,6 @@
 import MPrelude
 
 import qualified CBT
-import qualified CBT.Environment      as CBT
 import qualified DBT
 import qualified DBT.Postgresql       as Postgresql
 import qualified Data.ByteString.Lazy as LBS
@@ -13,7 +12,7 @@ import qualified Test.Tasty.MGolden   as Tasty
 
 main :: IO ()
 main =
-  CBT.runDefaultEnvironment $
+  CBT.runDefaultEnvironmentLog $
     DBT.withDatabaseContainer (CBT.Prefix "dbt") $ \clientConfig ->
       liftIO . Tasty.defaultMain $ Tasty.testGroup "dbt" [Devtools.testTree devtoolsConfig, testDB clientConfig]
 

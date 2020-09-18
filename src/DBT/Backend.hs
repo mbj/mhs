@@ -1,72 +1,126 @@
 module DBT.Backend
-  ( Backend(..)
-  , buildDefinition
+  ( buildDefinition
+  , populateDatabaseImage
+  , startDatabaseContainer
+  , withDatabaseContainer
+  , withDatabaseContainerImage
   )
 where
 
+import Control.Arrow (left)
 import DBT.Prelude
 import System.Path ((</>))
 
-import qualified CBT
 import qualified CBT.Backend
-import qualified CBT.Backend        as CBT (Backend)
+import qualified CBT.Backend        as CBT
 import qualified CBT.Environment    as CBT
 import qualified CBT.TH
+import qualified CBT.Types          as CBT
 import qualified DBT.Postgresql     as Postgresql
 import qualified DBT.Wait           as Wait
 import qualified Data.Text          as Text
 import qualified Data.Text.Encoding as Text
 import qualified System.Path        as Path
+import qualified UnliftIO.Exception as Exception
 
-class CBT.Backend b => Backend b where
-  getHostPort :: CBT.HasEnvironment m => CBT.ContainerName -> m Postgresql.HostPort
-  getHostPort containerName
-    =   Postgresql.HostPort
-    .   CBT.unPort
-    <$> CBT.Backend.getHostPort @b containerName containerPort
+getHostPort
+  :: forall b m env . (CBT.Backend b, CBT.WithEnv m env)
+  => CBT.ContainerName
+  -> m Postgresql.HostPort
+getHostPort containerName
+  =   Postgresql.HostPort
+  .   CBT.unPort
+  <$> CBT.Backend.getHostPort @b containerName containerPort
 
-  getMasterPassword :: CBT.HasEnvironment m => CBT.ContainerName -> m Postgresql.Password
-  getMasterPassword containerName =
-    Postgresql.Password . rstrip . Text.decodeUtf8 <$>
-      CBT.Backend.readContainerFile @b containerName pgMasterPasswordAbs
-    where
-      rstrip = Text.dropWhileEnd (== '\n')
+getMasterPassword
+  :: forall b m env . (CBT.Backend b, CBT.WithEnv m env)
+  => CBT.ContainerName
+  -> m Postgresql.Password
+getMasterPassword containerName =
+  Postgresql.Password . rstrip . Text.decodeUtf8 <$>
+    CBT.Backend.readContainerFile @b containerName pgMasterPasswordAbs
+  where
+    rstrip = Text.dropWhileEnd (== '\n')
 
-  getClientConfig
-    :: CBT.HasEnvironment m
-    => CBT.ContainerName
-    -> m Postgresql.ClientConfig
-  getClientConfig containerName =
-    mkClientConfig
-      <$> getHostPort @b containerName
-      <*> getMasterPassword @b containerName
+getClientConfig
+  :: forall b m env . (CBT.Backend b, CBT.WithEnv m env)
+  => CBT.ContainerName
+  -> m Postgresql.ClientConfig
+getClientConfig containerName =
+  mkClientConfig
+    <$> getHostPort @b containerName
+    <*> getMasterPassword @b containerName
 
-  startDatabaseContainer
-    :: CBT.HasEnvironment m
-    => CBT.ContainerName
-    -> m Postgresql.ClientConfig
-  startDatabaseContainer containerName = do
-    CBT.buildRun buildDefinition (containerDefinition containerName)
-    getClientConfig @b containerName
+startDatabaseContainer
+  :: forall b m env . (CBT.Backend b, CBT.WithEnv m env)
+  => CBT.ContainerName
+  -> m Postgresql.ClientConfig
+startDatabaseContainer containerName = do
+  CBT.buildRun @b buildDefinition (containerDefinition containerName)
+  getClientConfig @b containerName
 
-  withDatabaseContainer
-    :: CBT.HasEnvironment m
-    => CBT.ContainerName
-    -> (Postgresql.ClientConfig -> m a)
-    -> m a
-  withDatabaseContainer containerName action =
-    CBT.withContainer buildDefinition (containerDefinition containerName) $ do
-      hostPort <- getHostPort       @b containerName
-      password <- getMasterPassword @b containerName
+populateDatabaseImage
+  :: forall b m env . (CBT.Backend b, CBT.WithEnv m env)
+  => CBT.ContainerName
+  -> CBT.ImageName
+  -> (Postgresql.ClientConfig -> m ())
+  -> m (Either CBT.ImageBuildError ())
+populateDatabaseImage containerName imageName action =
+   fmap toError . Exception.tryAnyDeep $
+     Exception.bracket_
+       (CBT.buildRun @b buildDefinition containerDefinition')
+       stop
+       (runAction @b containerName action)
+  where
+    containerDefinition' = (containerDefinition containerName)
+      { CBT.remove = CBT.NoRemove
+      }
 
-      let config = mkClientConfig hostPort password
+    toError :: Either Exception.SomeException a -> Either CBT.ImageBuildError a
+    toError = left (CBT.ImageBuildError . convert . show)
 
-      waitForPort containerName config
+    stop :: m ()
+    stop = do
+      CBT.stop @b containerName
+      CBT.commit @b containerName imageName
+      CBT.removeContainer @b containerName
 
-      action config
+withDatabaseContainer
+  :: forall b m env a . (CBT.Backend b, CBT.WithEnv m env)
+  => CBT.ContainerName
+  -> (Postgresql.ClientConfig -> m a)
+  -> m a
+withDatabaseContainer containerName
+  = CBT.withContainer @b buildDefinition (containerDefinition containerName)
+  . runAction @b containerName
 
-instance Backend 'CBT.Docker
-instance Backend 'CBT.Podman
+withDatabaseContainerImage
+  :: forall b m env a . (CBT.Backend b, CBT.WithEnv m env)
+  => CBT.ContainerName
+  -> CBT.ImageName
+  -> (Postgresql.ClientConfig -> m a)
+  -> m a
+withDatabaseContainerImage containerName imageName
+  = CBT.withContainerDefinition @b containerDefinition'
+  . runAction @b containerName
+  where
+    containerDefinition' :: CBT.ContainerDefinition
+    containerDefinition' = (containerDefinition containerName) { CBT.imageName = imageName }
+
+runAction
+  :: forall b m env a . (CBT.Backend b, CBT.WithEnv m env)
+  => CBT.ContainerName
+  -> (Postgresql.ClientConfig -> m a)
+  -> m a
+runAction containerName action = do
+  hostPort <- getHostPort       @b containerName
+  password <- getMasterPassword @b containerName
+
+  let config = mkClientConfig hostPort password
+
+  waitForPort @b containerName config
+
+  action config
 
 containerPort :: CBT.Port
 containerPort = CBT.Port 5432
@@ -102,14 +156,18 @@ mkClientConfig hostPort password =
     , ..
     }
 
-waitForPort :: CBT.HasEnvironment m => CBT.ContainerName -> Postgresql.ClientConfig -> m ()
+waitForPort
+  :: forall b m env . (CBT.Backend b, CBT.WithEnv m env)
+  => CBT.ContainerName
+  -> Postgresql.ClientConfig
+  -> m ()
 waitForPort containerName clientConfig
   = Wait.wait
   $ Wait.Config
   { prefix      = "[DBT]"
   , maxAttempts = 100
   , waitTime    = 100000  -- 100ms
-  , onFail      = CBT.printInspect containerName >> CBT.printLogs containerName
+  , onFail      = CBT.printInspect @b containerName >> CBT.printLogs @b containerName
   , ..
   }
 

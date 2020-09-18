@@ -9,7 +9,7 @@ import Data.Int (Int)
 import GHC.Enum (succ)
 import GHC.Real (fromIntegral)
 
-import qualified CBT.Environment  as CBT
+import qualified CBT
 import qualified Colog
 import qualified DBT.Postgresql   as Postgresql
 import qualified Hasql.Connection as Hasql
@@ -17,12 +17,12 @@ import qualified Hasql.Connection as Hasql
 data Config = Config
   { clientConfig :: Postgresql.ClientConfig
   , maxAttempts  :: Natural
-  , onFail       :: forall m . CBT.HasEnvironment m => m ()
+  , onFail       :: forall m env . CBT.WithEnv m env => m ()
   , prefix       :: String
   , waitTime     :: Natural
   }
 
-wait :: forall m . CBT.HasEnvironment m => Config -> m ()
+wait :: forall m env . CBT.WithEnv m env => Config -> m ()
 wait Config{clientConfig = clientConfig@Postgresql.ClientConfig{..}, ..} =
   start =<< effectiveWaitTime
   where
