@@ -34,7 +34,7 @@ RUN apk add                  \
   --no-cache                 \
   --                         \
   curl                       \
-  ghc                        \
+  ghc@edge=8.8.4-r0          \
   git                        \
   libpq@mbj=12.2-r0          \
   libffi@edge                \
