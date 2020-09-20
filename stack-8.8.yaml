@@ -1,4 +1,4 @@
-resolver: lts-16.11
+resolver: lts-16.15
 extra-deps:
 - devtools-0.0.3@sha256:7187fd0e44fcbb401b367e2ee8627b3c6a6bb1e05fcd8f3fbeccf69f771787cc,4181
 - conversions-0.0.3@sha256:4adcd605bc4ee3b351359852bebfb4e7032966d93bf5200c56884c0103b7a6d0,3399
@@ -7,4 +7,4 @@ extra-deps:
 - tasty-1.3.1@sha256:01e35c97f7ee5ccbc28f21debea02a38cd010d53b4c3087f5677c5d06617a507,2520
 - tasty-mgolden-0.0.1@sha256:07fadb592cde353c386c5f38cff75539a5675e9350776ed6f4f0a70247427a78,4214
 - git: https://github.com/mbj/cbt
-  commit: edc33496e9c8433d87353aefc1c2dae60d536006
+  commit: e627111537911896d68fbecee154db04b5a8313a
