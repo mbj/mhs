@@ -66,11 +66,12 @@ populateDatabaseImage
   -> (Postgresql.ClientConfig -> m ())
   -> m (Either CBT.ImageBuildError ())
 populateDatabaseImage containerName imageName action =
-   fmap toError . Exception.tryAnyDeep $
+   fmap toError . Exception.tryAnyDeep $ do
      Exception.bracket_
        (CBT.buildRun @b buildDefinition containerDefinition')
-       stop
-       (runAction @b containerName action)
+       (CBT.stop @b containerName)
+       run
+     CBT.removeContainer @b containerName
   where
     containerDefinition' = (containerDefinition containerName)
       { CBT.remove = CBT.NoRemove
@@ -79,11 +80,10 @@ populateDatabaseImage containerName imageName action =
     toError :: Either Exception.SomeException a -> Either CBT.ImageBuildError a
     toError = left (CBT.ImageBuildError . convert . show)
 
-    stop :: m ()
-    stop = do
-      CBT.stop @b containerName
+    run :: m ()
+    run = do
+      runAction @b containerName action
       CBT.commit @b containerName imageName
-      CBT.removeContainer @b containerName
 
 withDatabaseContainer
   :: forall b m env a . (CBT.Backend b, CBT.WithEnv m env)
