@@ -12,8 +12,8 @@ import Data.Char
 import Data.Eq
 import Data.Function
 import Data.Semigroup
-import Data.List
 import Module
+import qualified Data.List as List
 
 newtype LocalModule = LocalModule ModuleName
 
@@ -25,7 +25,7 @@ moduleNameParser = do
   first  <- section
   others <- many (char '.' *> section)
 
-  pure . mkModuleName $ first <> intercalate "." others
+  pure . mkModuleName $ first <> List.intercalate "." others
   where
     section = (:) <$> satisfy isUpper <*> many (satisfy isLower)
 
@@ -35,5 +35,5 @@ isLocalModule (LocalModule localModuleName) moduleName =
     where
       prefixMatch =
         (moduleNameString localModuleName <> ".")
-        `isPrefixOf`
+        `List.isPrefixOf`
         moduleNameString moduleName

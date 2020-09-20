@@ -16,7 +16,6 @@ import Data.Foldable
 import Data.Function
 import Data.Generics.Aliases
 import Data.Generics.Text
-import Data.List
 import Data.Maybe
 import Data.Ord
 import Data.Semigroup
@@ -25,9 +24,13 @@ import Data.Text (Text, pack)
 import Data.Tuple
 import DynFlags
 import ErrUtils
+#if MIN_VERSION_GLASGOW_HASKELL(8,10,0,0)
+import GHC.Hs
+#else
 import HsDecls
 import HsExtension
 import HsSyn
+#endif
 import HscTypes
 import Module hiding (Module)
 import Outputable hiding ((<>), empty)
@@ -36,6 +39,8 @@ import Prelude(error)
 import SrcLoc
 import System.FilePath.Posix
 import SourceConstraints.LocalModule
+
+import qualified Data.List as List
 
 data Context = Context
   { dynFlags     :: DynFlags
@@ -144,7 +149,7 @@ locatedWarnings context@Context{..} node =
             (text "Present import list for local module")
 
         candidates :: [LImportDecl GhcPs]
-        candidates = filter isCandidate hsmodImports
+        candidates = List.filter isCandidate hsmodImports
 
         isCandidate :: LImportDecl GhcPs -> Bool
         isCandidate = \case
@@ -242,6 +247,6 @@ sortedLocated name context@Context{..} ordering nodes =
     candidates :: [((Located a, b), (Located a, b))]
     candidates =
       let items    = (\node -> (node, ordering $ unLoc node)) <$> nodes
-          expected = sortBy (compare `on` snd) items
+          expected = List.sortBy (compare `on` snd) items
       in
-        zip items expected
+        List.zip items expected

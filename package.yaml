@@ -14,10 +14,10 @@ description: |
 
 dependencies:
 - attoparsec ^>= 0.13
-- base       ^>= 4.13
+- base       ^>= 4.13 || ^>= 4.14
 - bytestring ^>= 0.10
 - filepath   ^>= 1.4
-- ghc        ^>= 8.8
+- ghc        ^>= 8.8 || ^>= 8.10
 - syb        ^>= 0.7
 - text       ^>= 1.2
 
@@ -57,6 +57,7 @@ when:
       ghc-options: -Wwarn
 
 default-extensions:
+- CPP
 - DerivingStrategies
 - GeneralizedNewtypeDeriving
 - LambdaCase
