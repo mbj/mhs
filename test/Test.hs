@@ -7,28 +7,33 @@ import qualified System.Path as Path
 import qualified Test.Tasty  as Tasty
 
 main :: IO ()
-main
-  = Tasty.defaultMain
-  $ Tasty.testGroup "cbt" [Devtools.testTree devtoolsConfig, image, container]
+main = do
+  cbt <- CBT.newDefaultEnvironment
+  Tasty.defaultMain
+    $ Tasty.testGroup "cbt"
+    [ Devtools.testTree devtoolsConfig
+    , container cbt
+    , image cbt
+    ]
 
 devtoolsConfig :: Devtools.Config
 devtoolsConfig = Devtools.defaultConfig
   { Devtools.hlintArguments = ["-XTypeApplications"] }
 
-image :: Tasty.TestTree
-image
+image :: CBT.Environment -> Tasty.TestTree
+image cbt
   = testCase "image" . void
-  . CBT.runDefaultEnvironmentLog
+  . CBT.runEnvironmentLog cbt
   . CBT.buildIfAbsent
   $ CBT.fromDockerfileContents
     (CBT.Prefix "cbt-test")
     (CBT.DockerfileContent "FROM alpine")
 
-container :: Tasty.TestTree
-container
+container :: CBT.Environment -> Tasty.TestTree
+container cbt
   = testCase "container" . void $ do
     containerName <- CBT.nextContainerName prefix
-    CBT.runDefaultEnvironmentLog $
+    CBT.runEnvironmentLog cbt $
       CBT.withContainer
         buildDefinition
         CBT.ContainerDefinition

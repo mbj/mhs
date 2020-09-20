@@ -37,7 +37,7 @@ runBuildThrow
 runBuildThrow state key buildAction = either Exception.throwIO pure =<< runBuild state key buildAction
 
 runBuild
-  :: forall m env key error success . (MonadUnliftIO m, Colog.WithLog env Colog.Message m, Key key, Show error)
+  :: forall m env key error success . (MonadUnliftIO m, Colog.WithLog env Colog.Message m, Key key)
   => IncrementalState key error success
   -> key
   -> m (Either error success)
@@ -53,8 +53,8 @@ runBuild (IncrementalState state) key buildAction = do
       result <- MVar.readMVar build
 
       either
-        (Colog.logError . convert . (("Build of " <> show key <> " failed: ") <>) . show)
-        (const $ Colog.logDebug . convert $ "Build of " <> show key <> " succeeded in other thread")
+        (const $ Colog.logError . convert $ "Build of " <> show key <> " failed in other thread")
+        (const $ Colog.logInfo . convert $ "Build of " <> show key <> " succeeded in other thread")
         result
 
       pure result
@@ -64,8 +64,15 @@ runBuild (IncrementalState state) key buildAction = do
       Colog.logDebug . convert $ "Starting to build: " <> show key
       result <- buildAction
       MVar.putMVar build result
-      Colog.logDebug . convert $ "Finished building: " <> show key
+      logBuildResult result
       pure result
+
+    logBuildResult :: Either error success -> m ()
+    logBuildResult result =
+      either
+        (const . Colog.logError . convert $ "Failed building: " <> show key)
+        (const . Colog.logInfo . convert $ "Success building: " <> show key)
+        result
 
     process
       :: StateMap key error success
