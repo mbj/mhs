@@ -24,9 +24,13 @@ import Data.Text (Text, pack)
 import Data.Tuple
 import DynFlags
 import ErrUtils
+#if MIN_VERSION_GLASGOW_HASKELL(8,10,0,0)
+import GHC.Hs
+#else
 import HsDecls
 import HsExtension
 import HsSyn
+#endif
 import HscTypes
 import Module hiding (Module)
 import Outputable hiding ((<>), empty)
