@@ -24,13 +24,10 @@ jobs:
         stack config set install-ghc false
         stack config set system-ghc true
     - name: Cache
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: ~/.stack
-        key: a-${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('stack.yaml') }}-${{ hashFiles('**/*.cabal') }}
-        restore-keys: |
-          a-${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('stack.yaml') }}-
-          a-${{ matrix.os }}-${{ matrix.ghc }}-
+        key: ${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('stack-*.yaml', '**/*.cabal') }}
     - name: Install dependencies
       run: stack build --test --only-dependencies
     - name: Build
