@@ -1,5 +1,5 @@
 name:        source-constraints
-version:     0.0.1
+version:     0.0.2
 synopsis:    Source constraints GHC plugin
 homepage:    https://github.com/mbj/source-constraints#readme
 author:      Markus Schirp
@@ -8,6 +8,7 @@ copyright:   2018 Markus Schirp
 category:    CodeQuality
 github:      mbj/source-constraints
 license:     BSD3
+tested-with: GHC ==8.8.4 || ==8.10.2
 description: |
   Please visit the README at <https://github.com/mbj/source-constraints#readme>
   for usage information.

@@ -4,10 +4,10 @@ cabal-version: 1.18
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b5e6081cd8340e75058861daa612032c1c9859ed3c054abea90e3120511acd8f
+-- hash: 7f4b65ce85cf869179da0d6dbb1879986a3279f7fb002c2254e841c7431f2818
 
 name:           source-constraints
-version:        0.0.1
+version:        0.0.2
 synopsis:       Source constraints GHC plugin
 description:    Please visit the README at <https://github.com/mbj/source-constraints#readme>
                 for usage information.
@@ -19,6 +19,7 @@ maintainer:     mbj@schirp-dso.com
 copyright:      2018 Markus Schirp
 license:        BSD3
 license-file:   LICENSE
+tested-with:    GHC ==8.8.4 || ==8.10.2
 build-type:     Simple
 extra-source-files:
     test/LocalModuleExplicitImport.hs
