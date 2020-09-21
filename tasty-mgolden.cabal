@@ -4,7 +4,7 @@ cabal-version: 1.18
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e9770eb29d62267c2125ac48f69bc4bc4159f4a97a127d5e0ea6a3b63ed1a94b
+-- hash: d358e82920d89ee03c3fafeb8ce8381742447c8fb23cefc1247c4607b0f4c1b5
 
 name:           tasty-mgolden
 version:        0.0.1
@@ -18,7 +18,7 @@ author:         Markus Schirp <mbj@schirp-dso.com>
 maintainer:     Markus Schirp <mbj@schirp-dso.com>
 license:        BSD3
 license-file:   LICENSE
-tested-with:    GHC ==8.6.5 || ==8.8.3
+tested-with:    GHC ==8.6.5 || ==8.8.4 || ==8.10.2
 build-type:     Simple
 extra-doc-files:
     README.md
