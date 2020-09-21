@@ -69,9 +69,8 @@ populateDatabaseImage containerName imageName action =
    fmap toError . Exception.tryAnyDeep $ do
      Exception.bracket_
        (CBT.buildRun @b buildDefinition containerDefinition')
-       (CBT.stop @b containerName)
+       (CBT.removeContainer @b containerName)
        run
-     CBT.removeContainer @b containerName
   where
     containerDefinition' = (containerDefinition containerName)
       { CBT.remove = CBT.NoRemove
@@ -83,6 +82,7 @@ populateDatabaseImage containerName imageName action =
     run :: m ()
     run = do
       runAction @b containerName action
+      CBT.stop @b containerName
       CBT.commit @b containerName imageName
 
 withDatabaseContainer
