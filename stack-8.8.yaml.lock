@@ -13,7 +13,7 @@ packages:
     hackage: tasty-1.3.1@sha256:01e35c97f7ee5ccbc28f21debea02a38cd010d53b4c3087f5677c5d06617a507,2520
 snapshots:
 - completed:
-    size: 496112
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/15/13.yaml
-    sha256: 75a1a0f870e1876898b117b0e443f911b3fa2985bfabb53158c81ab5765beda5
-  original: lts-15.13
+    size: 532380
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/15.yaml
+    sha256: 3b5f2a699aa5ed3abbc30410062bf743926f0868ce3eeb5655370c6c6cc1a9f4
+  original: lts-16.15

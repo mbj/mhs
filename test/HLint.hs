@@ -1,6 +1,6 @@
 import Control.Monad (unless)
 import Data.List (null)
-import Language.Haskell.HLint3 (hlint)
+import Language.Haskell.HLint (hlint)
 import System.Exit (exitFailure)
 import System.IO (IO)
 
