@@ -4,10 +4,10 @@ cabal-version: 1.18
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d358e82920d89ee03c3fafeb8ce8381742447c8fb23cefc1247c4607b0f4c1b5
+-- hash: 7817dcc5a5cdaecb0d7aee1db21f91f7b12b04bd8865af440aa7064ff962e8ae
 
 name:           tasty-mgolden
-version:        0.0.1
+version:        0.0.2
 synopsis:       Golden testing provider for tasty with muti-line diff output
 description:    Please visit the README at <https://github.com/mbj/tasty-mgolden#readme>
                 for usage information.
