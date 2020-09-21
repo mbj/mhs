@@ -97,13 +97,13 @@ runGolden golden@Golden{..} options = do
     =<< tryRead expectedPath
 
 absentFile :: Golden -> OptionSet -> Text -> IO Result
-absentFile golden@Golden{..} options actual =
+absentFile golden options actual =
   if shouldUpdate options
     then updateExpected golden actual
     else pure $ testFailed "file is absent"
 
 testExpected :: Golden -> OptionSet -> Text -> Text -> IO Result
-testExpected golden@Golden{..} options actual expected =
+testExpected golden options actual expected =
   if expected == actual
     then pure $ testPassed empty
     else mismatch options golden expected actual
