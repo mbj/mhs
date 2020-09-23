@@ -4,7 +4,7 @@ cabal-version: 1.18
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 7817dcc5a5cdaecb0d7aee1db21f91f7b12b04bd8865af440aa7064ff962e8ae
+-- hash: d24f2ff9d3b958bfb3a52ecb1fbb170ad948d787cbb2001453733218715c2104
 
 name:           tasty-mgolden
 version:        0.0.2
@@ -43,6 +43,7 @@ library
   ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -funbox-strict-fields
   build-depends:
       Diff ==0.3.4 || >=0.4 && <0.5
+    , ansi-terminal >=0.9 && <0.10 || >=0.10 && <0.11
     , base >=4.12 && <=4.15
     , filepath >=1.4.2 && <1.5
     , tasty >=1.3.1 && <1.4
@@ -59,6 +60,7 @@ executable tasty-mgolden-example
   ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -funbox-strict-fields -rtsopts -threaded -with-rtsopts=-N -Wno-implicit-prelude
   build-depends:
       Diff ==0.3.4 || >=0.4 && <0.5
+    , ansi-terminal >=0.9 && <0.10 || >=0.10 && <0.11
     , base >=4.12 && <=4.15
     , filepath >=1.4.2 && <1.5
     , tasty >=1.3.1 && <1.4
@@ -79,6 +81,7 @@ test-suite golden
   ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -funbox-strict-fields -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       Diff ==0.3.4 || >=0.4 && <0.5
+    , ansi-terminal >=0.9 && <0.10 || >=0.10 && <0.11
     , base >=4.12 && <=4.15
     , filepath >=1.4.2 && <1.5
     , tasty >=1.3.1 && <1.4
@@ -102,6 +105,7 @@ test-suite hlint
   ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -funbox-strict-fields -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       Diff ==0.3.4 || >=0.4 && <0.5
+    , ansi-terminal >=0.9 && <0.10 || >=0.10 && <0.11
     , base >=4.12 && <=4.15
     , filepath >=1.4.2 && <1.5
     , hlint
