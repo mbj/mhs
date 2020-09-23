@@ -28,6 +28,7 @@ import Test.Tasty.Providers.ConsoleFormat
 import qualified Data.Algorithm.Diff as Diff
 import qualified Data.Text           as Text
 import qualified Data.Text.IO        as Text
+import qualified System.Console.ANSI as ANSI
 import qualified System.IO.Error     as Error
 
 -- | Golden test run mode
@@ -150,7 +151,7 @@ addFormat :: ConsoleFormat
 addFormat = okFormat
 
 neutralFormat :: ConsoleFormat
-neutralFormat = infoOkFormat
+neutralFormat = ConsoleFormat ANSI.NormalIntensity ANSI.Dull ANSI.Black
 
 removeFormat :: ConsoleFormat
 removeFormat = infoFailFormat
