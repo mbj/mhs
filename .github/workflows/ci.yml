@@ -1,0 +1,29 @@
+name: CI
+
+on: push
+
+jobs:
+  ci:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        ghc: ['8.8']
+        os: [ubuntu-latest]
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-haskell@v1
+      with:
+        enable-stack: true
+        ghc-version: ${{ matrix.ghc }}
+        stack-version: '2.3'
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+        path: ~/.stack
+        key: g-${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('**/stack.yaml*') }}-${{ hashFiles('**/*.cabal') }}
+        restore-keys: |
+          g-${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('**/stack.yaml*') }}-
+          g-${{ matrix.os }}-${{ matrix.ghc }}-
+    - name: Build
+      run: stack build --system-ghc --fast --test --copy-bins --test-arguments='--hide-successes'
