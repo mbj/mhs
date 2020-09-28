@@ -1,0 +1,68 @@
+name:       mrio-colog
+synopsis:   Minimal version of rio with co-log integration via orphan instances
+homepage:   https://github.com/strainge/mrio#readme
+maintainer: Allan Lukwago <epicallan.al@gmail.com>, Markus Schirp mbj@schirp-dso.com
+copyright:  2020 Strainge Inc.
+license:    MIT
+github:     strainge/mrio
+version:    0.0.1
+
+dependencies:
+- base >= 4.10 && < 10
+- co-log
+- containers
+- mtl
+- source-constraints
+- mrio-core
+- text
+
+ghc-options:
+- -Wall
+- -Wcompat
+- -Werror
+- -Widentities
+- -Wimplicit-prelude
+- -Wincomplete-record-updates
+- -Wincomplete-uni-patterns
+- -Wmissing-local-signatures
+- -Wmissing-signatures
+- -Wmonomorphism-restriction
+- -Wredundant-constraints
+- -fhide-source-paths
+- -fplugin=SourceConstraints
+- -funbox-strict-fields
+- -optP-Wno-nonportable-include-path
+
+default-extensions:
+- DataKinds
+- DerivingStrategies
+- GeneralizedNewtypeDeriving
+- FlexibleContexts
+- FlexibleInstances
+- KindSignatures
+- MultiParamTypeClasses
+- NoImplicitPrelude
+- OverloadedStrings
+- PolyKinds
+- RecordWildCards
+- ScopedTypeVariables
+- StrictData
+- TupleSections
+- TypeFamilies
+- TypeApplications
+- UndecidableInstances
+
+library:
+  source-dirs: src
+
+tests:
+  test:
+    main: test/Test.hs
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -with-rtsopts=-N
+    dependencies:
+    - devtools
+    - mrio-core
+    - mrio-colog

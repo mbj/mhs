@@ -8,3 +8,4 @@ extra-deps:
   commit: 16455d5d938032362ddabe1437e5bc6407c32836
 packages:
 - core
+- colog
