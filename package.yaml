@@ -19,6 +19,7 @@ dependencies:
 - hasql                ^>= 1.4
 - mprelude             ^>= 0.2.0
 - network              ^>= 3.1
+- optparse-applicative ^>= 0.15
 - pathtype             ^>= 0.8
 - source-constraints   ^>= 0.0.1
 - template-haskell     >= 2.14 && ^>= 2.15
@@ -69,8 +70,20 @@ library:
   source-dirs: src
   exposed-modules:
   - DBT
+  - DBT.CLI
   - DBT.Connection
   - DBT.Postgresql
+
+executables:
+  dbt:
+    main:        Main.hs
+    source-dirs: app
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -with-rtsopts=-N
+    dependencies:
+    - dbt
 
 tests:
   test:
