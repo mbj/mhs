@@ -6,6 +6,8 @@ module DBT
   , stopDatabaseContainer
   , withDatabaseContainer
   , withDatabaseContainerImage
+  , withDatabaseContainerProcess
+  , withDatabaseContainerProcessRun_
   )
 where
 
@@ -13,8 +15,9 @@ import DBT.Prelude
 
 import qualified CBT
 import qualified CBT.Backend
-import qualified DBT.Backend     as Backend
-import qualified DBT.Postgresql  as Postgresql
+import qualified DBT.Backend          as Backend
+import qualified DBT.Postgresql       as Postgresql
+import qualified System.Process.Typed as Process
 
 imageName :: CBT.ImageName
 imageName = getField @"imageName" Backend.buildDefinition
@@ -29,6 +32,26 @@ withDatabaseContainer prefix action = do
   CBT.getImplementation >>= \case
     CBT.Docker -> Backend.withDatabaseContainer @'CBT.Docker containerName action
     CBT.Podman -> Backend.withDatabaseContainer @'CBT.Podman containerName action
+
+withDatabaseContainerProcess
+  :: CBT.WithEnv m env
+  => CBT.Prefix
+  -> Process.ProcessConfig stdin stdout stderr
+  -> (Process.ProcessConfig stdin stdout stderr -> (Process.Process stdin stdout stderr -> m a) -> m a)
+  -> (Process.Process stdin stdout stderr -> m a)
+  -> m a
+withDatabaseContainerProcess prefix proc withProcess action = do
+  withDatabaseContainer prefix $ \clientConfig -> do
+    env <- Postgresql.getEnv clientConfig
+    withProcess (Process.setEnv env proc) action
+
+withDatabaseContainerProcessRun_
+  :: CBT.WithEnv m env
+  => CBT.Prefix
+  -> Process.ProcessConfig stdin stdout stderr
+  -> m ()
+withDatabaseContainerProcessRun_ prefix proc =
+  withDatabaseContainerProcess prefix proc Process.withProcessWait_ Process.checkExitCode
 
 populateDatabaseImage
   :: CBT.WithEnv m env
