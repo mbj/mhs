@@ -45,7 +45,7 @@ packages:
     commit: 16455d5d938032362ddabe1437e5bc6407c32836
 snapshots:
 - completed:
-    size: 531701
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/4.yaml
-    sha256: d6119cdacc6d6b39c0bb8f6e11e8db6a21e92a38552e0d553414ba346592b53f
-  original: lts-16.4
+    size: 532386
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/17.yaml
+    sha256: d3ee1ae797cf63189c95cf27f00700304946c5cb3c1e6a82001cd6584a221e1b
+  original: lts-16.17
