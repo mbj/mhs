@@ -12,18 +12,23 @@ jobs:
         os: [ubuntu-latest]
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-haskell@v1
+    - uses: actions/setup-haskell@2215b2cb657e9dd555e7d634509d859983e7aa1e
       with:
         enable-stack: true
         ghc-version: ${{ matrix.ghc }}
         stack-version: '2.3'
+    - name: Setup stack
+      run: |
+        stack config set install-ghc false
+        stack config set system-ghc true
     - name: Cache
       uses: actions/cache@v2
       with:
         path: ~/.stack
-        key: g-${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('**/stack.yaml*') }}-${{ hashFiles('**/*.cabal') }}
-        restore-keys: |
-          g-${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('**/stack.yaml*') }}-
-          g-${{ matrix.os }}-${{ matrix.ghc }}-
+        key: ${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('stack-*.yaml', '**/*.cabal') }}
+    - name: Install dependencies
+      run: stack build --test --only-dependencies
     - name: Build
-      run: stack build --system-ghc --fast --test --copy-bins --test-arguments='--hide-successes'
+      run: stack build --fast --test --no-run-tests
+    - name: Run tests
+      run: stack build --fast --test
