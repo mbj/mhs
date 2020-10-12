@@ -17,32 +17,32 @@ import qualified Hasql.Connection as Hasql
 data Config = Config
   { clientConfig :: Postgresql.ClientConfig
   , maxAttempts  :: Natural
-  , onFail       :: forall m env . CBT.WithEnv m env => m ()
+  , onFail       :: forall env . CBT.WithEnv env => RIO env ()
   , prefix       :: String
   , waitTime     :: Natural
   }
 
-wait :: forall m env . CBT.WithEnv m env => Config -> m ()
+wait :: forall env . CBT.WithEnv env => Config -> RIO env ()
 wait Config{clientConfig = clientConfig@Postgresql.ClientConfig{..}, ..} =
   start =<< effectiveWaitTime
   where
-    failPrefix :: String -> m a
+    failPrefix :: String -> RIO env a
     failPrefix message = liftIO $ fail $ prefix <> (' ':message)
 
-    effectiveWaitTime :: m Int
+    effectiveWaitTime :: RIO env Int
     effectiveWaitTime =
       if waitTime <= fromIntegral (maxBound @Int)
         then pure $ fromIntegral waitTime
         else failPrefix $ "Cannot convert waitTime: " <> show waitTime <> " to Int"
 
-    start :: Int -> m ()
+    start :: Int -> RIO env ()
     start waitTime' = attempt 1
       where
-        attempt :: Natural -> m ()
+        attempt :: Natural -> RIO env ()
         attempt count =
           either (onError count) pure =<< (liftIO . withConnectionEither clientConfig $ const $ pure ())
 
-        onError :: Natural -> Hasql.ConnectionError -> m ()
+        onError :: Natural -> Hasql.ConnectionError -> RIO env ()
         onError attempts error =
           if attempts == maxAttempts
             then do

@@ -12,7 +12,7 @@ import qualified Test.Tasty.MGolden   as Tasty
 
 main :: IO ()
 main =
-  CBT.runDefaultEnvironmentLog $
+  CBT.runDefaultEnvironment $
     DBT.withDatabaseContainer (CBT.Prefix "dbt") $ \clientConfig ->
       liftIO . Tasty.defaultMain $ Tasty.testGroup "dbt" [Devtools.testTree devtoolsConfig, testDB clientConfig]
 

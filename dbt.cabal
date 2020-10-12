@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 421dcc0f0f9143f205810dd17c6437764dc7f51274960055a3e9d4353a0c0eec
+-- hash: b3d5d56f9027f47f3e875edd7687b3b6dc27a1d4de8ef6086a21d5803c3755c6
 
 name:           dbt
 version:        0.1.0
@@ -36,7 +36,7 @@ library
       Paths_dbt
   hs-source-dirs:
       src
-  default-extensions: AllowAmbiguousTypes DataKinds DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving KindSignatures LambdaCase MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TypeApplications
+  default-extensions: AllowAmbiguousTypes DataKinds DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving KindSignatures LambdaCase MonoLocalBinds MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TypeApplications
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
       base >=4.12 && >=4.13 && <4.14
@@ -48,6 +48,8 @@ library
     , cryptonite >=0.25 && >=0.26 && <0.27
     , hasql >=1.4 && <1.5
     , mprelude >=0.2.0 && <0.3
+    , mrio-colog >=0.0.1 && <0.1
+    , mrio-core >=0.0.1 && <0.1
     , network >=3.1 && <3.2
     , optparse-applicative >=0.15 && <0.16
     , pathtype >=0.8 && <0.9
@@ -66,7 +68,7 @@ executable dbt
       Paths_dbt
   hs-source-dirs:
       app
-  default-extensions: AllowAmbiguousTypes DataKinds DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving KindSignatures LambdaCase MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TypeApplications
+  default-extensions: AllowAmbiguousTypes DataKinds DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving KindSignatures LambdaCase MonoLocalBinds MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TypeApplications
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       base >=4.12 && >=4.13 && <4.14
@@ -79,6 +81,8 @@ executable dbt
     , dbt
     , hasql >=1.4 && <1.5
     , mprelude >=0.2.0 && <0.3
+    , mrio-colog >=0.0.1 && <0.1
+    , mrio-core >=0.0.1 && <0.1
     , network >=3.1 && <3.2
     , optparse-applicative >=0.15 && <0.16
     , pathtype >=0.8 && <0.9
@@ -96,7 +100,7 @@ test-suite test
   main-is: test/Test.hs
   other-modules:
       Paths_dbt
-  default-extensions: AllowAmbiguousTypes DataKinds DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving KindSignatures LambdaCase MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TypeApplications
+  default-extensions: AllowAmbiguousTypes DataKinds DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving KindSignatures LambdaCase MonoLocalBinds MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TypeApplications
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       base >=4.12 && >=4.13 && <4.14
@@ -110,6 +114,8 @@ test-suite test
     , devtools >=0.0.3 && <0.1
     , hasql >=1.4 && <1.5
     , mprelude >=0.2.0 && <0.3
+    , mrio-colog >=0.0.1 && <0.1
+    , mrio-core >=0.0.1 && <0.1
     , network >=3.1 && <3.2
     , optparse-applicative >=0.15 && <0.16
     , pathtype >=0.8 && <0.9

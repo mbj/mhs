@@ -24,18 +24,18 @@ import qualified System.Path        as Path
 import qualified UnliftIO.Exception as Exception
 
 getHostPort
-  :: forall b m env . (CBT.Backend b, CBT.WithEnv m env)
+  :: forall b env . (CBT.Backend b, CBT.WithEnv env)
   => CBT.ContainerName
-  -> m Postgresql.HostPort
+  -> RIO env Postgresql.HostPort
 getHostPort containerName
   =   Postgresql.HostPort
   .   CBT.unPort
   <$> CBT.Backend.getHostPort @b containerName containerPort
 
 getMasterPassword
-  :: forall b m env . (CBT.Backend b, CBT.WithEnv m env)
+  :: forall b env . (CBT.Backend b, CBT.WithEnv env)
   => CBT.ContainerName
-  -> m Postgresql.Password
+  -> RIO env Postgresql.Password
 getMasterPassword containerName =
   Postgresql.Password . rstrip . Text.decodeUtf8 <$>
     CBT.Backend.readContainerFile @b containerName pgMasterPasswordAbs
@@ -43,28 +43,28 @@ getMasterPassword containerName =
     rstrip = Text.dropWhileEnd (== '\n')
 
 getClientConfig
-  :: forall b m env . (CBT.Backend b, CBT.WithEnv m env)
+  :: forall b env . (CBT.Backend b, CBT.WithEnv env)
   => CBT.ContainerName
-  -> m Postgresql.ClientConfig
+  -> RIO env Postgresql.ClientConfig
 getClientConfig containerName =
   mkClientConfig
     <$> getHostPort @b containerName
     <*> getMasterPassword @b containerName
 
 startDatabaseContainer
-  :: forall b m env . (CBT.Backend b, CBT.WithEnv m env)
+  :: forall b env . (CBT.Backend b, CBT.WithEnv env)
   => CBT.ContainerName
-  -> m Postgresql.ClientConfig
+  -> RIO env Postgresql.ClientConfig
 startDatabaseContainer containerName = do
   CBT.buildRun @b buildDefinition (containerDefinition containerName)
   getClientConfig @b containerName
 
 populateDatabaseImage
-  :: forall b m env . (CBT.Backend b, CBT.WithEnv m env)
+  :: forall b env . (CBT.Backend b, CBT.WithEnv env)
   => CBT.ContainerName
   -> CBT.ImageName
-  -> (Postgresql.ClientConfig -> m ())
-  -> m (Either CBT.ImageBuildError ())
+  -> (Postgresql.ClientConfig -> RIO env ())
+  -> RIO env (Either CBT.ImageBuildError ())
 populateDatabaseImage containerName imageName action =
    fmap toError . Exception.tryAnyDeep $ do
      Exception.bracket_
@@ -79,27 +79,27 @@ populateDatabaseImage containerName imageName action =
     toError :: Either Exception.SomeException a -> Either CBT.ImageBuildError a
     toError = left (CBT.ImageBuildError . convert . show)
 
-    run :: m ()
+    run :: RIO env ()
     run = do
       runAction @b containerName action
       CBT.stop @b containerName
       CBT.commit @b containerName imageName
 
 withDatabaseContainer
-  :: forall b m env a . (CBT.Backend b, CBT.WithEnv m env)
+  :: forall b env a . (CBT.Backend b, CBT.WithEnv env)
   => CBT.ContainerName
-  -> (Postgresql.ClientConfig -> m a)
-  -> m a
+  -> (Postgresql.ClientConfig -> RIO env a)
+  -> RIO env a
 withDatabaseContainer containerName
   = CBT.withContainer @b buildDefinition (containerDefinition containerName)
   . runAction @b containerName
 
 withDatabaseContainerImage
-  :: forall b m env a . (CBT.Backend b, CBT.WithEnv m env)
+  :: forall b env a . (CBT.Backend b, CBT.WithEnv env)
   => CBT.ContainerName
   -> CBT.ImageName
-  -> (Postgresql.ClientConfig -> m a)
-  -> m a
+  -> (Postgresql.ClientConfig -> RIO env a)
+  -> RIO env a
 withDatabaseContainerImage containerName imageName
   = CBT.withContainerDefinition @b containerDefinition'
   . runAction @b containerName
@@ -108,10 +108,10 @@ withDatabaseContainerImage containerName imageName
     containerDefinition' = (containerDefinition containerName) { CBT.imageName = imageName }
 
 runAction
-  :: forall b m env a . (CBT.Backend b, CBT.WithEnv m env)
+  :: forall b env a . (CBT.Backend b, CBT.WithEnv env)
   => CBT.ContainerName
-  -> (Postgresql.ClientConfig -> m a)
-  -> m a
+  -> (Postgresql.ClientConfig -> RIO env a)
+  -> RIO env a
 runAction containerName action = do
   hostPort <- getHostPort       @b containerName
   password <- getMasterPassword @b containerName
@@ -157,10 +157,10 @@ mkClientConfig hostPort password =
     }
 
 waitForPort
-  :: forall b m env . (CBT.Backend b, CBT.WithEnv m env)
+  :: forall b env . (CBT.Backend b, CBT.WithEnv env)
   => CBT.ContainerName
   -> Postgresql.ClientConfig
-  -> m ()
+  -> RIO env ()
 waitForPort containerName clientConfig
   = Wait.wait
   $ Wait.Config
