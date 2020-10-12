@@ -13,12 +13,12 @@ import qualified System.Process.Typed as Process
 main :: IO ()
 main = do
   arguments <- Environment.getArgs
-  CBT.runDefaultEnvironmentLog $ run arguments
+  CBT.runDefaultEnvironment $ run arguments
 
 run
-  :: forall m env . (CBT.WithEnv m env)
+  :: forall env . (CBT.WithEnv env)
   => [String]
-  -> m ()
+  -> RIO env ()
 run arguments = do
   liftIO $ IO.hSetBuffering IO.stdout IO.LineBuffering
   join
@@ -28,10 +28,10 @@ run arguments = do
   where
     preferences = prefs showHelpOnEmpty
 
-    parser :: ParserInfo (m ())
+    parser :: ParserInfo (RIO env ())
     parser = wrapHelper "dbt commands" commands
 
-    commands :: Parser (m ())
+    commands :: Parser (RIO env ())
     commands
       = hsubparser
       $ mkCommand

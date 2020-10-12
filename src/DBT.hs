@@ -23,10 +23,10 @@ imageName :: CBT.ImageName
 imageName = getField @"imageName" Backend.buildDefinition
 
 withDatabaseContainer
-  :: CBT.WithEnv m env
+  :: CBT.WithEnv env
   => CBT.Prefix
-  -> (Postgresql.ClientConfig -> m a)
-  -> m a
+  -> (Postgresql.ClientConfig -> RIO env a)
+  -> RIO env a
 withDatabaseContainer prefix action = do
   containerName <- CBT.nextContainerName prefix
   CBT.getImplementation >>= \case
@@ -34,31 +34,31 @@ withDatabaseContainer prefix action = do
     CBT.Podman -> Backend.withDatabaseContainer @'CBT.Podman containerName action
 
 withDatabaseContainerProcess
-  :: CBT.WithEnv m env
+  :: CBT.WithEnv env
   => CBT.Prefix
   -> Process.ProcessConfig stdin stdout stderr
-  -> (Process.ProcessConfig stdin stdout stderr -> (Process.Process stdin stdout stderr -> m a) -> m a)
-  -> (Process.Process stdin stdout stderr -> m a)
-  -> m a
+  -> (Process.ProcessConfig stdin stdout stderr -> (Process.Process stdin stdout stderr -> RIO env a) -> RIO env a)
+  -> (Process.Process stdin stdout stderr -> RIO env a)
+  -> RIO env a
 withDatabaseContainerProcess prefix proc withProcess action = do
   withDatabaseContainer prefix $ \clientConfig -> do
     env <- Postgresql.getEnv clientConfig
     withProcess (Process.setEnv env proc) action
 
 withDatabaseContainerProcessRun_
-  :: CBT.WithEnv m env
+  :: CBT.WithEnv env
   => CBT.Prefix
   -> Process.ProcessConfig stdin stdout stderr
-  -> m ()
+  -> RIO env ()
 withDatabaseContainerProcessRun_ prefix proc =
   withDatabaseContainerProcess prefix proc Process.withProcessWait_ Process.checkExitCode
 
 populateDatabaseImage
-  :: CBT.WithEnv m env
+  :: CBT.WithEnv env
   => CBT.Prefix
   -> CBT.ImageName
-  -> (Postgresql.ClientConfig -> m ())
-  -> m (Either CBT.ImageBuildError ())
+  -> (Postgresql.ClientConfig -> RIO env ())
+  -> RIO env (Either CBT.ImageBuildError ())
 populateDatabaseImage prefix imageName' action = do
   containerName <- CBT.nextContainerName prefix
   CBT.getImplementation >>= \case
@@ -66,11 +66,11 @@ populateDatabaseImage prefix imageName' action = do
     CBT.Podman -> Backend.populateDatabaseImage @'CBT.Podman containerName imageName' action
 
 withDatabaseContainerImage
-  :: CBT.WithEnv m env
+  :: CBT.WithEnv env
   => CBT.Prefix
   -> CBT.ImageName
-  -> (Postgresql.ClientConfig -> m a)
-  -> m a
+  -> (Postgresql.ClientConfig -> RIO env a)
+  -> RIO env a
 withDatabaseContainerImage prefix imageName' action = do
   containerName <- CBT.nextContainerName prefix
   CBT.getImplementation >>= \case
@@ -78,9 +78,9 @@ withDatabaseContainerImage prefix imageName' action = do
     CBT.Podman -> Backend.withDatabaseContainerImage @'CBT.Podman containerName imageName' action
 
 startDatabaseContainer
-  :: CBT.WithEnv m env
+  :: CBT.WithEnv env
   => CBT.Prefix
-  -> m (CBT.ContainerName, Postgresql.ClientConfig)
+  -> RIO env (CBT.ContainerName, Postgresql.ClientConfig)
 startDatabaseContainer prefix = do
   containerName <- CBT.nextContainerName prefix
   config <- CBT.getImplementation >>= \case
@@ -89,9 +89,9 @@ startDatabaseContainer prefix = do
   pure (containerName, config)
 
 stopDatabaseContainer
-  :: CBT.WithEnv m env
+  :: CBT.WithEnv env
   => CBT.ContainerName
-  -> m ()
+  -> RIO env ()
 stopDatabaseContainer containerName = do
   CBT.getImplementation >>= \case
     CBT.Docker -> CBT.Backend.stop @'CBT.Docker containerName
