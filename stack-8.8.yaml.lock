@@ -59,6 +59,45 @@ packages:
     subdir: amazonka-cloudformation
     git: https://github.com/mbj/amazonka
     commit: 33aa6b71309793829b534fb29f6532d71c32b106
+- completed:
+    subdir: amazonka
+    name: mrio-amazonka
+    version: 0.0.1
+    git: https://github.com/strainge/mrio
+    pantry-tree:
+      size: 344
+      sha256: 7bde6a957def6bcb68794f7e77f0d1bbe7d15cf11f94e0824bade553368af8aa
+    commit: 2ba52b59ded8714e12fe4b1ce83f6fb27a2abac2
+  original:
+    subdir: amazonka
+    git: https://github.com/strainge/mrio
+    commit: 2ba52b59ded8714e12fe4b1ce83f6fb27a2abac2
+- completed:
+    subdir: colog
+    name: mrio-colog
+    version: 0.0.1
+    git: https://github.com/strainge/mrio
+    pantry-tree:
+      size: 467
+      sha256: fdb1a241d8166d5befcd772880e71af741559aa7f7ca699b742530caf19471e8
+    commit: 2ba52b59ded8714e12fe4b1ce83f6fb27a2abac2
+  original:
+    subdir: colog
+    git: https://github.com/strainge/mrio
+    commit: 2ba52b59ded8714e12fe4b1ce83f6fb27a2abac2
+- completed:
+    subdir: core
+    name: mrio-core
+    version: 0.0.1
+    git: https://github.com/strainge/mrio
+    pantry-tree:
+      size: 337
+      sha256: 21c1d7c3e37c3722efe29cf0132a9b06690bf12029653d72741d73e3d2f288a0
+    commit: 2ba52b59ded8714e12fe4b1ce83f6fb27a2abac2
+  original:
+    subdir: core
+    git: https://github.com/strainge/mrio
+    commit: 2ba52b59ded8714e12fe4b1ce83f6fb27a2abac2
 snapshots:
 - completed:
     size: 532386

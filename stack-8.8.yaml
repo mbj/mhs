@@ -10,6 +10,12 @@ extra-deps:
   commit: 33aa6b71309793829b534fb29f6532d71c32b106
   subdirs:
   - amazonka-cloudformation
+- git: https://github.com/strainge/mrio
+  commit: 2ba52b59ded8714e12fe4b1ce83f6fb27a2abac2
+  subdirs:
+  - amazonka
+  - colog
+  - core
 ghc-options:
   amazonka-cloudformation: -O0
   stratosphere:            -O0

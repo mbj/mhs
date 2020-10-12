@@ -1,6 +1,5 @@
 module StackDeploy.Wait (waitForAccept) where
 
-import Control.Exception.Base (AssertionFailed(AssertionFailed))
 import Control.Lens (view)
 import Data.Set (Set)
 import StackDeploy.AWS
@@ -15,21 +14,21 @@ import qualified Network.AWS.CloudFormation.Types as CF
 --
 -- Apply action for each event related to the remote operation.
 waitForAccept
-  :: forall m . MonadAWS m
+  :: forall env . HasAWS env
   => RemoteOperation
-  -> (CF.StackEvent -> m ())
-  -> m RemoteOperationResult
+  -> (CF.StackEvent -> RIO env ())
+  -> RIO env RemoteOperationResult
 waitForAccept RemoteOperation{..} action =
   classify =<< pollEvents pollConfig action
   where
-    classify :: Maybe CF.StackEvent -> m RemoteOperationResult
+    classify :: Maybe CF.StackEvent -> RIO env RemoteOperationResult
     classify = maybe
-      (throwM $ AssertionFailed "No last event")
+      (throwString "No last event")
       assertPresentResourceStatus
 
     assertPresentResourceStatus =
       maybe
-        (throwM $ AssertionFailed "Last event has no resource status")
+        (throwString "Last event has no resource status")
         remoteOperationResult
         . view CF.seResourceStatus
 
@@ -39,7 +38,7 @@ waitForAccept RemoteOperation{..} action =
       , stopCondition  = isStackEvent finalResourceStatus
       }
 
-    remoteOperationResult :: CF.ResourceStatus -> m RemoteOperationResult
+    remoteOperationResult :: CF.ResourceStatus -> RIO env RemoteOperationResult
     remoteOperationResult = \case
       CF.CreateComplete         -> pure RemoteOperationSuccess
       CF.CreateFailed           -> pure RemoteOperationFailure
@@ -50,7 +49,7 @@ waitForAccept RemoteOperation{..} action =
       CF.UpdateComplete         -> pure RemoteOperationSuccess
       CF.UpdateFailed           -> pure RemoteOperationFailure
       CF.UpdateRollbackComplete -> pure RemoteOperationFailure
-      status                    -> throwM . AssertionFailed $ message status
+      status                    -> throwString $ message status
       where
         message :: Show a => a -> String
         message = ("Last event has unexpected resource status: " <>) . show
