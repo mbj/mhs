@@ -1,32 +1,26 @@
 module StackDeploy.AWS
-  ( MonadAWS
+  ( module Exports
+  , AWS
+  , HasAWS(..)
+  , MRIO.Amazonka.paginate
+  , MRIO.Amazonka.send
+  , MonadAWS
   , listResource
-  , withAWS
   )
 where
 
-import Control.Lens (set)
-import Control.Monad.Trans.AWS (runAWST)
-import Control.Monad.Trans.Resource (runResourceT)
 import Data.Conduit (ConduitT, (.|))
 import Data.Conduit.Combinators (concatMap)
-import Network.AWS (AWS, AWSPager, MonadAWS, Rs, paginate)
+import Network.AWS (AWS, AWSPager, MonadAWS)
 import Network.AWS.Lens
+import Network.AWS.Types as Exports
 import StackDeploy.Prelude
 
-import qualified Network.AWS as AWS
-import qualified System.IO   as IO
+import qualified MRIO.Amazonka
 
 listResource
-  :: (AWSPager a, MonadAWS m)
+  :: (AWSPager a, HasAWS env)
   => a
   -> Lens' (Rs a) [b]
-  -> ConduitT () b m ()
-listResource action getList = paginate action .| concatMap (view getList)
-
-withAWS :: (MonadCatch m, MonadUnliftIO m) => AWS a -> m a
-withAWS action = do
-  logger <- AWS.newLogger AWS.Info IO.stderr
-  env    <- AWS.newEnv AWS.Discover <&> set AWS.envLogger logger
-
-  liftIO . runResourceT $ runAWST env action
+  -> ConduitT () b (RIO env) ()
+listResource action getList = MRIO.Amazonka.paginate action .| concatMap (view getList)

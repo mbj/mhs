@@ -30,10 +30,10 @@ type Provider = Provider.Provider InstanceSpec
 
 data InstanceSpec = InstanceSpec
   { capabilities  :: [CF.Capability]
-  , envParameters :: forall m . MonadAWS m => m Parameters
-  , envRoleARN    :: forall m . MonadAWS m => Maybe (m RoleARN)
+  , envParameters :: forall env . HasAWS env => RIO env Parameters
+  , envRoleARN    :: forall env . HasAWS env => Maybe (RIO env RoleARN)
   , name          :: Name
-  , onSuccess     :: forall m . MonadAWS m => m ()
+  , onSuccess     :: forall env . HasAWS env => RIO env ()
   , parameters    :: Parameters
   , roleARN       :: Maybe RoleARN
   , template      :: Template
@@ -43,11 +43,11 @@ instance Provider.HasName InstanceSpec where
   name = name
 
 get
-  :: forall m . MonadAWS m
+  :: forall env . HasAWS env
   => Provider
   -> Name
   -> Parameters
-  -> m InstanceSpec
+  -> RIO env InstanceSpec
 get provider targetName userParameters = do
   instanceSpec <- Provider.get "instance-spec" provider targetName
   env          <- envParameters instanceSpec
@@ -66,7 +66,7 @@ get provider targetName userParameters = do
     expandedParameters InstanceSpec{..} =
       Parameters.expandTemplate parameters template
 
-    tryEnvRole :: InstanceSpec -> m (Maybe RoleARN)
+    tryEnvRole :: InstanceSpec -> RIO env (Maybe RoleARN)
     tryEnvRole InstanceSpec{..} = maybe (pure roleARN) (pure <$>) envRoleARN
 
     union = Parameters.union

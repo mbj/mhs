@@ -11,12 +11,12 @@ import StackDeploy.Prelude
 
 import qualified Data.ByteString           as BS
 import qualified Data.Text.Encoding        as Text
-import qualified Network.AWS               as AWS
 import qualified Network.AWS.Data.Body     as AWS
 import qualified Network.AWS.S3.HeadObject as S3
 import qualified Network.AWS.S3.PutObject  as S3
 import qualified Network.AWS.S3.Types      as S3
 import qualified Network.HTTP.Types        as HTTP
+import qualified StackDeploy.AWS           as AWS
 
 data TargetObject = TargetObject
   { uploadCallback :: forall m . MonadIO m => Text -> m ()
@@ -25,7 +25,7 @@ data TargetObject = TargetObject
   , objectKey      :: S3.ObjectKey
   }
 
-syncTarget :: AWS.MonadAWS m => TargetObject -> m ()
+syncTarget :: HasAWS env => TargetObject -> RIO env ()
 syncTarget TargetObject{..} =
   putIfAbsent bucketName objectKey object (uploadCallback $ objectKeyText objectKey)
 
@@ -33,30 +33,31 @@ targetObjectKeyText :: TargetObject -> Text
 targetObjectKeyText = objectKeyText . objectKey
 
 testObjectExists
-  :: AWS.MonadAWS m
+  :: HasAWS env
   => S3.BucketName
   -> S3.ObjectKey
-  -> m Bool
+  -> RIO env Bool
 testObjectExists bucketName objectKey =
-  catchIf isNotFoundError
+  catchJust testNotFoundError
     ((void . AWS.send $ S3.headObject bucketName objectKey) >> pure True)
     (const $ pure False)
   where
-    isNotFoundError
+    testNotFoundError :: AWS.Error -> Maybe AWS.Error
+    testNotFoundError
       ( AWS.ServiceError
         AWS.ServiceError'
         { _serviceStatus = HTTP.Status { HTTP.statusCode = 404 } }
       )
-      = True
-    isNotFoundError _ = False
+      = empty
+    testNotFoundError error = pure error
 
 putIfAbsent
-  :: AWS.MonadAWS m
+  :: HasAWS env
   => S3.BucketName
   -> S3.ObjectKey
   -> AWS.HashedBody
-  -> m ()
-  -> m ()
+  -> RIO env ()
+  -> RIO env ()
 putIfAbsent bucketName objectKey object callback = do
   exists <- testObjectExists bucketName objectKey
 
