@@ -46,9 +46,35 @@ packages:
       sha256: 9cd24c3a02396dd93ed7d57df1d9668a2377d128e413db5ff89d82ffdfc830fa
   original:
     hackage: tasty-mgolden-0.0.1@sha256:07fadb592cde353c386c5f38cff75539a5675e9350776ed6f4f0a70247427a78,4214
+- completed:
+    subdir: colog
+    name: mrio-colog
+    version: 0.0.1
+    git: https://github.com/strainge/mrio
+    pantry-tree:
+      size: 467
+      sha256: a9095ddb17e2e9bc9f8e65d48271ebc1b3d4940725d28dd2a684127e073c8995
+    commit: 90e56a8ed9951244545b639f1c678c19d34c631e
+  original:
+    subdir: colog
+    git: https://github.com/strainge/mrio
+    commit: 90e56a8ed9951244545b639f1c678c19d34c631e
+- completed:
+    subdir: core
+    name: mrio-core
+    version: 0.0.1
+    git: https://github.com/strainge/mrio
+    pantry-tree:
+      size: 337
+      sha256: bc73498803538b6cf0403b6cd57c7c11b6e061f618fe14a9efc088bcaf19bff5
+    commit: 90e56a8ed9951244545b639f1c678c19d34c631e
+  original:
+    subdir: core
+    git: https://github.com/strainge/mrio
+    commit: 90e56a8ed9951244545b639f1c678c19d34c631e
 snapshots:
 - completed:
-    size: 532380
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/15.yaml
-    sha256: 3b5f2a699aa5ed3abbc30410062bf743926f0868ce3eeb5655370c6c6cc1a9f4
-  original: lts-16.15
+    size: 532386
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/17.yaml
+    sha256: d3ee1ae797cf63189c95cf27f00700304946c5cb3c1e6a82001cd6584a221e1b
+  original: lts-16.17

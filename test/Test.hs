@@ -1,4 +1,5 @@
 import MPrelude
+import MRIO.Core
 import Test.Tasty.HUnit
 
 import qualified CBT
@@ -23,7 +24,7 @@ devtoolsConfig = Devtools.defaultConfig
 image :: CBT.Environment -> Tasty.TestTree
 image cbt
   = testCase "image" . void
-  . CBT.runEnvironmentLog cbt
+  . runRIO cbt
   . CBT.buildIfAbsent
   $ CBT.fromDockerfileContents
     (CBT.Prefix "cbt-test")
@@ -31,9 +32,9 @@ image cbt
 
 container :: CBT.Environment -> Tasty.TestTree
 container cbt
-  = testCase "container" . void $ do
-    containerName <- CBT.nextContainerName prefix
-    CBT.runEnvironmentLog cbt $
+  = testCase "container" . void $
+    runRIO cbt $ do
+      containerName <- CBT.nextContainerName prefix
       CBT.withContainer
         buildDefinition
         CBT.ContainerDefinition

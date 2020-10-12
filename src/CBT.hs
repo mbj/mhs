@@ -36,11 +36,11 @@ import qualified System.Path        as Path
 import qualified UnliftIO.Exception as Exception
 
 withContainer
-  :: WithEnv m env
+  :: WithEnv env
   => BuildDefinition
   -> ContainerDefinition
-  -> m a
-  -> m a
+  -> RIO env a
+  -> RIO env a
 withContainer buildDefinition containerDefinition action = do
   implementation <- getImplementation
   case implementation of
@@ -48,9 +48,9 @@ withContainer buildDefinition containerDefinition action = do
     Podman -> CBT.Backend.withContainer @'Podman buildDefinition containerDefinition action
 
 build
-  :: WithEnv m env
+  :: WithEnv env
   => BuildDefinition
-  -> m ()
+  -> RIO env ()
 build buildDefinition = do
   implementation <- getImplementation
   case implementation of
@@ -58,10 +58,10 @@ build buildDefinition = do
     Podman -> CBT.Backend.build @'Podman buildDefinition
 
 buildRun
-  :: WithEnv m env
+  :: WithEnv env
   => BuildDefinition
   -> ContainerDefinition
-  -> m ()
+  -> RIO env ()
 buildRun buildDefinition containerDefinition = do
   implementation <- getImplementation
   case implementation of
@@ -69,9 +69,9 @@ buildRun buildDefinition containerDefinition = do
     Podman -> CBT.Backend.buildRun @'Podman buildDefinition containerDefinition
 
 runReadStdout
-  :: WithEnv m env
+  :: WithEnv env
   => ContainerDefinition
-  -> m BS.ByteString
+  -> RIO env BS.ByteString
 runReadStdout containerDefinition = do
   implementation <- getImplementation
   case implementation of
@@ -79,9 +79,9 @@ runReadStdout containerDefinition = do
     Podman -> CBT.Backend.runReadStdout @'Podman containerDefinition
 
 buildIfAbsent
-  :: WithEnv m env
+  :: WithEnv env
   => BuildDefinition
-  -> m ()
+  -> RIO env ()
 buildIfAbsent buildDefinition = do
   implementation <- getImplementation
   case implementation of
@@ -89,10 +89,10 @@ buildIfAbsent buildDefinition = do
     Podman -> CBT.Backend.buildIfAbsent @'Podman buildDefinition
 
 readContainerFile
-  :: WithEnv m env
+  :: WithEnv env
   => ContainerName
   -> Path.AbsFile
-  -> m BS.ByteString
+  -> RIO env BS.ByteString
 readContainerFile containerName path = do
   implementation <- getImplementation
   case implementation of
@@ -100,9 +100,9 @@ readContainerFile containerName path = do
     Podman -> CBT.Backend.readContainerFile @'Podman containerName path
 
 removeContainer
-  :: WithEnv m env
+  :: WithEnv env
   => ContainerName
-  -> m ()
+  -> RIO env ()
 removeContainer containerName = do
   implementation <- getImplementation
   case implementation of
@@ -110,10 +110,10 @@ removeContainer containerName = do
     Podman -> CBT.Backend.removeContainer @'Podman containerName
 
 commit
-  :: WithEnv m env
+  :: WithEnv env
   => ContainerName
   -> ImageName
-  -> m ()
+  -> RIO env ()
 commit containerName imageName = do
   implementation <- getImplementation
   case implementation of
@@ -121,9 +121,9 @@ commit containerName imageName = do
     Podman -> CBT.Backend.commit @'Podman containerName imageName
 
 printLogs
-  :: WithEnv m env
+  :: WithEnv env
   => ContainerName
-  -> m ()
+  -> RIO env ()
 printLogs containerName = do
   implementation <- getImplementation
   case implementation of
@@ -131,26 +131,26 @@ printLogs containerName = do
     Podman -> CBT.Backend.printLogs @'Podman containerName
 
 printInspect
-  :: WithEnv m env
+  :: WithEnv env
   => ContainerName
-  -> m ()
+  -> RIO env ()
 printInspect containerName = do
   implementation <- getImplementation
   case implementation of
     Docker -> CBT.Backend.printInspect @'Docker containerName
     Podman -> CBT.Backend.printInspect @'Podman containerName
 
-getImplementation :: forall m env . WithEnv m env => m Implementation
+getImplementation :: forall env . WithEnv env => RIO env Implementation
 getImplementation =
   maybe discover fromEnv =<< liftIO (Environment.lookupEnv "CBT_BACKEND")
   where
-    fromEnv :: String -> m Implementation
+    fromEnv :: String -> RIO env Implementation
     fromEnv = \case
       "docker" -> pure Docker
       "podman" -> pure Podman
       other    -> liftIO . fail $ "Unknown CBT_BACKEND: " <> show other
 
-    discover :: m Implementation
+    discover :: RIO env Implementation
     discover = do
       podman <- try @'Podman Podman
       docker <- try @'Docker Docker
@@ -161,32 +161,32 @@ getImplementation =
         (podman <|> docker)
 
 runLockedBuild
-  :: WithEnv m env
+  :: WithEnv env
   => ImageName
-  -> m (Either ImageBuildError ())
-  -> m (Either ImageBuildError ())
+  -> RIO env (Either ImageBuildError ())
+  -> RIO env (Either ImageBuildError ())
 runLockedBuild imageName buildAction = do
-  Environment{..} <- getEnvironment
+  Environment{..} <- getEnvironment <$> ask
   CBT.IncrementalState.runBuild builds imageName buildAction
 
 runLockedBuildThrow
-  :: WithEnv m env
+  :: WithEnv env
   => ImageName
-  -> m (Either ImageBuildError ())
-  -> m ()
+  -> RIO env (Either ImageBuildError ())
+  -> RIO env ()
 runLockedBuildThrow image action = either Exception.throwIO pure =<< runLockedBuild image action
 
 try
-  :: forall (b :: Implementation) m env . (Backend b, WithEnv m env)
+  :: forall (b :: Implementation) env . (Backend b, WithEnv env)
   => Implementation
-  -> m (Maybe Implementation)
+  -> RIO env (Maybe Implementation)
 try implementation = do
   isAvailable <- CBT.Backend.available @b
   if isAvailable
     then pure $ pure implementation
     else pure empty
 
-nextContainerName :: MonadIO m => Prefix -> m ContainerName
+nextContainerName :: Prefix -> RIO env ContainerName
 nextContainerName prefix = do
   uuid <- liftIO UUID.nextRandom
   pure $ ContainerName $ toText prefix <> "-" <> convertText (show uuid)
