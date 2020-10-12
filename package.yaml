@@ -9,9 +9,6 @@ github:      mbj/lht
 license:     BSD3
 
 dependencies:
-- amazonka           == 1.6.1
-- amazonka-core      == 1.6.1
-- amazonka-s3        == 1.6.1
 - base               ^>= 4.13
 - bytestring         ^>= 0.10
 - cbt                ^>= 0.1.0
@@ -79,9 +76,6 @@ library:
   - src
   exposed-modules:
   - LHT.Build
-  - LHT.Deploy
-  - LHT.Executable
-  - LHT.S3
   - LHT.Zip
 
 tests:

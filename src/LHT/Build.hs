@@ -1,20 +1,21 @@
 module LHT.Build
   ( Config(..)
-  , Executable(..)
   , Flag(..)
   , PackageName(..)
   , TargetName(..)
   , build
+  , buildZip
   )
 where
 
-import LHT.Executable
 import LHT.Prelude
 import System.Path ((</>))
 
 import qualified CBT
 import qualified CBT.TH
+import qualified Data.ByteString       as BS
 import qualified Data.Foldable         as Foldable
+import qualified LHT.Zip               as Zip
 import qualified System.Path           as Path
 import qualified System.Path.Directory as Path
 import qualified System.Posix.Files    as Files
@@ -44,13 +45,19 @@ buildDefinition = $$(CBT.TH.readDockerfile (CBT.Prefix "lht") $ Path.file "Docke
   { CBT.verbosity = CBT.Verbose }
 #endif
 
+buildZip
+  :: CBT.WithEnv env
+  => Config
+  -> RIO env BS.ByteString
+buildZip config = fmap (convert . Zip.mkZip) (build config)
+
 build
   :: CBT.WithEnv env
   => Config
-  -> RIO env Executable
+  -> RIO env BS.ByteString
 build config@Config{..} =
   withBuildContainer config $ \containerName ->
-    Executable <$> CBT.readContainerFile containerName (containerHomePath </> executablePath)
+    CBT.readContainerFile containerName (containerHomePath </> executablePath)
 
 withBuildContainer
   :: CBT.WithEnv env
