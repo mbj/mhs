@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 3af18681f95e99b53127cca6cfb31f6c703cde6b0d13b576b6fd4880a1116a4e
+-- hash: f383e4251e4e3a1df1d027d0d2ed3d823a6382d6cb3a6fde140aed46690393b2
 
 name:           lht
 version:        0.0.0.1
@@ -37,7 +37,7 @@ library
       Paths_lht
   hs-source-dirs:
       src
-  default-extensions: CPP DeriveAnyClass DeriveGeneric DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts FlexibleInstances GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables Strict TemplateHaskell
+  default-extensions: CPP DeriveAnyClass DeriveGeneric DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts FlexibleInstances GeneralizedNewtypeDeriving LambdaCase MonoLocalBinds MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables Strict TemplateHaskell
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields
   build-depends:
       amazonka ==1.6.1
@@ -51,6 +51,7 @@ library
     , exceptions >=0.10 && <0.11
     , http-types >=0.12 && <0.13
     , mprelude >=0.2 && <0.3
+    , mrio-core >=0.0.1 && <0.1
     , pathtype >=0.8 && <0.9
     , source-constraints >=0.0.1 && <0.1
     , tar >=0.5 && <0.6
@@ -72,7 +73,7 @@ test-suite devtools
   main-is: test/Test.hs
   other-modules:
       Paths_lht
-  default-extensions: CPP DeriveAnyClass DeriveGeneric DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts FlexibleInstances GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables Strict TemplateHaskell
+  default-extensions: CPP DeriveAnyClass DeriveGeneric DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts FlexibleInstances GeneralizedNewtypeDeriving LambdaCase MonoLocalBinds MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables Strict TemplateHaskell
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       amazonka ==1.6.1
@@ -89,6 +90,7 @@ test-suite devtools
     , http-types >=0.12 && <0.13
     , lht
     , mprelude >=0.2 && <0.3
+    , mrio-core >=0.0.1 && <0.1
     , pathtype >=0.8 && <0.9
     , source-constraints >=0.0.1 && <0.1
     , tar >=0.5 && <0.6

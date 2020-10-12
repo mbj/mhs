@@ -45,18 +45,18 @@ buildDefinition = $$(CBT.TH.readDockerfile (CBT.Prefix "lht") $ Path.file "Docke
 #endif
 
 build
-  :: CBT.WithEnv m env
+  :: CBT.WithEnv env
   => Config
-  -> m Executable
+  -> RIO env Executable
 build config@Config{..} =
   withBuildContainer config $ \containerName ->
     Executable <$> CBT.readContainerFile containerName (containerHomePath </> executablePath)
 
 withBuildContainer
-  :: CBT.WithEnv m env
+  :: CBT.WithEnv env
   => Config
-  -> (CBT.ContainerName -> m a)
-  -> m a
+  -> (CBT.ContainerName -> RIO env a)
+  -> RIO env a
 withBuildContainer Config{..} action = do
   containerName <- CBT.nextContainerName prefix
 
