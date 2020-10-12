@@ -1,4 +1,4 @@
-resolver: lts-16.15
+resolver: lts-16.17
 extra-deps:
 - devtools-0.0.3@sha256:7187fd0e44fcbb401b367e2ee8627b3c6a6bb1e05fcd8f3fbeccf69f771787cc,4181
 - conversions-0.0.3@sha256:4adcd605bc4ee3b351359852bebfb4e7032966d93bf5200c56884c0103b7a6d0,3399
