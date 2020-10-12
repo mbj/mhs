@@ -29,23 +29,25 @@ newtype ContainerRunFailure = ContainerRunFailure
 instance Exception ContainerRunFailure
 
 instance Show ContainerRunFailure where
-  show ContainerRunFailure{..} = "Failed to run container with name: " <> convertText (containerName containerDefinition)
+  show ContainerRunFailure{..}
+    = "Failed to run container with name: "
+    <> convertText (containerName containerDefinition)
 
 class Backend (b :: Implementation) where
   binaryName        :: String
-  getHostPort       :: WithEnv m env => ContainerName -> Port -> m Port
-  testImageExists   :: WithEnv m env => BuildDefinition -> m Bool
+  getHostPort       :: WithEnv env => ContainerName -> Port -> RIO env Port
+  testImageExists   :: WithEnv env => BuildDefinition -> RIO env Bool
 
-  available :: WithEnv m env => m Bool
+  available :: WithEnv env => RIO env Bool
   available = isJust <$> liftIO (Path.findExecutable (binaryName @b))
 
-  buildIfAbsent :: WithEnv m env => BuildDefinition -> m ()
+  buildIfAbsent :: WithEnv env => BuildDefinition -> RIO env ()
   buildIfAbsent buildDefinition@BuildDefinition{..} = do
     exists <- testImageExists @b buildDefinition
 
     unless exists (build @b buildDefinition)
 
-  printLogs :: WithEnv m env => ContainerName -> m ()
+  printLogs :: WithEnv env => ContainerName -> RIO env ()
   printLogs containerName
     = runProcess_
     $ backendProc @b
@@ -54,7 +56,7 @@ class Backend (b :: Implementation) where
     , convertText containerName
     ]
 
-  commit :: WithEnv m env => ContainerName -> ImageName -> m ()
+  commit :: WithEnv env => ContainerName -> ImageName -> RIO env ()
   commit containerName imageName
     = runProcess_
     $ backendProc @b
@@ -64,7 +66,7 @@ class Backend (b :: Implementation) where
     , convertText imageName
     ]
 
-  printInspect :: WithEnv m env => ContainerName -> m ()
+  printInspect :: WithEnv env => ContainerName -> RIO env ()
   printInspect containerName
     = runProcess_
     $ backendProc @b
@@ -73,7 +75,7 @@ class Backend (b :: Implementation) where
     , convertText containerName
     ]
 
-  status :: WithEnv m env => ContainerName -> m Status
+  status :: WithEnv env => ContainerName -> RIO env Status
   status containerName
     = mapStatus <$> runProcess proc
     where
@@ -83,10 +85,10 @@ class Backend (b :: Implementation) where
 
       proc = silenceStdout $ backendProc @b ["container", "inspect", convertText containerName]
 
-  build :: WithEnv m env => BuildDefinition -> m ()
+  build :: WithEnv env => BuildDefinition -> RIO env ()
   build BuildDefinition{..}
     = do
-      Environment{..} <- getEnvironment
+      Environment{..} <- getEnvironment <$> ask
       IncrementalState.runBuildThrow builds imageName
         . fmap fromExit
         . runProcess
@@ -99,15 +101,15 @@ class Backend (b :: Implementation) where
         Exit.ExitSuccess -> pure ()
         _                -> Left $ ImageBuildError "process exited with nonzero"
 
-  buildRun :: WithEnv m env => BuildDefinition -> ContainerDefinition -> m ()
+  buildRun :: WithEnv env => BuildDefinition -> ContainerDefinition -> RIO env ()
   buildRun buildDefinition containerDefinition =
     buildIfAbsent @b buildDefinition >> run @b containerDefinition
 
-  run :: WithEnv m env => ContainerDefinition -> m ()
+  run :: WithEnv env => ContainerDefinition -> RIO env ()
   run containerDefinition@ContainerDefinition{..} =
     handleFailure @b containerDefinition () =<< runProcess (runProc @b containerDefinition)
 
-  runReadStdout :: WithEnv m env => ContainerDefinition -> m BS.ByteString
+  runReadStdout :: WithEnv env => ContainerDefinition -> RIO env BS.ByteString
   runReadStdout containerDefinition = do
     (exitCode, output) <- readProcessStdout $ runProc @b containerDefinition'
     handleFailure @b containerDefinition (convert output) exitCode
@@ -115,14 +117,14 @@ class Backend (b :: Implementation) where
       containerDefinition' = containerDefinition { detach = Foreground }
 
   readContainerFile
-    :: forall m env .WithEnv m env
+    :: forall env .WithEnv env
     => ContainerName
-    -> Path.AbsFile -> m BS.ByteString
+    -> Path.AbsFile -> RIO env BS.ByteString
   readContainerFile containerName path = do
     tar <- readProcessStdout_ proc
     maybe notFound (pure . LBS.toStrict) . Tar.findEntry tar $ Path.takeFileName path
     where
-      notFound :: m BS.ByteString
+      notFound :: RIO env BS.ByteString
       notFound = liftIO $ fail "Tar from docker did not contain expected entry"
 
       proc
@@ -133,7 +135,7 @@ class Backend (b :: Implementation) where
         , "-"
         ]
 
-  removeContainer :: WithEnv m env => ContainerName -> m ()
+  removeContainer :: WithEnv env => ContainerName -> RIO env ()
   removeContainer containerName
     = runProcess_
     . silenceStdout
@@ -143,26 +145,26 @@ class Backend (b :: Implementation) where
     , convertText containerName
     ]
 
-  stop :: WithEnv m env => ContainerName -> m ()
+  stop :: WithEnv env => ContainerName -> RIO env ()
   stop containerName
     = runProcess_
     . silenceStdout
     $ backendProc @b ["stop", convertText containerName]
 
   withContainer
-    :: (WithEnv m env, MonadUnliftIO m)
+    :: WithEnv env
     => BuildDefinition
     -> ContainerDefinition
-    -> m a
-    -> m a
+    -> RIO env a
+    -> RIO env a
   withContainer buildDefinition containerDefinition@ContainerDefinition{..} =
     Exception.bracket_ (buildRun @b buildDefinition containerDefinition) (stop @b containerName)
 
   withContainerDefinition
-    :: (WithEnv m env, MonadUnliftIO m)
+    :: WithEnv env
     => ContainerDefinition
-    -> m a
-    -> m a
+    -> RIO env a
+    -> RIO env a
   withContainerDefinition containerDefinition@ContainerDefinition{..} =
     Exception.bracket_ (run @b containerDefinition) (stop @b containerName)
 
@@ -326,49 +328,49 @@ exitBool = \case
   Exit.ExitSuccess -> True
   _                -> False
 
-parsePort :: forall m env a . (WithEnv m env, ToText a, Show a) => a -> m Port
+parsePort :: forall env a . (ToText a, Show a) => a -> RIO env Port
 parsePort input = maybe failParse (pure . Port) . readMaybe $ convertText input
   where
-    failParse :: m Port
+    failParse :: RIO env Port
     failParse = liftIO . fail $ "Cannot parse PostgresqlPort from input: " <> show input
 
 runProcess
-  :: forall m env stdin stdout stderr . (WithEnv m env)
+  :: forall env stdin stdout stderr . WithEnv env
   => Process.ProcessConfig stdin stdout stderr
-  -> m Exit.ExitCode
+  -> RIO env Exit.ExitCode
 runProcess proc = procRun proc Process.runProcess
 
 runProcess_
-  :: forall m env stdin stdout stderr . (WithEnv m env)
+  :: forall env stdin stdout stderr . WithEnv env
   => Process.ProcessConfig stdin stdout stderr
-  -> m ()
+  -> RIO env ()
 runProcess_ proc = procRun proc Process.runProcess_
 
 readProcessStdout_
-  :: forall m env stdin stdout stderr . (WithEnv m env)
+  :: forall env stdin stdout stderr . WithEnv env
   => Process.ProcessConfig stdin stdout stderr
-  -> m LBS.ByteString
+  -> RIO env LBS.ByteString
 readProcessStdout_ proc = procRun proc Process.readProcessStdout_
 
 readProcessStdout
-  :: forall m env stdin stdout stderr . (WithEnv m env)
+  :: forall env stdin stdout stderr . WithEnv env
   => Process.ProcessConfig stdin stdout stderr
-  -> m (Exit.ExitCode, LBS.ByteString)
+  -> RIO env (Exit.ExitCode, LBS.ByteString)
 readProcessStdout proc = procRun proc Process.readProcessStdout
 
 procRun
-  :: forall m a env stdin stdout stderr . (WithEnv m env)
+  :: forall a env stdin stdout stderr . WithEnv env
   => Process.ProcessConfig stdin stdout stderr
   -> (Process.ProcessConfig stdin stdout stderr -> IO a)
-  -> m a
+  -> RIO env a
 procRun proc action = onDebug (Colog.logDebug . convert $ show proc) >> liftIO (action proc)
 
 handleFailure
-  :: forall b env m a . (Backend b, WithEnv m env)
+  :: forall b env a . (Backend b, WithEnv env)
   => ContainerDefinition
   -> a
   -> Exit.ExitCode
-  -> m a
+  -> RIO env a
 handleFailure containerDefinition@ContainerDefinition{..} value = \case
   Exit.ExitSuccess -> pure value
   _ -> do
@@ -378,9 +380,9 @@ handleFailure containerDefinition@ContainerDefinition{..} value = \case
     Exception.throwIO $ ContainerRunFailure containerDefinition
 
 captureText
-  :: forall m env stdin stdout stderr . (WithEnv m env)
+  :: forall env stdin stdout stderr . WithEnv env
   => Process.ProcessConfig stdin stdout stderr
-  -> m Text
+  -> RIO env Text
 captureText proc
   =   Text.strip
   .   Text.decodeUtf8

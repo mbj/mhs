@@ -68,6 +68,8 @@ markdown-unlit 0.5.0
 memory 0.15.0
 mono-traversable 1.0.15.1
 mprelude 0.2.0
+mrio-colog 0.0.1
+mrio-core 0.0.1
 mtl 2.2.2
 network-info 0.2.0.10
 old-locale 1.0.0.7
