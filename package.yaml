@@ -8,9 +8,6 @@ copyright:   2019 Markus Schirp
 github:      mbj/lht
 license:     BSD3
 
-extra-source-files:
-- aws/rds-ca-2019-root.pem
-
 dependencies:
 - amazonka           == 1.6.1
 - amazonka-core      == 1.6.1

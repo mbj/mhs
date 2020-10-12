@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f383e4251e4e3a1df1d027d0d2ed3d823a6382d6cb3a6fde140aed46690393b2
+-- hash: 73ba64431e76ba36c577219bb89cbc841d1012007d4ec51125190fc4594baff1
 
 name:           lht
 version:        0.0.0.1
@@ -17,8 +17,6 @@ copyright:      2019 Markus Schirp
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
-extra-source-files:
-    aws/rds-ca-2019-root.pem
 
 source-repository head
   type: git
