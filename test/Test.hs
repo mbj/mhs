@@ -16,7 +16,7 @@ main = do
   Text.putStrLn ""
   success <- PGT.expand selectors
 
-  CBT.runDefaultEnvironmentLog $
+  CBT.runDefaultEnvironment $
     DBT.withDatabaseContainer (CBT.Prefix "pgt") $ \pgConfig -> do
       let adminConfig = pgConfig { Postgresql.databaseName = Postgresql.DatabaseName "template1" }
       liftIO $ setupSchema adminConfig

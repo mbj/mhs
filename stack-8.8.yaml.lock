@@ -51,26 +51,52 @@ packages:
     version: 0.1.0
     git: https://github.com/mbj/cbt
     pantry-tree:
-      size: 1089
-      sha256: e3e59e1d424b22b98a4e0b1da402590c5faf3d325d9a2ea9cd0e036fd10e53ed
-    commit: edc33496e9c8433d87353aefc1c2dae60d536006
+      size: 1088
+      sha256: 3ad5009dc62031a9a73c070e5f490ec88a15c7b6ea912ea4d682fc34f2000cb7
+    commit: 30da53a4854c01bf9a9282023fd3f3e424bdf9f4
   original:
     git: https://github.com/mbj/cbt
-    commit: edc33496e9c8433d87353aefc1c2dae60d536006
+    commit: 30da53a4854c01bf9a9282023fd3f3e424bdf9f4
 - completed:
     name: dbt
     version: 0.1.0
     git: https://github.com/mbj/dbt
     pantry-tree:
-      size: 1114
-      sha256: c5b340c97f22fcdc826a362b2ebf38f118f1134c93777571f0c58fa80e63aa88
-    commit: 8dd7580e5af68e2b4a3d9f4034cf3918f1b723a1
+      size: 1218
+      sha256: da1a503e3e0f32d109f4d81e8a04213c3c65ac4b83fd89f0c7f7cfa1713562c6
+    commit: ec1269e973ee2cf3c3ce8d89998c601a0f45d2ff
   original:
     git: https://github.com/mbj/dbt
-    commit: 8dd7580e5af68e2b4a3d9f4034cf3918f1b723a1
+    commit: ec1269e973ee2cf3c3ce8d89998c601a0f45d2ff
+- completed:
+    subdir: colog
+    name: mrio-colog
+    version: 0.0.1
+    git: https://github.com/strainge/mrio
+    pantry-tree:
+      size: 467
+      sha256: a9095ddb17e2e9bc9f8e65d48271ebc1b3d4940725d28dd2a684127e073c8995
+    commit: 90e56a8ed9951244545b639f1c678c19d34c631e
+  original:
+    subdir: colog
+    git: https://github.com/strainge/mrio
+    commit: 90e56a8ed9951244545b639f1c678c19d34c631e
+- completed:
+    subdir: core
+    name: mrio-core
+    version: 0.0.1
+    git: https://github.com/strainge/mrio
+    pantry-tree:
+      size: 337
+      sha256: bc73498803538b6cf0403b6cd57c7c11b6e061f618fe14a9efc088bcaf19bff5
+    commit: 90e56a8ed9951244545b639f1c678c19d34c631e
+  original:
+    subdir: core
+    git: https://github.com/strainge/mrio
+    commit: 90e56a8ed9951244545b639f1c678c19d34c631e
 snapshots:
 - completed:
-    size: 532381
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/11.yaml
-    sha256: 1f43c4ad661a114a4f9dd4580988f30da1208d844c097714f5867c52a02e0aa1
-  original: lts-16.11
+    size: 532386
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/17.yaml
+    sha256: d3ee1ae797cf63189c95cf27f00700304946c5cb3c1e6a82001cd6584a221e1b
+  original: lts-16.17
