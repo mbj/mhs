@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 73ba64431e76ba36c577219bb89cbc841d1012007d4ec51125190fc4594baff1
+-- hash: ea6eb4db7cbaca2c1e0e89694359812f5f94985b977bb5bc494418948434c37d
 
 name:           lht
 version:        0.0.0.1
@@ -25,9 +25,6 @@ source-repository head
 library
   exposed-modules:
       LHT.Build
-      LHT.Deploy
-      LHT.Executable
-      LHT.S3
       LHT.Zip
   other-modules:
       LHT.Prelude
@@ -38,10 +35,7 @@ library
   default-extensions: CPP DeriveAnyClass DeriveGeneric DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts FlexibleInstances GeneralizedNewtypeDeriving LambdaCase MonoLocalBinds MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables Strict TemplateHaskell
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields
   build-depends:
-      amazonka ==1.6.1
-    , amazonka-core ==1.6.1
-    , amazonka-s3 ==1.6.1
-    , base >=4.13 && <4.14
+      base >=4.13 && <4.14
     , bytestring >=0.10 && <0.11
     , cbt >=0.1.0 && <0.2
     , conversions >=0.0.3 && <0.1
@@ -74,10 +68,7 @@ test-suite devtools
   default-extensions: CPP DeriveAnyClass DeriveGeneric DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts FlexibleInstances GeneralizedNewtypeDeriving LambdaCase MonoLocalBinds MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables Strict TemplateHaskell
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      amazonka ==1.6.1
-    , amazonka-core ==1.6.1
-    , amazonka-s3 ==1.6.1
-    , base >=4.13 && <4.14
+      base >=4.13 && <4.14
     , bytestring >=0.10 && <0.11
     , cbt >=0.1.0 && <0.2
     , conversions >=0.0.3 && <0.1

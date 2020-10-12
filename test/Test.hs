@@ -22,7 +22,7 @@ testBuild :: Tasty.TestTree
 testBuild =
   Tasty.testCase "test-build" $ do
     executable <- withCurrentDirectory (Path.relDir "example") . CBT.runDefaultEnvironment $
-      LHT.Build.un <$> LHT.Build.build config
+      LHT.Build.build config
 
     Tasty.assertBool
       "static binary"
