@@ -17,10 +17,10 @@ import qualified Network.AWS.Data.Body as AWS
 import qualified Network.AWS.S3.Types  as S3
 
 buildTargetObject
-  :: CBT.WithEnv m env
+  :: CBT.WithEnv env
   => Build.Config
   -> S3.BucketName
-  -> m S3.TargetObject
+  -> RIO env S3.TargetObject
 buildTargetObject config bucketName =
   byteStringTargetObject bucketName <$> Build.build config
 

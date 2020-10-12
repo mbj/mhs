@@ -23,6 +23,7 @@ dependencies:
 - exceptions         ^>= 0.10
 - http-types         ^>= 0.12
 - mprelude           ^>= 0.2
+- mrio-core          ^>= 0.0.1
 - pathtype           ^>= 0.8
 - source-constraints ^>= 0.0.1
 - tar                ^>= 0.5
@@ -64,6 +65,7 @@ default-extensions:
 - FlexibleInstances
 - GeneralizedNewtypeDeriving
 - LambdaCase
+- MonoLocalBinds
 - MultiParamTypeClasses
 - NoImplicitPrelude
 - NumericUnderscores
