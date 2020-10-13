@@ -108,17 +108,17 @@ perform = \case
     update
       instanceSpec@InstanceSpec{..}
       remoteOperation@RemoteOperation{..} =
-        catchJust testNoUpdateError
+        catchJust handleNoUpdateError
           (doUpdate >> waitFor remoteOperation)
-          (const $ pure RemoteOperationSuccess)
+          pure
       where
         doUpdate :: RIO env ()
         doUpdate =
           prepareOperation operationFields instanceSpec token (CF.updateStack $ toText stackId)
             >>= void . AWS.send
 
-        testNoUpdateError :: AWS.Error -> Maybe AWS.Error
-        testNoUpdateError
+        handleNoUpdateError :: AWS.Error -> Maybe RemoteOperationResult
+        handleNoUpdateError
           ( AWS.ServiceError
             AWS.ServiceError'
             { _serviceCode =
@@ -126,8 +126,8 @@ perform = \case
             , _serviceMessage =
               Just (AWS.ErrorMessage "No updates are to be performed.")
             }
-          ) = empty
-        testNoUpdateError error = pure error
+          ) = pure RemoteOperationSuccess
+        handleNoUpdateError _error = empty
 
         operationFields = OperationFields
           { capabilitiesField = CF.usCapabilities
@@ -196,20 +196,20 @@ printEvent event = do
 
 getStack :: HasAWS env => InstanceSpec.Name -> RIO env (Maybe CF.Stack)
 getStack name =
-  catchJust testNotFoundError (pure <$> getExistingStack name) (const $ pure empty)
+  catchJust handleNotFoundError (pure <$> getExistingStack name) pure
   where
-    testNotFoundError :: AWS.Error -> Maybe AWS.Error
-    testNotFoundError
-      error@(AWS.ServiceError
+    handleNotFoundError :: AWS.Error -> Maybe (Maybe CF.Stack)
+    handleNotFoundError
+      (AWS.ServiceError
         AWS.ServiceError'
         { _serviceCode    = AWS.ErrorCode "ValidationError"
         , _serviceMessage = Just actualMessage
         }
       )
       = if actualMessage == expectedMessage
-        then empty
-        else pure error
-    testNotFoundError error = pure error
+        then pure empty
+        else empty
+    handleNotFoundError _error = empty
 
     expectedMessage :: AWS.ErrorMessage
     expectedMessage =
