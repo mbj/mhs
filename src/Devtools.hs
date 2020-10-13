@@ -1,5 +1,14 @@
-module Devtools (Config(..), defaultConfig, defaultMain, main, testTree) where
+module Devtools
+  ( Config(..)
+  , Target(..)
+  , defaultConfig
+  , defaultMain
+  , main
+  , testTree
+  )
+where
 
+import Devtools.Config
 import Devtools.Prelude
 import System.IO (putStrLn)
 
@@ -7,13 +16,10 @@ import qualified Devtools.Dependencies as Dependencies
 import qualified Devtools.HLint        as HLint
 import qualified Test.Tasty            as Tasty
 
-newtype Config = Config
-  { hlintArguments :: [String]
-  }
-
 defaultConfig :: Config
 defaultConfig = Config
   { hlintArguments = []
+  , targets        = []
   }
 
 defaultMain :: IO ()
@@ -26,6 +32,6 @@ main config = do
 
 testTree :: Config -> Tasty.TestTree
 testTree Config{..} = Tasty.testGroup "devtools"
-  [ Dependencies.testTree
+  [ Dependencies.testTree targets
   , HLint.testTree hlintArguments
   ]
