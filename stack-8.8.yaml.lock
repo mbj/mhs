@@ -5,6 +5,13 @@
 
 packages:
 - completed:
+    hackage: conversions-0.0.3@sha256:4adcd605bc4ee3b351359852bebfb4e7032966d93bf5200c56884c0103b7a6d0,3399
+    pantry-tree:
+      size: 250
+      sha256: 13b4efb98beb55c6939375a3cb4c6861ac02b31c27ee1659d8e5ac6a54c55902
+  original:
+    hackage: conversions-0.0.3@sha256:4adcd605bc4ee3b351359852bebfb4e7032966d93bf5200c56884c0103b7a6d0,3399
+- completed:
     hackage: mprelude-0.2.0@sha256:e3d29aafb109029d85fb39f608f916d5e4268ce0d9069831e2ab251747b6e37b,2968
     pantry-tree:
       size: 265

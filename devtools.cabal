@@ -4,7 +4,7 @@ cabal-version: 1.18
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 10ba25189f0663169075ea8771f091d9af0ff814b260061a20374044460019e2
+-- hash: f4e4b379c093455d9e68f7eb7aa3181435b0f51b61584906ff523a3f6315afbc
 
 name:           devtools
 version:        0.0.3
@@ -34,6 +34,7 @@ flag development
 library
   exposed-modules:
       Devtools
+      Devtools.Config
       Devtools.Dependencies
       Devtools.HLint
       Devtools.Prelude
