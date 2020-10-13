@@ -38,18 +38,18 @@ testObjectExists
   -> S3.ObjectKey
   -> RIO env Bool
 testObjectExists bucketName objectKey =
-  catchJust testNotFoundError
+  catchJust handleNotFoundError
     ((void . AWS.send $ S3.headObject bucketName objectKey) >> pure True)
-    (const $ pure False)
+    pure
   where
-    testNotFoundError :: AWS.Error -> Maybe AWS.Error
-    testNotFoundError
+    handleNotFoundError :: AWS.Error -> Maybe Bool
+    handleNotFoundError
       ( AWS.ServiceError
         AWS.ServiceError'
         { _serviceStatus = HTTP.Status { HTTP.statusCode = 404 } }
       )
-      = empty
-    testNotFoundError error = pure error
+      = pure False
+    handleNotFoundError _error = empty
 
 putIfAbsent
   :: HasAWS env
