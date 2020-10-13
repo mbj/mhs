@@ -1,11 +1,11 @@
 resolver: lts-16.17
 extra-deps:
-- mprelude-0.1.0@sha256:73336894a0addfeef076678bcc2e13dce800f66fcf1c67c72bf25184ecac3fab,2974
-- source-constraints-0.0.1@sha256:abdda6ca3d942c81d61ed4374dbc0eee21e9c074da3f17b25d434c2d55df2acc,2979
+- mprelude-0.2.0@sha256:e3d29aafb109029d85fb39f608f916d5e4268ce0d9069831e2ab251747b6e37b,2968
+- source-constraints-0.0.2@sha256:5746921c48cde021cd9120fc917dd21768fa6f3716f9d09fc847cac3c6f5d4e4,3103
 - tasty-1.3.1@sha256:01e35c97f7ee5ccbc28f21debea02a38cd010d53b4c3087f5677c5d06617a507,2520
 - tasty-mgolden-0.0.1@sha256:07fadb592cde353c386c5f38cff75539a5675e9350776ed6f4f0a70247427a78,4214
-- git: https://github.com/mbj/devtools-hs.git
-  commit: 16455d5d938032362ddabe1437e5bc6407c32836
+- git: https://github.com/mbj/devtools-hs
+  commit: b7dc89487301ef6e2d30edcebc241bc6466b80a5
 packages:
 - amazonka
 - colog

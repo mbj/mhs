@@ -20,6 +20,7 @@ main = do
     liftIO . putStrLn $ "App Name is " <> name
 
   Devtools.main Devtools.defaultConfig
+    { Devtools.targets = [Devtools.Target "mrio-core"] }
  where
   env :: Env
   env = Env { appName = "Test App" }

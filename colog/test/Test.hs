@@ -39,7 +39,9 @@ main = do
     name <- asks appName
     logInfo $ "App Name is " <> name
 
-  Devtools.main Devtools.defaultConfig
+  Devtools.main
+    Devtools.defaultConfig
+    { Devtools.targets = [Devtools.Target "mrio-amazonka"] }
  where
   env :: Env
   env = Env { logAction = richMessageAction, appName = "Test App" }
