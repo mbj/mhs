@@ -50,7 +50,7 @@ applyMigration
   -> IO ()
 applyMigration logInfo withConfig = do
   withConfig $ \config -> do
-    DBT.withConnection config $ eitherFail <=< Hasql.run (Migration.apply logInfo)
+    DBT.withConnection config $ eitherThrowIO <=< Hasql.run (Migration.apply logInfo)
     Migration.dumpSchema logInfo config
 
 withConnection
@@ -59,7 +59,7 @@ withConnection
   -> IO ()
 withConnection session withConfig =
   withConfig $ \config ->
-    DBT.withConnection config $ eitherFail <=< Hasql.run session
+    DBT.withConnection config $ eitherThrowIO <=< Hasql.run session
 
 wrapHelper :: Parser b -> String -> ParserInfo b
 wrapHelper parser desc = info parser $ progDesc desc

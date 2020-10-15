@@ -3,21 +3,10 @@ name: CI
 on: push
 
 jobs:
-  base:
-    name: Base steps
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Check Whitespace
-      run: git diff --check -- HEAD~1
   ci:
-    name: Haskell steps
-    needs: base
     runs-on: ${{ matrix.os }}
     env:
-      CBT_BACKEND: docker
       STACK_YAML: stack-${{ matrix.ghc }}.yaml
-    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
@@ -25,39 +14,23 @@ jobs:
         os: [ubuntu-latest]
     steps:
     - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0  # fetch all history w/timestamps
-    - name: Normalize file timestamps to allow caching
-      run: |
-        git ls-tree -r --name-only -- HEAD | while read -r filename; do
-          TS="$(git log --max-count 1 --format='%ct' -- "$filename")"
-          touch -mt "$(date --date="@$TS" '+%Y%m%d%H%M.%S')" -- "$filename"
-        done
-    - uses: actions/setup-haskell@v1.1
+    - uses: actions/setup-haskell@2215b2cb657e9dd555e7d634509d859983e7aa1e
       with:
         enable-stack: true
         ghc-version: ${{ matrix.ghc }}
-        stack-version: 'latest'
-    - name: Cache ~/.stack
+        stack-version: '2.3'
+    - name: Setup stack
+      run: |
+        stack config set install-ghc false
+        stack config set system-ghc true
+    - name: Cache
       uses: actions/cache@v2
       with:
         path: ~/.stack
-        key: stack-${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('**/stack.yaml*') }}-${{ hashFiles('**/*.cabal') }}
-        restore-keys: |
-          stack-${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('**/stack.yaml*') }}-
-          stack-${{ matrix.os }}-${{ matrix.ghc }}-
-    - name: Cache .stack-work
-      uses: actions/cache@v2
-      with:
-        path: '**/.stack-work'
-        key: stack-work-${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('**/stack.yaml*') }}-${{ hashFiles('**/*.cabal') }}-${{ hashFiles('**/*.hs') }}
-        restore-keys: |
-          stack-work-${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('**/stack.yaml*') }}-${{ hashFiles('**/*.cabal') }}-
-          stack-work-${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('**/stack.yaml*') }}-
-          stack-work-${{ matrix.os }}-${{ matrix.ghc }}-
+        key: ${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('stack-*.yaml', '**/*.cabal') }}
+    - name: Install dependencies
+      run: stack build --test --only-dependencies
     - name: Build
-      run: stack build --copy-bins --fast --no-run-tests --system-ghc --test
-    - name: Verify Generated Files
-      run: git diff --exit-code
-    - name: Test
-      run: stack test --fast --system-ghc
+      run: stack build --fast --test --no-run-tests
+    - name: Run tests
+      run: stack build --fast --test
