@@ -1,7 +1,6 @@
 {-# OPTIONS -fno-warn-orphans #-}
 module MRIO.Colog
-  ( module Colog.Prelude
-  , LogActionField
+  ( LogActionField
   )
 where
 
