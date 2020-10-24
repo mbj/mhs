@@ -12,10 +12,10 @@ import qualified System.Random                    as Random
 newtype Id = Id Text
   deriving (Conversion Text) via Text
 
-data Operation
-  = OpCreate InstanceSpec
+data Operation env
+  = OpCreate (InstanceSpec env)
   | OpDelete Id
-  | OpUpdate Id InstanceSpec
+  | OpUpdate Id (InstanceSpec env)
 
 data RemoteOperation = RemoteOperation
   { stackId   :: Id
@@ -27,7 +27,7 @@ data RemoteOperationResult = RemoteOperationFailure | RemoteOperationSuccess
 newtype Token = Token Text
   deriving (Conversion Text) via Text
 
-verb :: Operation -> Text
+verb :: Operation env -> Text
 verb = \case
   (OpCreate     _instanceSpec) -> "create"
   (OpDelete _id              ) -> "delete"

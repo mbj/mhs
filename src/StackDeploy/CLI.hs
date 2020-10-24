@@ -32,7 +32,7 @@ import qualified StackDeploy.Template                           as Template
 
 parserInfo
   :: forall env . (HasAWS env, HasEnvironment env)
-  => InstanceSpec.Provider
+  => InstanceSpec.Provider env
   -> ParserInfo (RIO env ExitCode)
 parserInfo instanceSpecProvider = wrapHelper commands "stack commands"
   where
@@ -74,24 +74,24 @@ parserInfo instanceSpecProvider = wrapHelper commands "stack commands"
     wrapHelper :: Parser b -> String -> ParserInfo b
     wrapHelper parser desc = info parser (progDesc desc)
 
-    cancel :: InstanceSpec.Name -> RIO env ExitCode
+    cancel :: InstanceSpec.Name env -> RIO env ExitCode
     cancel name = do
       void . AWS.send . CF.cancelUpdateStack $ toText name
       success
 
-    create :: InstanceSpec.Name -> Parameters -> RIO env ExitCode
+    create :: InstanceSpec.Name env -> Parameters -> RIO env ExitCode
     create name params = do
       spec <- InstanceSpec.get instanceSpecProvider name params
       exitCode =<< perform (OpCreate spec)
 
-    update :: InstanceSpec.Name -> Parameters -> RIO env ExitCode
+    update :: InstanceSpec.Name env -> Parameters -> RIO env ExitCode
     update name params = do
       spec     <- InstanceSpec.get instanceSpecProvider name params
       stackId  <- getExistingStackId name
 
       exitCode =<< perform (OpUpdate stackId spec)
 
-    sync :: InstanceSpec.Name -> Parameters -> RIO env ExitCode
+    sync :: InstanceSpec.Name env -> Parameters -> RIO env ExitCode
     sync name params = do
       spec <- InstanceSpec.get instanceSpecProvider name params
 
@@ -99,10 +99,10 @@ parserInfo instanceSpecProvider = wrapHelper commands "stack commands"
         =<< perform . maybe (OpCreate spec) (`OpUpdate` spec)
         =<< getStackId name
 
-    wait :: InstanceSpec.Name -> Token -> RIO env ExitCode
+    wait :: InstanceSpec.Name env -> Token -> RIO env ExitCode
     wait name token = maybe success (waitForOperation token) =<< getStackId name
 
-    outputs :: InstanceSpec.Name -> RIO env ExitCode
+    outputs :: InstanceSpec.Name env -> RIO env ExitCode
     outputs name = do
       traverse_ printOutput =<< (view CF.sOutputs <$> getExistingStack name)
       success
@@ -110,7 +110,7 @@ parserInfo instanceSpecProvider = wrapHelper commands "stack commands"
         printOutput :: CF.Output -> RIO env ()
         printOutput = liftIO . Text.putStrLn . convertText . show
 
-    delete :: InstanceSpec.Name -> RIO env ExitCode
+    delete :: InstanceSpec.Name env -> RIO env ExitCode
     delete = maybe success (exitCode <=< perform . OpDelete) <=< getStackId
 
     list :: RIO env ExitCode
@@ -132,14 +132,14 @@ parserInfo instanceSpecProvider = wrapHelper commands "stack commands"
         (toList instanceSpecProvider)
       success
 
-    events :: InstanceSpec.Name -> RIO env ExitCode
+    events :: InstanceSpec.Name env -> RIO env ExitCode
     events name = do
       runConduit $ AWS.listResource req CF.dsersStackEvents .| Conduit.mapM_ printEvent
       success
       where
         req = CF.describeStackEvents & CF.dseStackName .~ pure (toText name)
 
-    watch :: InstanceSpec.Name -> RIO env ExitCode
+    watch :: InstanceSpec.Name env -> RIO env ExitCode
     watch name = do
       stackId <- getExistingStackId name
       void $ pollEvents (defaultPoll stackId) printEvent
@@ -189,7 +189,7 @@ parameterReader = eitherReader (Text.parseOnly parser . convertText)
       '-'  -> True
       char -> Char.isDigit char || Char.isAlpha char
 
-stackName :: Parser InstanceSpec.Name
+stackName :: Parser (InstanceSpec.Name env)
 stackName = InstanceSpec.mkName <$> argument str (metavar "STACK")
 
 templateName :: Parser Template.Name
