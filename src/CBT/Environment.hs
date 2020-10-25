@@ -19,7 +19,7 @@ import qualified CBT.IncrementalState as IncrementalState
 import qualified Colog
 import qualified System.Environment   as Environment
 
-type WithEnv env = (HasEnvironment env, HasLog env Colog.Message (RIO env))
+type WithEnv env = (HasEnvironment env, Colog.HasLog env Colog.Message (RIO env))
 
 data Environment = Environment
   { debug     :: Bool

@@ -53,12 +53,12 @@ packages:
     git: https://github.com/strainge/mrio
     pantry-tree:
       size: 467
-      sha256: a9095ddb17e2e9bc9f8e65d48271ebc1b3d4940725d28dd2a684127e073c8995
-    commit: 90e56a8ed9951244545b639f1c678c19d34c631e
+      sha256: 5f2f496fb4ad987a197812761cb604cda715cc2d99504d6f159cfb24d002bedb
+    commit: 0e6c7b51ee11952445f371101cf0fa50f5614341
   original:
     subdir: colog
     git: https://github.com/strainge/mrio
-    commit: 90e56a8ed9951244545b639f1c678c19d34c631e
+    commit: 0e6c7b51ee11952445f371101cf0fa50f5614341
 - completed:
     subdir: core
     name: mrio-core
@@ -66,12 +66,12 @@ packages:
     git: https://github.com/strainge/mrio
     pantry-tree:
       size: 337
-      sha256: bc73498803538b6cf0403b6cd57c7c11b6e061f618fe14a9efc088bcaf19bff5
-    commit: 90e56a8ed9951244545b639f1c678c19d34c631e
+      sha256: d119831311b7c6d90d327bfce08dba9c7016942bd3209a50807aea62de21a852
+    commit: 0e6c7b51ee11952445f371101cf0fa50f5614341
   original:
     subdir: core
     git: https://github.com/strainge/mrio
-    commit: 90e56a8ed9951244545b639f1c678c19d34c631e
+    commit: 0e6c7b51ee11952445f371101cf0fa50f5614341
 snapshots:
 - completed:
     size: 532386
