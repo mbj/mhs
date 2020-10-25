@@ -10,7 +10,6 @@ module StackDeploy.InstanceSpec
   )
 where
 
-import StackDeploy.AWS
 import StackDeploy.Parameters (Parameters)
 import StackDeploy.Prelude
 import StackDeploy.Template (Template)
@@ -24,30 +23,29 @@ newtype RoleARN = RoleARN Text
   deriving (Conversion Text) via Text
   deriving stock Eq
 
-type Name = Provider.Name InstanceSpec
+type Name env = Provider.Name (InstanceSpec env)
 
-type Provider = Provider.Provider InstanceSpec
+type Provider env = Provider.Provider (InstanceSpec env)
 
-data InstanceSpec = InstanceSpec
+data InstanceSpec env = InstanceSpec
   { capabilities  :: [CF.Capability]
-  , envParameters :: forall env . HasAWS env => RIO env Parameters
-  , envRoleARN    :: forall env . HasAWS env => Maybe (RIO env RoleARN)
-  , name          :: Name
-  , onSuccess     :: forall env . HasAWS env => RIO env ()
+  , envParameters :: RIO env Parameters
+  , envRoleARN    :: Maybe (RIO env RoleARN)
+  , name          :: Name env
+  , onSuccess     :: RIO env ()
   , parameters    :: Parameters
   , roleARN       :: Maybe RoleARN
   , template      :: Template
   }
 
-instance Provider.HasName InstanceSpec where
+instance Provider.HasName (InstanceSpec env) where
   name = name
 
 get
-  :: forall env . HasAWS env
-  => Provider
-  -> Name
+  :: Provider env
+  -> Name env
   -> Parameters
-  -> RIO env InstanceSpec
+  -> RIO env (InstanceSpec env)
 get provider targetName userParameters = do
   instanceSpec <- Provider.get "instance-spec" provider targetName
   env          <- envParameters instanceSpec
@@ -62,16 +60,16 @@ get provider targetName userParameters = do
     }
 
   where
-    expandedParameters :: InstanceSpec -> Parameters
+    expandedParameters :: InstanceSpec env -> Parameters
     expandedParameters InstanceSpec{..} =
       Parameters.expandTemplate parameters template
 
-    tryEnvRole :: InstanceSpec -> RIO env (Maybe RoleARN)
+    tryEnvRole :: InstanceSpec env -> RIO env (Maybe RoleARN)
     tryEnvRole InstanceSpec{..} = maybe (pure roleARN) (pure <$>) envRoleARN
 
     union = Parameters.union
 
-mk :: Name -> Template -> InstanceSpec
+mk :: Name env -> Template -> InstanceSpec env
 mk name template = InstanceSpec
   { capabilities  = empty
   , envParameters = pure Parameters.empty
@@ -82,8 +80,8 @@ mk name template = InstanceSpec
   , ..
   }
 
-mkName :: Text -> Name
+mkName :: Text -> Name env
 mkName = Provider.mkName
 
-templateProvider :: Provider -> Template.Provider
+templateProvider :: Provider env -> Template.Provider
 templateProvider provider = fromList $ template <$> toList provider

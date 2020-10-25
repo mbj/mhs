@@ -51,7 +51,7 @@ data OperationFields a = OperationFields
 
 perform
   :: forall env . (HasAWS env, HasEnvironment env)
-  => Operation
+  => Operation env
   -> RIO env RemoteOperationResult
 perform = \case
   (OpCreate instanceSpec) ->
@@ -70,7 +70,7 @@ perform = \case
       token <- newToken
       action RemoteOperation{..}
 
-    create :: InstanceSpec -> RIO env RemoteOperationResult
+    create :: InstanceSpec env -> RIO env RemoteOperationResult
     create instanceSpec@InstanceSpec{..} = do
       token   <- newToken
       stackId <- accessStackId CF.csrsStackId =<< doCreate token
@@ -102,7 +102,7 @@ perform = \case
           . CF.deleteStack $ toText stackId
 
     update
-      :: InstanceSpec
+      :: InstanceSpec env
       -> RemoteOperation
       -> RIO env RemoteOperationResult
     update
@@ -142,7 +142,7 @@ perform = \case
     waitFor remoteOperation = waitForAccept remoteOperation printEvent
 
     successCallback
-      :: InstanceSpec
+      :: InstanceSpec env
       -> RemoteOperationResult
       -> RIO env RemoteOperationResult
     successCallback InstanceSpec{..} result = case result of
@@ -194,7 +194,7 @@ printEvent event = do
     sayReason :: Maybe Text -> RIO env ()
     sayReason = maybe (pure ()) (say . ("- " <>))
 
-getStack :: HasAWS env => InstanceSpec.Name -> RIO env (Maybe CF.Stack)
+getStack :: HasAWS env => InstanceSpec.Name env -> RIO env (Maybe CF.Stack)
 getStack name =
   catchJust handleNotFoundError (pure <$> getExistingStack name) pure
   where
@@ -215,13 +215,16 @@ getStack name =
     expectedMessage =
       AWS.ErrorMessage $ "Stack with id " <> toText name <> " does not exist"
 
-getStackId :: HasAWS env => InstanceSpec.Name -> RIO env (Maybe Id)
+getStackId :: HasAWS env => InstanceSpec.Name env -> RIO env (Maybe Id)
 getStackId = getId <=< getStack
   where
     getId :: Maybe CF.Stack -> RIO env (Maybe Id)
     getId = maybe (pure empty) ((pure <$>) . idFromStack)
 
-getExistingStack :: forall env . HasAWS env => InstanceSpec.Name -> RIO env CF.Stack
+getExistingStack
+  :: forall env . HasAWS env
+  => InstanceSpec.Name env
+  -> RIO env CF.Stack
 getExistingStack name = maybe failMissingRequested pure =<< doRequest
   where
     doRequest :: RIO env (Maybe CF.Stack)
@@ -239,11 +242,11 @@ getExistingStack name = maybe failMissingRequested pure =<< doRequest
 
 getExistingStackId
   :: HasAWS env
-  => InstanceSpec.Name
+  => InstanceSpec.Name env
   -> RIO env Id
 getExistingStackId = idFromStack <=< getExistingStack
 
-getOutput :: HasAWS env => InstanceSpec.Name -> Text -> RIO env Text
+getOutput :: HasAWS env => InstanceSpec.Name env -> Text -> RIO env Text
 getOutput name key = do
   stack <- getExistingStack name
 
@@ -257,7 +260,7 @@ getOutput name key = do
     failStack message
       = throwString . convertText $ "Stack: " <> convertText name <> " " <> message
 
-stackNames :: HasAWS env => ConduitT () InstanceSpec.Name (RIO env) ()
+stackNames :: HasAWS env => ConduitT () (InstanceSpec.Name env) (RIO env) ()
 stackNames
   =  AWS.listResource CF.describeStacks CF.dsrsStacks
   .| map (InstanceSpec.mkName . view CF.sStackName)
@@ -265,7 +268,7 @@ stackNames
 prepareOperation
   :: forall env a . (HasAWS env, HasEnvironment env)
   => OperationFields a
-  -> InstanceSpec
+  -> InstanceSpec env
   -> Token
   -> a
   -> RIO env a
