@@ -1,10 +1,14 @@
 module DBT.Connection
-  ( withConnection
+  ( ConnectionEnv(..)
+  , runConnectionEnv
+  , withConnection
   , withConnectionEither
+  , withConnectionEnv
   , withConnectionSession
   )
 where
 
+import Control.Monad.Reader (ask)
 import DBT.Prelude
 
 import qualified DBT.Postgresql     as Postgresql
@@ -16,37 +20,54 @@ import qualified Hasql.Connection   as Hasql
 import qualified Hasql.Session      as Hasql
 import qualified UnliftIO.Exception as Exception
 
+data ConnectionEnv env = ConnectionEnv
+  { connection :: Hasql.Connection
+  , parent     :: env
+  }
+
+runConnectionEnv
+  :: RIO (ConnectionEnv env) a
+  -> Hasql.Connection
+  -> RIO env a
+runConnectionEnv action connection = do
+  parent <- ask
+  runRIO ConnectionEnv{..} action
+
 withConnection
-  :: forall m a . (MonadUnliftIO m)
-  => Postgresql.ClientConfig
-  -> (Hasql.Connection -> m a)
-  -> m a
+  :: Postgresql.ClientConfig
+  -> (Hasql.Connection -> RIO env a)
+  -> RIO env a
 withConnection config =
-  either (liftIO . fail . show) pure <=< withConnectionEither config
+  either (Exception.throwString . show) pure <=< withConnectionEither config
+
+withConnectionEnv
+  :: Postgresql.ClientConfig
+  -> RIO (ConnectionEnv env) a
+  -> RIO env a
+withConnectionEnv config = withConnection config . runConnectionEnv
 
 withConnectionEither
-  :: forall m a . (MonadUnliftIO m)
-  => Postgresql.ClientConfig
-  -> (Hasql.Connection -> m a)
-  -> m (Either Hasql.ConnectionError a)
+  :: forall a env . Postgresql.ClientConfig
+  -> (Hasql.Connection -> RIO env a)
+  -> RIO env (Either Hasql.ConnectionError a)
 withConnectionEither config action = do
   (liftIO . Hasql.acquire $ settings config)
      >>= either (pure . Left) (fmap Right . handleAction)
   where
-    handleAction :: Hasql.Connection -> m a
+    handleAction :: Hasql.Connection -> RIO env a
     handleAction connection =
       Exception.finally
         (action connection)
         (liftIO $ Hasql.release connection)
 
 withConnectionSession
-  :: forall m a . (MonadUnliftIO m)
+  :: forall a env . ()
   => Postgresql.ClientConfig
   -> Hasql.Session a
-  -> m a
+  -> RIO env a
 withConnectionSession config session
   = withConnection config
-  $ liftIO . (eitherFail <=< Hasql.run session)
+  $ either Exception.throwIO pure <=< (liftIO . Hasql.run session)
 
 settings :: Postgresql.ClientConfig -> Hasql.Settings
 settings config@Postgresql.ClientConfig{..}
@@ -86,6 +107,3 @@ instance Conversion Text Parameter where
         _    ->        x : suffix
         where
           suffix = escape xs
-
-eitherFail :: (MonadFail m, Show e) => Either e a -> m a
-eitherFail = either (fail . show) pure

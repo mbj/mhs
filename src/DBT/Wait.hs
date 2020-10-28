@@ -8,26 +8,27 @@ import DBT.Prelude
 import Data.Int (Int)
 import GHC.Enum (succ)
 import GHC.Real (fromIntegral)
+import UnliftIO.Exception (throwString)
 
 import qualified CBT
 import qualified Colog
 import qualified DBT.Postgresql   as Postgresql
 import qualified Hasql.Connection as Hasql
 
-data Config = Config
+data Config env = Config
   { clientConfig :: Postgresql.ClientConfig
   , maxAttempts  :: Natural
-  , onFail       :: forall env . CBT.WithEnv env => RIO env ()
+  , onFail       :: RIO env ()
   , prefix       :: String
   , waitTime     :: Natural
   }
 
-wait :: forall env . CBT.WithEnv env => Config -> RIO env ()
+wait :: forall env . CBT.WithEnv env => Config env -> RIO env ()
 wait Config{clientConfig = clientConfig@Postgresql.ClientConfig{..}, ..} =
   start =<< effectiveWaitTime
   where
     failPrefix :: String -> RIO env a
-    failPrefix message = liftIO $ fail $ prefix <> (' ':message)
+    failPrefix message = throwString $ prefix <> (' ':message)
 
     effectiveWaitTime :: RIO env Int
     effectiveWaitTime =
@@ -40,7 +41,7 @@ wait Config{clientConfig = clientConfig@Postgresql.ClientConfig{..}, ..} =
       where
         attempt :: Natural -> RIO env ()
         attempt count =
-          either (onError count) pure =<< (liftIO . withConnectionEither clientConfig $ const $ pure ())
+          either (onError count) pure =<< (withConnectionEither clientConfig . const $ pure ())
 
         onError :: Natural -> Hasql.ConnectionError -> RIO env ()
         onError attempts error =

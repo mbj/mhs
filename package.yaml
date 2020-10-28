@@ -20,6 +20,7 @@ dependencies:
 - mprelude             ^>= 0.2.0
 - mrio-colog           ^>= 0.0.1
 - mrio-core            ^>= 0.0.1
+- mtl                  ^>= 2.2
 - network              ^>= 3.1
 - optparse-applicative ^>= 0.15
 - pathtype             ^>= 0.8
@@ -76,6 +77,7 @@ library:
   - DBT.CLI
   - DBT.Connection
   - DBT.Postgresql
+  - DBT.Session
 
 executables:
   dbt:
