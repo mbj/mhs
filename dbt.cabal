@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b3d5d56f9027f47f3e875edd7687b3b6dc27a1d4de8ef6086a21d5803c3755c6
+-- hash: 5791b411060f981ae57f772602ab25cfbc9265dd8777646ec20e3b26ffc38254
 
 name:           dbt
 version:        0.1.0
@@ -28,6 +28,7 @@ library
       DBT.CLI
       DBT.Connection
       DBT.Postgresql
+      DBT.Session
   other-modules:
       DBT.Backend
       DBT.Prelude
@@ -50,6 +51,7 @@ library
     , mprelude >=0.2.0 && <0.3
     , mrio-colog >=0.0.1 && <0.1
     , mrio-core >=0.0.1 && <0.1
+    , mtl >=2.2 && <2.3
     , network >=3.1 && <3.2
     , optparse-applicative >=0.15 && <0.16
     , pathtype >=0.8 && <0.9
@@ -83,6 +85,7 @@ executable dbt
     , mprelude >=0.2.0 && <0.3
     , mrio-colog >=0.0.1 && <0.1
     , mrio-core >=0.0.1 && <0.1
+    , mtl >=2.2 && <2.3
     , network >=3.1 && <3.2
     , optparse-applicative >=0.15 && <0.16
     , pathtype >=0.8 && <0.9
@@ -116,6 +119,7 @@ test-suite test
     , mprelude >=0.2.0 && <0.3
     , mrio-colog >=0.0.1 && <0.1
     , mrio-core >=0.0.1 && <0.1
+    , mtl >=2.2 && <2.3
     , network >=3.1 && <3.2
     , optparse-applicative >=0.15 && <0.16
     , pathtype >=0.8 && <0.9
