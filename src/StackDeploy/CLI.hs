@@ -7,7 +7,7 @@ where
 import Control.Lens ((.~), view)
 import Data.Conduit ((.|), runConduit)
 import Options.Applicative hiding (value)
-import StackDeploy.Environment
+import StackDeploy.Config
 import StackDeploy.Events
 import StackDeploy.IO
 import StackDeploy.Parameters
@@ -31,7 +31,7 @@ import qualified StackDeploy.InstanceSpec                       as InstanceSpec
 import qualified StackDeploy.Template                           as Template
 
 parserInfo
-  :: forall env . (HasAWS env, HasEnvironment env)
+  :: forall env . (HasAWS env, HasConfig env)
   => InstanceSpec.Provider env
   -> ParserInfo (RIO env ExitCode)
 parserInfo instanceSpecProvider = wrapHelper commands "stack commands"

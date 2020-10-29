@@ -2,7 +2,6 @@ module StackDeploy.Wait (waitForAccept) where
 
 import Control.Lens (view)
 import Data.Set (Set)
-import StackDeploy.AWS
 import StackDeploy.Events
 import StackDeploy.Prelude
 import StackDeploy.Types

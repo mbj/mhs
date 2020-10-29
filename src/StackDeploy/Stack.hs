@@ -15,7 +15,7 @@ import Data.Conduit (ConduitT, (.|), runConduit)
 import Data.Conduit.Combinators (find, map)
 import Data.Int (Int)
 import Data.Time.Format (defaultTimeLocale, formatTime)
-import StackDeploy.Environment
+import StackDeploy.Config
 import StackDeploy.IO
 import StackDeploy.InstanceSpec (InstanceSpec(..))
 import StackDeploy.Prelude
@@ -50,7 +50,7 @@ data OperationFields a = OperationFields
   }
 
 perform
-  :: forall env . (HasAWS env, HasEnvironment env)
+  :: forall env . (HasAWS env, HasConfig env)
   => Operation env
   -> RIO env RemoteOperationResult
 perform = \case
@@ -266,7 +266,7 @@ stackNames
   .| map (InstanceSpec.mkName . view CF.sStackName)
 
 prepareOperation
-  :: forall env a . (HasAWS env, HasEnvironment env)
+  :: forall env a . (HasAWS env, HasConfig env)
   => OperationFields a
   -> InstanceSpec env
   -> Token
@@ -279,7 +279,6 @@ prepareOperation OperationFields{..} InstanceSpec{..} token
   . set     roleARNField      (toText <$> roleARN)
   . setText tokenField        token
   where
-
     setTemplateBody :: a -> RIO env a
     setTemplateBody request =
       if BS.length templateBodyBS <= maxBytes
@@ -288,7 +287,7 @@ prepareOperation OperationFields{..} InstanceSpec{..} token
 
     s3Template :: a -> RIO env a
     s3Template request = do
-      (getEnvironment <$> ask)
+      (getConfig <$> ask)
         >>= maybe failMissingTemplateBucket (doUpload request =<<) . getTemplateBucketName
 
     doUpload :: a -> S3.BucketName -> RIO env a

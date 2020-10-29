@@ -87,7 +87,7 @@ library:
   - src
   exposed-modules:
   - StackDeploy.CLI
-  - StackDeploy.Environment
+  - StackDeploy.Config
   - StackDeploy.InstanceSpec
   - StackDeploy.Parameters
   - StackDeploy.Provider
