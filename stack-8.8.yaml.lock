@@ -5,27 +5,6 @@
 
 packages:
 - completed:
-    hackage: amazonka-1.6.1@sha256:d863557379350ed6bbb91187abeb8c349a654f60b140d138710486f58ae7c476,3536
-    pantry-tree:
-      size: 992
-      sha256: 55747f9b56063ea1be73a962e1ce44528b9856e119e2d9f1238397b3112b6e70
-  original:
-    hackage: amazonka-1.6.1@sha256:d863557379350ed6bbb91187abeb8c349a654f60b140d138710486f58ae7c476,3536
-- completed:
-    hackage: amazonka-core-1.6.1@sha256:9bc59ce403c6eeba3b3eaf3f10e5f0b6a33b6edbbf8f6de0dd6f4c67b86fa698,5135
-    pantry-tree:
-      size: 3438
-      sha256: c13e643176308771491ec0e06390e269047bb1b28be4535992842f7426a95eb4
-  original:
-    hackage: amazonka-core-1.6.1@sha256:9bc59ce403c6eeba3b3eaf3f10e5f0b6a33b6edbbf8f6de0dd6f4c67b86fa698,5135
-- completed:
-    hackage: amazonka-s3-1.6.1@sha256:9d07240fca59ad5197fb614ce3051e701e4951e6d4625a2dab4a9c17a1900194,6317
-    pantry-tree:
-      size: 18385
-      sha256: 5cab233d241615764d9fd6927bc397f02887154450a9932c38c2e17ea86d79bc
-  original:
-    hackage: amazonka-s3-1.6.1@sha256:9d07240fca59ad5197fb614ce3051e701e4951e6d4625a2dab4a9c17a1900194,6317
-- completed:
     hackage: conversions-0.0.3@sha256:4adcd605bc4ee3b351359852bebfb4e7032966d93bf5200c56884c0103b7a6d0,3399
     pantry-tree:
       size: 250
@@ -73,40 +52,40 @@ packages:
     git: https://github.com/mbj/cbt
     pantry-tree:
       size: 1088
-      sha256: 3ad5009dc62031a9a73c070e5f490ec88a15c7b6ea912ea4d682fc34f2000cb7
-    commit: 30da53a4854c01bf9a9282023fd3f3e424bdf9f4
+      sha256: 0fa3a89887c3905d0e921e26ab59034041e9abce6e0348362abd779dfbfc46b3
+    commit: 2a3a764ebfdbac5d449e13e06f26a0c8d7fb7057
   original:
     git: https://github.com/mbj/cbt
-    commit: 30da53a4854c01bf9a9282023fd3f3e424bdf9f4
+    commit: 2a3a764ebfdbac5d449e13e06f26a0c8d7fb7057
 - completed:
     subdir: colog
     name: mrio-colog
     version: 0.0.1
-    git: https://github.com/strainge/mrio
+    git: https://github.com/pacthq/mrio
     pantry-tree:
       size: 467
-      sha256: a9095ddb17e2e9bc9f8e65d48271ebc1b3d4940725d28dd2a684127e073c8995
-    commit: 90e56a8ed9951244545b639f1c678c19d34c631e
+      sha256: 5f2f496fb4ad987a197812761cb604cda715cc2d99504d6f159cfb24d002bedb
+    commit: f4e77348314ce60061bc548a5fd4250eb19df718
   original:
     subdir: colog
-    git: https://github.com/strainge/mrio
-    commit: 90e56a8ed9951244545b639f1c678c19d34c631e
+    git: https://github.com/pacthq/mrio
+    commit: f4e77348314ce60061bc548a5fd4250eb19df718
 - completed:
     subdir: core
     name: mrio-core
     version: 0.0.1
-    git: https://github.com/strainge/mrio
+    git: https://github.com/pacthq/mrio
     pantry-tree:
       size: 337
-      sha256: bc73498803538b6cf0403b6cd57c7c11b6e061f618fe14a9efc088bcaf19bff5
-    commit: 90e56a8ed9951244545b639f1c678c19d34c631e
+      sha256: d119831311b7c6d90d327bfce08dba9c7016942bd3209a50807aea62de21a852
+    commit: f4e77348314ce60061bc548a5fd4250eb19df718
   original:
     subdir: core
-    git: https://github.com/strainge/mrio
-    commit: 90e56a8ed9951244545b639f1c678c19d34c631e
+    git: https://github.com/pacthq/mrio
+    commit: f4e77348314ce60061bc548a5fd4250eb19df718
 snapshots:
 - completed:
-    size: 532386
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/17.yaml
-    sha256: d3ee1ae797cf63189c95cf27f00700304946c5cb3c1e6a82001cd6584a221e1b
-  original: lts-16.17
+    size: 532177
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/20.yaml
+    sha256: 0e14ba5603f01e8496e8984fd84b545a012ca723f51a098c6c9d3694e404dc6d
+  original: lts-16.20
