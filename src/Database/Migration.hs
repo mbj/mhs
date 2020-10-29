@@ -1,8 +1,7 @@
 {-# LANGUAGE QuasiQuotes #-}
 
 module Database.Migration
-  ( LogInfo
-  , apply
+  ( apply
   , dryApply
   , dumpSchema
   , loadSchema
@@ -14,6 +13,7 @@ module Database.Migration
 where
 
 import Control.Bool (guard', whenM)
+import DBT.Session
 import Data.Bifunctor (bimap)
 import Data.ByteString (ByteString)
 import Database.Migration.Prelude
@@ -25,11 +25,13 @@ import Text.Read (readMaybe)
 
 import qualified Crypto.Hash                as Hash
 import qualified DBT.Postgresql             as Postgresql
+import qualified DBT.Session                as DBT
 import qualified Data.ByteArray             as BA
 import qualified Data.ByteString            as BS
 import qualified Data.ByteString.Lazy       as LBS
 import qualified Data.Foldable              as Foldable
 import qualified Data.List                  as List
+import qualified Data.Text.IO               as Text
 import qualified Hasql.Session              as Hasql
 import qualified Hasql.Transaction          as Transaction
 import qualified Hasql.Transaction.Sessions as Transaction
@@ -53,63 +55,60 @@ data MigrationFile = MigrationFile
   , sql    :: ByteString
   }
 
-type LogInfo = (forall a . (ToText a) => a -> IO ())
-
-dryApply :: LogInfo -> Hasql.Session ()
-dryApply logInfo = do
+dryApply :: DBT.Session env => RIO env ()
+dryApply = do
   files <- getNewMigrations
 
   if Foldable.null files
-    then liftIO $ logInfo @Text "No new migrations to apply"
-    else Foldable.traverse_ (liftIO . printMigrationFile logInfo) files
+    then printStatus ("No new migrations to apply" :: Text)
+    else Foldable.traverse_ printMigrationFile files
 
-status :: LogInfo -> Hasql.Session ()
-status logInfo = do
+status :: DBT.Session env => RIO env ()
+status = do
   applied <- readAppliedMigrations
 
-  liftIO . logInfo $ "Applied migrations: " <> show (Foldable.length applied)
+  printStatus $ "Applied migrations: " <> show (Foldable.length applied)
 
-  liftIO $ do
-    Foldable.traverse_ (logInfo . show) applied
+  Foldable.traverse_ (printStatus . show) applied
 
-    Foldable.traverse_ (printMigrationFile logInfo) =<<
-      newMigrations applied <$> readMigrationFiles
+  Foldable.traverse_ printMigrationFile =<<
+    newMigrations applied <$> readMigrationFiles
 
-dumpSchema :: LogInfo -> Postgresql.ClientConfig -> IO ()
-dumpSchema logInfo config = do
-  logInfo $ "Writing schema to " <> schemaFileString
-  env <- Environment.getEnvironment
+dumpSchema :: Postgresql.ClientConfig -> RIO env ()
+dumpSchema config = do
+  printStatus $ "Writing schema to " <> schemaFileString
+  env <- liftIO Environment.getEnvironment
   schema <- Process.readProcessStdout_
     . Process.setEnv (env <> Postgresql.toEnv config)
     $ Process.proc "pg_dump" ["--no-comments", "--schema-only"]
   migrations <- Process.readProcessStdout_
     . Process.setEnv (env <> Postgresql.toEnv config)
     $ Process.proc "pg_dump" ["--data-only", "--inserts", "--table=schema_migrations"]
-  LBS.writeFile schemaFileString $ schema <> migrations
+  liftIO $ LBS.writeFile schemaFileString $ schema <> migrations
 
-loadSchema :: LogInfo -> Hasql.Session ()
-loadSchema logInfo = do
-  liftIO . logInfo $ "Loading schema from " <> schemaFileString
-  Transaction.transaction
+loadSchema :: DBT.Session env => RIO env ()
+loadSchema = do
+  printStatus $ "Loading schema from " <> schemaFileString
+  runSession $ Transaction.transaction
     Transaction.Serializable
     Transaction.Write =<<
       Transaction.sql <$> liftIO (BS.readFile schemaFileString)
 
-apply :: LogInfo -> Hasql.Session ()
-apply logInfo = do
+apply :: DBT.Session env => RIO env ()
+apply = do
   migrations <- getNewMigrations
-  liftIO . logInfo $ "Applying " <> show (Foldable.length migrations) <> " pending migrations"
-  Foldable.traverse_ (applyMigration logInfo) migrations
+  printStatus $ "Applying " <> show (Foldable.length migrations) <> " pending migrations"
+  Foldable.traverse_ applyMigration migrations
 
-new :: LogInfo -> Hasql.Session ()
-new logInfo = do
+new :: DBT.Session env => RIO env ()
+new = do
   applied <- max . fmap appliedIndex <$> readAppliedMigrations
-  files   <- max . fmap fileIndex    <$> liftIO readMigrationFiles
+  files   <- max . fmap fileIndex    <$> readMigrationFiles
 
   let index = succ $ max [applied, files]
       file  = Path.toString $ migrationDir </> Path.relFile (show index) <.> ".sql"
 
-  liftIO . logInfo $ "Creating new migration file: " <> file
+  printStatus $ "Creating new migration file: " <> file
 
   liftIO $ do
     Path.createDirectoryIfMissing True migrationDir
@@ -119,8 +118,8 @@ new logInfo = do
     max :: (Foldable t, Num a, Ord a) => t a -> a
     max xs = if Foldable.null xs then 0 else Foldable.maximum xs
 
-setup :: Hasql.Session ()
-setup = Hasql.sql
+setup :: DBT.Session env => RIO env ()
+setup = runSession $ Hasql.sql
   [uncheckedSql|
     CREATE TABLE IF NOT EXISTS
       schema_migrations
@@ -130,13 +129,13 @@ setup = Hasql.sql
       )
   |]
 
-printMigrationFile :: LogInfo -> MigrationFile -> IO ()
-printMigrationFile logInfo MigrationFile{..} = logInfo $ Path.toString path
+printMigrationFile :: MigrationFile -> RIO env ()
+printMigrationFile MigrationFile{..} = printStatus $ Path.toString path
 
-applyMigration :: LogInfo -> MigrationFile -> Hasql.Session ()
-applyMigration logInfo MigrationFile{..} = do
-  liftIO . logInfo $ "Applying migration: " <> Path.toString path
-  Transaction.transaction Transaction.Serializable Transaction.Write $ do
+applyMigration :: DBT.Session env => MigrationFile -> RIO env ()
+applyMigration MigrationFile{..} = do
+  printStatus $ "Applying migration: " <> Path.toString path
+  runSession . Transaction.transaction Transaction.Serializable Transaction.Write $ do
     Transaction.sql sql
 
     Transaction.statement (BS.pack $ BA.unpack digest, convertUnsafe index)
@@ -148,10 +147,10 @@ applyMigration logInfo MigrationFile{..} = do
           ($1 :: bytea, $2 :: int8)
       |]
 
-  liftIO $ logInfo @Text "Success"
+  printStatus ("Success" :: Text)
 
-readAppliedMigrations :: Hasql.Session [AppliedMigration]
-readAppliedMigrations = do
+readAppliedMigrations :: DBT.Session env => RIO env [AppliedMigration]
+readAppliedMigrations = runSession $ do
   rows <- Foldable.toList <$> Hasql.statement ()
     [vectorStatement|
       SELECT
@@ -169,8 +168,8 @@ readAppliedMigrations = do
       = maybe (error "Failed to decode sha3_256 from DB") identity
       . Hash.digestFromByteString
 
-readMigrationFiles :: IO [MigrationFile]
-readMigrationFiles =
+readMigrationFiles :: RIO env [MigrationFile]
+readMigrationFiles = liftIO $
   whenM (Path.doesDirectoryExist migrationDir)
     $ Foldable.foldMap load =<< Path.filesInDir migrationDir
   where
@@ -197,15 +196,6 @@ readMigrationFiles =
         , ..
         }
 
-newMigrations :: [AppliedMigration] -> [MigrationFile] -> [MigrationFile]
-newMigrations applied = List.sortOn fileIndex . Foldable.foldMap test
-  where
-    test :: MigrationFile -> [MigrationFile]
-    test file = guard' (not . isApplied $ fileIndex file) file
-
-    isApplied :: Natural -> Bool
-    isApplied fileIndex' = Foldable.any ((==) fileIndex' . appliedIndex) applied
-
 dbDir :: Path.RelDir
 dbDir = Path.relDir "db"
 
@@ -215,8 +205,8 @@ migrationDir = dbDir </> Path.relDir "migrations"
 schemaFile :: Path.RelFile
 schemaFile = dbDir </> Path.relFile "schema.sql"
 
-getNewMigrations :: Hasql.Session [MigrationFile]
-getNewMigrations = newMigrations <$> readAppliedMigrations <*> liftIO readMigrationFiles
+getNewMigrations :: DBT.Session env => RIO env [MigrationFile]
+getNewMigrations = newMigrations <$> readAppliedMigrations <*> readMigrationFiles
 
 appliedIndex :: AppliedMigration -> Natural
 appliedIndex = index
@@ -226,3 +216,15 @@ fileIndex = index
 
 schemaFileString :: String
 schemaFileString = Path.toString schemaFile
+
+newMigrations :: [AppliedMigration] -> [MigrationFile] -> [MigrationFile]
+newMigrations applied = List.sortOn fileIndex . Foldable.foldMap test
+  where
+    test :: MigrationFile -> [MigrationFile]
+    test file = guard' (not . isApplied $ fileIndex file) file
+
+    isApplied :: Natural -> Bool
+    isApplied fileIndex' = Foldable.any ((==) fileIndex' . appliedIndex) applied
+
+printStatus :: ToText a => a -> RIO env ()
+printStatus = liftIO . Text.putStrLn . convert

@@ -79,23 +79,49 @@ packages:
     version: 0.1.0
     git: https://github.com/mbj/cbt
     pantry-tree:
-      size: 1089
-      sha256: e3e59e1d424b22b98a4e0b1da402590c5faf3d325d9a2ea9cd0e036fd10e53ed
-    commit: edc33496e9c8433d87353aefc1c2dae60d536006
+      size: 1088
+      sha256: 30f226f2b9444e255cf5767a5826b83b2195294880a6a1ea9e9368478ec709e8
+    commit: f14701c2d0ae985193c4c5a5cc764e082267da25
   original:
     git: https://github.com/mbj/cbt
-    commit: edc33496e9c8433d87353aefc1c2dae60d536006
+    commit: f14701c2d0ae985193c4c5a5cc764e082267da25
 - completed:
     name: dbt
     version: 0.1.0
     git: https://github.com/mbj/dbt
     pantry-tree:
-      size: 1114
-      sha256: c5b340c97f22fcdc826a362b2ebf38f118f1134c93777571f0c58fa80e63aa88
-    commit: 8dd7580e5af68e2b4a3d9f4034cf3918f1b723a1
+      size: 1276
+      sha256: cec10e0c5841e29a573a9e7d1346810b1f25d3ff950446d9a0a3dda66a393beb
+    commit: 4fe9557b89fad173db1fe99f0f9957e5b297576f
   original:
     git: https://github.com/mbj/dbt
-    commit: 8dd7580e5af68e2b4a3d9f4034cf3918f1b723a1
+    commit: 4fe9557b89fad173db1fe99f0f9957e5b297576f
+- completed:
+    subdir: core
+    name: mrio-core
+    version: 0.0.1
+    git: https://github.com/pacthq/mrio
+    pantry-tree:
+      size: 337
+      sha256: d119831311b7c6d90d327bfce08dba9c7016942bd3209a50807aea62de21a852
+    commit: 0e6c7b51ee11952445f371101cf0fa50f5614341
+  original:
+    subdir: core
+    git: https://github.com/pacthq/mrio
+    commit: 0e6c7b51ee11952445f371101cf0fa50f5614341
+- completed:
+    subdir: colog
+    name: mrio-colog
+    version: 0.0.1
+    git: https://github.com/pacthq/mrio
+    pantry-tree:
+      size: 467
+      sha256: 5f2f496fb4ad987a197812761cb604cda715cc2d99504d6f159cfb24d002bedb
+    commit: 0e6c7b51ee11952445f371101cf0fa50f5614341
+  original:
+    subdir: colog
+    git: https://github.com/pacthq/mrio
+    commit: 0e6c7b51ee11952445f371101cf0fa50f5614341
 snapshots:
 - completed:
     size: 532172

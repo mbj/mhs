@@ -6,6 +6,7 @@ where
 
 import Data.Conversions as Exports
 import MPrelude         as Exports
+import MRIO.Core        as Exports
 
 import qualified UnliftIO.Exception as Exception
 
