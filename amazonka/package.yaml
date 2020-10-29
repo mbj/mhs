@@ -13,7 +13,9 @@ dependencies:
 - conduit            ^>= 1.3
 - mrio-core
 - mtl                ^>= 2.2
+- resourcet          ^>= 1.2.4
 - source-constraints
+- unliftio-core      ^>= 0.1.2
 
 ghc-options:
 - -Wall
@@ -33,11 +35,12 @@ ghc-options:
 - -optP-Wno-nonportable-include-path
 
 default-extensions:
+- ConstraintKinds
 - DataKinds
 - DerivingStrategies
-- GeneralizedNewtypeDeriving
 - FlexibleContexts
 - FlexibleInstances
+- GeneralizedNewtypeDeriving
 - KindSignatures
 - MultiParamTypeClasses
 - NoImplicitPrelude
@@ -47,8 +50,8 @@ default-extensions:
 - ScopedTypeVariables
 - StrictData
 - TupleSections
-- TypeFamilies
 - TypeApplications
+- TypeFamilies
 - UndecidableInstances
 
 library:
