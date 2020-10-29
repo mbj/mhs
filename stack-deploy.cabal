@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 77a99de8261982d62ae991edaabad191217b18a622a16243356d606e8d72508a
+-- hash: a315a385b743b44de379ca9a722d34a8f56063a8596e16cae79ad8b66de216bc
 
 name:           stack-deploy
 version:        0.0.0.1
@@ -25,7 +25,7 @@ source-repository head
 library
   exposed-modules:
       StackDeploy.CLI
-      StackDeploy.Environment
+      StackDeploy.Config
       StackDeploy.InstanceSpec
       StackDeploy.Parameters
       StackDeploy.Provider

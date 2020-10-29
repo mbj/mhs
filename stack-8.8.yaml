@@ -1,4 +1,4 @@
-resolver: lts-16.17
+resolver: lts-16.20
 extra-deps:
 - conversions-0.0.3@sha256:4adcd605bc4ee3b351359852bebfb4e7032966d93bf5200c56884c0103b7a6d0,3399
 - devtools-0.0.3@sha256:7187fd0e44fcbb401b367e2ee8627b3c6a6bb1e05fcd8f3fbeccf69f771787cc,4181
@@ -10,8 +10,8 @@ extra-deps:
   commit: 33aa6b71309793829b534fb29f6532d71c32b106
   subdirs:
   - amazonka-cloudformation
-- git: https://github.com/strainge/mrio
-  commit: 2ba52b59ded8714e12fe4b1ce83f6fb27a2abac2
+- git: https://github.com/pacthq/mrio
+  commit: f4e77348314ce60061bc548a5fd4250eb19df718
   subdirs:
   - amazonka
   - colog

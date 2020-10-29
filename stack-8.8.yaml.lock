@@ -63,44 +63,44 @@ packages:
     subdir: amazonka
     name: mrio-amazonka
     version: 0.0.1
-    git: https://github.com/strainge/mrio
+    git: https://github.com/pacthq/mrio
     pantry-tree:
-      size: 344
-      sha256: 7bde6a957def6bcb68794f7e77f0d1bbe7d15cf11f94e0824bade553368af8aa
-    commit: 2ba52b59ded8714e12fe4b1ce83f6fb27a2abac2
+      size: 345
+      sha256: b926ed8e9f013f58798f2f9bdfbf72c160c30e0e8854a1806b986981cc9af4a6
+    commit: f4e77348314ce60061bc548a5fd4250eb19df718
   original:
     subdir: amazonka
-    git: https://github.com/strainge/mrio
-    commit: 2ba52b59ded8714e12fe4b1ce83f6fb27a2abac2
+    git: https://github.com/pacthq/mrio
+    commit: f4e77348314ce60061bc548a5fd4250eb19df718
 - completed:
     subdir: colog
     name: mrio-colog
     version: 0.0.1
-    git: https://github.com/strainge/mrio
+    git: https://github.com/pacthq/mrio
     pantry-tree:
       size: 467
-      sha256: fdb1a241d8166d5befcd772880e71af741559aa7f7ca699b742530caf19471e8
-    commit: 2ba52b59ded8714e12fe4b1ce83f6fb27a2abac2
+      sha256: 5f2f496fb4ad987a197812761cb604cda715cc2d99504d6f159cfb24d002bedb
+    commit: f4e77348314ce60061bc548a5fd4250eb19df718
   original:
     subdir: colog
-    git: https://github.com/strainge/mrio
-    commit: 2ba52b59ded8714e12fe4b1ce83f6fb27a2abac2
+    git: https://github.com/pacthq/mrio
+    commit: f4e77348314ce60061bc548a5fd4250eb19df718
 - completed:
     subdir: core
     name: mrio-core
     version: 0.0.1
-    git: https://github.com/strainge/mrio
+    git: https://github.com/pacthq/mrio
     pantry-tree:
       size: 337
-      sha256: 21c1d7c3e37c3722efe29cf0132a9b06690bf12029653d72741d73e3d2f288a0
-    commit: 2ba52b59ded8714e12fe4b1ce83f6fb27a2abac2
+      sha256: d119831311b7c6d90d327bfce08dba9c7016942bd3209a50807aea62de21a852
+    commit: f4e77348314ce60061bc548a5fd4250eb19df718
   original:
     subdir: core
-    git: https://github.com/strainge/mrio
-    commit: 2ba52b59ded8714e12fe4b1ce83f6fb27a2abac2
+    git: https://github.com/pacthq/mrio
+    commit: f4e77348314ce60061bc548a5fd4250eb19df718
 snapshots:
 - completed:
-    size: 532386
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/17.yaml
-    sha256: d3ee1ae797cf63189c95cf27f00700304946c5cb3c1e6a82001cd6584a221e1b
-  original: lts-16.17
+    size: 532177
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/20.yaml
+    sha256: 0e14ba5603f01e8496e8984fd84b545a012ca723f51a098c6c9d3694e404dc6d
+  original: lts-16.20

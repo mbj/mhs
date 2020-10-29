@@ -1,17 +1,14 @@
 module StackDeploy.AWS
   ( module Exports
-  , AWS
-  , HasAWS(..)
   , MRIO.Amazonka.paginate
   , MRIO.Amazonka.send
-  , MonadAWS
   , listResource
   )
 where
 
 import Data.Conduit (ConduitT, (.|))
 import Data.Conduit.Combinators (concatMap)
-import Network.AWS (AWS, AWSPager, MonadAWS)
+import Network.AWS (AWSPager)
 import Network.AWS.Lens
 import Network.AWS.Types as Exports
 import StackDeploy.Prelude
