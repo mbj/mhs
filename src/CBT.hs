@@ -9,9 +9,11 @@ module CBT
   , buildRun
   , commit
   , getImplementation
+  , login
   , nextContainerName
   , printInspect
   , printLogs
+  , push
   , readContainerFile
   , removeContainer
   , runLockedBuild
@@ -139,6 +141,29 @@ printInspect containerName = do
   case implementation of
     Docker -> CBT.Backend.printInspect @'Docker containerName
     Podman -> CBT.Backend.printInspect @'Podman containerName
+
+login
+  :: WithEnv env
+  => Registry
+  -> Username
+  -> Password
+  -> RIO env ()
+login registry username password = do
+  implementation <- getImplementation
+  case implementation of
+    Docker -> CBT.Backend.login @'Docker registry username password
+    Podman -> CBT.Backend.login @'Podman registry username password
+
+push
+  :: WithEnv env
+  => ImageName
+  -> Destination
+  -> RIO env ()
+push imageName destination = do
+  implementation <- getImplementation
+  case implementation of
+    Docker -> CBT.Backend.push @'Docker imageName destination
+    Podman -> CBT.Backend.push @'Podman imageName destination
 
 getImplementation :: forall env . RIO env Implementation
 getImplementation =

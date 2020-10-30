@@ -64,6 +64,18 @@ newtype Prefix = Prefix Text
   deriving (Conversion Text) via Text
   deriving stock Lift
 
+newtype Username = Username Text
+  deriving (Conversion Text) via Text
+
+newtype Password = Password Text
+  deriving (Conversion Text) via Text
+
+newtype Destination = Destination Text
+  deriving (Conversion Text) via Text
+
+newtype Registry = Registry Text
+  deriving (Conversion Text) via Text
+
 newtype ImageName = ImageName Text
   deriving (Conversion Text) via Text
   deriving newtype (Hashable)

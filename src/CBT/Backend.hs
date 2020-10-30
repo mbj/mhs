@@ -5,8 +5,10 @@ module CBT.Backend
   , buildIfAbsent
   , buildRun
   , commit
+  , login
   , printInspect
   , printLogs
+  , push
   , readContainerFile
   , removeContainer
   , runReadStdout
@@ -257,6 +259,41 @@ removeContainer containerName
   [ "container"
   , "rm"
   , convertText containerName
+  ]
+
+push
+  :: forall b env . (Backend b, WithEnv env)
+  => ImageName
+  -> Destination
+  -> RIO env ()
+push imageName destination
+  = runProcess_
+  $ backendProc @b
+  [ "push"
+  , convertText imageName
+  , convertText destination
+  ]
+
+login
+  :: forall b env . (Backend b, WithEnv env)
+  => Registry
+  -> Username
+  -> Password
+  -> RIO env ()
+login registry username password
+  = runProcess_
+  . Process.setStdin
+    ( Process.byteStringInput
+    . convert
+    . Text.encodeUtf8
+    $ toText password
+    )
+  $ backendProc @b
+  [ "login"
+  , "--username"
+  , convertText username
+  , "--password-stdin"
+  , convertText registry
   ]
 
 stop
