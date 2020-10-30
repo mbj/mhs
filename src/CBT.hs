@@ -140,7 +140,7 @@ printInspect containerName = do
     Docker -> CBT.Backend.printInspect @'Docker containerName
     Podman -> CBT.Backend.printInspect @'Podman containerName
 
-getImplementation :: forall env . WithEnv env => RIO env Implementation
+getImplementation :: forall env . RIO env Implementation
 getImplementation =
   maybe discover fromEnv =<< liftIO (Environment.lookupEnv "CBT_BACKEND")
   where
@@ -177,7 +177,7 @@ runLockedBuildThrow
 runLockedBuildThrow image action = either Exception.throwIO pure =<< runLockedBuild image action
 
 try
-  :: forall (b :: Implementation) env . (Backend b, WithEnv env)
+  :: forall (b :: Implementation) env . Backend b
   => Implementation
   -> RIO env (Maybe Implementation)
 try implementation = do
