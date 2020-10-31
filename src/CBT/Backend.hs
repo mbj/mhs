@@ -1,4 +1,23 @@
-module CBT.Backend (Backend(..)) where
+module CBT.Backend
+  ( Backend(..)
+  , available
+  , build
+  , buildIfAbsent
+  , buildRun
+  , commit
+  , login
+  , printInspect
+  , printLogs
+  , push
+  , readContainerFile
+  , removeContainer
+  , runReadStdout
+  , status
+  , stop
+  , withContainer
+  , withContainerDefinition
+  )
+where
 
 import CBT.Environment
 import CBT.Prelude
@@ -38,135 +57,272 @@ class Backend (b :: Implementation) where
   getHostPort       :: WithEnv env => ContainerName -> Port -> RIO env Port
   testImageExists   :: WithEnv env => BuildDefinition -> RIO env Bool
 
-  available :: WithEnv env => RIO env Bool
-  available = isJust <$> liftIO (Path.findExecutable (binaryName @b))
 
-  buildIfAbsent :: WithEnv env => BuildDefinition -> RIO env ()
-  buildIfAbsent buildDefinition@BuildDefinition{..} = do
-    exists <- testImageExists @b buildDefinition
+instance Backend 'Podman where
+  binaryName = "podman"
 
-    unless exists (build @b buildDefinition)
-
-  printLogs :: WithEnv env => ContainerName -> RIO env ()
-  printLogs containerName
-    = runProcess_
-    $ backendProc @b
-    [ "container"
-    , "logs"
-    , convertText containerName
-    ]
-
-  commit :: WithEnv env => ContainerName -> ImageName -> RIO env ()
-  commit containerName imageName
-    = runProcess_
-    $ backendProc @b
-    [ "container"
-    , "commit"
-    , convertText containerName
-    , convertText imageName
-    ]
-
-  printInspect :: WithEnv env => ContainerName -> RIO env ()
-  printInspect containerName
-    = runProcess_
-    $ backendProc @b
-    [ "container"
-    , "inspect"
-    , convertText containerName
-    ]
-
-  status :: WithEnv env => ContainerName -> RIO env Status
-  status containerName
-    = mapStatus <$> runProcess proc
+  getHostPort containerName containerPort' = parsePort =<< captureText proc
     where
-      mapStatus = \case
-        Exit.ExitSuccess -> Running
-        _                -> Absent
-
-      proc = silenceStdout $ backendProc @b ["container", "inspect", convertText containerName]
-
-  build :: WithEnv env => BuildDefinition -> RIO env ()
-  build BuildDefinition{..}
-    = do
-      Environment{..} <- getEnvironment <$> ask
-      IncrementalState.runBuildThrow builds imageName
-        . fmap fromExit
-        . runProcess
-        . setVerbosity verbosity
-        . Process.setStdin (Process.byteStringInput . LBS.fromStrict . Text.encodeUtf8 $ toText content)
-        $ Process.proc (binaryName @b) ["build", "--tag", convertText imageName, "-"]
-    where
-      fromExit :: Exit.ExitCode -> Either ImageBuildError ()
-      fromExit = \case
-        Exit.ExitSuccess -> pure ()
-        _                -> Left $ ImageBuildError "process exited with nonzero"
-
-  buildRun :: WithEnv env => BuildDefinition -> ContainerDefinition -> RIO env ()
-  buildRun buildDefinition containerDefinition =
-    buildIfAbsent @b buildDefinition >> run @b containerDefinition
-
-  run :: WithEnv env => ContainerDefinition -> RIO env ()
-  run containerDefinition@ContainerDefinition{..} =
-    handleFailure @b containerDefinition () =<< runProcess (runProc @b containerDefinition)
-
-  runReadStdout :: WithEnv env => ContainerDefinition -> RIO env BS.ByteString
-  runReadStdout containerDefinition = do
-    (exitCode, output) <- readProcessStdout $ runProc @b containerDefinition'
-    handleFailure @b containerDefinition (convert output) exitCode
-    where
-      containerDefinition' = containerDefinition { detach = Foreground }
-
-  readContainerFile
-    :: forall env .WithEnv env
-    => ContainerName
-    -> Path.AbsFile -> RIO env BS.ByteString
-  readContainerFile containerName path = do
-    tar <- readProcessStdout_ proc
-    maybe notFound (pure . LBS.toStrict) . Tar.findEntry tar $ Path.takeFileName path
-    where
-      notFound :: RIO env BS.ByteString
-      notFound = liftIO $ fail "Tar from docker did not contain expected entry"
-
-      proc
-        = Process.proc (binaryName @b)
+      proc = Process.proc (binaryName @'Podman)
         [ "container"
-        , "cp"
-        , convertText containerName <> ":" <> Path.toString path
-        , "-"
+        , "inspect"
+        , convertText containerName
+        , "--format"
+        , template
         ]
 
-  removeContainer :: WithEnv env => ContainerName -> RIO env ()
-  removeContainer containerName
-    = runProcess_
-    . silenceStdout
-    $ backendProc @b
-    [ "container"
-    , "rm"
-    , convertText containerName
-    ]
+      template =
+        mkTemplate $
+          mkField "HostPort" $
+            mkIndex "0" $
+              mkIndex (show $ (convertText containerPort' :: String) <> "/tcp") $
+                mkField "PortBindings" $
+                  mkField "HostConfig" ""
 
-  stop :: WithEnv env => ContainerName -> RIO env ()
-  stop containerName
-    = runProcess_
-    . silenceStdout
-    $ backendProc @b ["stop", convertText containerName]
+  testImageExists BuildDefinition{..} = exitBool <$> runProcess process
+    where
+      process =
+        Process.proc
+          (binaryName @'Podman)
+          [ "image"
+          , "exists"
+          , "--"
+          , convertText imageName
+          ]
 
-  withContainer
-    :: WithEnv env
-    => BuildDefinition
-    -> ContainerDefinition
-    -> RIO env a
-    -> RIO env a
-  withContainer buildDefinition containerDefinition@ContainerDefinition{..} =
-    Exception.bracket_ (buildRun @b buildDefinition containerDefinition) (stop @b containerName)
+instance Backend 'Docker where
+  binaryName = "docker"
 
-  withContainerDefinition
-    :: WithEnv env
-    => ContainerDefinition
-    -> RIO env a
-    -> RIO env a
-  withContainerDefinition containerDefinition@ContainerDefinition{..} =
-    Exception.bracket_ (run @b containerDefinition) (stop @b containerName)
+  getHostPort containerName containerPort' = parsePort =<< captureText proc
+    where
+      proc = Process.proc (binaryName @'Docker)
+        [ "container"
+        , "inspect"
+        , convertText containerName
+        , "--format"
+        , template
+        ]
+
+      template =
+        mkTemplate $
+          mkField "HostPort" $
+            mkIndex "0" $
+              mkIndex (show $ (convertText containerPort' :: String) <> "/tcp") $
+                mkField "Ports" $
+                  mkField "NetworkSettings" ""
+
+  testImageExists BuildDefinition{..} = exitBool <$> runProcess process
+    where
+      process
+        = silenceStdout
+        $ Process.proc (binaryName @'Docker)
+        [ "inspect"
+        , "--type", "image"
+        , "--"
+        , convertText imageName
+        ]
+
+available :: forall b env . Backend b => RIO env Bool
+available = isJust <$> liftIO (Path.findExecutable (binaryName @b))
+
+buildIfAbsent
+  :: forall b env . (Backend b, WithEnv env)
+  => BuildDefinition
+  -> RIO env ()
+buildIfAbsent buildDefinition@BuildDefinition{..} = do
+  exists <- testImageExists @b buildDefinition
+
+  unless exists (build @b buildDefinition)
+
+printLogs
+  :: forall b env . (Backend b, WithEnv env)
+  => ContainerName
+  -> RIO env ()
+printLogs containerName
+  = runProcess_
+  $ backendProc @b
+  [ "container"
+  , "logs"
+  , convertText containerName
+  ]
+
+commit
+  :: forall b env . (Backend b, WithEnv env)
+  => ContainerName
+  -> ImageName
+  -> RIO env ()
+commit containerName imageName
+  = runProcess_
+  $ backendProc @b
+  [ "container"
+  , "commit"
+  , convertText containerName
+  , convertText imageName
+  ]
+
+printInspect
+  :: forall b env . (Backend b, WithEnv env)
+  => ContainerName
+  -> RIO env ()
+printInspect containerName
+  = runProcess_
+  $ backendProc @b
+  [ "container"
+  , "inspect"
+  , convertText containerName
+  ]
+
+status
+  :: forall b env . (Backend b, WithEnv env)
+  => ContainerName
+  -> RIO env Status
+status containerName
+  = mapStatus <$> runProcess proc
+  where
+    mapStatus = \case
+      Exit.ExitSuccess -> Running
+      _                -> Absent
+
+    proc = silenceStdout $ backendProc @b ["container", "inspect", convertText containerName]
+
+build
+  :: forall b env . (Backend b, WithEnv env)
+  => BuildDefinition
+  -> RIO env ()
+build BuildDefinition{..}
+  = do
+    Environment{..} <- getEnvironment <$> ask
+    IncrementalState.runBuildThrow builds imageName
+      . fmap fromExit
+      . runProcess
+      . setVerbosity verbosity
+      . Process.setStdin (Process.byteStringInput . LBS.fromStrict . Text.encodeUtf8 $ toText content)
+      $ Process.proc (binaryName @b) ["build", "--tag", convertText imageName, "-"]
+  where
+    fromExit :: Exit.ExitCode -> Either ImageBuildError ()
+    fromExit = \case
+      Exit.ExitSuccess -> pure ()
+      _                -> Left $ ImageBuildError "process exited with nonzero"
+
+buildRun
+  :: forall b env . (Backend b, WithEnv env)
+  => BuildDefinition
+  -> ContainerDefinition -> RIO env ()
+buildRun buildDefinition containerDefinition =
+  buildIfAbsent @b buildDefinition >> run @b containerDefinition
+
+run
+  :: forall b env . (Backend b, WithEnv env)
+  => ContainerDefinition
+  -> RIO env ()
+run containerDefinition@ContainerDefinition{..} =
+  handleFailure @b containerDefinition () =<< runProcess (runProc @b containerDefinition)
+
+runReadStdout
+  :: forall b env . (Backend b, WithEnv env)
+  => ContainerDefinition
+  -> RIO env BS.ByteString
+runReadStdout containerDefinition = do
+  (exitCode, output) <- readProcessStdout $ runProc @b containerDefinition'
+  handleFailure @b containerDefinition (convert output) exitCode
+  where
+    containerDefinition' = containerDefinition { detach = Foreground }
+
+readContainerFile
+  :: forall b env . (Backend b, WithEnv env)
+  => ContainerName
+  -> Path.AbsFile
+  -> RIO env BS.ByteString
+readContainerFile containerName path = do
+  tar <- readProcessStdout_ proc
+  maybe notFound (pure . LBS.toStrict) . Tar.findEntry tar $ Path.takeFileName path
+  where
+    notFound :: RIO env BS.ByteString
+    notFound = liftIO $ fail "Tar from docker did not contain expected entry"
+
+    proc
+      = Process.proc (binaryName @b)
+      [ "container"
+      , "cp"
+      , convertText containerName <> ":" <> Path.toString path
+      , "-"
+      ]
+
+removeContainer
+  :: forall b env . (Backend b, WithEnv env)
+  => ContainerName
+  -> RIO env ()
+removeContainer containerName
+  = runProcess_
+  . silenceStdout
+  $ backendProc @b
+  [ "container"
+  , "rm"
+  , convertText containerName
+  ]
+
+push
+  :: forall b env . (Backend b, WithEnv env)
+  => ImageName
+  -> Destination
+  -> RIO env ()
+push imageName destination
+  = runProcess_
+  $ backendProc @b
+  [ "push"
+  , convertText imageName
+  , convertText destination
+  ]
+
+login
+  :: forall b env . (Backend b, WithEnv env)
+  => Registry
+  -> Username
+  -> Password
+  -> RIO env ()
+login registry username password
+  = runProcess_
+  . Process.setStdin
+    ( Process.byteStringInput
+    . convert
+    . Text.encodeUtf8
+    $ toText password
+    )
+  $ backendProc @b
+  [ "login"
+  , "--username"
+  , convertText username
+  , "--password-stdin"
+  , convertText registry
+  ]
+
+stop
+  :: forall b env . (Backend b, WithEnv env)
+  => ContainerName
+  -> RIO env ()
+stop containerName
+  = runProcess_
+  . silenceStdout
+  $ backendProc @b ["stop", convertText containerName]
+
+withContainer
+  :: forall b env a . (Backend b, WithEnv env)
+  => BuildDefinition
+  -> ContainerDefinition
+  -> RIO env a
+  -> RIO env a
+withContainer buildDefinition containerDefinition@ContainerDefinition{..} =
+  Exception.bracket_
+    (buildRun @b buildDefinition containerDefinition)
+    (stop @b containerName)
+
+withContainerDefinition
+  :: forall b env a . (Backend b, WithEnv env)
+  => ContainerDefinition
+  -> RIO env a
+  -> RIO env a
+withContainerDefinition containerDefinition@ContainerDefinition{..} =
+  Exception.bracket_ (run @b containerDefinition) (stop @b containerName)
 
 backendProc :: forall b . Backend b => [String] -> Proc
 backendProc = Process.proc (binaryName @b)
@@ -233,70 +389,6 @@ runProc ContainerDefinition{..} = detachSilence $ backendProc @b containerArgume
       case detach of
         Detach -> silenceStdout
         _      -> identity
-
-instance Backend 'Podman where
-  binaryName = "podman"
-
-  getHostPort containerName containerPort' = parsePort =<< captureText proc
-    where
-      proc = Process.proc (binaryName @'Podman)
-        [ "container"
-        , "inspect"
-        , convertText containerName
-        , "--format"
-        , template
-        ]
-
-      template =
-        mkTemplate $
-          mkField "HostPort" $
-            mkIndex "0" $
-              mkIndex (show $ (convertText containerPort' :: String) <> "/tcp") $
-                mkField "PortBindings" $
-                  mkField "HostConfig" ""
-
-  testImageExists BuildDefinition{..} = exitBool <$> runProcess process
-    where
-      process =
-        Process.proc
-          (binaryName @'Podman)
-          [ "image"
-          , "exists"
-          , "--"
-          , convertText imageName
-          ]
-
-instance Backend 'Docker where
-  binaryName = "docker"
-
-  getHostPort containerName containerPort' = parsePort =<< captureText proc
-    where
-      proc = Process.proc (binaryName @'Docker)
-        [ "container"
-        , "inspect"
-        , convertText containerName
-        , "--format"
-        , template
-        ]
-
-      template =
-        mkTemplate $
-          mkField "HostPort" $
-            mkIndex "0" $
-              mkIndex (show $ (convertText containerPort' :: String) <> "/tcp") $
-                mkField "Ports" $
-                  mkField "NetworkSettings" ""
-
-  testImageExists BuildDefinition{..} = exitBool <$> runProcess process
-    where
-      process
-        = silenceStdout
-        $ Process.proc (binaryName @'Docker)
-        [ "inspect"
-        , "--type", "image"
-        , "--"
-        , convertText imageName
-        ]
 
 type Proc = Process.ProcessConfig () () ()
 

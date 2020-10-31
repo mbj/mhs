@@ -9,9 +9,11 @@ module CBT
   , buildRun
   , commit
   , getImplementation
+  , login
   , nextContainerName
   , printInspect
   , printLogs
+  , push
   , readContainerFile
   , removeContainer
   , runLockedBuild
@@ -140,7 +142,30 @@ printInspect containerName = do
     Docker -> CBT.Backend.printInspect @'Docker containerName
     Podman -> CBT.Backend.printInspect @'Podman containerName
 
-getImplementation :: forall env . WithEnv env => RIO env Implementation
+login
+  :: WithEnv env
+  => Registry
+  -> Username
+  -> Password
+  -> RIO env ()
+login registry username password = do
+  implementation <- getImplementation
+  case implementation of
+    Docker -> CBT.Backend.login @'Docker registry username password
+    Podman -> CBT.Backend.login @'Podman registry username password
+
+push
+  :: WithEnv env
+  => ImageName
+  -> Destination
+  -> RIO env ()
+push imageName destination = do
+  implementation <- getImplementation
+  case implementation of
+    Docker -> CBT.Backend.push @'Docker imageName destination
+    Podman -> CBT.Backend.push @'Podman imageName destination
+
+getImplementation :: forall env . RIO env Implementation
 getImplementation =
   maybe discover fromEnv =<< liftIO (Environment.lookupEnv "CBT_BACKEND")
   where
@@ -177,7 +202,7 @@ runLockedBuildThrow
 runLockedBuildThrow image action = either Exception.throwIO pure =<< runLockedBuild image action
 
 try
-  :: forall (b :: Implementation) env . (Backend b, WithEnv env)
+  :: forall (b :: Implementation) env . Backend b
   => Implementation
   -> RIO env (Maybe Implementation)
 try implementation = do
