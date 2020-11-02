@@ -8,6 +8,7 @@ module CBT
   , buildIfAbsent
   , buildRun
   , commit
+  , getHostPort
   , getImplementation
   , login
   , nextContainerName
@@ -19,6 +20,7 @@ module CBT
   , runLockedBuild
   , runLockedBuildThrow
   , runReadStdout
+  , stop
   , withContainer
   )
 where
@@ -121,6 +123,27 @@ commit containerName imageName = do
   case implementation of
     Docker -> CBT.Backend.commit @'Docker containerName imageName
     Podman -> CBT.Backend.commit @'Podman containerName imageName
+
+stop
+  :: WithEnv env
+  => ContainerName
+  -> RIO env ()
+stop containerName = do
+  implementation <- getImplementation
+  case implementation of
+    Docker -> CBT.Backend.stop @'Docker containerName
+    Podman -> CBT.Backend.stop @'Podman containerName
+
+getHostPort
+  :: WithEnv env
+  => ContainerName
+  -> Port
+  -> RIO env Port
+getHostPort containerName port = do
+  implementation <- getImplementation
+  case implementation of
+    Docker -> CBT.Backend.getHostPort @'Docker containerName port
+    Podman -> CBT.Backend.getHostPort @'Podman containerName port
 
 printLogs
   :: WithEnv env
