@@ -14,8 +14,8 @@ module CBT.Backend
   , runReadStdout
   , status
   , stop
-  , withContainer
-  , withContainerDefinition
+  , withContainerBuildRun
+  , withContainerRun
   )
 where
 
@@ -195,14 +195,29 @@ build BuildDefinition{..}
     IncrementalState.runBuildThrow builds imageName
       . fmap fromExit
       . runProcess
-      . setVerbosity verbosity
-      . Process.setStdin (Process.byteStringInput . LBS.fromStrict . Text.encodeUtf8 $ toText content)
-      $ Process.proc (binaryName @b) ["build", "--tag", convertText imageName, "-"]
+      $ setVerbosity verbosity proc
   where
     fromExit :: Exit.ExitCode -> Either ImageBuildError ()
     fromExit = \case
       Exit.ExitSuccess -> pure ()
       _                -> Left $ ImageBuildError "process exited with nonzero"
+
+    proc = case source of
+      Directory path       -> buildProc [Path.toString path]
+      Instructions content -> fromInstructions content
+
+    fromInstructions content
+      = Process.setStdin
+        ( Process.byteStringInput
+        . LBS.fromStrict
+        . Text.encodeUtf8
+        $ toText content
+        )
+      $ buildProc ["-"]
+
+    buildProc arguments
+      = Process.proc (binaryName @b)
+      $ ["build", "--tag", convertText imageName] <> arguments
 
 buildRun
   :: forall b env . (Backend b, WithEnv env)
@@ -305,23 +320,23 @@ stop containerName
   . silenceStdout
   $ backendProc @b ["stop", convertText containerName]
 
-withContainer
+withContainerBuildRun
   :: forall b env a . (Backend b, WithEnv env)
   => BuildDefinition
   -> ContainerDefinition
   -> RIO env a
   -> RIO env a
-withContainer buildDefinition containerDefinition@ContainerDefinition{..} =
+withContainerBuildRun buildDefinition containerDefinition@ContainerDefinition{..} =
   Exception.bracket_
     (buildRun @b buildDefinition containerDefinition)
     (stop @b containerName)
 
-withContainerDefinition
+withContainerRun
   :: forall b env a . (Backend b, WithEnv env)
   => ContainerDefinition
   -> RIO env a
   -> RIO env a
-withContainerDefinition containerDefinition@ContainerDefinition{..} =
+withContainerRun containerDefinition@ContainerDefinition{..} =
   Exception.bracket_ (run @b containerDefinition) (stop @b containerName)
 
 backendProc :: forall b . Backend b => [String] -> Proc

@@ -8,6 +8,7 @@ module CBT
   , buildIfAbsent
   , buildRun
   , commit
+  , getHostPort
   , getImplementation
   , login
   , nextContainerName
@@ -19,7 +20,9 @@ module CBT
   , runLockedBuild
   , runLockedBuildThrow
   , runReadStdout
-  , withContainer
+  , stop
+  , withContainerBuildRun
+  , withContainerRun
   )
 where
 
@@ -37,17 +40,28 @@ import qualified System.Environment as Environment
 import qualified System.Path        as Path
 import qualified UnliftIO.Exception as Exception
 
-withContainer
+withContainerBuildRun
   :: WithEnv env
   => BuildDefinition
   -> ContainerDefinition
   -> RIO env a
   -> RIO env a
-withContainer buildDefinition containerDefinition action = do
+withContainerBuildRun buildDefinition containerDefinition action = do
   implementation <- getImplementation
   case implementation of
-    Docker -> CBT.Backend.withContainer @'Docker buildDefinition containerDefinition action
-    Podman -> CBT.Backend.withContainer @'Podman buildDefinition containerDefinition action
+    Docker -> CBT.Backend.withContainerBuildRun @'Docker buildDefinition containerDefinition action
+    Podman -> CBT.Backend.withContainerBuildRun @'Podman buildDefinition containerDefinition action
+
+withContainerRun
+  :: WithEnv env
+  => ContainerDefinition
+  -> RIO env a
+  -> RIO env a
+withContainerRun containerDefinition action = do
+  implementation <- getImplementation
+  case implementation of
+    Docker -> CBT.Backend.withContainerRun @'Docker containerDefinition action
+    Podman -> CBT.Backend.withContainerRun @'Podman containerDefinition action
 
 build
   :: WithEnv env
@@ -121,6 +135,27 @@ commit containerName imageName = do
   case implementation of
     Docker -> CBT.Backend.commit @'Docker containerName imageName
     Podman -> CBT.Backend.commit @'Podman containerName imageName
+
+stop
+  :: WithEnv env
+  => ContainerName
+  -> RIO env ()
+stop containerName = do
+  implementation <- getImplementation
+  case implementation of
+    Docker -> CBT.Backend.stop @'Docker containerName
+    Podman -> CBT.Backend.stop @'Podman containerName
+
+getHostPort
+  :: WithEnv env
+  => ContainerName
+  -> Port
+  -> RIO env Port
+getHostPort containerName port = do
+  implementation <- getImplementation
+  case implementation of
+    Docker -> CBT.Backend.getHostPort @'Docker containerName port
+    Podman -> CBT.Backend.getHostPort @'Podman containerName port
 
 printLogs
   :: WithEnv env

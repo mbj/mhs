@@ -16,14 +16,16 @@ data Implementation = Docker | Podman
 data Remove         = Remove | NoRemove
 
 data Verbosity = Verbose | Quiet
-  deriving stock Lift
+
+data BuildSource
+  = Directory Path.AbsRelDir
+  | Instructions DockerfileContent
 
 data BuildDefinition = BuildDefinition
-  { content   :: DockerfileContent
+  { source    :: BuildSource
   , imageName :: ImageName
   , verbosity :: Verbosity
   }
-  deriving stock Lift
 
 data Mount = Mount
   { containerPath :: Path.AbsDir
@@ -62,7 +64,6 @@ newtype DockerfileContent = DockerfileContent Text
 
 newtype Prefix = Prefix Text
   deriving (Conversion Text) via Text
-  deriving stock Lift
 
 newtype Username = Username Text
   deriving (Conversion Text) via Text
@@ -79,7 +80,7 @@ newtype Registry = Registry Text
 newtype ImageName = ImageName Text
   deriving (Conversion Text) via Text
   deriving newtype (Hashable)
-  deriving stock   (Eq, Lift, Show)
+  deriving stock   (Eq, Show)
 
 data Status = Running | Absent
   deriving stock Show
