@@ -47,17 +47,6 @@ packages:
   original:
     hackage: tasty-mgolden-0.0.1@sha256:07fadb592cde353c386c5f38cff75539a5675e9350776ed6f4f0a70247427a78,4214
 - completed:
-    name: cbt
-    version: 0.1.0
-    git: https://github.com/mbj/cbt
-    pantry-tree:
-      size: 1088
-      sha256: 0fa3a89887c3905d0e921e26ab59034041e9abce6e0348362abd779dfbfc46b3
-    commit: 2a3a764ebfdbac5d449e13e06f26a0c8d7fb7057
-  original:
-    git: https://github.com/mbj/cbt
-    commit: 2a3a764ebfdbac5d449e13e06f26a0c8d7fb7057
-- completed:
     subdir: colog
     name: mrio-colog
     version: 0.0.1
