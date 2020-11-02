@@ -39,11 +39,10 @@ data Config = Config
 prefix :: CBT.Prefix
 prefix = CBT.Prefix "lht"
 
-#ifndef __HLINT__
 buildDefinition :: CBT.BuildDefinition
-buildDefinition = $$(CBT.TH.readDockerfile (CBT.Prefix "lht") $ Path.file "Dockerfile")
-  { CBT.verbosity = CBT.Verbose }
-#endif
+buildDefinition
+  =  CBT.fromDockerfileContent prefix
+  $$(CBT.TH.readDockerfileContent $ Path.file "Dockerfile")
 
 buildZip
   :: CBT.WithEnv env
