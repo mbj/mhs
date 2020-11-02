@@ -51,12 +51,12 @@ packages:
     version: 0.1.0
     git: https://github.com/mbj/cbt
     pantry-tree:
-      size: 1088
-      sha256: 3ad5009dc62031a9a73c070e5f490ec88a15c7b6ea912ea4d682fc34f2000cb7
-    commit: 30da53a4854c01bf9a9282023fd3f3e424bdf9f4
+      size: 1201
+      sha256: e40052333c3df893806c46b711e1203bf52de24956f73e9f5091b16422540dd4
+    commit: 7da7b301b7813969c971c76cba516f16e66a3979
   original:
     git: https://github.com/mbj/cbt
-    commit: 30da53a4854c01bf9a9282023fd3f3e424bdf9f4
+    commit: 7da7b301b7813969c971c76cba516f16e66a3979
 - completed:
     subdir: colog
     name: mrio-colog
@@ -85,7 +85,7 @@ packages:
     commit: 90e56a8ed9951244545b639f1c678c19d34c631e
 snapshots:
 - completed:
-    size: 532386
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/17.yaml
-    sha256: d3ee1ae797cf63189c95cf27f00700304946c5cb3c1e6a82001cd6584a221e1b
-  original: lts-16.17
+    size: 532177
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/20.yaml
+    sha256: 0e14ba5603f01e8496e8984fd84b545a012ca723f51a098c6c9d3694e404dc6d
+  original: lts-16.20
