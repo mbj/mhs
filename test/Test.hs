@@ -46,7 +46,7 @@ testRun :: CBT.WithEnv env => CBT.BuildDefinition -> RIO env ()
 testRun buildDefinition = do
   containerName <- CBT.nextContainerName prefix
 
-  CBT.withContainer
+  CBT.withContainerBuildRun
     buildDefinition
     CBT.ContainerDefinition
       { detach           = CBT.Foreground

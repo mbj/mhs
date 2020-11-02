@@ -21,7 +21,8 @@ module CBT
   , runLockedBuildThrow
   , runReadStdout
   , stop
-  , withContainer
+  , withContainerBuildRun
+  , withContainerRun
   )
 where
 
@@ -39,17 +40,28 @@ import qualified System.Environment as Environment
 import qualified System.Path        as Path
 import qualified UnliftIO.Exception as Exception
 
-withContainer
+withContainerBuildRun
   :: WithEnv env
   => BuildDefinition
   -> ContainerDefinition
   -> RIO env a
   -> RIO env a
-withContainer buildDefinition containerDefinition action = do
+withContainerBuildRun buildDefinition containerDefinition action = do
   implementation <- getImplementation
   case implementation of
-    Docker -> CBT.Backend.withContainer @'Docker buildDefinition containerDefinition action
-    Podman -> CBT.Backend.withContainer @'Podman buildDefinition containerDefinition action
+    Docker -> CBT.Backend.withContainerBuildRun @'Docker buildDefinition containerDefinition action
+    Podman -> CBT.Backend.withContainerBuildRun @'Podman buildDefinition containerDefinition action
+
+withContainerRun
+  :: WithEnv env
+  => ContainerDefinition
+  -> RIO env a
+  -> RIO env a
+withContainerRun containerDefinition action = do
+  implementation <- getImplementation
+  case implementation of
+    Docker -> CBT.Backend.withContainerRun @'Docker containerDefinition action
+    Podman -> CBT.Backend.withContainerRun @'Podman containerDefinition action
 
 build
   :: WithEnv env

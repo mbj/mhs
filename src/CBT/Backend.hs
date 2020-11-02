@@ -14,8 +14,8 @@ module CBT.Backend
   , runReadStdout
   , status
   , stop
-  , withContainer
-  , withContainerDefinition
+  , withContainerBuildRun
+  , withContainerRun
   )
 where
 
@@ -320,23 +320,23 @@ stop containerName
   . silenceStdout
   $ backendProc @b ["stop", convertText containerName]
 
-withContainer
+withContainerBuildRun
   :: forall b env a . (Backend b, WithEnv env)
   => BuildDefinition
   -> ContainerDefinition
   -> RIO env a
   -> RIO env a
-withContainer buildDefinition containerDefinition@ContainerDefinition{..} =
+withContainerBuildRun buildDefinition containerDefinition@ContainerDefinition{..} =
   Exception.bracket_
     (buildRun @b buildDefinition containerDefinition)
     (stop @b containerName)
 
-withContainerDefinition
+withContainerRun
   :: forall b env a . (Backend b, WithEnv env)
   => ContainerDefinition
   -> RIO env a
   -> RIO env a
-withContainerDefinition containerDefinition@ContainerDefinition{..} =
+withContainerRun containerDefinition@ContainerDefinition{..} =
   Exception.bracket_ (run @b containerDefinition) (stop @b containerName)
 
 backendProc :: forall b . Backend b => [String] -> Proc
