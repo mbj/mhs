@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d9b24aad210cb55b1089907e3e32639df997386ed30355f78d7ceac42a7cb145
+-- hash: 7d7371944f8bf7052b7fafb40561fa4f19ca9252cbf17fefc5435dc0bad4dfbe
 
 name:           cbt
 version:        0.1.0
@@ -44,6 +44,7 @@ library
     , bytestring >=0.10 && <0.11
     , co-log >=0.4 && <0.5
     , co-log-core >=0.2 && <0.3
+    , conduit >=1.3.3 && <1.4
     , conversions >=0.0.3 && <0.1
     , cryptonite >=0.25 && >=0.26 && <0.27
     , exceptions >=0.10 && <0.11
@@ -53,6 +54,7 @@ library
     , mrio-core >=0.0.1 && <0.1
     , mtl >=2.2 && <2.3
     , pathtype >=0.8 && <0.9
+    , resourcet >=1.2.4 && <1.3
     , source-constraints >=0.0.1 && <0.1
     , tar >=0.5 && <0.6
     , template-haskell >=2.14 && >=2.15 && <2.16
@@ -78,6 +80,7 @@ test-suite test
     , cbt
     , co-log >=0.4 && <0.5
     , co-log-core >=0.2 && <0.3
+    , conduit >=1.3.3 && <1.4
     , conversions >=0.0.3 && <0.1
     , cryptonite >=0.25 && >=0.26 && <0.27
     , devtools >=0.0.3 && <0.1
@@ -88,6 +91,7 @@ test-suite test
     , mrio-core >=0.0.1 && <0.1
     , mtl >=2.2 && <2.3
     , pathtype >=0.8 && <0.9
+    , resourcet >=1.2.4 && <1.3
     , source-constraints >=0.0.1 && <0.1
     , tar >=0.5 && <0.6
     , tasty >=1.3.1 && <1.4

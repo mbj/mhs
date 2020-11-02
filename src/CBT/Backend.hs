@@ -195,14 +195,29 @@ build BuildDefinition{..}
     IncrementalState.runBuildThrow builds imageName
       . fmap fromExit
       . runProcess
-      . setVerbosity verbosity
-      . Process.setStdin (Process.byteStringInput . LBS.fromStrict . Text.encodeUtf8 $ toText content)
-      $ Process.proc (binaryName @b) ["build", "--tag", convertText imageName, "-"]
+      $ setVerbosity verbosity proc
   where
     fromExit :: Exit.ExitCode -> Either ImageBuildError ()
     fromExit = \case
       Exit.ExitSuccess -> pure ()
       _                -> Left $ ImageBuildError "process exited with nonzero"
+
+    proc = case source of
+      Directory path       -> buildProc [Path.toString path]
+      Instructions content -> fromInstructions content
+
+    fromInstructions content
+      = Process.setStdin
+        ( Process.byteStringInput
+        . LBS.fromStrict
+        . Text.encodeUtf8
+        $ toText content
+        )
+      $ buildProc ["-"]
+
+    buildProc arguments
+      = Process.proc (binaryName @b)
+      $ ["build", "--tag", convertText imageName] <> arguments
 
 buildRun
   :: forall b env . (Backend b, WithEnv env)

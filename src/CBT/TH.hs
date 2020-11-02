@@ -1,4 +1,4 @@
-module CBT.TH (readDockerfile) where
+module CBT.TH (readDockerfileContent) where
 
 import CBT.Prelude
 import CBT.Types
@@ -8,8 +8,8 @@ import Language.Haskell.TH.Syntax
 import qualified CBT.BuildDefinition as BuildDefinition
 import qualified System.Path         as Path
 
-readDockerfile :: Prefix -> Path.AbsRelFile -> Q (TExp BuildDefinition)
-readDockerfile prefix path = do
+readDockerfileContent :: Path.AbsRelFile -> Q (TExp DockerfileContent)
+readDockerfileContent path = do
   qAddDependentFile $ Path.toString path
 
-  TExp <$> (lift =<< runIO (BuildDefinition.readDockerfile prefix path))
+  TExp <$> (lift =<< runIO (BuildDefinition.readDockerfileContent path))

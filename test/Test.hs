@@ -1,3 +1,4 @@
+import GHC.Records (getField)
 import MPrelude
 import MRIO.Core
 import Test.Tasty.HUnit
@@ -14,46 +15,56 @@ main = do
     $ Tasty.testGroup "cbt"
     [ Devtools.testTree devtoolsConfig
     , container cbt
-    , image cbt
+    , imageDirectory cbt
+    , imageStatic cbt
     ]
 
 devtoolsConfig :: Devtools.Config
 devtoolsConfig = Devtools.defaultConfig
   { Devtools.hlintArguments = ["-XTypeApplications"] }
 
-image :: CBT.Environment -> Tasty.TestTree
-image cbt
-  = testCase "image" . void
+imageDirectory :: CBT.Environment -> Tasty.TestTree
+imageDirectory cbt
+  = testCase "image from directory definition"
+  . void
   . runRIO cbt
-  . CBT.buildIfAbsent
-  $ CBT.fromDockerfileContents
-    (CBT.Prefix "cbt-test")
-    (CBT.DockerfileContent "FROM alpine")
+  $ CBT.buildIfAbsent =<< CBT.fromDirectory prefix (Path.dir "test/app")
+
+imageStatic :: CBT.Environment -> Tasty.TestTree
+imageStatic cbt
+  = testCase "image from static definition"
+  . void
+  . runRIO cbt
+  $ CBT.buildIfAbsent buildDefinitionStatic
 
 container :: CBT.Environment -> Tasty.TestTree
 container cbt
   = testCase "container" . void $
-    runRIO cbt $ do
-      containerName <- CBT.nextContainerName prefix
-      CBT.withContainer
-        buildDefinition
-        CBT.ContainerDefinition
-          { detach           = CBT.Foreground
-          , imageName        = (CBT.imageName :: CBT.BuildDefinition -> CBT.ImageName) buildDefinition
-          , mounts           = []
-          , programArguments = []
-          , programName      = "true"
-          , publishPorts     = []
-          , remove           = CBT.NoRemove
-          , removeOnRunFail  = CBT.Remove
-          , workDir          = Path.absDir "/"
-          , ..
-          }
-        (pure ())
+    runRIO cbt $ testRun buildDefinitionStatic
 
-buildDefinition :: CBT.BuildDefinition
-buildDefinition =
-  CBT.fromDockerfileContents
+testRun :: CBT.WithEnv env => CBT.BuildDefinition -> RIO env ()
+testRun buildDefinition = do
+  containerName <- CBT.nextContainerName prefix
+
+  CBT.withContainer
+    buildDefinition
+    CBT.ContainerDefinition
+      { detach           = CBT.Foreground
+      , imageName        = getField @"imageName" buildDefinition
+      , mounts           = []
+      , programArguments = []
+      , programName      = "true"
+      , publishPorts     = []
+      , remove           = CBT.NoRemove
+      , removeOnRunFail  = CBT.Remove
+      , workDir          = Path.absDir "/"
+      , ..
+      }
+    (pure ())
+
+buildDefinitionStatic :: CBT.BuildDefinition
+buildDefinitionStatic =
+  CBT.fromDockerfileContent
     prefix
     (CBT.DockerfileContent "FROM alpine")
 
