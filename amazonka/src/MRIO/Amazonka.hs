@@ -43,8 +43,7 @@ class HasResourceMap env where
   resourceMap :: env -> ResourceMap
 
 instance HasResourceMap env => MonadResource (RIO env) where
-  liftResourceT (ResourceT run) = do
-    (liftIO . run) =<< asks resourceMap
+  liftResourceT (ResourceT run) = (liftIO . run) =<< asks resourceMap
 
 type HasAWS env = (MonadResource (RIO env), HasAWSEnv env)
 
