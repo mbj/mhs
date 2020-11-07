@@ -1,4 +1,4 @@
-resolver: lts-16.18
+resolver: lts-16.20
 extra-deps:
 - conversions-0.0.3@sha256:4adcd605bc4ee3b351359852bebfb4e7032966d93bf5200c56884c0103b7a6d0,3399
 - devtools-0.0.3@sha256:7187fd0e44fcbb401b367e2ee8627b3c6a6bb1e05fcd8f3fbeccf69f771787cc,4181
@@ -11,9 +11,9 @@ extra-deps:
 - tasty-1.3.1@sha256:01e35c97f7ee5ccbc28f21debea02a38cd010d53b4c3087f5677c5d06617a507,2520
 - tasty-mgolden-0.0.1@sha256:07fadb592cde353c386c5f38cff75539a5675e9350776ed6f4f0a70247427a78,4214
 - git: https://github.com/mbj/cbt
-  commit: f14701c2d0ae985193c4c5a5cc764e082267da25
+  commit: 7da7b301b7813969c971c76cba516f16e66a3979
 - git: https://github.com/mbj/dbt
-  commit: 4fe9557b89fad173db1fe99f0f9957e5b297576f
+  commit: 5e2da88b245ad52228ca53e2bbf4c4cf4a8aee8f
 - git: https://github.com/pacthq/mrio
   commit: 0e6c7b51ee11952445f371101cf0fa50f5614341
   subdirs:

@@ -79,23 +79,23 @@ packages:
     version: 0.1.0
     git: https://github.com/mbj/cbt
     pantry-tree:
-      size: 1088
-      sha256: 30f226f2b9444e255cf5767a5826b83b2195294880a6a1ea9e9368478ec709e8
-    commit: f14701c2d0ae985193c4c5a5cc764e082267da25
+      size: 1201
+      sha256: e40052333c3df893806c46b711e1203bf52de24956f73e9f5091b16422540dd4
+    commit: 7da7b301b7813969c971c76cba516f16e66a3979
   original:
     git: https://github.com/mbj/cbt
-    commit: f14701c2d0ae985193c4c5a5cc764e082267da25
+    commit: 7da7b301b7813969c971c76cba516f16e66a3979
 - completed:
     name: dbt
     version: 0.1.0
     git: https://github.com/mbj/dbt
     pantry-tree:
-      size: 1276
-      sha256: cec10e0c5841e29a573a9e7d1346810b1f25d3ff950446d9a0a3dda66a393beb
-    commit: 4fe9557b89fad173db1fe99f0f9957e5b297576f
+      size: 1217
+      sha256: 37fd55071cfaee91521be3f4dd51804037edda9ad3353c4608c12c3d43de3f48
+    commit: 5e2da88b245ad52228ca53e2bbf4c4cf4a8aee8f
   original:
     git: https://github.com/mbj/dbt
-    commit: 4fe9557b89fad173db1fe99f0f9957e5b297576f
+    commit: 5e2da88b245ad52228ca53e2bbf4c4cf4a8aee8f
 - completed:
     subdir: core
     name: mrio-core
@@ -124,7 +124,7 @@ packages:
     commit: 0e6c7b51ee11952445f371101cf0fa50f5614341
 snapshots:
 - completed:
-    size: 532172
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/18.yaml
-    sha256: 4f2a092c6f4869854e8d7435ab98ce5157c641022c3cbfc4c4614ff3db752e62
-  original: lts-16.18
+    size: 532177
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/20.yaml
+    sha256: 0e14ba5603f01e8496e8984fd84b545a012ca723f51a098c6c9d3694e404dc6d
+  original: lts-16.20

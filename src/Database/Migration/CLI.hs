@@ -1,5 +1,7 @@
 module Database.Migration.CLI
-  ( WithClientConfig
+  ( Config(..)
+  , WithClientConfig
+  , defaultConfig
   , parserInfo
   )
 where
@@ -11,12 +13,24 @@ import Options.Applicative
 import qualified DBT.Connection as DBT
 import qualified DBT.Postgresql as Postgresql
 
-type WithClientConfig env = (Postgresql.ClientConfig -> RIO env ()) -> RIO env ()
+type WithClientConfig env = forall a . (Postgresql.ClientConfig -> RIO env a) -> RIO env a
 
-parserInfo :: ParserInfo (WithClientConfig env -> RIO env ())
+data Config env = Config
+  { runPGDump  :: RunPGDump env
+  , withConfig :: WithClientConfig env
+  }
+
+defaultConfig :: WithClientConfig env -> Config env
+defaultConfig withConfig
+  = Config
+  { runPGDump = withConfig . localPGDump
+  , ..
+  }
+
+parserInfo :: ParserInfo (Config env -> RIO env ())
 parserInfo = wrapHelper commands "migration commands"
   where
-    commands :: Parser (WithClientConfig env -> RIO env ())
+    commands :: Parser (Config env -> RIO env ())
     commands = hsubparser
       $  mkCommand
          "apply"
@@ -48,7 +62,7 @@ parserInfo = wrapHelper commands "migration commands"
          "Setup DB migrations, create schema_migrations table"
       <> mkCommand
          "dump-schema"
-         (\withConfig -> withConfig dumpSchema)
+         (\Config{..} -> dumpSchema runPGDump)
          ("Dump database schema to " <> schemaFileString)
       <> mkCommand
          "load-schema"
@@ -57,22 +71,23 @@ parserInfo = wrapHelper commands "migration commands"
 
     withConnection'
       :: RIO (DBT.ConnectionEnv env) ()
-      -> WithClientConfig env
+      -> Config env
       -> RIO env ()
     withConnection' = flip withConnection
 
 applyMigration
-  :: WithClientConfig env
+  :: Config env
   -> RIO env ()
-applyMigration withConfig =
+applyMigration Config{..} = do
   withConfig $ \config ->
-    DBT.withConnection config $ DBT.runConnectionEnv (apply >> dumpSchema config)
+    DBT.withConnection config $ DBT.runConnectionEnv apply
+  dumpSchema runPGDump
 
 withConnection
-  :: WithClientConfig env
+  :: Config env
   -> RIO (DBT.ConnectionEnv env) ()
   -> RIO env ()
-withConnection withConfig action' =
+withConnection Config{..} action' =
   withConfig $ \config ->
     DBT.withConnection config $ DBT.runConnectionEnv action'
 
