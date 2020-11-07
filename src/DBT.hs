@@ -1,5 +1,6 @@
 module DBT
-  ( imageName
+  ( buildDefinition
+  , imageName
   , populateDatabaseImage
   , withDatabaseContainer
   , withDatabaseContainerImage
