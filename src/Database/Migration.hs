@@ -1,10 +1,12 @@
 {-# LANGUAGE QuasiQuotes #-}
 
 module Database.Migration
-  ( apply
+  ( RunPGDump
+  , apply
   , dryApply
   , dumpSchema
   , loadSchema
+  , localPGDump
   , new
   , schemaFileString
   , setup
@@ -15,7 +17,6 @@ where
 import Control.Bool (guard', whenM)
 import DBT.Session
 import Data.Bifunctor (bimap)
-import Data.ByteString (ByteString)
 import Database.Migration.Prelude
 import GHC.Enum (succ)
 import Hasql.TH (resultlessStatement, uncheckedSql, vectorStatement)
@@ -35,12 +36,13 @@ import qualified Data.Text.IO               as Text
 import qualified Hasql.Session              as Hasql
 import qualified Hasql.Transaction          as Transaction
 import qualified Hasql.Transaction.Sessions as Transaction
-import qualified System.Environment         as Environment
 import qualified System.Path                as Path
 import qualified System.Path.Directory      as Path
 import qualified System.Process.Typed       as Process
 
 type Digest = Hash.Digest Hash.SHA3_256
+
+type RunPGDump env = [Text] -> RIO env LBS.ByteString
 
 data AppliedMigration = AppliedMigration
   { digest :: Digest
@@ -52,7 +54,7 @@ data MigrationFile = MigrationFile
   { digest :: Digest
   , index  :: Natural
   , path   :: Path.RelFile
-  , sql    :: ByteString
+  , sql    :: BS.ByteString
   }
 
 dryApply :: DBT.Session env => RIO env ()
@@ -74,16 +76,19 @@ status = do
   Foldable.traverse_ printMigrationFile =<<
     newMigrations applied <$> readMigrationFiles
 
-dumpSchema :: Postgresql.ClientConfig -> RIO env ()
-dumpSchema config = do
+
+localPGDump :: [Text] -> Postgresql.ClientConfig -> RIO env LBS.ByteString
+localPGDump arguments clientConfig =  do
+  env <- Postgresql.getEnv clientConfig
+  Process.readProcessStdout_
+    . Process.setEnv env
+    $ Process.proc "pg_dump" (convert <$> arguments)
+
+dumpSchema :: RunPGDump env -> RIO env ()
+dumpSchema pgDump = do
   printStatus $ "Writing schema to " <> schemaFileString
-  env <- liftIO Environment.getEnvironment
-  schema <- Process.readProcessStdout_
-    . Process.setEnv (env <> Postgresql.toEnv config)
-    $ Process.proc "pg_dump" ["--no-comments", "--schema-only"]
-  migrations <- Process.readProcessStdout_
-    . Process.setEnv (env <> Postgresql.toEnv config)
-    $ Process.proc "pg_dump" ["--data-only", "--inserts", "--table=schema_migrations"]
+  schema     <- pgDump ["--no-comments", "--schema-only"]
+  migrations <- pgDump ["--data-only", "--inserts", "--table=schema_migrations"]
   liftIO $ LBS.writeFile schemaFileString $ schema <> migrations
 
 loadSchema :: DBT.Session env => RIO env ()
@@ -163,7 +168,7 @@ readAppliedMigrations = runSession $ do
     |]
   pure $ uncurry AppliedMigration . bimap fromByteString convertUnsafe <$> rows
   where
-    fromByteString :: ByteString -> Hash.Digest Hash.SHA3_256
+    fromByteString :: BS.ByteString -> Hash.Digest Hash.SHA3_256
     fromByteString
       = maybe (error "Failed to decode sha3_256 from DB") identity
       . Hash.digestFromByteString
