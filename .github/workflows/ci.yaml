@@ -19,7 +19,7 @@ jobs:
       with:
         enable-stack: true
         ghc-version: ${{ matrix.ghc }}
-        stack-version: '2.3'
+        stack-version: '2.5.1'
     - name: Setup stack
       run: |
         stack config set install-ghc false
