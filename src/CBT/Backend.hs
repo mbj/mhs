@@ -129,7 +129,7 @@ buildIfAbsent
   :: forall b env . (Backend b, WithEnv env)
   => BuildDefinition
   -> RIO env ()
-buildIfAbsent buildDefinition@BuildDefinition{..} = do
+buildIfAbsent buildDefinition = do
   exists <- testImageExists @b buildDefinition
 
   unless exists (build @b buildDefinition)
@@ -230,7 +230,7 @@ run
   :: forall b env . (Backend b, WithEnv env)
   => ContainerDefinition
   -> RIO env ()
-run containerDefinition@ContainerDefinition{..} =
+run containerDefinition =
   handleFailure @b containerDefinition () =<< runProcess (runProc @b containerDefinition)
 
 runReadStdout
