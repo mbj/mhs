@@ -54,11 +54,11 @@ packages:
     pantry-tree:
       size: 467
       sha256: 5f2f496fb4ad987a197812761cb604cda715cc2d99504d6f159cfb24d002bedb
-    commit: f4e77348314ce60061bc548a5fd4250eb19df718
+    commit: c84e2fe1ebc3ecc68e96f09ceac1f3ab9fc186f3
   original:
     subdir: colog
     git: https://github.com/pacthq/mrio
-    commit: f4e77348314ce60061bc548a5fd4250eb19df718
+    commit: c84e2fe1ebc3ecc68e96f09ceac1f3ab9fc186f3
 - completed:
     subdir: core
     name: mrio-core
@@ -67,14 +67,14 @@ packages:
     pantry-tree:
       size: 337
       sha256: d119831311b7c6d90d327bfce08dba9c7016942bd3209a50807aea62de21a852
-    commit: f4e77348314ce60061bc548a5fd4250eb19df718
+    commit: c84e2fe1ebc3ecc68e96f09ceac1f3ab9fc186f3
   original:
     subdir: core
     git: https://github.com/pacthq/mrio
-    commit: f4e77348314ce60061bc548a5fd4250eb19df718
+    commit: c84e2fe1ebc3ecc68e96f09ceac1f3ab9fc186f3
 snapshots:
 - completed:
-    size: 532177
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/20.yaml
-    sha256: 0e14ba5603f01e8496e8984fd84b545a012ca723f51a098c6c9d3694e404dc6d
-  original: lts-16.20
+    size: 532414
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/22.yaml
+    sha256: e483fb88549fc0f454c190979bf35ac91c7aceff2c0e71e7d8edd11842d772d8
+  original: lts-16.22

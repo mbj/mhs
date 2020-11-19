@@ -15,7 +15,7 @@ jobs:
         os: [ubuntu-latest]
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-haskell@v1.1.3
+    - uses: actions/setup-haskell@v1
       with:
         enable-stack: true
         ghc-version: ${{ matrix.ghc }}
@@ -27,8 +27,10 @@ jobs:
     - name: Cache
       uses: actions/cache@v2
       with:
-        path: ~/.stack
-        key: ${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('stack-*.yaml', '**/*.cabal') }}
+        path: |
+          ~/.stack
+          .stack-work
+        key: ${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('stack-*.yaml') }}
     - name: Install dependencies
       run: stack build --test --only-dependencies
     - name: Build
