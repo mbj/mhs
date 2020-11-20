@@ -1,12 +1,8 @@
-import MPrelude
+module Main (main) where
+
 import System.IO (IO)
-import Test.Tasty
-import Test.Tasty.MGolden
+
+import qualified Devtools
 
 main :: IO ()
-main = defaultMain tests
-
-tests :: TestTree
-tests = testGroup "mgolden tests"
-  [ goldenTest "test/expected/foo.txt" $ pure "foo\nbar\n"
-  ]
+main = Devtools.main Devtools.defaultConfig

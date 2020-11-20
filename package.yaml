@@ -65,15 +65,12 @@ when:
     else:
       ghc-options: -Wwarn
 
-executables:
-  devtools: &devtools
-    main:        app/Main.hs
+tests:
+  test:
+    main:        test/Test.hs
     ghc-options:
     - -rtsopts
     - -threaded
     - -with-rtsopts=-N
     dependencies:
     - devtools
-
-tests:
-  devtools-test: *devtools

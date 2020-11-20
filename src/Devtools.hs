@@ -28,10 +28,14 @@ defaultMain = main defaultConfig
 main :: Config -> IO ()
 main config = do
   putStrLn empty
-  Tasty.defaultMain $ testTree config
+  Tasty.defaultMain =<< testTree config
 
-testTree :: Config -> Tasty.TestTree
-testTree Config{..} = Tasty.testGroup "devtools"
-  [ Dependencies.testTree targets
-  , HLint.testTree hlintArguments
-  ]
+testTree :: Config -> IO Tasty.TestTree
+testTree Config{..} = do
+  filename <- Dependencies.getFilename
+
+  pure $ Tasty.testGroup
+    "devtools"
+    [ Dependencies.testTree filename targets
+    , HLint.testTree hlintArguments
+    ]
