@@ -41,7 +41,7 @@ main = do
 
   Devtools.main
     Devtools.defaultConfig
-    { Devtools.targets = [Devtools.Target "mrio-amazonka"] }
+    { Devtools.targets = [Devtools.Target "mrio-colog"] }
  where
   env :: Env
   env = Env { logAction = richMessageAction, appName = "Test App" }
