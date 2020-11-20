@@ -5,12 +5,16 @@
 
 packages:
 - completed:
-    hackage: conversions-0.0.3@sha256:4adcd605bc4ee3b351359852bebfb4e7032966d93bf5200c56884c0103b7a6d0,3399
+    name: mprelude
+    version: 0.2.1
+    git: https://github.com/mbj/mprelude
     pantry-tree:
-      size: 250
-      sha256: 13b4efb98beb55c6939375a3cb4c6861ac02b31c27ee1659d8e5ac6a54c55902
+      size: 875
+      sha256: 1fdd54a5eca26f3a3540f67e0e49e4bbb9e19ea33271f999498b431d971d3403
+    commit: 436804ee20e26617f42d156d944ef63f396857a4
   original:
-    hackage: conversions-0.0.3@sha256:4adcd605bc4ee3b351359852bebfb4e7032966d93bf5200c56884c0103b7a6d0,3399
+    git: https://github.com/mbj/mprelude
+    commit: 436804ee20e26617f42d156d944ef63f396857a4
 - completed:
     hackage: source-constraints-0.0.2@sha256:5746921c48cde021cd9120fc917dd21768fa6f3716f9d09fc847cac3c6f5d4e4,3103
     pantry-tree:
@@ -32,27 +36,9 @@ packages:
       sha256: 9cd24c3a02396dd93ed7d57df1d9668a2377d128e413db5ff89d82ffdfc830fa
   original:
     hackage: tasty-mgolden-0.0.1@sha256:07fadb592cde353c386c5f38cff75539a5675e9350776ed6f4f0a70247427a78,4214
-- completed:
-    hackage: unliftio-core-0.2.0.1@sha256:9b3e44ea9aacacbfc35b3b54015af450091916ac3618a41868ebf6546977659a,1082
-    pantry-tree:
-      size: 328
-      sha256: e81c5a1e82ec2cd68cbbbec9cd60567363abe02257fa1370a906f6754b6818b8
-  original:
-    hackage: unliftio-core-0.2.0.1@sha256:9b3e44ea9aacacbfc35b3b54015af450091916ac3618a41868ebf6546977659a,1082
-- completed:
-    name: mprelude
-    version: 0.2.1
-    git: https://github.com/mbj/mprelude
-    pantry-tree:
-      size: 875
-      sha256: 1fdd54a5eca26f3a3540f67e0e49e4bbb9e19ea33271f999498b431d971d3403
-    commit: 436804ee20e26617f42d156d944ef63f396857a4
-  original:
-    git: https://github.com/mbj/mprelude
-    commit: 436804ee20e26617f42d156d944ef63f396857a4
 snapshots:
 - completed:
-    size: 532414
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/22.yaml
-    sha256: e483fb88549fc0f454c190979bf35ac91c7aceff2c0e71e7d8edd11842d772d8
-  original: lts-16.22
+    size: 553330
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2020/11/19.yaml
+    sha256: 7ae41d7d9026078cbc28fa535936498eaf604f93b04f9c9c61224312c7f47758
+  original: nightly-2020-11-19

@@ -4,10 +4,10 @@ cabal-version: 1.18
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 28160fc04e20acffdb935a7fe9d603e6dc99612264c2fe23c6bab134280907af
+-- hash: 1ab3f83c389cae0745d3d2ddb4de502d0a96c2d0b770b4c1a5a5f1ac1dcbd7a1
 
 name:           devtools
-version:        0.0.3
+version:        0.1.0
 synopsis:       Haskell development tool agregate
 description:    An attempt to group development that would typically run on CI / local
                 into one tasty interface.
@@ -46,7 +46,7 @@ library
   ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
       Diff >0.3 && <0.5
-    , base >4.12 && <4.14
+    , base >4.12 && <4.15
     , bytestring >=0.10 && <0.11
     , cmdargs >=0.10.20 && <0.11
     , filepath >=1.4 && <1.5
@@ -72,7 +72,7 @@ test-suite test
   ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       Diff >0.3 && <0.5
-    , base >4.12 && <4.14
+    , base >4.12 && <4.15
     , bytestring >=0.10 && <0.11
     , cmdargs >=0.10.20 && <0.11
     , devtools
