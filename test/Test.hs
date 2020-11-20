@@ -11,10 +11,11 @@ import qualified Test.Tasty  as Tasty
 main :: IO ()
 main = do
   cbt <- CBT.newDefaultEnvironment
+  devtools <- Devtools.testTree devtoolsConfig
   Tasty.defaultMain
     $ Tasty.testGroup "cbt"
-    [ Devtools.testTree devtoolsConfig
-    , container cbt
+    [ container cbt
+    , devtools
     , imageDirectory cbt
     , imageStatic cbt
     ]
