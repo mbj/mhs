@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 6eb14e125980c1b6aae3ff569df832b85ec25663702e7e9f31508bbf4b29e87b
+-- hash: 48d49ca38c6d48fec9e601bc310cf042f97c215f77317ab98e7fbcedef10c3f1
 
 name:           dbt
 version:        0.1.0
@@ -39,13 +39,12 @@ library
   default-extensions: AllowAmbiguousTypes DataKinds DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving KindSignatures LambdaCase MonoLocalBinds MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TypeApplications
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
-      base >=4.12 && >=4.13 && <4.14
+      base >=4.12 && <4.13 || >=4.13 && <4.14 || >=4.14 && <4.15
     , bytestring >=0.10 && <0.11
     , cbt >=0.1.0 && <0.2
     , co-log >=0.4 && <0.5
     , containers >=0.6 && <0.7
     , conversions >=0.0.3 && <0.1
-    , cryptonite >=0.25 && >=0.26 && <0.27
     , hasql >=1.4 && <1.5
     , mprelude >=0.2.0 && <0.3
     , mrio-colog >=0.0.1 && <0.1
@@ -55,12 +54,12 @@ library
     , optparse-applicative >=0.15 && <0.16
     , pathtype >=0.8 && <0.9
     , source-constraints >=0.0.1 && <0.1
-    , template-haskell >=2.14 && >=2.15 && <2.16
+    , template-haskell >=2.14 && <2.15 || >=2.15 && <2.16 || >=2.16 && <2.17
     , text >=1.2 && <1.3
     , th-lift-instances >=0.1 && <0.2
     , typed-process >=0.2 && <0.3
     , unliftio >=0.2 && <0.3
-    , unliftio-core >=0.1 && <0.2
+    , unliftio-core >=0.2 && <0.3
   default-language: Haskell2010
 
 executable dbt
@@ -72,13 +71,12 @@ executable dbt
   default-extensions: AllowAmbiguousTypes DataKinds DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving KindSignatures LambdaCase MonoLocalBinds MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TypeApplications
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      base >=4.12 && >=4.13 && <4.14
+      base >=4.12 && <4.13 || >=4.13 && <4.14 || >=4.14 && <4.15
     , bytestring >=0.10 && <0.11
     , cbt >=0.1.0 && <0.2
     , co-log >=0.4 && <0.5
     , containers >=0.6 && <0.7
     , conversions >=0.0.3 && <0.1
-    , cryptonite >=0.25 && >=0.26 && <0.27
     , dbt
     , hasql >=1.4 && <1.5
     , mprelude >=0.2.0 && <0.3
@@ -89,12 +87,12 @@ executable dbt
     , optparse-applicative >=0.15 && <0.16
     , pathtype >=0.8 && <0.9
     , source-constraints >=0.0.1 && <0.1
-    , template-haskell >=2.14 && >=2.15 && <2.16
+    , template-haskell >=2.14 && <2.15 || >=2.15 && <2.16 || >=2.16 && <2.17
     , text >=1.2 && <1.3
     , th-lift-instances >=0.1 && <0.2
     , typed-process >=0.2 && <0.3
     , unliftio >=0.2 && <0.3
-    , unliftio-core >=0.1 && <0.2
+    , unliftio-core >=0.2 && <0.3
   default-language: Haskell2010
 
 test-suite test
@@ -105,15 +103,14 @@ test-suite test
   default-extensions: AllowAmbiguousTypes DataKinds DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving KindSignatures LambdaCase MonoLocalBinds MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TypeApplications
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      base >=4.12 && >=4.13 && <4.14
+      base >=4.12 && <4.13 || >=4.13 && <4.14 || >=4.14 && <4.15
     , bytestring >=0.10 && <0.11
     , cbt >=0.1.0 && <0.2
     , co-log >=0.4 && <0.5
     , containers >=0.6 && <0.7
     , conversions >=0.0.3 && <0.1
-    , cryptonite >=0.25 && >=0.26 && <0.27
     , dbt
-    , devtools >=0.0.3 && <0.1
+    , devtools >=0.1.0 && <0.2
     , hasql >=1.4 && <1.5
     , mprelude >=0.2.0 && <0.3
     , mrio-colog >=0.0.1 && <0.1
@@ -125,10 +122,10 @@ test-suite test
     , source-constraints >=0.0.1 && <0.1
     , tasty
     , tasty-mgolden
-    , template-haskell >=2.14 && >=2.15 && <2.16
+    , template-haskell >=2.14 && <2.15 || >=2.15 && <2.16 || >=2.16 && <2.17
     , text >=1.2 && <1.3
     , th-lift-instances >=0.1 && <0.2
     , typed-process >=0.2 && <0.3
     , unliftio >=0.2 && <0.3
-    , unliftio-core >=0.1 && <0.2
+    , unliftio-core >=0.2 && <0.3
   default-language: Haskell2010

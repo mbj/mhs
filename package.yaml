@@ -9,13 +9,12 @@ github:      mbj/dbt
 license:     BSD3
 
 dependencies:
-- base                 >= 4.12 && ^>= 4.13
+- base                 ^>= 4.12 || ^>= 4.13 || ^>= 4.14
 - bytestring           ^>= 0.10
 - cbt                  ^>= 0.1.0
 - co-log               ^>= 0.4
 - containers           ^>= 0.6
 - conversions          ^>= 0.0.3
-- cryptonite           >= 0.25 && ^>= 0.26
 - hasql                ^>= 1.4
 - mprelude             ^>= 0.2.0
 - mrio-colog           ^>= 0.0.1
@@ -25,12 +24,12 @@ dependencies:
 - optparse-applicative ^>= 0.15
 - pathtype             ^>= 0.8
 - source-constraints   ^>= 0.0.1
-- template-haskell     >= 2.14 && ^>= 2.15
+- template-haskell     ^>= 2.14 || ^>= 2.15 || ^>= 2.16
 - text                 ^>= 1.2
 - th-lift-instances    ^>= 0.1
 - typed-process        ^>= 0.2
 - unliftio             ^>= 0.2
-- unliftio-core        ^>= 0.1
+- unliftio-core        ^>= 0.2
 
 ghc-options:
 - -Wall
@@ -99,6 +98,6 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - dbt
-    - devtools ^>= 0.0.3
+    - devtools ^>= 0.1.0
     - tasty
     - tasty-mgolden

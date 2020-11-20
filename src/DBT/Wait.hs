@@ -24,7 +24,7 @@ data Config env = Config
   }
 
 wait :: forall env . CBT.WithEnv env => Config env -> RIO env ()
-wait Config{clientConfig = clientConfig@Postgresql.ClientConfig{..}, ..} =
+wait Config{clientConfig = clientConfig, ..} =
   start =<< effectiveWaitTime
   where
     failPrefix :: String -> RIO env a
