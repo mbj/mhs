@@ -252,7 +252,7 @@ mkTH
   => a
   -> TH.Q (TH.TExp b)
 mkTH input =
-  TH.TExp <$> either (fail . show) (TH.lift @b) (convertThrow @b @a @e input)
+  TH.TExp <$> either (fail . show) TH.lift (convertThrow @b @a @e input)
 
 toText :: ToText a => a -> Text
 toText = convert
