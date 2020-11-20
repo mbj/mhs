@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5c2bcf056eb05925465f130fdc713bb85c9f7fc90e99fe441c5509f41c472637
+-- hash: 51f545fff9d22075629ccc8c1c046603b7a0c6de72367720443eaa51dcb0c7d1
 
 name:           mrio-amazonka
 version:        0.0.1
@@ -37,7 +37,7 @@ library
     , mtl >=2.2 && <2.3
     , resourcet >=1.2.4 && <1.3
     , source-constraints
-    , unliftio-core >=0.1.2 && <0.2
+    , unliftio-core >=0.2 && <0.3
   default-language: Haskell2010
 
 test-suite test
@@ -57,5 +57,5 @@ test-suite test
     , mtl >=2.2 && <2.3
     , resourcet >=1.2.4 && <1.3
     , source-constraints
-    , unliftio-core >=0.1.2 && <0.2
+    , unliftio-core >=0.2 && <0.3
   default-language: Haskell2010
