@@ -12,10 +12,12 @@ import qualified Test.Tasty            as Tasty
 import qualified Test.Tasty.HUnit      as Tasty
 
 main :: IO ()
-main =
+main = do
+  devtools <- Devtools.testTree Devtools.defaultConfig
+
   Tasty.defaultMain $ Tasty.testGroup "lht"
     [ testBuild
-    , Tasty.after Tasty.AllFinish "test-build" $ Devtools.testTree Devtools.defaultConfig
+    , Tasty.after Tasty.AllFinish "test-build" devtools
     ]
 
 testBuild :: Tasty.TestTree
