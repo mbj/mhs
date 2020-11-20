@@ -1,11 +1,12 @@
-resolver: lts-16.22
+resolver: nightly-2020-11-19
 extra-deps:
 - git: https://github.com/mbj/devtools-hs.git
   commit: 5d7846e1e01552ea9577230982aa12715729ad57
 - source-constraints-0.0.2@sha256:5746921c48cde021cd9120fc917dd21768fa6f3716f9d09fc847cac3c6f5d4e4,3103
 - tasty-1.3.1@sha256:01e35c97f7ee5ccbc28f21debea02a38cd010d53b4c3087f5677c5d06617a507,2520
 - tasty-mgolden-0.0.1@sha256:07fadb592cde353c386c5f38cff75539a5675e9350776ed6f4f0a70247427a78,4214
-- unliftio-core-0.2.0.1@sha256:9b3e44ea9aacacbfc35b3b54015af450091916ac3618a41868ebf6546977659a,1082
 flags:
   mprelude:
     development: true
+# till there is a devtools release with GHC 8.10
+allow-newer: true
