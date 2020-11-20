@@ -58,13 +58,12 @@ library
       base >4.12 && <4.15
     , bytestring ==0.10.*
     , control-bool ==0.2.*
-    , devtools >=0.0.2 && <0.1
     , exceptions ==0.10.*
     , mtl ==2.2.*
-    , source-constraints >=0.0.1 && <0.1
+    , source-constraints >=0.0.2 && <0.1
     , template-haskell ==2.15.*
     , text ==1.2.*
-    , unliftio-core ==0.1.*
+    , unliftio-core ==0.2.*
   if flag(development)
     ghc-options: -Werror
   else
@@ -105,13 +104,13 @@ test-suite test
     , bytestring ==0.10.*
     , control-bool ==0.2.*
     , conversions
-    , devtools >=0.0.2 && <0.1
+    , devtools >=0.1.0 && <0.2
     , exceptions ==0.10.*
     , mtl ==2.2.*
-    , source-constraints >=0.0.1 && <0.1
+    , source-constraints >=0.0.2 && <0.1
     , template-haskell ==2.15.*
     , text ==1.2.*
-    , unliftio-core ==0.1.*
+    , unliftio-core ==0.2.*
   if flag(development)
     ghc-options: -Werror
   else
