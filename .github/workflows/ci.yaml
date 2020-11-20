@@ -14,11 +14,11 @@ jobs:
         os: [ubuntu-latest, macOS-latest]
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-haskell@2215b2cb657e9dd555e7d634509d859983e7aa1e
+    - uses: actions/setup-haskell@v1
       with:
         enable-stack: true
         ghc-version: ${{ matrix.ghc }}
-        stack-version: '2.3'
+        stack-version: '2.5.1'
     - name: Setup stack
       run: |
         stack config set install-ghc false
