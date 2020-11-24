@@ -1,0 +1,103 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: b358a7afcde2e72a3f1e13733bdc8c9a0021eb5f324b29e83415c1e8719f6a97
+
+name:           xray
+version:        0.0.1
+synopsis:       Recording and submitting traces for Amazon XRay
+homepage:       https://github.com/mbj/xray
+bug-reports:    https://github.com/mbj/xray/issues
+maintainer:     Markus Schirp mbj@schirp-dso.com
+copyright:      Markus Schirp
+license:        MIT
+build-type:     Simple
+
+source-repository head
+  type: git
+  location: https://github.com/mbj/xray
+
+library
+  exposed-modules:
+      XRay.BoundText
+      XRay.Config
+      XRay.Connection
+      XRay.Environment
+      XRay.JSON
+      XRay.Parser
+      XRay.Prelude
+      XRay.Segment
+      XRay.TraceHeader
+      XRay.TraceId
+  other-modules:
+      Paths_xray
+  hs-source-dirs:
+      src
+  default-extensions: AllowAmbiguousTypes DataKinds DeriveGeneric DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts FlexibleInstances GeneralizedNewtypeDeriving KindSignatures LambdaCase MultiParamTypeClasses NoImplicitPrelude OverloadedLists OverloadedStrings PolyKinds RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TupleSections TypeApplications TypeFamilies TypeOperators
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path
+  build-depends:
+      aeson >=1.4 && <1.5 || >=1.5 && <1.6
+    , attoparsec >=0.13 && <0.14
+    , base >=4.13 && <4.14 || >=4.14 && <4.15
+    , binary >=0.8 && <0.9
+    , bytestring >=0.10 && <0.11
+    , conversions >=0.0.4 && <0.1
+    , hashable >=1.3 && <1.4
+    , http-types >=0.12 && <0.13
+    , mprelude >=0.2.0 && <0.3
+    , mrio-core >=0.0.1 && <0.1
+    , mtl >=2.2 && <2.3
+    , network (>=3.1 && <3.2) && >=3.1.2
+    , pathtype >=0.8 && <0.9
+    , random >=1.1 && <1.2
+    , scientific >=0.3 && <0.4
+    , source-constraints >=0.0.2 && <0.1
+    , symbols >=0.3 && <0.4
+    , template-haskell >=2.15 && <2.16 || >=2.16 && <2.17
+    , text >=1.2 && <1.3
+    , time >=1.9 && <1.10
+    , unliftio >=0.2 && <0.3
+    , unordered-containers >=0.2 && <0.3
+  default-language: Haskell2010
+
+test-suite test
+  type: exitcode-stdio-1.0
+  main-is: Test.hs
+  other-modules:
+      Test.TraceHeader
+      Paths_xray
+  hs-source-dirs:
+      test
+  default-extensions: AllowAmbiguousTypes DataKinds DeriveGeneric DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts FlexibleInstances GeneralizedNewtypeDeriving KindSignatures LambdaCase MultiParamTypeClasses NoImplicitPrelude OverloadedLists OverloadedStrings PolyKinds RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TupleSections TypeApplications TypeFamilies TypeOperators
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
+  build-depends:
+      aeson >=1.4 && <1.5 || >=1.5 && <1.6
+    , attoparsec >=0.13 && <0.14
+    , base >=4.13 && <4.14 || >=4.14 && <4.15
+    , binary >=0.8 && <0.9
+    , bytestring >=0.10 && <0.11
+    , conversions >=0.0.4 && <0.1
+    , devtools >=0.1 && <0.2
+    , hashable >=1.3 && <1.4
+    , http-types >=0.12 && <0.13
+    , mprelude >=0.2.0 && <0.3
+    , mrio-core >=0.0.1 && <0.1
+    , mtl >=2.2 && <2.3
+    , network (>=3.1 && <3.2) && >=3.1.2
+    , pathtype >=0.8 && <0.9
+    , random >=1.1 && <1.2
+    , scientific >=0.3 && <0.4
+    , source-constraints >=0.0.2 && <0.1
+    , symbols >=0.3 && <0.4
+    , tasty
+    , tasty-hunit
+    , template-haskell >=2.15 && <2.16 || >=2.16 && <2.17
+    , text >=1.2 && <1.3
+    , time >=1.9 && <1.10
+    , unliftio >=0.2 && <0.3
+    , unordered-containers >=0.2 && <0.3
+    , xray
+  default-language: Haskell2010
