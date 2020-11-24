@@ -5,33 +5,33 @@
 
 packages:
 - completed:
-    hackage: conversions-0.0.3@sha256:4adcd605bc4ee3b351359852bebfb4e7032966d93bf5200c56884c0103b7a6d0,3399
+    hackage: conversions-0.0.4@sha256:2e795093fe1318d5b37d52283ca3709573d28f4be7978c51284c27b645d3548d,3406
     pantry-tree:
       size: 250
-      sha256: 13b4efb98beb55c6939375a3cb4c6861ac02b31c27ee1659d8e5ac6a54c55902
+      sha256: dcd44c2b005235991df8b9f5fce5931f79599c05d59da2caf943c6aa41f09088
   original:
-    hackage: conversions-0.0.3@sha256:4adcd605bc4ee3b351359852bebfb4e7032966d93bf5200c56884c0103b7a6d0,3399
+    hackage: conversions-0.0.4@sha256:2e795093fe1318d5b37d52283ca3709573d28f4be7978c51284c27b645d3548d,3406
 - completed:
-    hackage: devtools-0.0.3@sha256:7187fd0e44fcbb401b367e2ee8627b3c6a6bb1e05fcd8f3fbeccf69f771787cc,4181
+    hackage: devtools-0.1.0@sha256:c5898fe567d610492cc140495f0828c55e64e7c1b28dc2b1b9a84cc5f6dc7c39,3148
     pantry-tree:
-      size: 452
-      sha256: 3af775bf631610214642c7c2be8ec3f8116db8fc25fa2d77feb11562540ce36a
+      size: 516
+      sha256: 2de35331c693369cd31b739e4d619ddd487653f6107d36f7c025c15a4e117ff9
   original:
-    hackage: devtools-0.0.3@sha256:7187fd0e44fcbb401b367e2ee8627b3c6a6bb1e05fcd8f3fbeccf69f771787cc,4181
+    hackage: devtools-0.1.0@sha256:c5898fe567d610492cc140495f0828c55e64e7c1b28dc2b1b9a84cc5f6dc7c39,3148
 - completed:
-    hackage: mprelude-0.2.0@sha256:e3d29aafb109029d85fb39f608f916d5e4268ce0d9069831e2ab251747b6e37b,2968
+    hackage: mprelude-0.2.1@sha256:c7cfd52b86c4a5469cffd84e84e96157c99ef05173b14cf309498b291c867a8f,2968
     pantry-tree:
       size: 265
-      sha256: fc84d143b0e35f4d44b17947f70912abc9af97de2f88b9185af12d84df07ed76
+      sha256: 391c3c95dc57ce7c59698a4c1896906b384d7001683dc7888e4714a5fa7e85da
   original:
-    hackage: mprelude-0.2.0@sha256:e3d29aafb109029d85fb39f608f916d5e4268ce0d9069831e2ab251747b6e37b,2968
+    hackage: mprelude-0.2.1@sha256:c7cfd52b86c4a5469cffd84e84e96157c99ef05173b14cf309498b291c867a8f,2968
 - completed:
-    hackage: source-constraints-0.0.1@sha256:abdda6ca3d942c81d61ed4374dbc0eee21e9c074da3f17b25d434c2d55df2acc,2979
+    hackage: source-constraints-0.0.2@sha256:5746921c48cde021cd9120fc917dd21768fa6f3716f9d09fc847cac3c6f5d4e4,3103
     pantry-tree:
-      size: 767
-      sha256: 838aa22a00a46a7a469cce9d4049acd8c94ed9c1e8c0eeb898a6d8e67bdd6818
+      size: 768
+      sha256: 028d0fa64e36ef0df8629d4d36339458351d831a43d8d2dd8009600df1203377
   original:
-    hackage: source-constraints-0.0.1@sha256:abdda6ca3d942c81d61ed4374dbc0eee21e9c074da3f17b25d434c2d55df2acc,2979
+    hackage: source-constraints-0.0.2@sha256:5746921c48cde021cd9120fc917dd21768fa6f3716f9d09fc847cac3c6f5d4e4,3103
 - completed:
     hackage: tasty-1.3.1@sha256:01e35c97f7ee5ccbc28f21debea02a38cd010d53b4c3087f5677c5d06617a507,2520
     pantry-tree:
@@ -47,56 +47,63 @@ packages:
   original:
     hackage: tasty-mgolden-0.0.1@sha256:07fadb592cde353c386c5f38cff75539a5675e9350776ed6f4f0a70247427a78,4214
 - completed:
+    hackage: unliftio-core-0.2.0.1@sha256:9b3e44ea9aacacbfc35b3b54015af450091916ac3618a41868ebf6546977659a,1082
+    pantry-tree:
+      size: 328
+      sha256: e81c5a1e82ec2cd68cbbbec9cd60567363abe02257fa1370a906f6754b6818b8
+  original:
+    hackage: unliftio-core-0.2.0.1@sha256:9b3e44ea9aacacbfc35b3b54015af450091916ac3618a41868ebf6546977659a,1082
+- completed:
     name: cbt
     version: 0.1.0
     git: https://github.com/mbj/cbt
     pantry-tree:
-      size: 1088
-      sha256: 3ad5009dc62031a9a73c070e5f490ec88a15c7b6ea912ea4d682fc34f2000cb7
-    commit: 30da53a4854c01bf9a9282023fd3f3e424bdf9f4
+      size: 1462
+      sha256: d24da1571c056001a39d541f34e6862e004d849e003007ee3c87ae7ba5f40e2a
+    commit: 8aa32616d80d331dedf5438d8de09c1309c6040f
   original:
     git: https://github.com/mbj/cbt
-    commit: 30da53a4854c01bf9a9282023fd3f3e424bdf9f4
+    commit: 8aa32616d80d331dedf5438d8de09c1309c6040f
 - completed:
     name: dbt
     version: 0.1.0
     git: https://github.com/mbj/dbt
     pantry-tree:
-      size: 1218
-      sha256: da1a503e3e0f32d109f4d81e8a04213c3c65ac4b83fd89f0c7f7cfa1713562c6
-    commit: ec1269e973ee2cf3c3ce8d89998c601a0f45d2ff
+      size: 1410
+      sha256: 9f94a6319ebe0cf94bfce0fe27542963bd80e98a884fbc36b351f179f0a1b719
+    commit: 5a5ff815cb9ac2c904a254fe452e0a2769be2827
   original:
     git: https://github.com/mbj/dbt
-    commit: ec1269e973ee2cf3c3ce8d89998c601a0f45d2ff
+    commit: 5a5ff815cb9ac2c904a254fe452e0a2769be2827
 - completed:
     subdir: colog
     name: mrio-colog
     version: 0.0.1
     git: https://github.com/strainge/mrio
     pantry-tree:
-      size: 467
-      sha256: a9095ddb17e2e9bc9f8e65d48271ebc1b3d4940725d28dd2a684127e073c8995
-    commit: 90e56a8ed9951244545b639f1c678c19d34c631e
+      size: 544
+      sha256: d7578ba04304fbfd95559aff64126e0d9fc26426209eb6d8e4bdb644a58e99ce
+    commit: 1bca68bd417b77d4aef02940c84929a0f9a965ac
   original:
     subdir: colog
     git: https://github.com/strainge/mrio
-    commit: 90e56a8ed9951244545b639f1c678c19d34c631e
+    commit: 1bca68bd417b77d4aef02940c84929a0f9a965ac
 - completed:
     subdir: core
     name: mrio-core
     version: 0.0.1
     git: https://github.com/strainge/mrio
     pantry-tree:
-      size: 337
-      sha256: bc73498803538b6cf0403b6cd57c7c11b6e061f618fe14a9efc088bcaf19bff5
-    commit: 90e56a8ed9951244545b639f1c678c19d34c631e
+      size: 414
+      sha256: 5e26a5e7ca17980ba4dafe94c9df5f99125b7713f7477863d3c2d938e7eafd1c
+    commit: 1bca68bd417b77d4aef02940c84929a0f9a965ac
   original:
     subdir: core
     git: https://github.com/strainge/mrio
-    commit: 90e56a8ed9951244545b639f1c678c19d34c631e
+    commit: 1bca68bd417b77d4aef02940c84929a0f9a965ac
 snapshots:
 - completed:
-    size: 532386
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/17.yaml
-    sha256: d3ee1ae797cf63189c95cf27f00700304946c5cb3c1e6a82001cd6584a221e1b
-  original: lts-16.17
+    size: 532414
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/22.yaml
+    sha256: e483fb88549fc0f454c190979bf35ac91c7aceff2c0e71e7d8edd11842d772d8
+  original: lts-16.22

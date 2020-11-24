@@ -28,7 +28,6 @@ dependencies:
 - typed-process        ^>= 0.2
 - unix                 ^>= 2.7
 - unliftio             ^>= 0.2
-- unliftio-core        ^>= 0.1
 
 library:
   source-dirs: src
@@ -87,5 +86,5 @@ tests:
     - -threaded
     - -with-rtsopts=-N
     dependencies:
-    - devtools ^>= 0.0.1
+    - devtools ^>= 0.1.0
     - pgt

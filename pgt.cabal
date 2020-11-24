@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 44f28d1172d7e0d65a9557acb9c8387b88196b3f223b62be1a500306425abf68
+-- hash: 3dc5d2e8037e3869a84571afd4984c239371328ba1260a863c2e894b6a20b4d2
 
 name:           pgt
 version:        0.0.1
@@ -59,7 +59,6 @@ library
     , typed-process >=0.2 && <0.3
     , unix >=2.7 && <2.8
     , unliftio >=0.2 && <0.3
-    , unliftio-core >=0.1 && <0.2
   default-language: Haskell2010
 
 executable pgt
@@ -92,7 +91,6 @@ executable pgt
     , typed-process >=0.2 && <0.3
     , unix >=2.7 && <2.8
     , unliftio >=0.2 && <0.3
-    , unliftio-core >=0.1 && <0.2
   default-language: Haskell2010
 
 test-suite test
@@ -109,7 +107,7 @@ test-suite test
     , containers >=0.6 && <0.7
     , conversions >=0.0.3 && <0.1
     , dbt >=0.1.0 && <0.2
-    , devtools >=0.0.1 && <0.1
+    , devtools >=0.1.0 && <0.2
     , directory >=1.3 && <1.4
     , filepath >=1.4 && <1.5
     , mprelude >=0.2.0 && <0.3
@@ -125,5 +123,4 @@ test-suite test
     , typed-process >=0.2 && <0.3
     , unix >=2.7 && <2.8
     , unliftio >=0.2 && <0.3
-    , unliftio-core >=0.1 && <0.2
   default-language: Haskell2010
