@@ -106,7 +106,7 @@ perform = \case
       -> RemoteOperation
       -> RIO env RemoteOperationResult
     update
-      instanceSpec@InstanceSpec{..}
+      instanceSpec
       remoteOperation@RemoteOperation{..} =
         catchJust handleNoUpdateError
           (doUpdate >> waitFor remoteOperation)

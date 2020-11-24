@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a315a385b743b44de379ca9a722d34a8f56063a8596e16cae79ad8b66de216bc
+-- hash: dcf17cbb1b050b737593b2ab064007b28fc6017584df7a099c0085238becccc0
 
 name:           stack-deploy
-version:        0.0.0.1
+version:        0.0.1
 synopsis:       Utilities around cloudformation templates
 homepage:       https://github.com/mbj/stack-deploy
 bug-reports:    https://github.com/mbj/stack-deploy/issues
@@ -54,7 +54,7 @@ library
     , amazonka-core ==1.6.1
     , amazonka-s3 ==1.6.1
     , attoparsec >=0.13 && <0.14
-    , base >=4.12 && >=4.13 && <4.14
+    , base >=4.12 && <4.13 || >=4.13 && <4.14 || >=4.14 && <4.15
     , bytestring >=0.10 && <0.11
     , conduit >=1.3 && <1.4
     , containers >=0.6 && <0.7
@@ -63,7 +63,7 @@ library
     , filepath >=1.4 && <1.5
     , hashable >=1.2 && >=1.3 && <1.4
     , http-types >=0.12 && <0.13
-    , lens >=4.17 && >=4.18 && <4.19
+    , lens >=4.17 && <4.18 || >=4.18 && <4.19 || >=4.19 && <4.20
     , mprelude >=0.2.0 && <0.3
     , mrio-amazonka >=0.0.1 && <0.1
     , mrio-core >=0.0.1 && <0.1
@@ -71,14 +71,13 @@ library
     , optparse-applicative >=0.14 && >=0.15 && <0.16
     , random >=1.1 && <1.2
     , source-constraints >=0.0.1 && <0.1
-    , stratosphere >=0.48 && <1.0
+    , stratosphere >=0.59 && <0.60
     , tasty >=1.3 && <1.4
     , tasty-mgolden >=0.0.1 && <0.1
     , text >=1.2 && <1.3
     , text-conversions >=0.3 && <0.4
     , time >=1.8 && >=1.9 && <1.10
     , unliftio >=0.2 && <0.3
-    , unliftio-core >=0.1 && <0.2
     , unordered-containers >=0.2 && <0.3
     , vector >=0.12 && <0.13
   default-language: Haskell2010
@@ -98,17 +97,17 @@ test-suite devtools
     , amazonka-core ==1.6.1
     , amazonka-s3 ==1.6.1
     , attoparsec >=0.13 && <0.14
-    , base >=4.12 && >=4.13 && <4.14
+    , base >=4.12 && <4.13 || >=4.13 && <4.14 || >=4.14 && <4.15
     , bytestring >=0.10 && <0.11
     , conduit >=1.3 && <1.4
     , containers >=0.6 && <0.7
     , conversions >=0.0.3 && <0.1
-    , devtools >=0.0.3 && <0.1
+    , devtools >=0.1.0 && <0.2
     , exceptions >=0.10 && <0.11
     , filepath >=1.4 && <1.5
     , hashable >=1.2 && >=1.3 && <1.4
     , http-types >=0.12 && <0.13
-    , lens >=4.17 && >=4.18 && <4.19
+    , lens >=4.17 && <4.18 || >=4.18 && <4.19 || >=4.19 && <4.20
     , mprelude >=0.2.0 && <0.3
     , mrio-amazonka >=0.0.1 && <0.1
     , mrio-core >=0.0.1 && <0.1
@@ -116,14 +115,13 @@ test-suite devtools
     , optparse-applicative >=0.14 && >=0.15 && <0.16
     , random >=1.1 && <1.2
     , source-constraints >=0.0.1 && <0.1
-    , stratosphere >=0.48 && <1.0
+    , stratosphere >=0.59 && <0.60
     , tasty >=1.3 && <1.4
     , tasty-mgolden >=0.0.1 && <0.1
     , text >=1.2 && <1.3
     , text-conversions >=0.3 && <0.4
     , time >=1.8 && >=1.9 && <1.10
     , unliftio >=0.2 && <0.3
-    , unliftio-core >=0.1 && <0.2
     , unordered-containers >=0.2 && <0.3
     , vector >=0.12 && <0.13
   default-language: Haskell2010
