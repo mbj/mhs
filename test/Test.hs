@@ -16,19 +16,18 @@ main = do
   Text.putStrLn ""
   success <- PGT.expand selectors
 
-  CBT.runDefaultEnvironment $
-    DBT.withDatabaseContainer (CBT.Prefix "pgt") $ \pgConfig -> do
+  CBT.runDefaultEnvironment $ do
+    containerName <- CBT.nextContainerName $ CBT.Prefix "pgt"
+    DBT.withDatabaseContainer containerName $ \pgConfig -> do
       let adminConfig = pgConfig { Postgresql.databaseName = Postgresql.DatabaseName "template1" }
       liftIO $ setupSchema adminConfig
-      config <- PGT.configure adminConfig empty
+      config   <- PGT.configure adminConfig empty
+      devtools <- liftIO $ Devtools.testTree Devtools.defaultConfig
       liftIO . Tasty.defaultMain $
         Tasty.testGroup ""
           [ devtools
           , PGT.testTree config success
           ]
-
-devtools :: Tasty.TestTree
-devtools = Devtools.testTree Devtools.defaultConfig
 
 setupSchema :: Postgresql.ClientConfig -> IO ()
 setupSchema pgConfig = do
