@@ -19,12 +19,12 @@ packages:
   original:
     hackage: devtools-0.1.0@sha256:c5898fe567d610492cc140495f0828c55e64e7c1b28dc2b1b9a84cc5f6dc7c39,3148
 - completed:
-    hackage: fast-builder-0.1.2.0@sha256:d01db8a5f1ac262e2db0375c47e46660c67ad4145bef64cc7303ade096e461ee,2801
+    hackage: fast-builder-0.1.2.1@sha256:6e3148d9ac21e5ec900fa59d1d65322e6b4c0491f19b53bdbe093186a519eb9f,2791
     pantry-tree:
-      size: 1058
-      sha256: b38174b316e6609a6a45da8989470556c8450e87f60f294ed709dc50d905de67
+      size: 986
+      sha256: 6b1f7822bdc4b8905fd871929f5ecc5a337588f83d858079abce3b6393c6d1e4
   original:
-    hackage: fast-builder-0.1.2.0@sha256:d01db8a5f1ac262e2db0375c47e46660c67ad4145bef64cc7303ade096e461ee,2801
+    hackage: fast-builder-0.1.2.1@sha256:6e3148d9ac21e5ec900fa59d1d65322e6b4c0491f19b53bdbe093186a519eb9f,2791
 - completed:
     hackage: hasql-th-0.4.0.8@sha256:e77af01c354fcebb0fc8358a4bb2f7b361329bce28f783d8d6b17fbd5fa43279,2245
     pantry-tree:
@@ -33,12 +33,12 @@ packages:
   original:
     hackage: hasql-th-0.4.0.8@sha256:e77af01c354fcebb0fc8358a4bb2f7b361329bce28f783d8d6b17fbd5fa43279,2245
 - completed:
-    hackage: headed-megaparsec-0.1.0.4@sha256:2888428f8cee84088b196639a2b5d7741d98caaeaa7a68662e54031f0dbf4655,1569
+    hackage: headed-megaparsec-0.2@sha256:53e0fca4b30bc568f0dfae5b97abe7967939c8a9ee00f30bc99936d75181dd72,1566
     pantry-tree:
       size: 383
-      sha256: 8babe7ad5e12f6569cf0bd7cac342b6f1a1669643469383e41137c61499e2120
+      sha256: 4277a2ab79fd6da7cc4fb01c55426322dffe4a53cdf80ef66d033034dc43d109
   original:
-    hackage: headed-megaparsec-0.1.0.4@sha256:2888428f8cee84088b196639a2b5d7741d98caaeaa7a68662e54031f0dbf4655,1569
+    hackage: headed-megaparsec-0.2@sha256:53e0fca4b30bc568f0dfae5b97abe7967939c8a9ee00f30bc99936d75181dd72,1566
 - completed:
     hackage: mprelude-0.2.1@sha256:c7cfd52b86c4a5469cffd84e84e96157c99ef05173b14cf309498b291c867a8f,2968
     pantry-tree:
@@ -47,12 +47,12 @@ packages:
   original:
     hackage: mprelude-0.2.1@sha256:c7cfd52b86c4a5469cffd84e84e96157c99ef05173b14cf309498b291c867a8f,2968
 - completed:
-    hackage: postgresql-syntax-0.3.0.2@sha256:f676be8eaade863bd5ea0a3bd0a60c05e0bf0c324a0cb2e05355fe684b879418,4169
+    hackage: postgresql-syntax-0.3.0.3@sha256:b93a73c388811e331327561d85ed268f232be6c7f8f90ff27b2091c64c6aea90,4170
     pantry-tree:
       size: 1141
-      sha256: 9aefa646bdcd3b6187b4076392dcb90d40b3b40fb10e08eea6592be364a8c6cb
+      sha256: 59f0edcb31c8b30432c1fef4107805cc9e20e7cc2e3d5e2f819789c556c6a386
   original:
-    hackage: postgresql-syntax-0.3.0.2@sha256:f676be8eaade863bd5ea0a3bd0a60c05e0bf0c324a0cb2e05355fe684b879418,4169
+    hackage: postgresql-syntax-0.3.0.3@sha256:b93a73c388811e331327561d85ed268f232be6c7f8f90ff27b2091c64c6aea90,4170
 - completed:
     hackage: source-constraints-0.0.2@sha256:5746921c48cde021cd9120fc917dd21768fa6f3716f9d09fc847cac3c6f5d4e4,3103
     pantry-tree:
@@ -68,19 +68,12 @@ packages:
   original:
     hackage: tasty-1.3.1@sha256:01e35c97f7ee5ccbc28f21debea02a38cd010d53b4c3087f5677c5d06617a507,2520
 - completed:
-    hackage: tasty-mgolden-0.0.1@sha256:07fadb592cde353c386c5f38cff75539a5675e9350776ed6f4f0a70247427a78,4214
+    hackage: tasty-mgolden-0.0.2@sha256:f86dc1dd628647ec0415ec263a2e6519a7529df64bf6c03259fd44e3d7ef4540,4473
     pantry-tree:
-      size: 338
-      sha256: 9cd24c3a02396dd93ed7d57df1d9668a2377d128e413db5ff89d82ffdfc830fa
+      size: 387
+      sha256: bfaec42a01b0be9e1a9e3158fe1e777c19c400cf1f29a1df28be970899762a5b
   original:
-    hackage: tasty-mgolden-0.0.1@sha256:07fadb592cde353c386c5f38cff75539a5675e9350776ed6f4f0a70247427a78,4214
-- completed:
-    hackage: unliftio-core-0.2.0.1@sha256:9b3e44ea9aacacbfc35b3b54015af450091916ac3618a41868ebf6546977659a,1082
-    pantry-tree:
-      size: 328
-      sha256: e81c5a1e82ec2cd68cbbbec9cd60567363abe02257fa1370a906f6754b6818b8
-  original:
-    hackage: unliftio-core-0.2.0.1@sha256:9b3e44ea9aacacbfc35b3b54015af450091916ac3618a41868ebf6546977659a,1082
+    hackage: tasty-mgolden-0.0.2@sha256:f86dc1dd628647ec0415ec263a2e6519a7529df64bf6c03259fd44e3d7ef4540,4473
 - completed:
     name: cbt
     version: 0.1.0
@@ -131,7 +124,7 @@ packages:
     commit: 1bca68bd417b77d4aef02940c84929a0f9a965ac
 snapshots:
 - completed:
-    size: 532414
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/22.yaml
-    sha256: e483fb88549fc0f454c190979bf35ac91c7aceff2c0e71e7d8edd11842d772d8
-  original: lts-16.22
+    size: 553330
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2020/11/19.yaml
+    sha256: 7ae41d7d9026078cbc28fa535936498eaf604f93b04f9c9c61224312c7f47758
+  original: nightly-2020-11-19

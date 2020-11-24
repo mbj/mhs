@@ -39,7 +39,7 @@ containers 0.6.2.1
 contravariant 1.5.2
 contravariant-extras 0.3.5.2
 control-bool 0.2.1
-conversions 0.0.3
+conversions 0.0.4
 cpphs 1.20.9.1
 cryptohash-md5 0.11.100.1
 cryptohash-sha1 0.11.100.1
@@ -59,7 +59,7 @@ db-migrations 0.0.1
 dbt 0.1.0
 deepseq 1.4.4.0
 deferred-folds 0.9.11
-devtools 0.0.3
+devtools 0.1.0
 directory 1.3.6.0
 distributive 0.6.2
 dlist 0.8.0.8
@@ -90,7 +90,7 @@ hlint 3.1.6
 hpc 0.6.0.3
 hscolour 1.24.4
 integer-gmp 1.0.2.0
-integer-logarithms 1.0.3
+integer-logarithms 1.0.3.1
 libyaml 0.1.2
 loch-th 0.2.2
 markdown-unlit 0.5.0
@@ -98,7 +98,7 @@ math-functions 0.3.4.1
 megaparsec 8.0.0
 memory 0.15.0
 mono-traversable 1.0.15.1
-mprelude 0.2.0
+mprelude 0.2.1
 mrio-colog 0.0.1
 mrio-core 0.0.1
 mtl 2.2.2
@@ -115,7 +115,7 @@ pathtype 0.8.1.1
 placeholders 0.1
 polyparse 1.13
 postgresql-binary 0.12.2
-postgresql-libpq 0.9.4.2
+postgresql-libpq 0.9.4.3
 postgresql-syntax 0.3.0.2
 pretty 1.1.3.6
 primitive 0.7.0.1
@@ -129,7 +129,7 @@ scientific 0.3.6.2
 selective 0.4.1.1
 semigroupoids 5.3.4
 semigroups 0.19.1
-source-constraints 0.0.1
+source-constraints 0.0.2
 split 0.2.3.4
 splitmix 0.0.5
 stm 2.5.0.0
@@ -151,7 +151,7 @@ th-abstraction 0.3.2.0
 th-lift 0.8.2
 th-lift-instances 0.1.17
 time 1.9.3
-time-compat 1.9.3
+time-compat 1.9.4
 torsor 0.1
 transformers 0.5.6.2
 transformers-compat 0.6.6
@@ -159,10 +159,10 @@ type-hint 0.1
 typed-process 0.2.6.0
 typerep-map 0.3.3.0
 unbounded-delays 0.1.1.0
-uniplate 1.6.12
+uniplate 1.6.13
 unix 2.7.2.2
-unliftio 0.2.13
-unliftio-core 0.1.2.0
+unliftio 0.2.13.1
+unliftio-core 0.2.0.1
 unordered-containers 0.2.10.0
 utf8-string 1.0.1.1
 utility-ht 0.0.15
