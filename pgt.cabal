@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 3dc5d2e8037e3869a84571afd4984c239371328ba1260a863c2e894b6a20b4d2
+-- hash: a1d1bc840f3789413889c6f99e56e4825e24c26fd0a6e38935f5d1ae84a755b2
 
 name:           pgt
 version:        0.0.1
@@ -39,7 +39,7 @@ library
   default-extensions: CPP DataKinds DeriveAnyClass DeriveGeneric DerivingStrategies DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving MultiParamTypeClasses NoImplicitPrelude OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables StrictData TemplateHaskell
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin-opt=SourceConstraints:local:Pgt -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
-      base >=4.13 && <4.14
+      base >=4.13 && <5
     , bytestring >=0.10 && <0.11
     , cbt >=0.1.0 && <0.2
     , containers >=0.6 && <0.7
@@ -70,7 +70,7 @@ executable pgt
   default-extensions: CPP DataKinds DeriveAnyClass DeriveGeneric DerivingStrategies DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving MultiParamTypeClasses NoImplicitPrelude OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables StrictData TemplateHaskell
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin-opt=SourceConstraints:local:Pgt -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      base >=4.13 && <4.14
+      base >=4.13 && <5
     , bytestring >=0.10 && <0.11
     , cbt >=0.1.0 && <0.2
     , containers >=0.6 && <0.7
@@ -101,7 +101,7 @@ test-suite test
   default-extensions: CPP DataKinds DeriveAnyClass DeriveGeneric DerivingStrategies DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving MultiParamTypeClasses NoImplicitPrelude OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables StrictData TemplateHaskell
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin-opt=SourceConstraints:local:Pgt -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      base >=4.13 && <4.14
+      base >=4.13 && <5
     , bytestring >=0.10 && <0.11
     , cbt >=0.1.0 && <0.2
     , containers >=0.6 && <0.7
