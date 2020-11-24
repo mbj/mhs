@@ -4,7 +4,7 @@ cabal-version: 1.18
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 8744f5f37c4585f95873e443ba29b672154927b87891ca5dd4230fb8fb269303
+-- hash: 091da212e02159ef8ca8187fc0b0bc6db243b1450ed55ddcbc27757fc9b757c0
 
 name:           db-migrations
 version:        0.0.1
@@ -17,8 +17,6 @@ copyright:      2020 Markus Schirp
 license:        AllRightsReserved
 license-file:   LICENSE
 build-type:     Simple
-extra-source-files:
-    test/stack-dependencies.txt
 extra-doc-files:
     README.md
     ChangeLog.md
@@ -39,63 +37,61 @@ library
   default-extensions: DerivingStrategies DuplicateRecordFields FlexibleContexts NoImplicitPrelude OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables TypeApplications
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields
   build-depends:
-      base >=4.12 && >=4.13 && <4.14
+      base >=4.11 && <5
     , bytestring >=0.10 && <0.11
     , cbt >=0.1.0 && <0.2
     , containers >=0.6 && <0.7
-    , control-bool >=0.2.1 && <0.3
+    , control-bool >=0.2 && <0.3
     , conversions >=0.0.3 && <0.1
-    , cryptonite >=0.25 && >=0.26 && <0.27
+    , cryptonite
     , dbt >=0.1.0 && <0.2
     , hasql >=1.4 && <1.5
-    , hasql-th >=0.4.0.8 && <0.5
-    , hasql-transaction >=1.0.0.1 && <1.1
-    , memory >=0.15.0 && <0.16
-    , mprelude >=0.2.0 && <0.3
+    , hasql-th
+    , hasql-transaction >=1.0 && <1.1
+    , memory >=0.15 && <0.16
+    , mprelude >=0.2 && <0.3
     , mrio-core >=0.0.1 && <0.1
     , network >=3.1 && <3.2
     , optparse-applicative >=0.15 && <0.16
     , pathtype >=0.8 && <0.9
     , source-constraints >=0.0.1 && <0.1
-    , template-haskell >=2.14 && >=2.15 && <2.16
+    , template-haskell >=2.14 && <3
     , text >=1.2 && <1.3
     , th-lift-instances >=0.1 && <0.2
     , typed-process >=0.2 && <0.3
     , unliftio >=0.2 && <0.3
-    , unliftio-core >=0.1 && <0.2
   default-language: Haskell2010
 
 test-suite devtools
   type: exitcode-stdio-1.0
-  main-is: test/Devtools.hs
+  main-is: test/Test.hs
   other-modules:
       Paths_db_migrations
   default-extensions: DerivingStrategies DuplicateRecordFields FlexibleContexts NoImplicitPrelude OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables TypeApplications
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      base >=4.12 && >=4.13 && <4.14
+      base >=4.11 && <5
     , bytestring >=0.10 && <0.11
     , cbt >=0.1.0 && <0.2
     , containers >=0.6 && <0.7
-    , control-bool >=0.2.1 && <0.3
+    , control-bool >=0.2 && <0.3
     , conversions >=0.0.3 && <0.1
-    , cryptonite >=0.25 && >=0.26 && <0.27
+    , cryptonite
     , dbt >=0.1.0 && <0.2
-    , devtools >=0.0.3 && <0.1
+    , devtools >=0.1.0 && <0.2
     , hasql >=1.4 && <1.5
-    , hasql-th >=0.4.0.8 && <0.5
-    , hasql-transaction >=1.0.0.1 && <1.1
-    , memory >=0.15.0 && <0.16
-    , mprelude >=0.2.0 && <0.3
+    , hasql-th
+    , hasql-transaction >=1.0 && <1.1
+    , memory >=0.15 && <0.16
+    , mprelude >=0.2 && <0.3
     , mrio-core >=0.0.1 && <0.1
     , network >=3.1 && <3.2
     , optparse-applicative >=0.15 && <0.16
     , pathtype >=0.8 && <0.9
     , source-constraints >=0.0.1 && <0.1
-    , template-haskell >=2.14 && >=2.15 && <2.16
+    , template-haskell >=2.14 && <3
     , text >=1.2 && <1.3
     , th-lift-instances >=0.1 && <0.2
     , typed-process >=0.2 && <0.3
     , unliftio >=0.2 && <0.3
-    , unliftio-core >=0.1 && <0.2
   default-language: Haskell2010
