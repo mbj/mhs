@@ -1,15 +1,15 @@
 import MPrelude
 
 import qualified CBT
-import qualified DBT
-import qualified DBT.Postgresql       as Postgresql
-import qualified Data.Text.IO         as Text
+import qualified DBT.Postgresql           as Postgresql
+import qualified DBT.Postgresql.Container as DBT
+import qualified Data.Text.IO             as Text
 import qualified Devtools
 import qualified PGT
-import qualified PGT.Selector         as PGT
-import qualified System.Path          as Path
-import qualified System.Process.Typed as Process
-import qualified Test.Tasty           as Tasty
+import qualified PGT.Selector             as PGT
+import qualified System.Path              as Path
+import qualified System.Process.Typed     as Process
+import qualified Test.Tasty               as Tasty
 
 main :: IO ()
 main = do

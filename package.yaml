@@ -8,26 +8,25 @@ extra-source-files:
 - examples/*.sql.expected
 
 dependencies:
-- base                 >= 4.13 && <5
-- bytestring           ^>= 0.10
-- cbt                  ^>= 0.1.0
-- containers           ^>= 0.6
-- conversions          ^>= 0.0.3
-- dbt                  ^>= 0.1.0
-- directory            ^>= 1.3
-- filepath             ^>= 1.4
-- mprelude             ^>= 0.2.0
-- optparse-applicative ^>= 0.15
-- ordered-containers   ^>= 0.2
-- pathtype             ^>= 0.8.1
-- source-constraints   ^>= 0.0.1
-- tasty                ^>= 1.3.1
-- tasty-mgolden        ^>= 0.0.1
-- text                 ^>= 1.2
-- text-conversions     ^>= 0.3
-- typed-process        ^>= 0.2
-- unix                 ^>= 2.7
-- unliftio             ^>= 0.2
+- base                      >= 4.13 && <5
+- bytestring                ^>= 0.10
+- containers                ^>= 0.6
+- conversions               ^>= 0.0.3
+- dbt-postgresql-connection ^>= 0.1.0
+- directory                 ^>= 1.3
+- filepath                  ^>= 1.4
+- mprelude                  ^>= 0.2.0
+- optparse-applicative      ^>= 0.15
+- ordered-containers        ^>= 0.2
+- pathtype                  ^>= 0.8.1
+- source-constraints        ^>= 0.0.1
+- tasty                     ^>= 1.3.1
+- tasty-mgolden             ^>= 0.0.1
+- text                      ^>= 1.2
+- text-conversions          ^>= 0.3
+- typed-process             ^>= 0.2
+- unix                      ^>= 2.7
+- unliftio                  ^>= 0.2
 
 library:
   source-dirs: src
@@ -86,5 +85,7 @@ tests:
     - -threaded
     - -with-rtsopts=-N
     dependencies:
+    - cbt                      ^>= 0.1.0
+    - dbt-postgresql-container ^>= 0.1.0
     - devtools ^>= 0.1.0
     - pgt
