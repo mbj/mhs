@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a1d1bc840f3789413889c6f99e56e4825e24c26fd0a6e38935f5d1ae84a755b2
+-- hash: 2cd6c180a4d16988719407896d43cd694d95c4fefe70a65a5b811fc3846391fe
 
 name:           pgt
 version:        0.0.1
@@ -41,10 +41,9 @@ library
   build-depends:
       base >=4.13 && <5
     , bytestring >=0.10 && <0.11
-    , cbt >=0.1.0 && <0.2
     , containers >=0.6 && <0.7
     , conversions >=0.0.3 && <0.1
-    , dbt >=0.1.0 && <0.2
+    , dbt-postgresql-connection >=0.1.0 && <0.2
     , directory >=1.3 && <1.4
     , filepath >=1.4 && <1.5
     , mprelude >=0.2.0 && <0.3
@@ -72,10 +71,9 @@ executable pgt
   build-depends:
       base >=4.13 && <5
     , bytestring >=0.10 && <0.11
-    , cbt >=0.1.0 && <0.2
     , containers >=0.6 && <0.7
     , conversions >=0.0.3 && <0.1
-    , dbt >=0.1.0 && <0.2
+    , dbt-postgresql-connection >=0.1.0 && <0.2
     , directory >=1.3 && <1.4
     , filepath >=1.4 && <1.5
     , mprelude >=0.2.0 && <0.3
@@ -106,7 +104,8 @@ test-suite test
     , cbt >=0.1.0 && <0.2
     , containers >=0.6 && <0.7
     , conversions >=0.0.3 && <0.1
-    , dbt >=0.1.0 && <0.2
+    , dbt-postgresql-connection >=0.1.0 && <0.2
+    , dbt-postgresql-container >=0.1.0 && <0.2
     , devtools >=0.1.0 && <0.2
     , directory >=1.3 && <1.4
     , filepath >=1.4 && <1.5
