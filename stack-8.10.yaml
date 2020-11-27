@@ -11,11 +11,13 @@ extra-deps:
 - tasty-1.3.1@sha256:01e35c97f7ee5ccbc28f21debea02a38cd010d53b4c3087f5677c5d06617a507,2520
 - tasty-mgolden-0.0.2@sha256:f86dc1dd628647ec0415ec263a2e6519a7529df64bf6c03259fd44e3d7ef4540,4473
 - git: https://github.com/mbj/cbt
-  commit: 8aa32616d80d331dedf5438d8de09c1309c6040f
+  commit: de64766a78c59d5c8e022f788c40be0f9168f673
 - git: https://github.com/mbj/dbt
-  commit: 5a5ff815cb9ac2c904a254fe452e0a2769be2827
+  commit: b0aed0ea9541506780d4d459e268f213be979917
+  subdirs:
+  - postgresql-connection
+  - postgresql-container
 - git: https://github.com/pacthq/mrio
   commit: 1bca68bd417b77d4aef02940c84929a0f9a965ac
   subdirs:
   - core
-  - colog

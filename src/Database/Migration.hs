@@ -15,7 +15,6 @@ module Database.Migration
 where
 
 import Control.Bool (guard', whenM)
-import DBT.Session
 import Data.Bifunctor (bimap)
 import Database.Migration.Prelude
 import GHC.Enum (succ)
@@ -26,7 +25,7 @@ import Text.Read (readMaybe)
 
 import qualified Crypto.Hash                as Hash
 import qualified DBT.Postgresql             as Postgresql
-import qualified DBT.Session                as DBT
+import qualified DBT.Postgresql.Session     as DBT
 import qualified Data.ByteArray             as BA
 import qualified Data.ByteString            as BS
 import qualified Data.ByteString.Lazy       as LBS
@@ -94,7 +93,7 @@ dumpSchema pgDump = do
 loadSchema :: DBT.Session env => RIO env ()
 loadSchema = do
   printStatus $ "Loading schema from " <> schemaFileString
-  runSession $ Transaction.transaction
+  DBT.runSession $ Transaction.transaction
     Transaction.Serializable
     Transaction.Write =<<
       Transaction.sql <$> liftIO (BS.readFile schemaFileString)
@@ -124,7 +123,7 @@ new = do
     max xs = if Foldable.null xs then 0 else Foldable.maximum xs
 
 setup :: DBT.Session env => RIO env ()
-setup = runSession $ Hasql.sql
+setup = DBT.runSession $ Hasql.sql
   [uncheckedSql|
     CREATE TABLE IF NOT EXISTS
       schema_migrations
@@ -140,7 +139,7 @@ printMigrationFile MigrationFile{..} = printStatus $ Path.toString path
 applyMigration :: DBT.Session env => MigrationFile -> RIO env ()
 applyMigration MigrationFile{..} = do
   printStatus $ "Applying migration: " <> Path.toString path
-  runSession . Transaction.transaction Transaction.Serializable Transaction.Write $ do
+  DBT.runSession . Transaction.transaction Transaction.Serializable Transaction.Write $ do
     Transaction.sql sql
 
     Transaction.statement (BS.pack $ BA.unpack digest, convertUnsafe index)
@@ -155,7 +154,7 @@ applyMigration MigrationFile{..} = do
   printStatus ("Success" :: Text)
 
 readAppliedMigrations :: DBT.Session env => RIO env [AppliedMigration]
-readAppliedMigrations = runSession $ do
+readAppliedMigrations = DBT.runSession $ do
   rows <- Foldable.toList <$> Hasql.statement ()
     [vectorStatement|
       SELECT

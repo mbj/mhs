@@ -87,22 +87,37 @@ packages:
     git: https://github.com/mbj/cbt
     pantry-tree:
       size: 1462
-      sha256: d24da1571c056001a39d541f34e6862e004d849e003007ee3c87ae7ba5f40e2a
-    commit: 8aa32616d80d331dedf5438d8de09c1309c6040f
+      sha256: 6f6e301df7e87095415c9cb2082f6020853fb987b92fa89ec8f91fad89268d88
+    commit: de64766a78c59d5c8e022f788c40be0f9168f673
   original:
     git: https://github.com/mbj/cbt
-    commit: 8aa32616d80d331dedf5438d8de09c1309c6040f
+    commit: de64766a78c59d5c8e022f788c40be0f9168f673
 - completed:
-    name: dbt
+    subdir: postgresql-connection
+    name: dbt-postgresql-connection
     version: 0.1.0
     git: https://github.com/mbj/dbt
     pantry-tree:
-      size: 1410
-      sha256: 9f94a6319ebe0cf94bfce0fe27542963bd80e98a884fbc36b351f179f0a1b719
-    commit: 5a5ff815cb9ac2c904a254fe452e0a2769be2827
+      size: 599
+      sha256: c466ba237e459ca3fdc4dae0f991ea76aac339430a27e53722d9c3eb34907301
+    commit: b0aed0ea9541506780d4d459e268f213be979917
   original:
+    subdir: postgresql-connection
     git: https://github.com/mbj/dbt
-    commit: 5a5ff815cb9ac2c904a254fe452e0a2769be2827
+    commit: b0aed0ea9541506780d4d459e268f213be979917
+- completed:
+    subdir: postgresql-container
+    name: dbt-postgresql-container
+    version: 0.1.0
+    git: https://github.com/mbj/dbt
+    pantry-tree:
+      size: 705
+      sha256: 5cf5eed53b1beb3f880e4d076dcb8fae2867c998f1586fb1c1a58c543eeace73
+    commit: b0aed0ea9541506780d4d459e268f213be979917
+  original:
+    subdir: postgresql-container
+    git: https://github.com/mbj/dbt
+    commit: b0aed0ea9541506780d4d459e268f213be979917
 - completed:
     subdir: core
     name: mrio-core
@@ -114,19 +129,6 @@ packages:
     commit: 1bca68bd417b77d4aef02940c84929a0f9a965ac
   original:
     subdir: core
-    git: https://github.com/pacthq/mrio
-    commit: 1bca68bd417b77d4aef02940c84929a0f9a965ac
-- completed:
-    subdir: colog
-    name: mrio-colog
-    version: 0.0.1
-    git: https://github.com/pacthq/mrio
-    pantry-tree:
-      size: 544
-      sha256: d7578ba04304fbfd95559aff64126e0d9fc26426209eb6d8e4bdb644a58e99ce
-    commit: 1bca68bd417b77d4aef02940c84929a0f9a965ac
-  original:
-    subdir: colog
     git: https://github.com/pacthq/mrio
     commit: 1bca68bd417b77d4aef02940c84929a0f9a965ac
 snapshots:
