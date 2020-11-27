@@ -1,8 +1,8 @@
-module DBT.CLI (main) where
+module DBT.Postgresql.Container.CLI (main) where
 
 import Control.Monad (join)
-import DBT
-import DBT.Prelude
+import DBT.Postgresql.Container
+import DBT.Postgresql.Prelude
 import Options.Applicative
 
 import qualified CBT

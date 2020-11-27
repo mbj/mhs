@@ -4,18 +4,17 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 48d49ca38c6d48fec9e601bc310cf042f97c215f77317ab98e7fbcedef10c3f1
+-- hash: 6d2d3527c7b088c90e38637bca5fb48e4d45f7c87af2ec499a05fefaeb4cba46
 
-name:           dbt
+name:           dbt-postgresql-container
 version:        0.1.0
-synopsis:       A database toolkit
+synopsis:       DBT Postgresql container tool
 homepage:       https://github.com/mbj/dbt
 bug-reports:    https://github.com/mbj/dbt/issues
 author:         Markus Schirp
 maintainer:     mbj@schirp-dso.com
 copyright:      2019 Markus Schirp
 license:        BSD3
-license-file:   LICENSE
 build-type:     Simple
 
 source-repository head
@@ -24,16 +23,11 @@ source-repository head
 
 library
   exposed-modules:
-      DBT
-      DBT.CLI
-      DBT.Connection
-      DBT.Postgresql
-      DBT.Session
+      DBT.Postgresql.Container
+      DBT.Postgresql.Container.CLI
   other-modules:
-      DBT.Prelude
-      DBT.TH
-      DBT.Wait
-      Paths_dbt
+      DBT.Postgresql.Wait
+      Paths_dbt_postgresql_container
   hs-source-dirs:
       src
   default-extensions: AllowAmbiguousTypes DataKinds DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving KindSignatures LambdaCase MonoLocalBinds MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TypeApplications
@@ -45,6 +39,7 @@ library
     , co-log >=0.4 && <0.5
     , containers >=0.6 && <0.7
     , conversions >=0.0.3 && <0.1
+    , dbt-postgresql-connection >=0.1.0 && <0.2
     , hasql >=1.4 && <1.5
     , mprelude >=0.2.0 && <0.3
     , mrio-colog >=0.0.1 && <0.1
@@ -65,7 +60,7 @@ library
 executable dbt
   main-is: Main.hs
   other-modules:
-      Paths_dbt
+      Paths_dbt_postgresql_container
   hs-source-dirs:
       app
   default-extensions: AllowAmbiguousTypes DataKinds DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving KindSignatures LambdaCase MonoLocalBinds MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TypeApplications
@@ -77,7 +72,8 @@ executable dbt
     , co-log >=0.4 && <0.5
     , containers >=0.6 && <0.7
     , conversions >=0.0.3 && <0.1
-    , dbt
+    , dbt-postgresql-connection >=0.1.0 && <0.2
+    , dbt-postgresql-container
     , hasql >=1.4 && <1.5
     , mprelude >=0.2.0 && <0.3
     , mrio-colog >=0.0.1 && <0.1
@@ -99,7 +95,7 @@ test-suite test
   type: exitcode-stdio-1.0
   main-is: test/Test.hs
   other-modules:
-      Paths_dbt
+      Paths_dbt_postgresql_container
   default-extensions: AllowAmbiguousTypes DataKinds DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving KindSignatures LambdaCase MonoLocalBinds MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TypeApplications
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
@@ -109,7 +105,8 @@ test-suite test
     , co-log >=0.4 && <0.5
     , containers >=0.6 && <0.7
     , conversions >=0.0.3 && <0.1
-    , dbt
+    , dbt-postgresql-connection
+    , dbt-postgresql-container
     , devtools >=0.1.0 && <0.2
     , hasql >=1.4 && <1.5
     , mprelude >=0.2.0 && <0.3

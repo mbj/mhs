@@ -17,7 +17,7 @@ module DBT.Postgresql
   )
 where
 
-import DBT.Prelude
+import DBT.Postgresql.Prelude
 import Data.Maybe (catMaybes)
 import Data.Word (Word16)
 import Text.Read (readMaybe)
