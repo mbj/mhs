@@ -9,7 +9,7 @@ extra-deps:
 - tasty-mgolden-0.0.1@sha256:07fadb592cde353c386c5f38cff75539a5675e9350776ed6f4f0a70247427a78,4214
 - unliftio-core-0.2.0.1@sha256:9b3e44ea9aacacbfc35b3b54015af450091916ac3618a41868ebf6546977659a,1082
 - git: https://github.com/mbj/cbt
-  commit: 8aa32616d80d331dedf5438d8de09c1309c6040f
+  commit: fc41c0addfa8c07e2f35ad71933a2c68975fea45
 - git: https://github.com/pacthq/mrio
   commit: 0bd402ebdcf3ae4c114b878983b735bf8de34f99
   subdirs:
