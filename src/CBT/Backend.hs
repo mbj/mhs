@@ -353,16 +353,16 @@ runProc ContainerDefinition{..} = detachSilence $ backendProc @b containerArgume
       [
         [ "run"
         , "--name", convertText containerName
-        , "--workdir", Path.toString workDir
         ]
       , detachFlag
+      , workDirOptions
       , mountOptions
       , publishOptions
       , removeFlag
       , [ "--"
         , convertText imageName
         ]
-      ] <> [programName] <> programArguments
+      ] <> commandArguments
       where
         publishOptions :: [String]
         publishOptions = mconcat $ mkPublish <$> publishPorts
@@ -398,6 +398,13 @@ runProc ContainerDefinition{..} = detachSilence $ backendProc @b containerArgume
         detachFlag = case detach of
           Detach     -> ["--detach"]
           Foreground -> []
+
+        workDirOptions :: [String]
+        workDirOptions = maybe [] (("--workdir" :) . pure . Path.toString) workDir
+
+        commandArguments :: [String]
+        commandArguments =
+          maybe [] (\Command{..} -> convert <$> name:arguments) command
 
     detachSilence :: Proc -> Proc
     detachSilence =

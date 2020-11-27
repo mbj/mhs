@@ -49,17 +49,10 @@ testRun buildDefinition = do
 
   CBT.withContainerBuildRun
     buildDefinition
-    CBT.ContainerDefinition
-      { detach           = CBT.Foreground
-      , imageName        = getField @"imageName" buildDefinition
-      , mounts           = []
-      , programArguments = []
-      , programName      = "true"
-      , publishPorts     = []
-      , remove           = CBT.NoRemove
-      , removeOnRunFail  = CBT.Remove
-      , workDir          = Path.absDir "/"
-      , ..
+    (CBT.minimalContainerDefinition (getField @"imageName" buildDefinition) containerName)
+      { CBT.command = pure $ CBT.mkCommand "true"
+      , CBT.remove  = CBT.NoRemove
+      , CBT.detach  = CBT.Detach
       }
     (pure ())
 
