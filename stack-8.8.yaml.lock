@@ -59,11 +59,11 @@ packages:
     git: https://github.com/mbj/cbt
     pantry-tree:
       size: 1462
-      sha256: d24da1571c056001a39d541f34e6862e004d849e003007ee3c87ae7ba5f40e2a
-    commit: 8aa32616d80d331dedf5438d8de09c1309c6040f
+      sha256: 6f6e301df7e87095415c9cb2082f6020853fb987b92fa89ec8f91fad89268d88
+    commit: de64766a78c59d5c8e022f788c40be0f9168f673
   original:
     git: https://github.com/mbj/cbt
-    commit: 8aa32616d80d331dedf5438d8de09c1309c6040f
+    commit: de64766a78c59d5c8e022f788c40be0f9168f673
 - completed:
     subdir: colog
     name: mrio-colog
