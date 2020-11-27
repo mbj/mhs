@@ -32,17 +32,41 @@ data Mount = Mount
   , hostPath      :: Path.AbsDir
   }
 
+data Command = Command
+  { arguments :: [Text]
+  , name      :: Text
+  }
+
+data EnvVariable = EnvInherit Text | EnvSet Text Text
+
 data ContainerDefinition = ContainerDefinition
-  { containerName    :: ContainerName
-  , detach           :: Detach
-  , imageName        :: ImageName
-  , mounts           :: [Mount]
-  , programArguments :: [String]
-  , programName      :: String
-  , publishPorts     :: [PublishPort]
-  , remove           :: Remove
-  , removeOnRunFail  :: Remove
-  , workDir          :: Path.AbsDir
+  { command         :: Maybe Command
+  , containerName   :: ContainerName
+  , detach          :: Detach
+  , env             :: [EnvVariable]
+  , imageName       :: ImageName
+  , mounts          :: [Mount]
+  , publishPorts    :: [PublishPort]
+  , remove          :: Remove
+  , removeOnRunFail :: Remove
+  , workDir         :: Maybe Path.AbsDir
+  }
+
+mkCommand :: Text -> Command
+mkCommand name = Command { arguments = [], .. }
+
+minimalContainerDefinition :: ImageName -> ContainerName -> ContainerDefinition
+minimalContainerDefinition imageName containerName =
+  ContainerDefinition
+  { command         = empty
+  , detach          = Foreground
+  , env             = []
+  , mounts          = []
+  , publishPorts    = []
+  , remove          = Remove
+  , removeOnRunFail = Remove
+  , workDir         = empty
+  , ..
   }
 
 newtype ContainerName = ContainerName Text
