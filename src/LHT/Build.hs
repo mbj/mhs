@@ -107,6 +107,7 @@ withBuildContainer Config{..} action = do
       (CBT.minimalContainerDefinition (getField @"imageName" buildDefinition) containerName)
       { CBT.command = pure command
       , CBT.detach  = CBT.Foreground
+      , CBT.env     = [CBT.EnvInherit "STACK_YAML"]
       , CBT.remove  = CBT.NoRemove
       , CBT.workDir = pure containerProjectPath
       , CBT.mounts  = mounts
