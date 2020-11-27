@@ -1,4 +1,4 @@
-module DBT.Connection
+module DBT.Postgresql.Connection
   ( ConnectionEnv(..)
   , runConnectionEnv
   , withConnection
@@ -9,7 +9,7 @@ module DBT.Connection
 where
 
 import Control.Monad.Reader (ask)
-import DBT.Prelude
+import DBT.Postgresql.Prelude
 
 import qualified DBT.Postgresql     as Postgresql
 import qualified Data.ByteString    as BS

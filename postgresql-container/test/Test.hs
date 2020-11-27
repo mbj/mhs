@@ -1,14 +1,14 @@
 import MPrelude
 
 import qualified CBT
-import qualified DBT
-import qualified DBT.Postgresql       as Postgresql
-import qualified Data.ByteString.Lazy as LBS
-import qualified Data.Text.Encoding   as Text
+import qualified DBT.Postgresql           as Postgresql
+import qualified DBT.Postgresql.Container as DBT
+import qualified Data.ByteString.Lazy     as LBS
+import qualified Data.Text.Encoding       as Text
 import qualified Devtools
-import qualified System.Process.Typed as Process
-import qualified Test.Tasty           as Tasty
-import qualified Test.Tasty.MGolden   as Tasty
+import qualified System.Process.Typed     as Process
+import qualified Test.Tasty               as Tasty
+import qualified Test.Tasty.MGolden       as Tasty
 
 main :: IO ()
 main = do
@@ -20,7 +20,9 @@ main = do
 
 devtoolsConfig :: Devtools.Config
 devtoolsConfig = Devtools.defaultConfig
-  { Devtools.hlintArguments = ["-XTemplateHaskell", "-XTypeApplications"] }
+  { Devtools.hlintArguments = ["-XTemplateHaskell", "-XTypeApplications"]
+  , Devtools.targets        = [Devtools.Target "dbt-postgresql-container"]
+  }
 
 testDB :: Postgresql.ClientConfig -> Tasty.TestTree
 testDB clientConfig

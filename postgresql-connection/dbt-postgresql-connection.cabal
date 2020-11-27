@@ -1,0 +1,71 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 0a9afc73c2c7918877cd3ce0926bf01b9ff134073efdb0f19ffb6fb91113572b
+
+name:           dbt-postgresql-connection
+version:        0.1.0
+synopsis:       DBT Postgresql database connection
+homepage:       https://github.com/mbj/dbt
+bug-reports:    https://github.com/mbj/dbt/issues
+author:         Markus Schirp
+maintainer:     mbj@schirp-dso.com
+copyright:      2019 Markus Schirp
+license:        BSD3
+build-type:     Simple
+
+source-repository head
+  type: git
+  location: https://github.com/mbj/dbt
+
+library
+  exposed-modules:
+      DBT.Postgresql
+      DBT.Postgresql.Connection
+      DBT.Postgresql.Prelude
+      DBT.Postgresql.Session
+  other-modules:
+      Paths_dbt_postgresql_connection
+  hs-source-dirs:
+      src
+  default-extensions: AllowAmbiguousTypes DataKinds DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving KindSignatures LambdaCase MonoLocalBinds MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TypeApplications
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path
+  build-depends:
+      base >=4.12 && <4.13 || >=4.13 && <4.14 || >=4.14 && <4.15
+    , bytestring >=0.10 && <0.11
+    , containers >=0.6 && <0.7
+    , conversions >=0.0.3 && <0.1
+    , hasql >=1.4 && <1.5
+    , mprelude >=0.2.0 && <0.3
+    , mrio-core >=0.0.1 && <0.1
+    , mtl >=2.2 && <2.3
+    , source-constraints >=0.0.2 && <0.1
+    , text >=1.2 && <1.3
+    , unliftio >=0.2 && <0.3
+  default-language: Haskell2010
+
+test-suite test
+  type: exitcode-stdio-1.0
+  main-is: test/Test.hs
+  other-modules:
+      Paths_dbt_postgresql_connection
+  default-extensions: AllowAmbiguousTypes DataKinds DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts GeneralizedNewtypeDeriving KindSignatures LambdaCase MonoLocalBinds MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TypeApplications
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
+  build-depends:
+      base >=4.12 && <4.13 || >=4.13 && <4.14 || >=4.14 && <4.15
+    , bytestring >=0.10 && <0.11
+    , containers >=0.6 && <0.7
+    , conversions >=0.0.3 && <0.1
+    , dbt-postgresql-connection
+    , devtools >=0.1.0 && <0.2
+    , hasql >=1.4 && <1.5
+    , mprelude >=0.2.0 && <0.3
+    , mrio-core >=0.0.1 && <0.1
+    , mtl >=2.2 && <2.3
+    , source-constraints >=0.0.2 && <0.1
+    , text >=1.2 && <1.3
+    , unliftio >=0.2 && <0.3
+  default-language: Haskell2010

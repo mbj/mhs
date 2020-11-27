@@ -1,4 +1,4 @@
-module DBT
+module DBT.Postgresql.Container
   ( buildDefinition
   , imageName
   , populateDatabaseImage
@@ -10,13 +10,13 @@ module DBT
 where
 
 import Control.Arrow (left)
-import DBT.Prelude
+import DBT.Postgresql.Prelude
 import System.Path ((</>))
 
 import qualified CBT
 import qualified CBT.TH
 import qualified DBT.Postgresql       as Postgresql
-import qualified DBT.Wait             as Wait
+import qualified DBT.Postgresql.Wait  as Wait
 import qualified Data.Text            as Text
 import qualified Data.Text.Encoding   as Text
 import qualified System.Path          as Path

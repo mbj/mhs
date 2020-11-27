@@ -1,8 +1,8 @@
-module DBT.Session (Session(..)) where
+module DBT.Postgresql.Session (Session(..)) where
 
 import Control.Monad.Reader (asks)
-import DBT.Connection
-import DBT.Prelude
+import DBT.Postgresql.Connection
+import DBT.Postgresql.Prelude
 
 import qualified Hasql.Session      as Hasql
 import qualified UnliftIO.Exception as Exception

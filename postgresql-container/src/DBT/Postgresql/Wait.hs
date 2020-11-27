@@ -1,16 +1,15 @@
 {-# LANGUAGE RankNTypes #-}
 
-module DBT.Wait (Config(..), wait) where
+module DBT.Postgresql.Wait (Config(..), wait) where
 
 import Control.Concurrent (threadDelay)
-import DBT.Connection
-import DBT.Prelude
+import DBT.Postgresql.Connection
+import DBT.Postgresql.Prelude
 import Data.Int (Int)
 import GHC.Enum (succ)
 import GHC.Real (fromIntegral)
 import UnliftIO.Exception (throwString)
 
-import qualified CBT
 import qualified Colog
 import qualified DBT.Postgresql   as Postgresql
 import qualified Hasql.Connection as Hasql
@@ -23,7 +22,7 @@ data Config env = Config
   , waitTime     :: Natural
   }
 
-wait :: forall env . CBT.WithEnv env => Config env -> RIO env ()
+wait :: forall env . Colog.WithLog env Colog.Message (RIO env) => Config env -> RIO env ()
 wait Config{clientConfig = clientConfig, ..} =
   start =<< effectiveWaitTime
   where
