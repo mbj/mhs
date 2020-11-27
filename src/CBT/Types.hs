@@ -37,10 +37,13 @@ data Command = Command
   , name      :: Text
   }
 
+data EnvVariable = EnvInherit Text | EnvSet Text Text
+
 data ContainerDefinition = ContainerDefinition
   { command         :: Maybe Command
   , containerName   :: ContainerName
   , detach          :: Detach
+  , env             :: [EnvVariable]
   , imageName       :: ImageName
   , mounts          :: [Mount]
   , publishPorts    :: [PublishPort]
@@ -57,6 +60,7 @@ minimalContainerDefinition imageName containerName =
   ContainerDefinition
   { command         = empty
   , detach          = Foreground
+  , env             = []
   , mounts          = []
   , publishPorts    = []
   , remove          = Remove
