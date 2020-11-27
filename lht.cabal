@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4c60a765a8150d31879e648a65740c62e657b5361f31f8be59d12c4102e6c087
+-- hash: a397f752b682327acf949d80e2cd1d934166f4d3f83a6e4ecb378717f3328a81
 
 name:           lht
 version:        0.0.1
@@ -32,7 +32,7 @@ library
       Paths_lht
   hs-source-dirs:
       src
-  default-extensions: CPP DeriveAnyClass DeriveGeneric DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts FlexibleInstances GeneralizedNewtypeDeriving LambdaCase MonoLocalBinds MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables Strict TemplateHaskell
+  default-extensions: DataKinds DeriveAnyClass DeriveGeneric DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts FlexibleInstances GeneralizedNewtypeDeriving LambdaCase MonoLocalBinds MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables Strict TemplateHaskell TypeApplications
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields
   build-depends:
       base >=4.13 && <4.14 || >=4.14 && <4.15
@@ -65,7 +65,7 @@ test-suite devtools
   main-is: test/Test.hs
   other-modules:
       Paths_lht
-  default-extensions: CPP DeriveAnyClass DeriveGeneric DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts FlexibleInstances GeneralizedNewtypeDeriving LambdaCase MonoLocalBinds MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables Strict TemplateHaskell
+  default-extensions: DataKinds DeriveAnyClass DeriveGeneric DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts FlexibleInstances GeneralizedNewtypeDeriving LambdaCase MonoLocalBinds MultiParamTypeClasses NoImplicitPrelude NumericUnderscores OverloadedLists OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables Strict TemplateHaskell TypeApplications
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       base >=4.13 && <4.14 || >=4.14 && <4.15

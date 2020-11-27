@@ -6,6 +6,7 @@ import qualified Data.Elf              as ELF
 import qualified Data.Foldable         as Foldable
 import qualified Devtools
 import qualified LHT.Build
+import qualified System.Environment    as Environment
 import qualified System.Path           as Path
 import qualified System.Path.Directory as Path
 import qualified Test.Tasty            as Tasty
@@ -23,12 +24,17 @@ main = do
 testBuild :: Tasty.TestTree
 testBuild =
   Tasty.testCase "test-build" $ do
-    executable <- withCurrentDirectory (Path.relDir "example") . CBT.runDefaultEnvironment $
-      LHT.Build.build config
+    stack <- Environment.getEnv "STACK_YAML"
 
-    Tasty.assertBool
-      "static binary"
-      (Foldable.null . ELF.parseSymbolTables $ ELF.parseElf executable)
+    if stack == "stack-8.10.yaml"
+      then pure ()
+      else do
+        executable <- withCurrentDirectory (Path.relDir "example") . CBT.runDefaultEnvironment $
+          LHT.Build.build config
+
+        Tasty.assertBool
+          "static binary"
+          (Foldable.null . ELF.parseSymbolTables $ ELF.parseElf executable)
 
 config :: LHT.Build.Config
 config = LHT.Build.Config

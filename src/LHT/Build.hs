@@ -82,19 +82,10 @@ withBuildContainer Config{..} action = do
     hostStackWorkPath :: Path.AbsDir
     hostStackWorkPath = hostProjectPath </> Path.relDir ".stack-work-lht"
 
-    containerDefinition = CBT.ContainerDefinition
-      { detach           = CBT.Foreground
-      , publishPorts     = []
-      , remove           = CBT.NoRemove
-      , removeOnRunFail  = CBT.Remove
-      , imageName        = (CBT.imageName :: CBT.BuildDefinition -> CBT.ImageName) buildDefinition
-      , workDir          = containerProjectPath
-      , mounts =
-        [ CBT.Mount { hostPath = hostProjectPath, containerPath = containerProjectPath }
-        , CBT.Mount { hostPath = hostStackPath,   containerPath = containerStackPath }
-        ]
-      , programName      = "stack"
-      , programArguments =
+    command :: CBT.Command
+    command = CBT.Command
+      { name = "stack"
+      , arguments =
         [ "build"
         , "--allow-different-user"
         , "--copy-bins"
@@ -104,7 +95,22 @@ withBuildContainer Config{..} action = do
         ] <> flagArguments <>
         [ convertText packageName <> ":" <> convertText targetName
         ]
-      , ..
+      }
+
+    mounts :: [CBT.Mount]
+    mounts =
+      [ CBT.Mount { hostPath = hostProjectPath, containerPath = containerProjectPath }
+      , CBT.Mount { hostPath = hostStackPath,   containerPath = containerStackPath }
+      ]
+
+    containerDefinition =
+      (CBT.minimalContainerDefinition (getField @"imageName" buildDefinition) containerName)
+      { CBT.command = pure command
+      , CBT.detach  = CBT.Foreground
+      , CBT.env     = [CBT.EnvInherit "STACK_YAML"]
+      , CBT.remove  = CBT.NoRemove
+      , CBT.workDir = pure containerProjectPath
+      , CBT.mounts  = mounts
       }
 
   setupSharedDirectory hostStackPath
@@ -116,12 +122,12 @@ withBuildContainer Config{..} action = do
     (action containerName)
 
   where
-    flagArguments :: [String]
+    flagArguments :: [Text]
     flagArguments = Foldable.foldMap mkFlag flags
       where
-        mkFlag :: Flag -> [String]
+        mkFlag :: Flag -> [Text]
         mkFlag (Flag name value) =
-          ["--flag", convertText name <> ":" <> convertText value]
+          ["--flag", convert name <> ":" <> convert value]
 
 setupSharedDirectory :: MonadIO m => Path.AbsDir -> m ()
 setupSharedDirectory path = liftIO $ do
