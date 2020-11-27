@@ -4,7 +4,7 @@ cabal-version: 1.18
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 091da212e02159ef8ca8187fc0b0bc6db243b1450ed55ddcbc27757fc9b757c0
+-- hash: 7521467779bbfc65e8b48c6cd912f370f725714894bda1bcca03423da2a09fae
 
 name:           db-migrations
 version:        0.0.1
@@ -39,14 +39,13 @@ library
   build-depends:
       base >=4.11 && <5
     , bytestring >=0.10 && <0.11
-    , cbt >=0.1.0 && <0.2
     , containers >=0.6 && <0.7
     , control-bool >=0.2 && <0.3
     , conversions >=0.0.3 && <0.1
-    , cryptonite
-    , dbt >=0.1.0 && <0.2
+    , cryptonite >=0.26 && <1
+    , dbt-postgresql-connection >=0.1.0 && <0.2
     , hasql >=1.4 && <1.5
-    , hasql-th
+    , hasql-th >=0.4 && <0.5
     , hasql-transaction >=1.0 && <1.1
     , memory >=0.15 && <0.16
     , mprelude >=0.2 && <0.3
@@ -72,15 +71,14 @@ test-suite devtools
   build-depends:
       base >=4.11 && <5
     , bytestring >=0.10 && <0.11
-    , cbt >=0.1.0 && <0.2
     , containers >=0.6 && <0.7
     , control-bool >=0.2 && <0.3
     , conversions >=0.0.3 && <0.1
-    , cryptonite
-    , dbt >=0.1.0 && <0.2
+    , cryptonite >=0.26 && <1
+    , dbt-postgresql-connection >=0.1.0 && <0.2
     , devtools >=0.1.0 && <0.2
     , hasql >=1.4 && <1.5
-    , hasql-th
+    , hasql-th >=0.4 && <0.5
     , hasql-transaction >=1.0 && <1.1
     , memory >=0.15 && <0.16
     , mprelude >=0.2 && <0.3

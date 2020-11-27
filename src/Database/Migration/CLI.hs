@@ -10,8 +10,8 @@ import Database.Migration
 import Database.Migration.Prelude
 import Options.Applicative
 
-import qualified DBT.Connection as DBT
-import qualified DBT.Postgresql as Postgresql
+import qualified DBT.Postgresql            as Postgresql
+import qualified DBT.Postgresql.Connection as DBT
 
 type WithClientConfig env = forall a . (Postgresql.ClientConfig -> RIO env a) -> RIO env a
 
