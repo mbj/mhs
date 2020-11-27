@@ -195,21 +195,20 @@ buildDefinition
 
 postgresqlDefinition
   :: CBT.ContainerName
-  -> [String]
+  -> [Text]
   -> CBT.ContainerDefinition
 postgresqlDefinition containerName arguments =
-  CBT.ContainerDefinition
-    { detach           = CBT.Foreground
-    , imageName        = (CBT.imageName :: CBT.BuildDefinition -> CBT.ImageName) buildDefinition
-    , mounts           = []
-    , programArguments = convertText masterUserName : arguments
-    , programName      = "setuidgid"
-    , publishPorts     = []
-    , remove           = CBT.Remove
-    , removeOnRunFail  = CBT.Remove
-    , workDir          = pgHome
-    , ..
+  (CBT.minimalContainerDefinition (getField @"imageName" buildDefinition) containerName)
+    { CBT.command      = pure command
+    , CBT.mounts       = []
+    , CBT.publishPorts = []
+    , CBT.workDir      = pure pgHome
     }
+  where
+    command = CBT.Command
+      { CBT.name      = "setuidgid"
+      , CBT.arguments = convert masterUserName : arguments
+      }
 
 containerDefinition :: CBT.ContainerName -> CBT.ContainerDefinition
 containerDefinition containerName
@@ -217,7 +216,7 @@ containerDefinition containerName
   $ postgresqlDefinition
     containerName
     [ "postgres"
-    , "-D", Path.toString pgData
+    , "-D", convert $ Path.toString pgData
     , "-h", "0.0.0.0"  -- connections from outside the container
     , "-k", ""         -- no unix socket
     ]
