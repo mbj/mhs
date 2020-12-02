@@ -126,7 +126,7 @@ source-constraints 0.0.2
 split 0.2.3.4
 stack-deploy 0.0.1
 stm 2.5.0.0
-stratosphere 0.59.1
+stratosphere 0.58.0
 streaming-commons 0.2.2.1
 syb 0.7.1
 tagged 0.8.6

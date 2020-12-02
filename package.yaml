@@ -33,7 +33,7 @@ dependencies:
 - optparse-applicative    >= 0.14 && ^>= 0.15
 - random                  ^>= 1.1
 - source-constraints      ^>= 0.0.1
-- stratosphere            ^>= 0.59
+- stratosphere            >= 0.58 && < 1
 - tasty                   ^>= 1.3
 - tasty-mgolden           ^>= 0.0.1
 - text                    ^>= 1.2

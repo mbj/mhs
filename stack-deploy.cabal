@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: dcf17cbb1b050b737593b2ab064007b28fc6017584df7a099c0085238becccc0
+-- hash: cb1d1f807099a5ff76d232ad7b4cfdc76a72f0153d8885ba56469f60453576b5
 
 name:           stack-deploy
 version:        0.0.1
@@ -71,7 +71,7 @@ library
     , optparse-applicative >=0.14 && >=0.15 && <0.16
     , random >=1.1 && <1.2
     , source-constraints >=0.0.1 && <0.1
-    , stratosphere >=0.59 && <0.60
+    , stratosphere >=0.58 && <1
     , tasty >=1.3 && <1.4
     , tasty-mgolden >=0.0.1 && <0.1
     , text >=1.2 && <1.3
@@ -115,7 +115,7 @@ test-suite devtools
     , optparse-applicative >=0.14 && >=0.15 && <0.16
     , random >=1.1 && <1.2
     , source-constraints >=0.0.1 && <0.1
-    , stratosphere >=0.59 && <0.60
+    , stratosphere >=0.58 && <1
     , tasty >=1.3 && <1.4
     , tasty-mgolden >=0.0.1 && <0.1
     , text >=1.2 && <1.3
