@@ -33,12 +33,12 @@ packages:
   original:
     hackage: source-constraints-0.0.2@sha256:5746921c48cde021cd9120fc917dd21768fa6f3716f9d09fc847cac3c6f5d4e4,3103
 - completed:
-    hackage: stratosphere-0.59.1@sha256:e8a77ab12b5243b54bd55f240dcf5617be6b161cd6f84dc0cb1c22ba05c3e63b,145458
+    hackage: stratosphere-0.58.0@sha256:f87e078696a13eaf35c08ef694803b3744d36ceeea4eecd6ac712577a9438245,142880
     pantry-tree:
-      size: 243793
-      sha256: d558204a372f28054baf5ea778bf30b193c14ddc4b05e0e0cf7e381bcd3653e3
+      size: 239498
+      sha256: db619e09c6b8caf52ffbb91cfd4ed609c738d7042eb88d8a7082c17b1b3ffae0
   original:
-    hackage: stratosphere-0.59.1@sha256:e8a77ab12b5243b54bd55f240dcf5617be6b161cd6f84dc0cb1c22ba05c3e63b,145458
+    hackage: stratosphere-0.58.0@sha256:f87e078696a13eaf35c08ef694803b3744d36ceeea4eecd6ac712577a9438245,142880
 - completed:
     hackage: tasty-1.3.1@sha256:01e35c97f7ee5ccbc28f21debea02a38cd010d53b4c3087f5677c5d06617a507,2520
     pantry-tree:
