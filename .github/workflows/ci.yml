@@ -1,0 +1,36 @@
+name: CI
+
+on: push
+
+jobs:
+  ci:
+    runs-on: ${{ matrix.os }}
+    env:
+      STACK_YAML: stack-${{ matrix.ghc }}.yaml
+    strategy:
+      fail-fast: false
+      matrix:
+        ghc: ['8.8', '8.10']
+        os: [ubuntu-latest]
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-haskell@v1
+      with:
+        enable-stack: true
+        ghc-version: ${{ matrix.ghc }}
+        stack-version: '2.5.1'
+    - name: Setup stack
+      run: |
+        stack config set install-ghc false
+        stack config set system-ghc true
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+        path: ~/.stack
+        key: a-${{ matrix.os }}-${{ hashFiles(env.STACK_YAML, format('{0}.lock', env.STACK_YAML)) }}
+    - name: Install dependencies
+      run: stack build --test --only-dependencies
+    - name: Build
+      run: stack build --fast --test --no-run-tests
+    - name: Run tests
+      run: stack build --fast --test
