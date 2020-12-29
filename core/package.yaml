@@ -7,12 +7,17 @@ license:    MIT
 github:     strainge/mrio
 version:    0.0.1
 
+flags:
+  development:
+    description: Run GHC with development flags
+    default: false
+    manual: true
+
 dependencies:
 - base >= 4.10 && < 10
 - exceptions
 - mtl
 - primitive
-- source-constraints
 - unliftio-core
 
 ghc-options:
@@ -28,9 +33,19 @@ ghc-options:
 - -Wmonomorphism-restriction
 - -Wredundant-constraints
 - -fhide-source-paths
-- -fplugin=SourceConstraints
 - -funbox-strict-fields
 - -optP-Wno-nonportable-include-path
+
+when:
+  - condition: flag(development)
+    then:
+      ghc-options:
+      - -Werror
+      - -fplugin=SourceConstraints
+      dependencies:
+      - source-constraints ^>= 0.0.2
+    else:
+      ghc-options: -Wwarn
 
 default-extensions:
 - DataKinds
