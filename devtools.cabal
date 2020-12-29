@@ -4,7 +4,7 @@ cabal-version: 1.18
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 1ab3f83c389cae0745d3d2ddb4de502d0a96c2d0b770b4c1a5a5f1ac1dcbd7a1
+-- hash: 7e10a80ff4d9978cab59d436fcbab70d0e3c262fabd74adb12e059b7bfc8118e
 
 name:           devtools
 version:        0.1.0
@@ -43,7 +43,7 @@ library
   hs-source-dirs:
       src
   default-extensions: DerivingStrategies LambdaCase NoImplicitPrelude OverloadedStrings RecordWildCards StrictData
-  ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path
+  ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
       Diff >0.3 && <0.5
     , base >4.12 && <4.15
@@ -52,13 +52,14 @@ library
     , filepath >=1.4 && <1.5
     , hlint >3.1 && <4
     , mprelude >=0.2.0 && <0.3
-    , source-constraints >=0.0.1 && <0.1
     , tasty >=1.3.1 && <1.4
     , tasty-mgolden >=0.0.1 && <0.1
     , text >=1.2 && <1.3
     , typed-process >=0.2 && <0.3
   if flag(development)
-    ghc-options: -Werror
+    ghc-options: -Werror -fplugin=SourceConstraints
+    build-depends:
+        source-constraints >=0.0.1 && <0.1
   else
     ghc-options: -Wwarn
   default-language: Haskell2010
@@ -69,7 +70,7 @@ test-suite test
   other-modules:
       Paths_devtools
   default-extensions: DerivingStrategies LambdaCase NoImplicitPrelude OverloadedStrings RecordWildCards StrictData
-  ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
+  ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       Diff >0.3 && <0.5
     , base >4.12 && <4.15
@@ -79,13 +80,14 @@ test-suite test
     , filepath >=1.4 && <1.5
     , hlint >3.1 && <4
     , mprelude >=0.2.0 && <0.3
-    , source-constraints >=0.0.1 && <0.1
     , tasty >=1.3.1 && <1.4
     , tasty-mgolden >=0.0.1 && <0.1
     , text >=1.2 && <1.3
     , typed-process >=0.2 && <0.3
   if flag(development)
-    ghc-options: -Werror
+    ghc-options: -Werror -fplugin=SourceConstraints
+    build-depends:
+        source-constraints >=0.0.1 && <0.1
   else
     ghc-options: -Wwarn
   default-language: Haskell2010
