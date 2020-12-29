@@ -9,13 +9,10 @@ version:    0.0.4
 dependencies:
 - base               > 4.12 && < 4.15
 - bytestring         ^>= 0.10
-- control-bool       ^>= 0.2
 - exceptions         ^>= 0.10
 - mtl                ^>= 2.2
-- source-constraints ^>= 0.0.2
 - template-haskell   ^>= 2.15 || ^>= 2.16
 - text               ^>= 1.2
-- unliftio-core      ^>= 0.2
 
 flags:
   development:
@@ -35,7 +32,6 @@ ghc-options:
 - -Wmonomorphism-restriction
 - -Wredundant-constraints
 - -fhide-source-paths
-- -fplugin=SourceConstraints
 - -funbox-strict-fields
 - -optP-Wno-nonportable-include-path
 
@@ -69,7 +65,11 @@ library:
 when:
   - condition: flag(development)
     then:
-      ghc-options: -Werror
+      ghc-options:
+      - -Werror
+      - -fplugin=SourceConstraints
+      dependencies:
+      - source-constraints ^>= 0.0.2
     else:
       ghc-options: -Wwarn
 

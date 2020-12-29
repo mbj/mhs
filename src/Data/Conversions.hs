@@ -3,7 +3,6 @@
 module Data.Conversions where
 
 import           Control.Applicative
-import           Control.Bool                   ( guard' )
 import           Control.Exception              ( Exception )
 import           Control.Monad                  ( MonadPlus(..) )
 import           Control.Monad.Catch            ( MonadThrow
@@ -256,3 +255,8 @@ mkTH input =
 
 toText :: ToText a => a -> Text
 toText = convert
+
+-- | 'guard'' b a returns a if b is True, otherwise becomes 'mzero'.
+guard' :: MonadPlus m => Bool -> a -> m a
+guard' b a = if b then pure a else mzero
+{-# INLINE guard' #-}
