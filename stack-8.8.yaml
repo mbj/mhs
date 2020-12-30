@@ -15,3 +15,11 @@ packages:
 - amazonka
 - colog
 - core
+
+flags:
+  mrio-amazonka:
+    development: true
+  mrio-colog:
+    development: true
+  mrio-core:
+    development: true
