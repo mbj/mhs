@@ -84,19 +84,6 @@ default-extensions:
 library:
   source-dirs:
   - src
-  exposed-modules:
-  - StackDeploy.CLI
-  - StackDeploy.Config
-  - StackDeploy.InstanceSpec
-  - StackDeploy.Parameters
-  - StackDeploy.Provider
-  - StackDeploy.S3
-  - StackDeploy.Stack
-  - StackDeploy.Template
-  - StackDeploy.Template.Code
-  - StackDeploy.Types
-  - StackDeploy.Utils
-  - StackDeploy.Wait
 
 tests:
   devtools:

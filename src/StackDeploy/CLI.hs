@@ -1,12 +1,9 @@
-module StackDeploy.CLI
-  ( parserInfo
-  , stackName
-  )
-where
+module StackDeploy.CLI (parserInfo) where
 
 import Control.Lens ((.~), view)
 import Data.Conduit ((.|), runConduit)
 import Options.Applicative hiding (value)
+import StackDeploy.CLI.Utils
 import StackDeploy.Config
 import StackDeploy.Events
 import StackDeploy.IO
@@ -45,16 +42,16 @@ parserInfo instanceSpecProvider = wrapHelper commands "stack commands"
 
     instanceCommands :: Parser (RIO env ExitCode)
     instanceCommands = hsubparser
-      $  mkCommand "cancel"   (cancel <$> stackName)                "cancel stack update"
-      <> mkCommand "create"   (create <$> stackName <*> parameters) "create stack"
-      <> mkCommand "delete"   (delete <$> stackName)                "delete stack"
-      <> mkCommand "events"   (events <$> stackName)                "list stack events"
-      <> mkCommand "list"     (pure list)                           "list stack instances"
-      <> mkCommand "outputs"  (outputs <$> stackName)               "list stack outputs"
-      <> mkCommand "sync"     (sync <$> stackName <*> parameters)   "sync stack with spec"
-      <> mkCommand "update"   (update <$> stackName <*> parameters) "update existing stack"
-      <> mkCommand "wait"     (wait <$> stackName <*> tokenParser)  "wait for stack operation"
-      <> mkCommand "watch"    (watch <$> stackName)                 "watch stack events"
+      $  mkCommand "cancel"   (cancel <$> instanceSpecName)                "cancel stack update"
+      <> mkCommand "create"   (create <$> instanceSpecName <*> parameters) "create stack"
+      <> mkCommand "delete"   (delete <$> instanceSpecName)                "delete stack"
+      <> mkCommand "events"   (events <$> instanceSpecName)                "list stack events"
+      <> mkCommand "list"     (pure list)                                  "list stack instances"
+      <> mkCommand "outputs"  (outputs <$> instanceSpecName)               "list stack outputs"
+      <> mkCommand "sync"     (sync <$> instanceSpecName <*> parameters)   "sync stack with spec"
+      <> mkCommand "update"   (update <$> instanceSpecName <*> parameters) "update existing stack"
+      <> mkCommand "wait"     (wait <$> instanceSpecName <*> tokenParser)  "wait for stack operation"
+      <> mkCommand "watch"    (watch <$> instanceSpecName)                 "watch stack events"
 
     templateCommands :: Parser (RIO env ExitCode)
     templateCommands = hsubparser
@@ -188,12 +185,6 @@ parameterReader = eitherReader (Text.parseOnly parser . convertText)
     allowChar = \case
       '-'  -> True
       char -> Char.isDigit char || Char.isAlpha char
-
-stackName :: Parser (InstanceSpec.Name env)
-stackName = InstanceSpec.mkName <$> argument str (metavar "STACK")
-
-templateName :: Parser Template.Name
-templateName = Template.mkName <$> argument str (metavar "TEMPLATE")
 
 parameters :: Parser Parameters
 parameters = fromList <$> many parameter

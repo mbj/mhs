@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: cb1d1f807099a5ff76d232ad7b4cfdc76a72f0153d8885ba56469f60453576b5
+-- hash: 6df3eb08dd0edc954020a4695132b601b3aa78a58888454b51391de1a31dcbae
 
 name:           stack-deploy
 version:        0.0.1
@@ -24,10 +24,15 @@ source-repository head
 
 library
   exposed-modules:
+      StackDeploy.AWS
       StackDeploy.CLI
+      StackDeploy.CLI.Utils
       StackDeploy.Config
+      StackDeploy.Events
       StackDeploy.InstanceSpec
+      StackDeploy.IO
       StackDeploy.Parameters
+      StackDeploy.Prelude
       StackDeploy.Provider
       StackDeploy.S3
       StackDeploy.Stack
@@ -37,10 +42,6 @@ library
       StackDeploy.Utils
       StackDeploy.Wait
   other-modules:
-      StackDeploy.AWS
-      StackDeploy.Events
-      StackDeploy.IO
-      StackDeploy.Prelude
       Paths_stack_deploy
   hs-source-dirs:
       src
