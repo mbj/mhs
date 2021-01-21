@@ -1,4 +1,10 @@
-module StackDeploy.CLI.Utils (instanceSpecName, templateName) where
+module StackDeploy.CLI.Utils
+  ( instanceSpecNameArgument
+  , instanceSpecNameOption
+  , templateNameArgument
+  , templateNameOption
+  )
+where
 
 import Options.Applicative
 import StackDeploy.Prelude
@@ -6,11 +12,17 @@ import StackDeploy.Prelude
 import qualified StackDeploy.InstanceSpec as InstanceSpec
 import qualified StackDeploy.Template     as Template
 
-instanceSpecName :: Parser (InstanceSpec.Name env)
-instanceSpecName = instanceSpecNameParser (InstanceSpec.mkName <$> str)
+instanceSpecNameArgument :: Parser (InstanceSpec.Name env)
+instanceSpecNameArgument = InstanceSpec.mkName <$> argument str (metavar "STACK")
 
-templateName :: Parser Template.Name
-templateName = templateNameParser (Template.mkName <$> str)
+instanceSpecNameOption :: Parser (InstanceSpec.Name env)
+instanceSpecNameOption = instanceSpecNameParser (InstanceSpec.mkName <$> str)
+
+templateNameArgument :: Parser Template.Name
+templateNameArgument = Template.mkName <$> argument str (metavar "TEMPLATE")
+
+templateNameOption :: Parser Template.Name
+templateNameOption = templateNameParser (Template.mkName <$> str)
 
 instanceSpecNameParser :: ReadM (InstanceSpec.Name env) -> Parser (InstanceSpec.Name env)
 instanceSpecNameParser reader =
