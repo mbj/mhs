@@ -42,21 +42,21 @@ parserInfo instanceSpecProvider = wrapHelper commands "stack commands"
 
     instanceCommands :: Parser (RIO env ExitCode)
     instanceCommands = hsubparser
-      $  mkCommand "cancel"   (cancel <$> instanceSpecName)                "cancel stack update"
-      <> mkCommand "create"   (create <$> instanceSpecName <*> parameters) "create stack"
-      <> mkCommand "delete"   (delete <$> instanceSpecName)                "delete stack"
-      <> mkCommand "events"   (events <$> instanceSpecName)                "list stack events"
-      <> mkCommand "list"     (pure list)                                  "list stack instances"
-      <> mkCommand "outputs"  (outputs <$> instanceSpecName)               "list stack outputs"
-      <> mkCommand "sync"     (sync <$> instanceSpecName <*> parameters)   "sync stack with spec"
-      <> mkCommand "update"   (update <$> instanceSpecName <*> parameters) "update existing stack"
-      <> mkCommand "wait"     (wait <$> instanceSpecName <*> tokenParser)  "wait for stack operation"
-      <> mkCommand "watch"    (watch <$> instanceSpecName)                 "watch stack events"
+      $  mkCommand "cancel"   (cancel <$> instanceSpecNameArgument)                "cancel stack update"
+      <> mkCommand "create"   (create <$> instanceSpecNameArgument <*> parameters) "create stack"
+      <> mkCommand "delete"   (delete <$> instanceSpecNameArgument)                "delete stack"
+      <> mkCommand "events"   (events <$> instanceSpecNameArgument)                "list stack events"
+      <> mkCommand "list"     (pure list)                                          "list stack instances"
+      <> mkCommand "outputs"  (outputs <$> instanceSpecNameArgument)               "list stack outputs"
+      <> mkCommand "sync"     (sync <$> instanceSpecNameArgument <*> parameters)   "sync stack with spec"
+      <> mkCommand "update"   (update <$> instanceSpecNameArgument <*> parameters) "update existing stack"
+      <> mkCommand "wait"     (wait <$> instanceSpecNameArgument <*> tokenParser)  "wait for stack operation"
+      <> mkCommand "watch"    (watch <$> instanceSpecNameArgument)                 "watch stack events"
 
     templateCommands :: Parser (RIO env ExitCode)
     templateCommands = hsubparser
-      $  mkCommand "list"    (pure listTemplates)      "list templates"
-      <> mkCommand "render"  (render <$> templateName) "render template"
+      $  mkCommand "list"    (pure listTemplates)              "list templates"
+      <> mkCommand "render"  (render <$> templateNameArgument) "render template"
 
     specCommands :: Parser (RIO env ExitCode)
     specCommands = hsubparser
