@@ -95,6 +95,12 @@ fetchOutput stack soutput =
       . convertText
       $ "Stack: " <> view CF.sStackName stack <> " " <> message
 
+resolveSecretsmanagerSecret :: Val Text -> Val Text
+resolveSecretsmanagerSecret arn = wrap $ Join ":" ["resolve", "secretsmanager", arn]
+  where
+    wrap :: Val Text -> Val Text
+    wrap value = Join "" ["{{", value, "}}"]
+
 -- See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/pseudo-parameter-reference.html
 data PseudoParameter a
   = AccountId
