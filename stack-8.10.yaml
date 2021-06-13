@@ -1,4 +1,4 @@
-resolver: nightly-2020-11-19
+resolver: lts-17.15
 extra-deps:
 - git: https://github.com/mbj/devtools-hs.git
   commit: 4ad5c5193a320977a9a7befb8726f2db0d271712
