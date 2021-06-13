@@ -6,24 +6,24 @@ jobs:
   ci:
     runs-on: ${{ matrix.os }}
     env:
-      STACK_YAML: stack-${{ matrix.ghc }}.yaml
+      STACK_YAML: ${{ matrix.project }}/stack-${{ matrix.ghc }}.yaml
     strategy:
       fail-fast: false
       matrix:
-        ghc: ['8.8', '8.10']
-        os: [ubuntu-latest, macOS-latest]
+        ghc:     ['8.8', '8.10']
+        os:      [ubuntu-latest, macOS-latest]
+        project: [source-constraints]
     steps:
     - uses: actions/checkout@v2
     - uses: haskell/actions/setup@v1
       with:
         enable-stack: true
-        ghc-version: ${{ matrix.ghc }}
-        stack-version: '2.3'
+        stack-version: latest
     - name: Cache
       uses: actions/cache@v2
       with:
         path: ~/.stack
-        key: b-${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('stack-*.yaml', '**/*.cabal') }}
+        key: ${{ matrix.project }}-${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('stack-*.yaml', '**/*.cabal') }}
     - name: Install dependencies
       run: stack build --test --only-dependencies
     - name: Build
