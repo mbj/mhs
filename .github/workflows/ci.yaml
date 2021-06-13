@@ -1,0 +1,32 @@
+name: CI
+
+on: push
+
+jobs:
+  ci:
+    runs-on: ${{ matrix.os }}
+    env:
+      STACK_YAML: ${{ matrix.project }}/stack-${{ matrix.ghc }}.yaml
+    strategy:
+      fail-fast: false
+      matrix:
+        ghc:     ['8.8', '8.10']
+        os:      [ubuntu-latest, macOS-latest]
+        project: [source-constraints]
+    steps:
+    - uses: actions/checkout@v2
+    - uses: haskell/actions/setup@v1
+      with:
+        enable-stack: true
+        stack-version: latest
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+        path: ~/.stack
+        key: ${{ matrix.project }}-${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles('stack-*.yaml', '**/*.cabal') }}
+    - name: Install dependencies
+      run: stack build --test --only-dependencies
+    - name: Build
+      run: stack build --fast --test --no-run-tests
+    - name: Run tests
+      run: stack build --fast --test
