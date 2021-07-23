@@ -1,10 +1,10 @@
 cabal-version: 1.18
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 7f4b65ce85cf869179da0d6dbb1879986a3279f7fb002c2254e841c7431f2818
+-- hash: 17aec98d9ce385d94b5bef4e58cd1ad356be24c647595bd7b37759d331eee391
 
 name:           source-constraints
 version:        0.0.2
@@ -19,7 +19,8 @@ maintainer:     mbj@schirp-dso.com
 copyright:      2018 Markus Schirp
 license:        BSD3
 license-file:   LICENSE
-tested-with:    GHC ==8.8.4 || ==8.10.2
+tested-with:
+    GHC ==8.8.4 || ==8.10.2
 build-type:     Simple
 extra-source-files:
     test/LocalModuleExplicitImport.hs
@@ -48,16 +49,25 @@ library
       Paths_source_constraints
   hs-source-dirs:
       src
-  default-extensions: CPP DerivingStrategies GeneralizedNewtypeDeriving LambdaCase NoImplicitPrelude OverloadedStrings RecordWildCards ScopedTypeVariables Strict
+  default-extensions:
+      CPP
+      DerivingStrategies
+      GeneralizedNewtypeDeriving
+      LambdaCase
+      NoImplicitPrelude
+      OverloadedStrings
+      RecordWildCards
+      ScopedTypeVariables
+      Strict
   ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction
   build-depends:
-      attoparsec >=0.13 && <0.14
+      attoparsec ==0.13.*
     , base >=4.13 && <4.14 || >=4.14 && <4.15
-    , bytestring >=0.10 && <0.11
-    , filepath >=1.4 && <1.5
+    , bytestring ==0.10.*
+    , filepath ==1.4.*
     , ghc >=8.8 && <8.9 || >=8.10 && <8.11
-    , syb >=0.7 && <0.8
-    , text >=1.2 && <1.3
+    , syb ==0.7.*
+    , text ==1.2.*
   if flag(development)
     ghc-options: -Werror
   else
@@ -69,20 +79,29 @@ test-suite hspec
   main-is: Spec.hs
   hs-source-dirs:
       test
-  default-extensions: CPP DerivingStrategies GeneralizedNewtypeDeriving LambdaCase NoImplicitPrelude OverloadedStrings RecordWildCards ScopedTypeVariables Strict
+  default-extensions:
+      CPP
+      DerivingStrategies
+      GeneralizedNewtypeDeriving
+      LambdaCase
+      NoImplicitPrelude
+      OverloadedStrings
+      RecordWildCards
+      ScopedTypeVariables
+      Strict
   ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      attoparsec >=0.13 && <0.14
+      attoparsec ==0.13.*
     , base >=4.13 && <4.14 || >=4.14 && <4.15
-    , bytestring >=0.10 && <0.11
-    , filepath >=1.4 && <1.5
+    , bytestring ==0.10.*
+    , filepath ==1.4.*
     , ghc >=8.8 && <8.9 || >=8.10 && <8.11
-    , ghc-paths >=0.1 && <0.2
-    , heredoc >=0.2 && <0.3
-    , hspec >=2.7 && <2.8
+    , ghc-paths ==0.1.*
+    , heredoc ==0.2.*
+    , hspec ==2.7.*
     , source-constraints
-    , syb >=0.7 && <0.8
-    , text >=1.2 && <1.3
+    , syb ==0.7.*
+    , text ==1.2.*
   if flag(development)
     ghc-options: -Werror
   else
