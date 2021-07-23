@@ -16,6 +16,7 @@ flags:
   mprelude:
     development: true
 packages:
+- cbt
 - conversions
 - devtools
 - mrio-amazonka

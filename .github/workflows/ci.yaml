@@ -10,9 +10,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ghc:     ['8.8', '8.10']
-        os:      [ubuntu-latest, macOS-latest]
+        ghc: ['8.8', '8.10']
+        os:  [ubuntu-latest, macOS-latest]
         project:
+        - cbt
         - devtools
         - mrio-amazonka
         - mrio-colog
