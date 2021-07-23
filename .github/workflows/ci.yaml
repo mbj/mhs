@@ -13,7 +13,7 @@ jobs:
         ghc:     ['8.8', '8.10']
         os:      [ubuntu-latest, macOS-latest]
         project:
-        - mprelude
+        - devtools
         - source-constraints
     steps:
     - uses: actions/checkout@v2
