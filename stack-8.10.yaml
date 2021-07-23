@@ -23,14 +23,15 @@ flags:
   mprelude:
     development: true
 packages:
-- db-migrations
 - cbt
 - conversions
+- db-migrations
 - devtools
 - lht
 - mrio-amazonka
 - mrio-colog
 - mrio-core
+- pgt
 - postgresql-connection
 - postgresql-container
 - source-constraints
