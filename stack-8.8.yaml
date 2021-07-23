@@ -20,5 +20,7 @@ packages:
 - mrio-amazonka
 - mrio-colog
 - mrio-core
+- postgresql-connection
+- postgresql-container
 - source-constraints
 - tasty-mgolden

@@ -1,0 +1,102 @@
+name:        dbt-postgresql-container
+version:     0.1.0
+synopsis:    DBT Postgresql container tool
+homepage:    https://github.com/mbj/dbt
+author:      Markus Schirp
+maintainer:  mbj@schirp-dso.com
+copyright:   2019 Markus Schirp
+github:      mbj/dbt
+license:     BSD3
+
+dependencies:
+- base                      ^>= 4.12 || ^>= 4.13 || ^>= 4.14
+- bytestring                ^>= 0.10
+- cbt                       ^>= 0.1.0
+- co-log                    ^>= 0.4
+- containers                ^>= 0.6
+- conversions               ^>= 0.0.3
+- dbt-postgresql-connection ^>= 0.1.0
+- hasql                     ^>= 1.4
+- mprelude                  ^>= 0.2.0
+- mrio-colog                ^>= 0.0.1
+- mrio-core                 ^>= 0.0.1
+- mtl                       ^>= 2.2
+- network                   ^>= 3.1
+- optparse-applicative      ^>= 0.15 || ^>= 0.16
+- pathtype                  ^>= 0.8
+- source-constraints        ^>= 0.0.1
+- template-haskell          ^>= 2.14 || ^>= 2.15 || ^>= 2.16
+- text                      ^>= 1.2
+- th-lift-instances         ^>= 0.1
+- typed-process             ^>= 0.2
+- unliftio                  ^>= 0.2
+- unliftio-core             ^>= 0.2
+
+ghc-options:
+- -Wall
+- -Wcompat
+- -Werror
+- -Widentities
+- -Wimplicit-prelude
+- -Wincomplete-record-updates
+- -Wincomplete-uni-patterns
+- -Wmissing-exported-signatures
+- -Wmissing-local-signatures
+- -Wmonomorphism-restriction
+- -Wredundant-constraints
+- -fplugin=SourceConstraints
+- -funbox-strict-fields
+- -optP-Wno-nonportable-include-path
+
+default-extensions:
+- AllowAmbiguousTypes
+- DataKinds
+- DerivingStrategies
+- DerivingVia
+- DuplicateRecordFields
+- FlexibleContexts
+- GeneralizedNewtypeDeriving
+- KindSignatures
+- LambdaCase
+- MonoLocalBinds
+- MultiParamTypeClasses
+- NoImplicitPrelude
+- NumericUnderscores
+- OverloadedLists
+- OverloadedStrings
+- RecordWildCards
+- ScopedTypeVariables
+- StrictData
+- TemplateHaskell
+- TypeApplications
+
+library:
+  source-dirs: src
+  exposed-modules:
+  - DBT.Postgresql.Container
+  - DBT.Postgresql.Container.CLI
+
+executables:
+  dbt:
+    main:        Main.hs
+    source-dirs: app
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -with-rtsopts=-N
+    dependencies:
+    - dbt-postgresql-container
+
+tests:
+  test:
+    main: test/Test.hs
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -with-rtsopts=-N
+    dependencies:
+    - dbt-postgresql-connection
+    - dbt-postgresql-container
+    - devtools ^>= 0.1.0
+    - tasty
+    - tasty-mgolden
