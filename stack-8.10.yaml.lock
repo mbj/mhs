@@ -19,6 +19,34 @@ packages:
   original:
     hackage: co-log-0.4.0.1@sha256:3d4c17f37693c80d1aa2c41669bc3438fac3e89dc5f479e57d79bc3ddc4dfcc5,5087
 - completed:
+    hackage: hasql-th-0.4.0.9@sha256:56515d8d08d4c68e36899a46624ecd1505608cf6b4c24b5c33aee54bc76e6275,2245
+    pantry-tree:
+      size: 864
+      sha256: 0c895bf03caf2c77e8a314bcd08dae41fe0eaadbcaf9ce92de9b1538067f3347
+  original:
+    hackage: hasql-th-0.4.0.9@sha256:56515d8d08d4c68e36899a46624ecd1505608cf6b4c24b5c33aee54bc76e6275,2245
+- completed:
+    hackage: headed-megaparsec-0.2.0.1@sha256:4bb2f1e68d2972e6b40ede202708c81b2e2fe83c454e439f27f47d1fdf7c8697,1571
+    pantry-tree:
+      size: 383
+      sha256: 9c5bb405d2b708e128b1206b09f86aeed9b9a6689c6391e66d39dcfa0924638d
+  original:
+    hackage: headed-megaparsec-0.2.0.1@sha256:4bb2f1e68d2972e6b40ede202708c81b2e2fe83c454e439f27f47d1fdf7c8697,1571
+- completed:
+    hackage: megaparsec-9.1.0@sha256:0e9bd4714f3682b99d447f05553eda25590c15d7f2108222f62010e844c58ac0,3107
+    pantry-tree:
+      size: 1447
+      sha256: 4b96e8eacd375ea700be86bbbc0d1ae198655120db158601763e19e23dee5946
+  original:
+    hackage: megaparsec-9.1.0@sha256:0e9bd4714f3682b99d447f05553eda25590c15d7f2108222f62010e844c58ac0,3107
+- completed:
+    hackage: postgresql-syntax-0.4@sha256:df8b65a33f4088eddad25cedbec814e5f34f8e8ae55065139b73bd6da0d66f21,4176
+    pantry-tree:
+      size: 1227
+      sha256: 1942e3259b02a2546bf1fc6fe7f956cbcce724f29c3feea8698ab90a465e499a
+  original:
+    hackage: postgresql-syntax-0.4@sha256:df8b65a33f4088eddad25cedbec814e5f34f8e8ae55065139b73bd6da0d66f21,4176
+- completed:
     hackage: tasty-1.3.1@sha256:01e35c97f7ee5ccbc28f21debea02a38cd010d53b4c3087f5677c5d06617a507,2520
     pantry-tree:
       size: 1804
