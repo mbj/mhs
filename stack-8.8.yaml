@@ -15,6 +15,7 @@ flags:
   source-constraints:
     development: true
 packages:
+- conversions
 - devtools
 - mrio-amazonka
 - mrio-colog

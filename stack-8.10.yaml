@@ -16,6 +16,7 @@ flags:
   mprelude:
     development: true
 packages:
+- conversions
 - devtools
 - mrio-amazonka
 - mrio-colog
