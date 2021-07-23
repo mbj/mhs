@@ -21,6 +21,7 @@ import Outputable hiding ((<>), empty)
 import SourceConstraints
 import SourceConstraints.LocalModule
 import System.IO
+import System.Environment as System
 import Test.Hspec
 import Text.Heredoc
 
@@ -56,7 +57,7 @@ import GHC
   )
 
 main :: IO ()
-main = hspec $ do
+main = System.withArgs [] . hspec $ do
   expectWarnings
     "test/MissingDerivingStrategy.hs"
     [[str|Missing deriving strategy

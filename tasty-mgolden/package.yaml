@@ -78,9 +78,11 @@ tests:
     - -threaded
     - -with-rtsopts=-N
     dependencies:
+    - directory
     - tasty-expected-failure
     - tasty-hunit
     - tasty-mgolden
+    - temporary
     - typed-process
 
 executables:
