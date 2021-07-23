@@ -8,14 +8,18 @@ import Test.Tasty.MGolden
 import Test.Tasty.Providers.ConsoleFormat
 
 import qualified Data.Text.IO         as Text
+import qualified System.Directory     as System
+import qualified System.Environment   as System
 import qualified System.Exit          as Exit
+import qualified System.IO.Temp       as System
 import qualified System.Process.Typed as Process
 
 main :: IO ()
-main = defaultMain tests
+main = System.withArgs [] $ defaultMain tests
 
 tests :: TestTree
-tests = testGroup "mgolden tests"
+tests =
+  testGroup "mgolden tests"
   [ goldenTest path path $ pure "foo\nbar\n"
   , expectFail $ goldenTest path path $ pure "foo\nbaz\n"
   , testFormat
@@ -43,12 +47,13 @@ runPrinter (ResultDetailsPrinter action) = action 0 (const id)
 
 testWorkflow :: TestTree
 testWorkflow =
-  testCase "usage workflow" $ do
-    reset
-    assertEqual "initialy exits with tatus 1" (Exit.ExitFailure 1) =<< run []
-    assertEqual "exits 0 with update flag" Exit.ExitSuccess        =<< run ["--update"]
-    assertEqual "has updated contents" "foo\nbaz\n"                =<< Text.readFile "example/example-b.txt"
-    reset
+  testCase "with update" $ do
+    System.withSystemTempDirectory "tasty-mgolden" $ \directory -> do
+      System.withCurrentDirectory directory $ do
+        setup
+        assertEqual "initialy exits with tatus 1" (Exit.ExitFailure 1) =<< run []
+        assertEqual "exits 0 with update flag" Exit.ExitSuccess        =<< run ["--update"]
+        assertEqual "has updated contents" "foo\nbaz\n"                =<< Text.readFile "example/example-b.txt"
 
 run :: [String] -> IO Exit.ExitCode
 run arguments = do
@@ -58,7 +63,8 @@ run arguments = do
         (["exec", "--", "tasty-mgolden-example"] <> arguments)
   pure status
 
-reset :: IO ()
-reset = do
+setup :: IO ()
+setup = do
+  System.createDirectory "example"
   Text.writeFile "example/example-a.txt" "foo\nbar"
   Text.writeFile "example/example-b.txt" "foo\nbar"

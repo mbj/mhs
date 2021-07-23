@@ -4,7 +4,7 @@ cabal-version: 1.18
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e3fc0c5b61105eb064cc25898c4994c0daeb5aa8af5594abf447f9f16af74d8e
+-- hash: 8d89e133cdf836dd1bd8fa74514fcd65c18abb5e4f0b621ccce346aa86d3197e
 
 name:           tasty-mgolden
 version:        0.0.2
@@ -103,11 +103,13 @@ test-suite golden
       Diff ==0.3.4 || >=0.4 && <0.5
     , ansi-terminal >=0.9 && <0.10 || >=0.10 && <0.11
     , base >=4.12 && <=4.15
+    , directory
     , filepath >=1.4.2 && <1.5
     , tasty >=1.3.1 && <1.4
     , tasty-expected-failure
     , tasty-hunit
     , tasty-mgolden
+    , temporary
     , text ==1.2.*
     , typed-process
   if flag(development)
