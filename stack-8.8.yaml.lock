@@ -5,6 +5,13 @@
 
 packages:
 - completed:
+    hackage: stratosphere-0.59.1@sha256:e8a77ab12b5243b54bd55f240dcf5617be6b161cd6f84dc0cb1c22ba05c3e63b,145458
+    pantry-tree:
+      size: 243793
+      sha256: d558204a372f28054baf5ea778bf30b193c14ddc4b05e0e0cf7e381bcd3653e3
+  original:
+    hackage: stratosphere-0.59.1@sha256:e8a77ab12b5243b54bd55f240dcf5617be6b161cd6f84dc0cb1c22ba05c3e63b,145458
+- completed:
     hackage: tasty-1.3.1@sha256:01e35c97f7ee5ccbc28f21debea02a38cd010d53b4c3087f5677c5d06617a507,2520
     pantry-tree:
       size: 1804
@@ -44,6 +51,19 @@ packages:
     subdir: core
     git: https://github.com/brendanhay/amazonka
     commit: 020bc7bde47bb235e448c76088dc44d6cec13e9b
+- completed:
+    subdir: amazonka-cloudformation
+    name: amazonka-cloudformation
+    version: 1.6.1
+    git: https://github.com/mbj/amazonka
+    pantry-tree:
+      size: 10760
+      sha256: 84a348ddd543a8878c9f9a0525f6ea1a6affc7bc0e1c0bc62c9ea946a648c066
+    commit: 33aa6b71309793829b534fb29f6532d71c32b106
+  original:
+    subdir: amazonka-cloudformation
+    git: https://github.com/mbj/amazonka
+    commit: 33aa6b71309793829b534fb29f6532d71c32b106
 snapshots:
 - completed:
     size: 534126
