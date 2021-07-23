@@ -1,0 +1,85 @@
+github:     mbj/conversions
+homepage:   https://github.com/mbj/conversions#readme
+license:    MIT
+maintainer: Markus Schirp mbj@schirp-ds.com, Allan Lukwago <epicallan.al@gmail.com>
+name:       conversions
+synopsis:   Injective explicit total and partial conversions
+version:    0.0.4
+
+dependencies:
+- base               > 4.12 && < 4.15
+- bytestring         ^>= 0.10
+- exceptions         ^>= 0.10
+- mtl                ^>= 2.2
+- template-haskell   ^>= 2.15 || ^>= 2.16
+- text               ^>= 1.2
+
+flags:
+  development:
+    description: Run GHC with development flags
+    default: false
+    manual: true
+
+ghc-options:
+- -Wall
+- -Wcompat
+- -Widentities
+- -Wimplicit-prelude
+- -Wincomplete-record-updates
+- -Wincomplete-uni-patterns
+- -Wmissing-local-signatures
+- -Wmissing-signatures
+- -Wmonomorphism-restriction
+- -Wredundant-constraints
+- -fhide-source-paths
+- -funbox-strict-fields
+- -optP-Wno-nonportable-include-path
+
+default-extensions:
+- AllowAmbiguousTypes
+- ConstraintKinds
+- DataKinds
+- DerivingStrategies
+- DerivingVia
+- DuplicateRecordFields
+- FlexibleContexts
+- FlexibleInstances
+- ExistentialQuantification
+- KindSignatures
+- LambdaCase
+- MultiParamTypeClasses
+- NoImplicitPrelude
+- OverloadedLists
+- OverloadedStrings
+- PolyKinds
+- ScopedTypeVariables
+- StrictData
+- TupleSections
+- TypeApplications
+- TypeFamilies
+- TypeOperators
+
+library:
+  source-dirs: src
+
+when:
+  - condition: flag(development)
+    then:
+      ghc-options:
+      - -Werror
+      - -fplugin=SourceConstraints
+      dependencies:
+      - source-constraints ^>= 0.0.2
+    else:
+      ghc-options: -Wwarn
+
+tests:
+  test:
+    main: test/Test.hs
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -with-rtsopts=-N
+    dependencies:
+    - conversions
+    - devtools ^>= 0.1.0
