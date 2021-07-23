@@ -25,17 +25,6 @@ packages:
       sha256: e81c5a1e82ec2cd68cbbbec9cd60567363abe02257fa1370a906f6754b6818b8
   original:
     hackage: unliftio-core-0.2.0.1@sha256:9b3e44ea9aacacbfc35b3b54015af450091916ac3618a41868ebf6546977659a,1082
-- completed:
-    name: devtools
-    version: 0.1.0
-    git: https://github.com/mbj/devtools-hs.git
-    pantry-tree:
-      size: 1058
-      sha256: 718606fda1141aacd19600ea6caf0a0f3eb2ff674db796e4777da25551ca46e9
-    commit: 4ad5c5193a320977a9a7befb8726f2db0d271712
-  original:
-    git: https://github.com/mbj/devtools-hs.git
-    commit: 4ad5c5193a320977a9a7befb8726f2db0d271712
 snapshots:
 - completed:
     size: 534126
