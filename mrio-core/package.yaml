@@ -1,0 +1,80 @@
+name:       mrio-core
+synopsis:   Minimal version of rio with the RIO core type.
+homepage:   https://github.com/mbj/mhs#readme
+maintainer: Markus Schirp mbj@schirp-dso.com, Allan Lukwago <epicallan.al@gmail.com>
+copyright:  2021 Markus Schirp
+license:    MIT
+github:     mbj/mhs
+version:    0.0.1
+
+flags:
+  development:
+    description: Run GHC with development flags
+    default: false
+    manual: true
+
+dependencies:
+- base >= 4.10 && < 10
+- exceptions
+- mtl
+- primitive
+- unliftio-core
+
+ghc-options:
+- -Wall
+- -Wcompat
+- -Werror
+- -Widentities
+- -Wimplicit-prelude
+- -Wincomplete-record-updates
+- -Wincomplete-uni-patterns
+- -Wmissing-local-signatures
+- -Wmissing-signatures
+- -Wmonomorphism-restriction
+- -Wredundant-constraints
+- -fhide-source-paths
+- -funbox-strict-fields
+- -optP-Wno-nonportable-include-path
+
+when:
+  - condition: flag(development)
+    then:
+      ghc-options:
+      - -Werror
+      - -fplugin=SourceConstraints
+      dependencies:
+      - source-constraints ^>= 0.0.2
+    else:
+      ghc-options: -Wwarn
+
+default-extensions:
+- DataKinds
+- DerivingStrategies
+- GeneralizedNewtypeDeriving
+- FlexibleContexts
+- FlexibleInstances
+- KindSignatures
+- MultiParamTypeClasses
+- NoImplicitPrelude
+- OverloadedStrings
+- PolyKinds
+- ScopedTypeVariables
+- StrictData
+- TupleSections
+- TypeFamilies
+- TypeApplications
+- UndecidableInstances
+
+library:
+  source-dirs: src
+
+tests:
+  test:
+    main: test/Test.hs
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -with-rtsopts=-N
+    dependencies:
+    - devtools
+    - mrio-core

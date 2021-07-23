@@ -1,0 +1,110 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.4.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 9393e8b3b581e159687f52f963854dee43c548e26b584937572110d02773d472
+
+name:           mrio-colog
+version:        0.0.1
+synopsis:       Minimal version of rio with co-log integration via orphan instances
+homepage:       https://github.com/mbj/mhs#readme
+bug-reports:    https://github.com/mbj/mhs/issues
+maintainer:     Markus Schirp mbj@schirp-dso.com, Allan Lukwago <epicallan.al@gmail.com>
+copyright:      2021 Markus Schirp
+license:        MIT
+build-type:     Simple
+
+source-repository head
+  type: git
+  location: https://github.com/mbj/mhs
+
+flag development
+  description: Run GHC with development flags
+  manual: True
+  default: False
+
+library
+  exposed-modules:
+      MRIO.Colog
+      MRIO.Colog.Prelude
+      MRIO.Colog.Ref
+  other-modules:
+      Paths_mrio_colog
+  hs-source-dirs:
+      src
+  default-extensions:
+      DataKinds
+      DerivingStrategies
+      GeneralizedNewtypeDeriving
+      FlexibleContexts
+      FlexibleInstances
+      KindSignatures
+      MultiParamTypeClasses
+      NoImplicitPrelude
+      OverloadedStrings
+      PolyKinds
+      RecordWildCards
+      ScopedTypeVariables
+      StrictData
+      TupleSections
+      TypeFamilies
+      TypeApplications
+      UndecidableInstances
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path
+  build-depends:
+      base >=4.10 && <10
+    , co-log
+    , containers
+    , mrio-core
+    , mtl
+    , text
+  if flag(development)
+    ghc-options: -Werror -fplugin=SourceConstraints
+    build-depends:
+        source-constraints >=0.0.2 && <0.1
+  else
+    ghc-options: -Wwarn
+  default-language: Haskell2010
+
+test-suite test
+  type: exitcode-stdio-1.0
+  main-is: test/Test.hs
+  other-modules:
+      Paths_mrio_colog
+  default-extensions:
+      DataKinds
+      DerivingStrategies
+      GeneralizedNewtypeDeriving
+      FlexibleContexts
+      FlexibleInstances
+      KindSignatures
+      MultiParamTypeClasses
+      NoImplicitPrelude
+      OverloadedStrings
+      PolyKinds
+      RecordWildCards
+      ScopedTypeVariables
+      StrictData
+      TupleSections
+      TypeFamilies
+      TypeApplications
+      UndecidableInstances
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
+  build-depends:
+      base >=4.10 && <10
+    , co-log
+    , containers
+    , devtools
+    , mrio-colog
+    , mrio-core
+    , mtl
+    , text
+  if flag(development)
+    ghc-options: -Werror -fplugin=SourceConstraints
+    build-depends:
+        source-constraints >=0.0.2 && <0.1
+  else
+    ghc-options: -Wwarn
+  default-language: Haskell2010

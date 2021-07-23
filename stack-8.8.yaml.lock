@@ -25,6 +25,32 @@ packages:
       sha256: e81c5a1e82ec2cd68cbbbec9cd60567363abe02257fa1370a906f6754b6818b8
   original:
     hackage: unliftio-core-0.2.0.1@sha256:9b3e44ea9aacacbfc35b3b54015af450091916ac3618a41868ebf6546977659a,1082
+- completed:
+    subdir: amazonka
+    name: amazonka
+    version: 1.6.1
+    git: https://github.com/brendanhay/amazonka
+    pantry-tree:
+      size: 1038
+      sha256: 59c7840fe6c9609d1d5022149010e72db5778e4978b9384b6dee8a4a207c96b3
+    commit: 020bc7bde47bb235e448c76088dc44d6cec13e9b
+  original:
+    subdir: amazonka
+    git: https://github.com/brendanhay/amazonka
+    commit: 020bc7bde47bb235e448c76088dc44d6cec13e9b
+- completed:
+    subdir: core
+    name: amazonka-core
+    version: 1.6.1
+    git: https://github.com/brendanhay/amazonka
+    pantry-tree:
+      size: 3484
+      sha256: dbd45ae65d2df195ac670bed949d98ab3764bf5c691594c861337d8228ccc9fb
+    commit: 020bc7bde47bb235e448c76088dc44d6cec13e9b
+  original:
+    subdir: core
+    git: https://github.com/brendanhay/amazonka
+    commit: 020bc7bde47bb235e448c76088dc44d6cec13e9b
 snapshots:
 - completed:
     size: 534126

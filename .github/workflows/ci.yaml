@@ -14,6 +14,9 @@ jobs:
         os:      [ubuntu-latest, macOS-latest]
         project:
         - devtools
+        - mrio-amazonka
+        - mrio-colog
+        - mrio-core
         - source-constraints
     steps:
     - uses: actions/checkout@v2

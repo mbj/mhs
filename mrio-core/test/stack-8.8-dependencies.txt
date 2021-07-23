@@ -51,6 +51,7 @@ integer-logarithms 1.0.3.1
 libyaml 0.1.2
 mono-traversable 1.0.15.1
 mprelude 0.2.1
+mrio-core 0.0.1
 mtl 2.2.2
 old-locale 1.0.0.7
 optparse-applicative 0.15.1.0
