@@ -35,6 +35,7 @@ packages:
 - lht
 - mrio-amazonka
 - mrio-colog
+- mrio-log
 - mrio-core
 - openapi
 - pgt

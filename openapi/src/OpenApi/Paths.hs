@@ -65,8 +65,10 @@ parsePathTemplateText input =
     anyPathSegment :: Text.Parser PathSegment
     anyPathSegment = dynamicPathSegment <|> (PathSegmentStatic <$> segmentName)
 
-    dynamicPathSegment   = skip '{' *> (PathSegmentDynamic . TaggedText <$> segmentName) <* skip '}'
-    segmentChar char = any ($ char) ([Char.isDigit, Char.isLower, Char.isUpper, (== '_')] :: [Char -> Bool])
-    segmentName      = Text.takeWhile1 segmentChar
-    separator        = skip '/'
-    skip             = void . Text.char
+    dynamicPathSegment = skip '{' *> (PathSegmentDynamic . TaggedText <$> segmentName) <* skip '}'
+
+    segmentChar char = any ($ char) ([Char.isDigit, Char.isLower, Char.isUpper, (== '_'), (== '-')] :: [Char -> Bool])
+
+    segmentName = Text.takeWhile1 segmentChar
+    separator   = skip '/'
+    skip        = void . Text.char
