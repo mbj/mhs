@@ -31,6 +31,7 @@ packages:
 - mrio-amazonka
 - mrio-colog
 - mrio-core
+- openapi
 - pgt
 - postgresql-connection
 - postgresql-container

@@ -5,6 +5,20 @@
 
 packages:
 - completed:
+    hackage: aeson-1.5.6.0@sha256:d3e76872f8634c9cd33eb128d6c4dd1bf0cc8d71d1f32055d774490d5f6dedf8,6786
+    pantry-tree:
+      size: 37981
+      sha256: 10dbaacb905db0c0b0602cc3045d91079c3ca8eb981c356864a4a68cf2cf9784
+  original:
+    hackage: aeson-1.5.6.0@sha256:d3e76872f8634c9cd33eb128d6c4dd1bf0cc8d71d1f32055d774490d5f6dedf8,6786
+- completed:
+    hackage: data-fix-0.3.1@sha256:7aee2c0633632479cef93c8000befd5bc950ba7c329d69e918ca520944164e27,1645
+    pantry-tree:
+      size: 261
+      sha256: 8802b0b00dfbbd8526aec56d31f8dd7193b0af4f694144958c3ab08dd1f60f78
+  original:
+    hackage: data-fix-0.3.1@sha256:7aee2c0633632479cef93c8000befd5bc950ba7c329d69e918ca520944164e27,1645
+- completed:
     hackage: fast-builder-0.1.2.1@sha256:6e3148d9ac21e5ec900fa59d1d65322e6b4c0491f19b53bdbe093186a519eb9f,2791
     pantry-tree:
       size: 986
@@ -39,6 +53,13 @@ packages:
       sha256: d558204a372f28054baf5ea778bf30b193c14ddc4b05e0e0cf7e381bcd3653e3
   original:
     hackage: stratosphere-0.59.1@sha256:e8a77ab12b5243b54bd55f240dcf5617be6b161cd6f84dc0cb1c22ba05c3e63b,145458
+- completed:
+    hackage: strict-0.4.0.1@sha256:08cf72ad570fddfe3b3424117bf20a303a1fb21047b40c1d6c8004c0e3e02a0b,4124
+    pantry-tree:
+      size: 654
+      sha256: f490c0ecce59996cdd154e753de05733a3edbb9f65d1b768133e6f79f73de572
+  original:
+    hackage: strict-0.4.0.1@sha256:08cf72ad570fddfe3b3424117bf20a303a1fb21047b40c1d6c8004c0e3e02a0b,4124
 - completed:
     hackage: tasty-1.3.1@sha256:01e35c97f7ee5ccbc28f21debea02a38cd010d53b4c3087f5677c5d06617a507,2520
     pantry-tree:
