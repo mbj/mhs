@@ -22,6 +22,7 @@ packages:
 - cbt
 - conversions
 - devtools
+- lht
 - mrio-amazonka
 - mrio-colog
 - mrio-core
