@@ -4,7 +4,6 @@ extra-deps:
 - co-log-0.4.0.1@sha256:3d4c17f37693c80d1aa2c41669bc3438fac3e89dc5f479e57d79bc3ddc4dfcc5,5087
 - mprelude
 - tasty-1.3.1@sha256:01e35c97f7ee5ccbc28f21debea02a38cd010d53b4c3087f5677c5d06617a507,2520
-- tasty-mgolden-0.0.1@sha256:07fadb592cde353c386c5f38cff75539a5675e9350776ed6f4f0a70247427a78,4214
 - git: https://github.com/brendanhay/amazonka
   commit: 020bc7bde47bb235e448c76088dc44d6cec13e9b
   subdirs:
@@ -23,3 +22,4 @@ packages:
 - mrio-colog
 - mrio-core
 - source-constraints
+- tasty-mgolden
