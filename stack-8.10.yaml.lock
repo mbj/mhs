@@ -51,6 +51,19 @@ packages:
     subdir: core
     git: https://github.com/brendanhay/amazonka
     commit: 020bc7bde47bb235e448c76088dc44d6cec13e9b
+- completed:
+    subdir: amazonka-cloudformation
+    name: amazonka-cloudformation
+    version: 1.6.1
+    git: https://github.com/mbj/amazonka
+    pantry-tree:
+      size: 10760
+      sha256: 84a348ddd543a8878c9f9a0525f6ea1a6affc7bc0e1c0bc62c9ea946a648c066
+    commit: 33aa6b71309793829b534fb29f6532d71c32b106
+  original:
+    subdir: amazonka-cloudformation
+    git: https://github.com/mbj/amazonka
+    commit: 33aa6b71309793829b534fb29f6532d71c32b106
 snapshots:
 - completed:
     size: 585603

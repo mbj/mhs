@@ -9,6 +9,10 @@ extra-deps:
   subdirs:
   - amazonka
   - core
+- git: https://github.com/mbj/amazonka
+  commit: 33aa6b71309793829b534fb29f6532d71c32b106
+  subdirs:
+  - amazonka-cloudformation
 flags:
   source-constraints:
     development: true
@@ -24,4 +28,5 @@ packages:
 - postgresql-connection
 - postgresql-container
 - source-constraints
+- stack-deploy
 - tasty-mgolden
