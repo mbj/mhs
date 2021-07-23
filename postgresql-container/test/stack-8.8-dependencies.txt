@@ -2,11 +2,12 @@ Cabal 3.0.1.0
 Diff 0.4.0
 QuickCheck 2.13.2
 StateVar 1.2.1
-aeson 1.4.7.1
+aeson 1.5.6.0
 alex 3.2.6
 ansi-terminal 0.10.3
 ansi-wl-pprint 0.6.9
 array 0.5.4.0
+assoc 1.0.2
 async 2.2.2
 attoparsec 0.13.2.4
 base 4.13.0.0
@@ -51,6 +52,7 @@ data-default-instances-dlist 0.0.1
 data-default-instances-old-locale 0.0.1
 data-dword 0.3.2
 data-endian 0.1.1
+data-fix 0.3.1
 data-serializer 0.3.4.1
 data-textual 0.3.0.3
 dbt-postgresql-connection 0.1.0
@@ -123,6 +125,7 @@ source-constraints 0.0.2
 split 0.2.3.4
 splitmix 0.0.5
 stm 2.5.0.0
+strict 0.4.0.1
 syb 0.7.1
 tagged 0.8.6.1
 tar 0.5.1.1
@@ -140,6 +143,7 @@ text-printer 0.5.0.1
 th-abstraction 0.3.2.0
 th-lift 0.8.2
 th-lift-instances 0.1.18
+these 1.1.1.1
 time 1.9.3
 time-compat 1.9.5
 torsor 0.1
