@@ -23,6 +23,7 @@ main = do
       liftIO $ setupSchema adminConfig
       config   <- PGT.configure adminConfig empty
       devtools <- liftIO $ Devtools.testTree Devtools.defaultConfig
+         { Devtools.targets = [Devtools.Target "pgt"] }
       liftIO . Tasty.defaultMain $
         Tasty.testGroup ""
           [ devtools

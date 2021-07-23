@@ -47,6 +47,13 @@ packages:
   original:
     hackage: postgresql-syntax-0.4@sha256:df8b65a33f4088eddad25cedbec814e5f34f8e8ae55065139b73bd6da0d66f21,4176
 - completed:
+    hackage: symbols-0.3.0.0@sha256:5d051bccbd4bcb33fa8ce076bd3cd2bacc90973682f7340976758947eaa128a9,964
+    pantry-tree:
+      size: 529
+      sha256: 06746077732f4d49d3277821303292314d51df9a63efecd47217fc0946233026
+  original:
+    hackage: symbols-0.3.0.0@sha256:5d051bccbd4bcb33fa8ce076bd3cd2bacc90973682f7340976758947eaa128a9,964
+- completed:
     hackage: tasty-1.3.1@sha256:01e35c97f7ee5ccbc28f21debea02a38cd010d53b4c3087f5677c5d06617a507,2520
     pantry-tree:
       size: 1804
