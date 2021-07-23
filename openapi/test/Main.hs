@@ -17,6 +17,15 @@ import qualified Data.Map.Strict           as Map
 import qualified Devtools
 import qualified Network.HTTP.Types.Status as HTTP
 
+main :: IO ()
+main = do
+  devtools <- Devtools.testTree Devtools.defaultConfig
+    { Devtools.hlintArguments = ["-XTypeApplications"]
+    , Devtools.targets        = [Devtools.Target "openapi"]
+    }
+
+  defaultMain $ testGroup "openapi" [suite, devtools]
+
 suite :: TestTree
 suite = testGroup "Test Suite"
   [ parseFormat
@@ -50,6 +59,7 @@ parsePathTemplate
       , ("/1",           PathTemplate [static' "1"])
       , ("/__foo__",     PathTemplate [static' "__foo__"])
       , ("/foo",         PathTemplate [static' "foo"])
+      , ("/foo-bar",     PathTemplate [static' "foo-bar"])
       , ("/foo/bar",     PathTemplate [static' "foo", static' "bar"])
       , ("/foo/{bar}",   PathTemplate [static' "foo", dynamic "bar"])
       , ("/foo_bar",     PathTemplate [static' "foo_bar"])
@@ -119,14 +129,6 @@ parseResponses :: TestTree
       , (JSON.object [("99", JSON.object empty)], "Invalid status code pattern: \"99\"")
       , (JSON.object [("foo", JSON.object empty)], "Invalid status code pattern: \"foo\"")
       ]
-
-main :: IO ()
-main = do
-  Devtools.main Devtools.defaultConfig
-    { Devtools.hlintArguments = ["-XTypeApplications"]
-    , Devtools.targets = [Devtools.Target "openapi"]
-    }
-  defaultMain suite
 
 mkAccepted
   :: forall a . (Eq a, JSON.FromJSON a, JSON.ToJSON a, Show a)
