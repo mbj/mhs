@@ -23,6 +23,8 @@ flags:
     development: true
   mprelude:
     development: true
+  mrio-log:
+    development: true
 packages:
 - bounded
 - cbt
@@ -33,6 +35,7 @@ packages:
 - mrio-amazonka
 - mrio-colog
 - mrio-core
+- mrio-log
 - openapi
 - pgt
 - postgresql-connection
