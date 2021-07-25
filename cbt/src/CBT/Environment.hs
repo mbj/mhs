@@ -13,21 +13,18 @@ import CBT.IncrementalState
 import CBT.Prelude
 import CBT.Types
 import Data.Maybe (isJust)
-import MRIO.Colog
 
 import qualified CBT.IncrementalState as IncrementalState
-import qualified Colog
+import qualified MRIO.Log             as Log
 import qualified System.Environment   as Environment
 
-type WithEnv env = (HasEnvironment env, Colog.HasLog env Colog.Message (RIO env))
+type WithEnv env = (HasEnvironment env, Log.Env env)
 
 data Environment = Environment
   { debug     :: Bool
   , builds    :: IncrementalState ImageName ImageBuildError ()
-  , logAction :: Colog.LogAction (RIO Environment) Colog.Message
+  , logAction :: Log.Action (RIO Environment)
   }
-
-type instance LogActionField Environment = "logAction"
 
 class HasEnvironment env where
   getEnvironment :: env -> Environment
@@ -40,7 +37,7 @@ newDefaultEnvironment = do
   debug  <- isJust <$> liftIO (Environment.lookupEnv "CBT_DEBUG")
   builds <- IncrementalState.new
   pure $ Environment
-    { logAction = Colog.richMessageAction
+    { logAction = Log.defaultCLIAction
     , ..
     }
 

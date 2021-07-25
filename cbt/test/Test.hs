@@ -23,7 +23,7 @@ main = do
 devtoolsConfig :: Devtools.Config
 devtoolsConfig = Devtools.defaultConfig
   { Devtools.hlintArguments = ["-XTypeApplications"]
-  , Devtools.targets        = [Devtools.Target "devtools"]
+  , Devtools.targets        = [Devtools.Target "cbt"]
   }
 
 imageDirectory :: CBT.Environment -> Tasty.TestTree
