@@ -30,12 +30,12 @@ import Text.Read (readMaybe)
 
 import qualified CBT.Backend.Tar       as Tar
 import qualified CBT.IncrementalState  as IncrementalState
-import qualified Colog
 import qualified Data.ByteString       as BS
 import qualified Data.ByteString.Lazy  as LBS
 import qualified Data.List             as List
 import qualified Data.Text             as Text
 import qualified Data.Text.Encoding    as Text
+import qualified MRIO.Log              as Log
 import qualified System.Exit           as Exit
 import qualified System.Path           as Path
 import qualified System.Path.Directory as Path
@@ -485,7 +485,7 @@ procRun
   => Process.ProcessConfig stdin stdout stderr
   -> (Process.ProcessConfig stdin stdout stderr -> IO a)
   -> RIO env a
-procRun proc action = onDebug (Colog.logDebug . convert $ show proc) >> liftIO (action proc)
+procRun proc action = onDebug (Log.debug . convert $ show proc) >> liftIO (action proc)
 
 handleFailure
   :: forall b env a . (Backend b, WithEnv env)

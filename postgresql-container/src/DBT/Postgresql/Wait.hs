@@ -10,9 +10,9 @@ import GHC.Enum (succ)
 import GHC.Real (fromIntegral)
 import UnliftIO.Exception (throwString)
 
-import qualified Colog
 import qualified DBT.Postgresql   as Postgresql
 import qualified Hasql.Connection as Hasql
+import qualified MRIO.Log         as Log
 
 data Config env = Config
   { clientConfig :: Postgresql.ClientConfig
@@ -22,7 +22,7 @@ data Config env = Config
   , waitTime     :: Natural
   }
 
-wait :: forall env . Colog.WithLog env Colog.Message (RIO env) => Config env -> RIO env ()
+wait :: forall env . Log.Env env => Config env -> RIO env ()
 wait Config{clientConfig = clientConfig, ..} =
   start =<< effectiveWaitTime
   where
@@ -49,6 +49,6 @@ wait Config{clientConfig = clientConfig, ..} =
               onFail
               failPrefix $ "Giving up connection, last error: " <> show error
             else do
-              Colog.logDebug . convert $ "Retrying failed connection attempt from error: " <> show error
+              Log.debug . convert $ "Retrying failed connection attempt from error: " <> show error
               liftIO $ threadDelay waitTime'
               attempt $ succ attempts

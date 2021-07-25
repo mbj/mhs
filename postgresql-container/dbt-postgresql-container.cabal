@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d01ed9aec404a1a56a2fb3cfa48492abb2d524915a9be4b105be9f0f01783221
+-- hash: 04f6b56fc8b3a14fa7c766687043ec6f073df418bc6e4c52bfdde48d8f689b6c
 
 name:           dbt-postgresql-container
 version:        0.1.0
@@ -56,14 +56,13 @@ library
       base >=4.12 && <4.13 || >=4.13 && <4.14 || >=4.14 && <4.15
     , bytestring ==0.10.*
     , cbt >=0.1.0 && <0.2
-    , co-log ==0.4.*
     , containers ==0.6.*
     , conversions >=0.0.3 && <0.1
     , dbt-postgresql-connection >=0.1.0 && <0.2
     , hasql ==1.4.*
     , mprelude >=0.2.0 && <0.3
-    , mrio-colog >=0.0.1 && <0.1
     , mrio-core >=0.0.1 && <0.1
+    , mrio-log >=0.0.1 && <0.1
     , mtl ==2.2.*
     , network ==3.1.*
     , optparse-applicative >=0.15 && <0.16 || >=0.16 && <0.17
@@ -109,15 +108,14 @@ executable dbt
       base >=4.12 && <4.13 || >=4.13 && <4.14 || >=4.14 && <4.15
     , bytestring ==0.10.*
     , cbt >=0.1.0 && <0.2
-    , co-log ==0.4.*
     , containers ==0.6.*
     , conversions >=0.0.3 && <0.1
     , dbt-postgresql-connection >=0.1.0 && <0.2
     , dbt-postgresql-container
     , hasql ==1.4.*
     , mprelude >=0.2.0 && <0.3
-    , mrio-colog >=0.0.1 && <0.1
     , mrio-core >=0.0.1 && <0.1
+    , mrio-log >=0.0.1 && <0.1
     , mtl ==2.2.*
     , network ==3.1.*
     , optparse-applicative >=0.15 && <0.16 || >=0.16 && <0.17
@@ -162,7 +160,6 @@ test-suite test
       base >=4.12 && <4.13 || >=4.13 && <4.14 || >=4.14 && <4.15
     , bytestring ==0.10.*
     , cbt >=0.1.0 && <0.2
-    , co-log ==0.4.*
     , containers ==0.6.*
     , conversions >=0.0.3 && <0.1
     , dbt-postgresql-connection
@@ -170,8 +167,8 @@ test-suite test
     , devtools >=0.1.0 && <0.2
     , hasql ==1.4.*
     , mprelude >=0.2.0 && <0.3
-    , mrio-colog >=0.0.1 && <0.1
     , mrio-core >=0.0.1 && <0.1
+    , mrio-log >=0.0.1 && <0.1
     , mtl ==2.2.*
     , network ==3.1.*
     , optparse-applicative >=0.15 && <0.16 || >=0.16 && <0.17

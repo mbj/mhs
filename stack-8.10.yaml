@@ -1,7 +1,5 @@
 resolver: lts-18.3
 extra-deps:
-- ansi-terminal-0.10.3@sha256:e2fbcef5f980dc234c7ad8e2fa433b0e8109132c9e643bc40ea5608cd5697797,3226
-- co-log-0.4.0.1@sha256:3d4c17f37693c80d1aa2c41669bc3438fac3e89dc5f479e57d79bc3ddc4dfcc5,5087
 - hasql-th-0.4.0.9@sha256:56515d8d08d4c68e36899a46624ecd1505608cf6b4c24b5c33aee54bc76e6275,2245
 - headed-megaparsec-0.2.0.1@sha256:4bb2f1e68d2972e6b40ede202708c81b2e2fe83c454e439f27f47d1fdf7c8697,1571
 - megaparsec-9.1.0@sha256:0e9bd4714f3682b99d447f05553eda25590c15d7f2108222f62010e844c58ac0,3107
@@ -33,7 +31,6 @@ packages:
 - devtools
 - lht
 - mrio-amazonka
-- mrio-colog
 - mrio-core
 - mrio-log
 - openapi

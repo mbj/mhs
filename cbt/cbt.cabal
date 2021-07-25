@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b66c8c9c6b77465f5e3c43eafb929bfcc092a9ea75f1ba1584a47d825d0dc0d0
+-- hash: b59144901572fc84699fa445524a87e1403ab7bccdebe69f9564ec16d360ef46
 
 name:           cbt
 version:        0.1.0
@@ -69,16 +69,14 @@ library
   build-depends:
       base >=4.12 && <=4.15
     , bytestring ==0.10.*
-    , co-log ==0.4.*
-    , co-log-core ==0.2.*
     , conduit >=1.3.3 && <1.4
     , conversions >=0.0.3 && <0.1
     , cryptonite >=0.25 && <=0.29
     , exceptions ==0.10.*
     , hashable ==1.3.*
     , mprelude ==0.2.*
-    , mrio-colog >=0.0.1 && <0.1
     , mrio-core >=0.0.1 && <0.1
+    , mrio-log >=0.0.1 && <0.1
     , mtl ==2.2.*
     , pathtype ==0.8.*
     , resourcet >=1.2.4 && <1.3
@@ -132,8 +130,6 @@ test-suite test
       base >=4.12 && <=4.15
     , bytestring ==0.10.*
     , cbt
-    , co-log ==0.4.*
-    , co-log-core ==0.2.*
     , conduit >=1.3.3 && <1.4
     , conversions >=0.0.3 && <0.1
     , cryptonite >=0.25 && <=0.29
@@ -141,8 +137,8 @@ test-suite test
     , exceptions ==0.10.*
     , hashable ==1.3.*
     , mprelude ==0.2.*
-    , mrio-colog >=0.0.1 && <0.1
     , mrio-core >=0.0.1 && <0.1
+    , mrio-log >=0.0.1 && <0.1
     , mtl ==2.2.*
     , pathtype ==0.8.*
     , resourcet >=1.2.4 && <1.3
