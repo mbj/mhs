@@ -3,7 +3,7 @@ Diff 0.4.0
 QuickCheck 2.14.2
 StateVar 1.2.1
 aeson 1.5.6.0
-ansi-terminal 0.10.3
+ansi-terminal 0.11
 ansi-wl-pprint 0.6.9
 array 0.5.4.0
 assoc 1.0.2
