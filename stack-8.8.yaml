@@ -34,9 +34,8 @@ packages:
 - devtools
 - lht
 - mrio-amazonka
-- mrio-colog
-- mrio-log
 - mrio-core
+- mrio-log
 - openapi
 - pgt
 - postgresql-connection
