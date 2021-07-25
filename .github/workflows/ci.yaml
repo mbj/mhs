@@ -16,7 +16,6 @@ jobs:
         - cbt
         - devtools
         - mrio-amazonka
-        - mrio-colog
         - mrio-core
         - mrio-log
         - source-constraints
@@ -25,7 +24,7 @@ jobs:
     - uses: haskell/actions/setup@v1
       with:
         enable-stack: true
-        stack-version: latest
+        stack-version: 2.7.3
     - name: Cache Dependencies
       uses: actions/cache@v2
       with:
