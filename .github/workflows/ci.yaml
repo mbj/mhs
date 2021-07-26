@@ -14,11 +14,19 @@ jobs:
         os:  [ubuntu-latest]
         project:
         - cbt
+        - conversions
+        - db-migrations
+        - dbt-postgresql-connection
+        - dbt-postgresql-container
         - devtools
+        - lht
         - mrio-amazonka
         - mrio-core
         - mrio-log
+        - openapi
+        - pgt
         - source-constraints
+        - tasty-mgolden
     steps:
     - uses: actions/checkout@v2
     - uses: haskell/actions/setup@v1
