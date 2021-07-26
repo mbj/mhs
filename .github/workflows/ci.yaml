@@ -11,21 +11,28 @@ jobs:
       fail-fast: false
       matrix:
         ghc: ['8.8', '8.10']
-        os:  [ubuntu-latest, macOS-latest]
+        os:  [ubuntu-latest]
         project:
         - cbt
+        - conversions
+        - db-migrations
+        - dbt-postgresql-connection
+        - dbt-postgresql-container
         - devtools
+        - lht
         - mrio-amazonka
-        - mrio-colog
         - mrio-core
         - mrio-log
+        - openapi
+        - pgt
         - source-constraints
+        - tasty-mgolden
     steps:
     - uses: actions/checkout@v2
     - uses: haskell/actions/setup@v1
       with:
         enable-stack: true
-        stack-version: latest
+        stack-version: 2.7.3
     - name: Cache Dependencies
       uses: actions/cache@v2
       with:
