@@ -11,7 +11,7 @@ jobs:
       fail-fast: false
       matrix:
         ghc: ['8.8', '8.10']
-        os:  [ubuntu-latest, macOS-latest]
+        os:  [ubuntu-latest]
         project:
         - cbt
         - devtools
