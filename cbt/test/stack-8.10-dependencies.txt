@@ -109,7 +109,7 @@ typed-process 0.2.6.0
 unbounded-delays 0.1.1.1
 uniplate 1.6.13
 unix 2.7.2.2
-unliftio 0.2.18
+unliftio 0.2.19
 unliftio-core 0.2.0.1
 unordered-containers 0.2.14.0
 utf8-string 1.0.2
