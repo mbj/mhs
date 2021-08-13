@@ -16,6 +16,7 @@ import qualified CBT.TH
 import qualified Data.ByteString       as BS
 import qualified Data.Foldable         as Foldable
 import qualified LHT.Zip               as Zip
+import qualified System.Environment    as Environment
 import qualified System.Path           as Path
 import qualified System.Path.Directory as Path
 import qualified System.Posix.Files    as Files
@@ -34,6 +35,7 @@ data Config = Config
   , flags          :: [Flag]
   , packageName    :: PackageName
   , targetName     :: TargetName
+  , stackYamlPath  :: Maybe Path.AbsRelFile
   }
 
 prefix :: CBT.Prefix
@@ -64,10 +66,11 @@ withBuildContainer
   -> (CBT.ContainerName -> RIO env a)
   -> RIO env a
 withBuildContainer Config{..} action = do
-  containerName <- CBT.nextContainerName prefix
+  containerName     <- CBT.nextContainerName prefix
+  hostProjectPath   <- liftIO Path.getCurrentDirectory
+  hostHomePath      <- liftIO Path.getHomeDirectory
 
-  hostProjectPath <- liftIO Path.getCurrentDirectory
-  hostHomePath    <- liftIO Path.getHomeDirectory
+  envStackYaml :: Maybe Path.AbsRelFile <- fmap Path.file <$> liftIO (Environment.lookupEnv "STACK_YAML")
 
   let
     containerProjectPath :: Path.AbsDir
@@ -90,7 +93,6 @@ withBuildContainer Config{..} action = do
         , "--allow-different-user"
         , "--copy-bins"
         , "--interleaved-output"
-        , "--system-ghc"
         , "--work-dir", ".stack-work-lht"
         ] <> flagArguments <>
         [ convertText packageName <> ":" <> convertText targetName
@@ -100,14 +102,18 @@ withBuildContainer Config{..} action = do
     mounts :: [CBT.Mount]
     mounts =
       [ CBT.Mount { hostPath = hostProjectPath, containerPath = containerProjectPath }
-      , CBT.Mount { hostPath = hostStackPath,   containerPath = containerStackPath }
+      , CBT.Mount { hostPath = hostStackPath,   containerPath = containerStackPath   }
       ]
 
     containerDefinition =
       (CBT.minimalContainerDefinition (getField @"imageName" buildDefinition) containerName)
       { CBT.command = pure command
       , CBT.detach  = CBT.Foreground
-      , CBT.env     = [CBT.EnvInherit "STACK_YAML"]
+      , CBT.env     = Foldable.toList
+        $ CBT.EnvSet "STACK_YAML"
+        . convert
+        . Path.toString
+        . Path.takeFileName <$> envStackYaml
       , CBT.remove  = CBT.NoRemove
       , CBT.workDir = pure containerProjectPath
       , CBT.mounts  = mounts
