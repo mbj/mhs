@@ -47,12 +47,12 @@ packages:
   original:
     hackage: postgresql-syntax-0.3.0.2@sha256:f676be8eaade863bd5ea0a3bd0a60c05e0bf0c324a0cb2e05355fe684b879418,4169
 - completed:
-    hackage: stratosphere-0.59.1@sha256:e8a77ab12b5243b54bd55f240dcf5617be6b161cd6f84dc0cb1c22ba05c3e63b,145458
+    hackage: stratosphere-0.58.0@sha256:f87e078696a13eaf35c08ef694803b3744d36ceeea4eecd6ac712577a9438245,142880
     pantry-tree:
-      size: 243793
-      sha256: d558204a372f28054baf5ea778bf30b193c14ddc4b05e0e0cf7e381bcd3653e3
+      size: 239498
+      sha256: db619e09c6b8caf52ffbb91cfd4ed609c738d7042eb88d8a7082c17b1b3ffae0
   original:
-    hackage: stratosphere-0.59.1@sha256:e8a77ab12b5243b54bd55f240dcf5617be6b161cd6f84dc0cb1c22ba05c3e63b,145458
+    hackage: stratosphere-0.58.0@sha256:f87e078696a13eaf35c08ef694803b3744d36ceeea4eecd6ac712577a9438245,142880
 - completed:
     hackage: strict-0.4.0.1@sha256:08cf72ad570fddfe3b3424117bf20a303a1fb21047b40c1d6c8004c0e3e02a0b,4124
     pantry-tree:
