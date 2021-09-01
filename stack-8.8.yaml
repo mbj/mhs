@@ -43,3 +43,4 @@ packages:
 - source-constraints
 - stack-deploy
 - tasty-mgolden
+- lambda-runtime

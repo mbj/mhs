@@ -1,0 +1,107 @@
+name:                lambda-runtime
+synopsis:            A runtime environment for Haskell applications running on AWS Lambda.
+description:         A runtime environment for Haskell applications running on AWS Lambda.
+version:             0.0.1
+github:              mbj/mhs/lambda-runtime
+license:             BSD3
+author:              epicallan.al@gmail.com, Markus Schirp, Makara digital
+maintainer:          epicallan.al@gmail.com, mbj@schirp-dso.com
+category:            Web,AWS
+extra-source-files:
+- README.md
+
+dependencies:
+  - base >= 4.7 && < 5
+
+default-extensions:
+  - AllowAmbiguousTypes
+  - OverloadedStrings
+  - DeriveFoldable
+  - DeriveFunctor
+  - DeriveAnyClass
+  - DeriveGeneric
+  - DerivingStrategies
+  - DeriveTraversable
+  - DataKinds
+  - KindSignatures
+  - DuplicateRecordFields
+  - ConstraintKinds
+  - EmptyCase
+  - FlexibleContexts
+  - GeneralizedNewtypeDeriving
+  - LambdaCase
+  - MultiParamTypeClasses
+  - RecordWildCards
+  - ScopedTypeVariables
+  - TypeApplications
+  - ViewPatterns
+
+ghc-options:
+  - -Wall
+  - -Wcompat
+  - -Wincomplete-record-updates
+  - -Wincomplete-uni-patterns
+  - -Wredundant-constraints
+  - -fno-warn-partial-type-signatures
+  - -fno-warn-name-shadowing
+  - -fwarn-tabs
+  - -fwarn-unused-imports
+  - -fwarn-missing-signatures
+  - -fwarn-incomplete-patterns
+
+flags:
+  support_aesni:
+    default: false
+    manual: false
+  development:
+    description: Run GHC with development flags
+    default: false
+    manual: true
+
+when:
+  - condition: flag(development)
+    then:
+      ghc-options:
+      - -Werror
+      - -fplugin=SourceConstraints
+      dependencies:
+      - source-constraints ^>= 0.0.2
+    else:
+      ghc-options: -Wwarn
+
+library:
+  source-dirs: src
+  dependencies:
+    - aeson
+    - aeson-pretty
+    - bytestring
+    - conversions
+    - envy
+    - http-client
+    - http-types
+    - exceptions
+    - mtl
+    - mrio-core
+    - mprelude
+    - optparse-applicative ^>= 0.15 || ^>= 0.16
+    - text
+
+executables:
+  cli-example:
+    source-dirs: example
+    main: Main.hs
+    dependencies:
+      - base >= 4.7 && < 5
+      - aeson
+      - lambda-runtime
+      - unordered-containers
+
+tests:
+  test:
+    main: test/Test.hs
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -with-rtsopts=-N
+    dependencies:
+    - devtools ^>= 0.1.0
