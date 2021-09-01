@@ -44,3 +44,4 @@ packages:
 - stack-deploy
 - tasty-mgolden
 - lambda-runtime
+- lambda-alb
