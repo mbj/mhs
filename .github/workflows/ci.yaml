@@ -20,6 +20,8 @@ jobs:
         - dbt-postgresql-container
         - devtools
         - lht
+        - lambda-alb
+        - lambda-runtime
         - mrio-amazonka
         - mrio-core
         - mrio-log

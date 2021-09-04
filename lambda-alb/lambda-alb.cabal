@@ -1,0 +1,165 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.4.
+--
+-- see: https://github.com/sol/hpack
+
+name:           lambda-alb
+version:        0.0.1
+synopsis:       AWS lambda ALB integration
+description:    AWS lambda ALB integration
+category:       Web,AWS
+homepage:       https://github.com/mbj/mhs#readme
+bug-reports:    https://github.com/mbj/mhs/issues
+author:         epicallan.al@gmail.com, Markus Schirp, Makara digital
+maintainer:     epicallan.al@gmail.com, mbj@schirp-dso.com
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/mbj/mhs
+  subdir: lambda-alb
+
+flag development
+  description: Run GHC with development flags
+  manual: True
+  default: False
+
+flag support_aesni
+  manual: False
+  default: False
+
+library
+  exposed-modules:
+      AWS.Lambda.ALB
+  other-modules:
+      Paths_lambda_alb
+  hs-source-dirs:
+      src
+  default-extensions:
+      AllowAmbiguousTypes
+      OverloadedStrings
+      DeriveFoldable
+      DeriveFunctor
+      DeriveAnyClass
+      DeriveGeneric
+      DerivingStrategies
+      DeriveTraversable
+      DataKinds
+      KindSignatures
+      DuplicateRecordFields
+      ConstraintKinds
+      EmptyCase
+      FlexibleContexts
+      GeneralizedNewtypeDeriving
+      LambdaCase
+      MultiParamTypeClasses
+      RecordWildCards
+      ScopedTypeVariables
+      TypeApplications
+      ViewPatterns
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -fno-warn-partial-type-signatures -fno-warn-name-shadowing -fwarn-tabs -fwarn-unused-imports -fwarn-missing-signatures -fwarn-incomplete-patterns
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , bytestring
+    , case-insensitive
+    , exceptions
+    , http-client
+    , http-types
+    , lambda-runtime
+    , mprelude
+    , text
+    , unordered-containers
+  if flag(development)
+    ghc-options: -Werror -fplugin=SourceConstraints
+    build-depends:
+        source-constraints >=0.0.2 && <0.1
+  else
+    ghc-options: -Wwarn
+  default-language: Haskell2010
+
+executable bootstrap
+  main-is: Main.hs
+  other-modules:
+      Paths_lambda_alb
+  hs-source-dirs:
+      example
+  default-extensions:
+      AllowAmbiguousTypes
+      OverloadedStrings
+      DeriveFoldable
+      DeriveFunctor
+      DeriveAnyClass
+      DeriveGeneric
+      DerivingStrategies
+      DeriveTraversable
+      DataKinds
+      KindSignatures
+      DuplicateRecordFields
+      ConstraintKinds
+      EmptyCase
+      FlexibleContexts
+      GeneralizedNewtypeDeriving
+      LambdaCase
+      MultiParamTypeClasses
+      RecordWildCards
+      ScopedTypeVariables
+      TypeApplications
+      ViewPatterns
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -fno-warn-partial-type-signatures -fno-warn-name-shadowing -fwarn-tabs -fwarn-unused-imports -fwarn-missing-signatures -fwarn-incomplete-patterns
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , lambda-alb
+    , lambda-runtime
+  if flag(development)
+    ghc-options: -Werror -fplugin=SourceConstraints
+    build-depends:
+        source-constraints >=0.0.2 && <0.1
+  else
+    ghc-options: -Wwarn
+  default-language: Haskell2010
+
+test-suite test
+  type: exitcode-stdio-1.0
+  main-is: test/Test.hs
+  other-modules:
+      Paths_lambda_alb
+  default-extensions:
+      AllowAmbiguousTypes
+      OverloadedStrings
+      DeriveFoldable
+      DeriveFunctor
+      DeriveAnyClass
+      DeriveGeneric
+      DerivingStrategies
+      DeriveTraversable
+      DataKinds
+      KindSignatures
+      DuplicateRecordFields
+      ConstraintKinds
+      EmptyCase
+      FlexibleContexts
+      GeneralizedNewtypeDeriving
+      LambdaCase
+      MultiParamTypeClasses
+      RecordWildCards
+      ScopedTypeVariables
+      TypeApplications
+      ViewPatterns
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -fno-warn-partial-type-signatures -fno-warn-name-shadowing -fwarn-tabs -fwarn-unused-imports -fwarn-missing-signatures -fwarn-incomplete-patterns -rtsopts -threaded -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , devtools >=0.1.0 && <0.2
+  if flag(development)
+    ghc-options: -Werror -fplugin=SourceConstraints
+    build-depends:
+        source-constraints >=0.0.2 && <0.1
+  else
+    ghc-options: -Wwarn
+  default-language: Haskell2010
