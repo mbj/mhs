@@ -3,8 +3,34 @@ name: CI
 on: push
 
 jobs:
-  ci:
+  dependencies:
     runs-on: ${{ matrix.os }}
+    env:
+      STACK_YAML: ${{ github.workspace }}/stack-${{ matrix.ghc }}.yaml
+    strategy:
+      fail-fast: false
+      matrix:
+        ghc: ['8.10']
+        os:  [ubuntu-latest]
+    steps:
+    - uses: actions/checkout@v2
+    - uses: haskell/actions/setup@v1
+      with:
+        enable-stack: true
+        stack-version: 2.7.3
+    - name: Cache Dependencies
+      uses: actions/cache@v2
+      with:
+        path: ~/.stack
+        key: ${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles(env.STACK_YAML, format('{0}.lock', env.STACK_YAML)) }}
+        restore-keys: |
+          ${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles(env.STACK_YAML, format('{0}.lock', env.STACK_YAML)) }}
+          ${{ matrix.os }}-${{ matrix.ghc }}
+    - name: Install dependencies
+      run: stack build --test --only-dependencies
+  tests:
+    runs-on: ${{ matrix.os }}
+    needs: dependencies
     env:
       STACK_YAML: ${{ github.workspace }}/stack-${{ matrix.ghc }}.yaml
     strategy:
@@ -40,9 +66,6 @@ jobs:
       with:
         path: ~/.stack
         key: ${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles(env.STACK_YAML, format('{0}.lock', env.STACK_YAML)) }}
-        restore-keys: |
-          ${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles(env.STACK_YAML, format('{0}.lock', env.STACK_YAML)) }}
-          ${{ matrix.os }}-${{ matrix.ghc }}
     - name: Install dependencies
       run: stack build --test --only-dependencies
     - name: Build
