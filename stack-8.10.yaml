@@ -1,4 +1,4 @@
-resolver: lts-18.4
+resolver: lts-18.9
 extra-deps:
 - hasql-th-0.4.0.9@sha256:56515d8d08d4c68e36899a46624ecd1505608cf6b4c24b5c33aee54bc76e6275,2245
 - headed-megaparsec-0.2.0.1@sha256:4bb2f1e68d2972e6b40ede202708c81b2e2fe83c454e439f27f47d1fdf7c8697,1571
