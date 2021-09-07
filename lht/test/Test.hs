@@ -1,6 +1,5 @@
-{-# OPTIONS_GHC -Wwarn #-}
-
 import MPrelude
+import System.Path ((</>))
 
 import qualified CBT
 import qualified Control.Exception     as Exception
@@ -19,32 +18,31 @@ main = do
   devtools <- Devtools.testTree Devtools.defaultConfig { Devtools.targets = [Devtools.Target "lht"] }
 
   Tasty.defaultMain $ Tasty.testGroup "lht"
-    [ -- Disabled while importing to mhs
-      -- , testBuild
-      Tasty.after Tasty.AllFinish "test-build" devtools
+    [ testBuild
+    , Tasty.after Tasty.AllFinish "test-build" devtools
     ]
 
 testBuild :: Tasty.TestTree
 testBuild =
   Tasty.testCase "test-build" $ do
-    stack <- Environment.getEnv "STACK_YAML"
+    stackYamlEnv :: Path.AbsRelFile <- Path.file <$> Environment.getEnv "STACK_YAML"
 
-    if stack == "stack-8.10.yaml"
-      then pure ()
-      else do
-        executable <- withCurrentDirectory (Path.relDir "example") . CBT.runDefaultEnvironment $
-          LHT.Build.build config
+    let stackYamlPath = Path.dir "./" </> Path.takeFileName stackYamlEnv
 
-        Tasty.assertBool
-          "static binary"
-          (Foldable.null . ELF.parseSymbolTables $ ELF.parseElf executable)
+    executable <- withCurrentDirectory (Path.relDir "example") . CBT.runDefaultEnvironment $
+      LHT.Build.build $ config stackYamlPath
 
-config :: LHT.Build.Config
-config = LHT.Build.Config
+    Tasty.assertBool
+      "static binary"
+      (Foldable.null . ELF.parseSymbolTables $ ELF.parseElf executable)
+
+config :: Path.AbsRelFile -> LHT.Build.Config
+config stackYamlPath = LHT.Build.Config
   { executablePath = Path.relFile ".local/bin/hello-world"
-  , packageName    = packageName
-  , targetName     = LHT.Build.TargetName "hello-world"
   , flags          = [LHT.Build.Flag packageName "static"]
+  , packageName    = packageName
+  , stackYamlPath  = pure stackYamlPath
+  , targetName     = LHT.Build.TargetName "hello-world"
   }
   where
     packageName = LHT.Build.PackageName "example"
