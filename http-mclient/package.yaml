@@ -1,0 +1,96 @@
+name:                http-mclient
+synopsis:            Minimal http-client
+description:         Minimal http-client built on top of http-client library
+version:             0.0.1
+github:              mbj/mhs/http-mclient
+license:             BSD3
+author:              gamsnjaga@gmail.com, epicallan.al@gmail.com
+maintainer:          gamsnjaga@gmail.com, epicallan.al@gmail.com, mbj@schirp-dso.com
+category:            Web
+extra-source-files:
+- README.md
+
+dependencies:
+  - base >= 4.7 && < 5
+
+default-extensions:
+  - AllowAmbiguousTypes
+  - OverloadedStrings
+  - OverloadedLists
+  - DeriveFunctor
+  - DeriveAnyClass
+  - DeriveGeneric
+  - DerivingStrategies
+  - DerivingVia
+  - DataKinds
+  - KindSignatures
+  - DuplicateRecordFields
+  - ConstraintKinds
+  - FlexibleContexts
+  - GeneralizedNewtypeDeriving
+  - LambdaCase
+  - NoImplicitPrelude
+  - MonoLocalBinds
+  - MultiWayIf
+  - MultiParamTypeClasses
+  - RecordWildCards
+  - ScopedTypeVariables
+  - TypeApplications
+
+ghc-options:
+  - -Wall
+  - -Wcompat
+  - -Wincomplete-record-updates
+  - -Wincomplete-uni-patterns
+  - -Wredundant-constraints
+  - -fno-warn-partial-type-signatures
+  - -fno-warn-name-shadowing
+  - -fwarn-tabs
+  - -fwarn-unused-imports
+  - -fwarn-missing-signatures
+  - -fwarn-incomplete-patterns
+
+flags:
+  support_aesni:
+    default: false
+    manual: false
+  development:
+    description: Run GHC with development flags
+    default: false
+    manual: true
+
+when:
+  - condition: flag(development)
+    then:
+      ghc-options:
+      - -Werror
+      - -fplugin=SourceConstraints
+      dependencies:
+      - source-constraints ^>= 0.0.2
+    else:
+      ghc-options: -Wwarn
+
+library:
+  source-dirs: src
+  dependencies:
+    - aeson
+    - bounded
+    - bytestring
+    - conversions
+    - http-client
+    - http-media
+    - http-types
+    - exceptions
+    - mtl
+    - mprelude
+    - text
+
+tests:
+  test:
+    main: test/Test.hs
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -with-rtsopts=-N
+    dependencies:
+    - devtools ^>= 0.1.0

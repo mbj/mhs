@@ -1,0 +1,126 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.4.
+--
+-- see: https://github.com/sol/hpack
+
+name:           http-mclient
+version:        0.0.1
+synopsis:       Minimal http-client
+description:    Minimal http-client built on top of http-client library
+category:       Web
+homepage:       https://github.com/mbj/mhs#readme
+bug-reports:    https://github.com/mbj/mhs/issues
+author:         gamsnjaga@gmail.com, epicallan.al@gmail.com
+maintainer:     gamsnjaga@gmail.com, epicallan.al@gmail.com, mbj@schirp-dso.com
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/mbj/mhs
+  subdir: http-mclient
+
+flag development
+  description: Run GHC with development flags
+  manual: True
+  default: False
+
+flag support_aesni
+  manual: False
+  default: False
+
+library
+  exposed-modules:
+      Network.HTTP.MClient
+  other-modules:
+      Paths_http_mclient
+  hs-source-dirs:
+      src
+  default-extensions:
+      AllowAmbiguousTypes
+      OverloadedStrings
+      OverloadedLists
+      DeriveFunctor
+      DeriveAnyClass
+      DeriveGeneric
+      DerivingStrategies
+      DerivingVia
+      DataKinds
+      KindSignatures
+      DuplicateRecordFields
+      ConstraintKinds
+      FlexibleContexts
+      GeneralizedNewtypeDeriving
+      LambdaCase
+      NoImplicitPrelude
+      MonoLocalBinds
+      MultiWayIf
+      MultiParamTypeClasses
+      RecordWildCards
+      ScopedTypeVariables
+      TypeApplications
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -fno-warn-partial-type-signatures -fno-warn-name-shadowing -fwarn-tabs -fwarn-unused-imports -fwarn-missing-signatures -fwarn-incomplete-patterns
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , bounded
+    , bytestring
+    , conversions
+    , exceptions
+    , http-client
+    , http-media
+    , http-types
+    , mprelude
+    , mtl
+    , text
+  if flag(development)
+    ghc-options: -Werror -fplugin=SourceConstraints
+    build-depends:
+        source-constraints >=0.0.2 && <0.1
+  else
+    ghc-options: -Wwarn
+  default-language: Haskell2010
+
+test-suite test
+  type: exitcode-stdio-1.0
+  main-is: test/Test.hs
+  other-modules:
+      Paths_http_mclient
+  default-extensions:
+      AllowAmbiguousTypes
+      OverloadedStrings
+      OverloadedLists
+      DeriveFunctor
+      DeriveAnyClass
+      DeriveGeneric
+      DerivingStrategies
+      DerivingVia
+      DataKinds
+      KindSignatures
+      DuplicateRecordFields
+      ConstraintKinds
+      FlexibleContexts
+      GeneralizedNewtypeDeriving
+      LambdaCase
+      NoImplicitPrelude
+      MonoLocalBinds
+      MultiWayIf
+      MultiParamTypeClasses
+      RecordWildCards
+      ScopedTypeVariables
+      TypeApplications
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -fno-warn-partial-type-signatures -fno-warn-name-shadowing -fwarn-tabs -fwarn-unused-imports -fwarn-missing-signatures -fwarn-incomplete-patterns -rtsopts -threaded -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , devtools >=0.1.0 && <0.2
+  if flag(development)
+    ghc-options: -Werror -fplugin=SourceConstraints
+    build-depends:
+        source-constraints >=0.0.2 && <0.1
+  else
+    ghc-options: -Wwarn
+  default-language: Haskell2010
