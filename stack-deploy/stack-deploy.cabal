@@ -25,6 +25,7 @@ library
       StackDeploy.AWS
       StackDeploy.CLI
       StackDeploy.CLI.Utils
+      StackDeploy.Component
       StackDeploy.Config
       StackDeploy.Events
       StackDeploy.InstanceSpec
