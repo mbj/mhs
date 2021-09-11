@@ -35,7 +35,6 @@ data Config = Config
   , flags          :: [Flag]
   , packageName    :: PackageName
   , targetName     :: TargetName
-  , stackYamlPath  :: Maybe Path.AbsRelFile
   }
 
 prefix :: CBT.Prefix
@@ -92,6 +91,7 @@ withBuildContainer Config{..} action = do
         [ "build"
         , "--allow-different-user"
         , "--copy-bins"
+        , "--ghc-build", "lht"
         , "--interleaved-output"
         , "--work-dir", ".stack-work-lht"
         ] <> flagArguments <>
