@@ -120,6 +120,8 @@ hspec-expectations 0.8.2
 http-client 0.6.4.1
 http-client-tls 0.3.5.3
 http-conduit 2.3.8
+http-mclient 0.0.1
+http-media 0.8.0.0
 http-types 0.12.3
 indexed-traversable 0.1.1
 ini 0.4.1

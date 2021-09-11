@@ -45,6 +45,7 @@ jobs:
         - dbt-postgresql-connection
         - dbt-postgresql-container
         - devtools
+        - http-mclient
         - lht
         - lambda-alb
         - lambda-runtime

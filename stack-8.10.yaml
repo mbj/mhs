@@ -30,6 +30,7 @@ packages:
 - conversions
 - db-migrations
 - devtools
+- http-mclient
 - lambda-alb
 - lambda-runtime
 - lht
