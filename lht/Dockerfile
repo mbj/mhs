@@ -37,14 +37,11 @@ RUN apk add                  \
   gcc                        \
   git                        \
   libffi                     \
-  libpq@mbj=12.2-r0          \
-  gmp-dev                    \
   make                       \
   musl-dev                   \
   ncurses-dev                \
   ncurses-static             \
   openssl-libs-static        \
-  postgresql-dev@mbj=12.2-r0 \
   stack@mbj=2.7.3-r0         \
   tar                        \
   xz                         \
