@@ -260,3 +260,6 @@ toText = convert
 guard' :: MonadPlus m => Bool -> a -> m a
 guard' b a = if b then pure a else mzero
 {-# INLINE guard' #-}
+
+eitherThrow :: forall m e a. (MonadThrow m, Exception e) => Either e a -> m a
+eitherThrow = either throwM pure
