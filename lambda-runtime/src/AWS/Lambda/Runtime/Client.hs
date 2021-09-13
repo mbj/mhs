@@ -57,7 +57,7 @@ getHttpConfig = do
   awsLambdaRuntimeApi <- ExceptT $ maybeToEither MissingLambdaRunTimeApi
     <$> lookupEnv "AWS_LAMBDA_RUNTIME_API"
 
-  req <- withExceptT (InvalidLambdaRunTimeApi . showc @Text)
+  request <- withExceptT (InvalidLambdaRunTimeApi . showc @Text)
     . ExceptT
     . try @_ @HTTP.HttpException
     $ HTTP.parseRequest ("http://" <> awsLambdaRuntimeApi)
@@ -69,7 +69,7 @@ getHttpConfig = do
         , HTTP.managerConnCount           = 1
         , HTTP.managerIdleConnectionCount = 1
         }
-  pure $ HTTPConfig req manager
+  pure $ HTTPConfig{..}
 
 getNextLambdaEvent:: HTTPConfig -> LambdaClient LambdaEvent
 getNextLambdaEvent httpConfig = do
