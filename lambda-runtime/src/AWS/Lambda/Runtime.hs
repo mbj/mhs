@@ -1,5 +1,7 @@
 module AWS.Lambda.Runtime
   ( module AWS.Lambda.Runtime.Types
+  , Client.getConnection
+  , processNextEvent
   , run
   )
 where
@@ -16,17 +18,16 @@ run
   => (Event -> m JSON.Value)
   -> m ()
 run function = do
-  connection <- either throwM pure =<< liftIO (runExceptT Client.getConnection)
+  connection <- eitherThrow =<< liftIO (runExceptT Client.getConnection)
 
-  forever $ processEvent connection function
+  forever $ processNextEvent connection function
 
-processEvent
+processNextEvent
   :: forall m . (MonadIO m, MonadCatch m)
   => Client.Connection
   -> (Event -> m JSON.Value)
   -> m ()
-processEvent connection function = do
-  event@Event{..} <- either throwM pure =<<
-    liftIO (runExceptT $ Client.getNextEvent connection)
+processNextEvent connection function = do
+  event@Event{..} <- eitherThrow =<< liftIO (runExceptT $ Client.getNextEvent connection)
 
   Client.sendEventResponse connection requestId =<< function event

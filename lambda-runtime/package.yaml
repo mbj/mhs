@@ -76,7 +76,6 @@ library:
     - aeson
     - bytestring
     - conversions
-    - envy
     - http-client
     - http-types
     - exceptions

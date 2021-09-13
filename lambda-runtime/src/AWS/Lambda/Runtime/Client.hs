@@ -1,6 +1,6 @@
 module AWS.Lambda.Runtime.Client
   ( Connection
-  , InternalLambdaClientError (..)
+  , InternalLambdaClientError(..)
   , LambdaClient
   , getConnection
   , getNextEvent

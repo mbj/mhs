@@ -38,7 +38,6 @@ library
   exposed-modules:
       AWS.Lambda.Runtime
       AWS.Lambda.Runtime.Client
-      AWS.Lambda.Runtime.Environment
       AWS.Lambda.Runtime.Prelude
       AWS.Lambda.Runtime.Types
   other-modules:
@@ -73,7 +72,6 @@ library
     , base >=4.7 && <5
     , bytestring
     , conversions
-    , envy
     , exceptions
     , http-client
     , http-types
