@@ -1,10 +1,14 @@
 module AWS.Lambda.ALB
-  ( module AWS.Lambda
-  , module AWS.Lambda.ALB
-  ) where
+  ( Headers(..)
+  , Request(..)
+  , Response(..)
+  , runALB
+  )
+where
 
-import AWS.Lambda
-import AWS.Prelude
+import AWS.Lambda.Runtime
+import AWS.Lambda.Runtime.Prelude
+import AWS.Lambda.Runtime.Types
 import Data.ByteString (ByteString)
 import Data.CaseInsensitive (CI)
 import Data.HashMap.Strict (HashMap)
@@ -79,12 +83,11 @@ data Response = Response
   deriving stock    (Generic, Show, Eq)
 
 runALB
-  :: forall env body m . (MonadCatch m, MonadIO m, JSON.FromJSON body)
-  => env
-  -> (Request body -> RIO env Response)
+  :: forall body m . (MonadCatch m, MonadIO m, JSON.FromJSON body)
+  => (Request body -> m Response)
   -> m ()
-runALB env lambdaFn = run env $ \ value -> do
-  request <- liftIO $ parseRequest value
+runALB lambdaFn = run $ \LambdaEvent{..} -> do
+  request <- liftIO $ parseRequest body
   JSON.toJSON <$> lambdaFn request
 
 parseRequest

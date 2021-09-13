@@ -54,7 +54,7 @@ flags:
     description: Run GHC with development flags
     default: false
     manual: true
-  examples:
+  example:
     description: Build CLI example
     default: false
     manual: true
@@ -74,7 +74,6 @@ library:
   source-dirs: src
   dependencies:
     - aeson
-    - aeson-pretty
     - bytestring
     - conversions
     - envy
@@ -82,7 +81,6 @@ library:
     - http-types
     - exceptions
     - mtl
-    - mrio-core
     - mprelude
     - optparse-applicative ^>= 0.15 || ^>= 0.16
     - text
@@ -92,14 +90,19 @@ executables:
     source-dirs: example
     main: Main.hs
     dependencies:
-      - base >= 4.7 && < 5
+      - base
+      - bytestring
       - aeson
+      - aeson-pretty
       - lambda-runtime
+      - optparse-applicative
       - unordered-containers
-    buildable: false
     when:
-    - condition: flag(examples)
-      buildable: true
+    - condition: flag(example)
+      then:
+        buildable: true
+      else:
+        buildable: false
 
 tests:
   test:

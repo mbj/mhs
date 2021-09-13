@@ -1,4 +1,4 @@
-module AWS.Prelude
+module AWS.Lambda.Runtime.Prelude
   ( module Exports
   , maybeToEither
   , safeHead
@@ -12,7 +12,6 @@ import Data.Bifunctor         as Exports
 import Data.Conversions       as Exports
 import Data.Text.Encoding     as Exports (decodeUtf8, encodeUtf8)
 import MPrelude               as Exports
-import MRIO.Core              as Exports
 
 showc :: forall b a . (Show a, Conversion b String) => a -> b
 showc = convert . show

@@ -3,38 +3,29 @@ module AWS.Lambda.Runtime
   )
 where
 
-import AWS.Prelude
+import AWS.Lambda.Runtime.Prelude
+import AWS.Lambda.Runtime.Types
 import Control.Monad.Except (runExceptT)
 
-import qualified AWS.Lambda.Client as Client
-import qualified Data.Aeson        as JSON
+import qualified AWS.Lambda.Runtime.Client as Client
+import qualified Data.Aeson                as JSON
 
 run
-  :: forall env m . (MonadCatch m, MonadIO m)
-  => env
-  -> (JSON.Value -> RIO env JSON.Value)
+  :: forall m . (MonadCatch m, MonadIO m)
+  => (LambdaEvent -> m JSON.Value)
   -> m ()
-run env lambdaFn = forever . processEvent $ (runRIO env . lambdaFn)
+run function = do
+  connection <- either throwM pure =<< liftIO (runExceptT Client.getConnection)
+
+  forever $ processEvent connection function
 
 processEvent
   :: forall m . (MonadIO m, MonadCatch m)
-  => (JSON.Value -> m JSON.Value)
+  => Client.Connection
+  -> (LambdaEvent -> m JSON.Value)
   -> m ()
-processEvent fn =
-  either throwM runFunction =<< liftIO (runExceptT Client.getHttpConfig)
-  where
-    runFunction :: Client.HTTPConfig -> m ()
-    runFunction httpConfig = do
-      Client.LambdaEvent{..} <- processNextLambdaAction httpConfig
-        $ Client.getNextLambdaEvent httpConfig
+processEvent connection function = do
+  event@Client.LambdaEvent{..} <- either throwM pure =<<
+    liftIO (runExceptT $ Client.getNextLambdaEvent connection)
 
-      Client.sendEventResponse httpConfig requestId =<< fn event
-
-    processNextLambdaAction :: Client.HTTPConfig -> Client.LambdaClient a -> m a
-    processNextLambdaAction httpConfig action =
-      liftIO (runExceptT action) >>= \case
-        Right result -> pure result
-        Left error   -> do
-          Client.sendBootError httpConfig error
-          -- throw error to give a chance to a client to catch and respond to error
-          throwM error
+  Client.sendEventResponse connection requestId =<< function event
