@@ -4,7 +4,7 @@ module AWS.Lambda.ALB
   ) where
 
 import AWS.Lambda
-import AWS.Prelude
+import AWS.Lambda.Prelude
 import Data.ByteString (ByteString)
 import Data.CaseInsensitive (CI)
 import Data.HashMap.Strict (HashMap)

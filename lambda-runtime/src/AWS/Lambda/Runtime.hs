@@ -3,7 +3,7 @@ module AWS.Lambda.Runtime
   )
 where
 
-import AWS.Prelude
+import AWS.Lambda.Prelude
 import Control.Monad.Except (runExceptT)
 
 import qualified AWS.Lambda.Client as Client

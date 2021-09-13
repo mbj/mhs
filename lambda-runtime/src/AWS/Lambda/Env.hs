@@ -5,7 +5,7 @@ module AWS.Lambda.Env
   )
   where
 
-import AWS.Prelude
+import AWS.Lambda.Prelude
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Word (Word16)
 

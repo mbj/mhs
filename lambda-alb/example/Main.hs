@@ -1,7 +1,7 @@
 module Main where
 
 import AWS.Lambda.ALB
-import AWS.Prelude
+import AWS.Lambda.Prelude
 
 import qualified System.IO  as IO
 

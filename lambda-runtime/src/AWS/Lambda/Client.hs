@@ -10,7 +10,7 @@ module AWS.Lambda.Client
   )
 where
 
-import AWS.Prelude
+import AWS.Lambda.Prelude
 import Control.Exception (displayException)
 import Control.Monad.Except (ExceptT(..), liftEither, throwError, withExceptT)
 import System.Environment (lookupEnv)

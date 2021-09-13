@@ -39,8 +39,8 @@ library
       AWS.Lambda
       AWS.Lambda.Client
       AWS.Lambda.Env
+      AWS.Lambda.Prelude
       AWS.Lambda.Runtime
-      AWS.Prelude
   other-modules:
       Paths_lambda_runtime
   hs-source-dirs:
