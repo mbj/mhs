@@ -36,11 +36,10 @@ flag example
 
 library
   exposed-modules:
-      AWS.Lambda
-      AWS.Lambda.Client
-      AWS.Lambda.Env
-      AWS.Lambda.Prelude
       AWS.Lambda.Runtime
+      AWS.Lambda.Runtime.Client
+      AWS.Lambda.Runtime.Env
+      AWS.Lambda.Runtime.Prelude
   other-modules:
       Paths_lambda_runtime
   hs-source-dirs:

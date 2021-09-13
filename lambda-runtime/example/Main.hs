@@ -4,7 +4,7 @@
 --
 module Main where
 
-import AWS.Lambda.Prelude
+import AWS.Lambda.Runtime.Prelude
 import Data.String (fromString)
 import Options.Applicative
 

@@ -1,4 +1,4 @@
-module AWS.Lambda.Prelude
+module AWS.Lambda.Runtime.Prelude
   ( module Exports
   , maybeToEither
   , safeHead

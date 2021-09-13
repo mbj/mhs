@@ -1,10 +1,13 @@
 module AWS.Lambda.ALB
-  ( module AWS.Lambda
-  , module AWS.Lambda.ALB
-  ) where
+  ( Headers(..)
+  , Request(..)
+  , Response(..)
+  , runALB
+  )
+where
 
-import AWS.Lambda
-import AWS.Lambda.Prelude
+import AWS.Lambda.Runtime
+import AWS.Lambda.Runtime.Prelude
 import Data.ByteString (ByteString)
 import Data.CaseInsensitive (CI)
 import Data.HashMap.Strict (HashMap)

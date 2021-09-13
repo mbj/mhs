@@ -1,11 +1,11 @@
-module AWS.Lambda.Env
+module AWS.Lambda.Runtime.Env
   ( LambdaEnv (..)
   , LambdaEnvDecodeError (..)
   , getLambdaEnv
   )
   where
 
-import AWS.Lambda.Prelude
+import AWS.Lambda.Runtime.Prelude
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Word (Word16)
 

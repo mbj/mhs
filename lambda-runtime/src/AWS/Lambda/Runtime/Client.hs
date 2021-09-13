@@ -1,4 +1,4 @@
-module AWS.Lambda.Client
+module AWS.Lambda.Runtime.Client
   ( HTTPConfig
   , InternalLambdaClientError (..)
   , LambdaClient
@@ -10,7 +10,7 @@ module AWS.Lambda.Client
   )
 where
 
-import AWS.Lambda.Prelude
+import AWS.Lambda.Runtime.Prelude
 import Control.Exception (displayException)
 import Control.Monad.Except (ExceptT(..), liftEither, throwError, withExceptT)
 import System.Environment (lookupEnv)

@@ -3,11 +3,11 @@ module AWS.Lambda.Runtime
   )
 where
 
-import AWS.Lambda.Prelude
+import AWS.Lambda.Runtime.Prelude
 import Control.Monad.Except (runExceptT)
 
-import qualified AWS.Lambda.Client as Client
-import qualified Data.Aeson        as JSON
+import qualified AWS.Lambda.Runtime.Client as Client
+import qualified Data.Aeson                as JSON
 
 run
   :: forall m . (MonadCatch m, MonadIO m)
