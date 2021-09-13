@@ -1,9 +1,9 @@
 module AWS.Lambda.Runtime.Client
-  ( HTTPConfig
+  ( Connection
   , InternalLambdaClientError (..)
   , LambdaClient
   , LambdaEvent (..)
-  , getHttpConfig
+  , getConnection
   , getNextLambdaEvent
   , sendBootError
   , sendEventResponse
@@ -20,7 +20,7 @@ import qualified Data.ByteString     as BS
 import qualified Network.HTTP.Client as HTTP
 import qualified Network.HTTP.Types  as HTTP
 
-data HTTPConfig = HTTPConfig
+data Connection = Connection
   { request :: HTTP.Request
   , manager :: HTTP.Manager
   }
@@ -52,8 +52,8 @@ instance Exception InternalLambdaClientError
 
 type LambdaClient = ExceptT InternalLambdaClientError IO
 
-getHttpConfig :: LambdaClient HTTPConfig
-getHttpConfig = do
+getConnection :: LambdaClient Connection
+getConnection = do
   awsLambdaRuntimeApi <- ExceptT $ maybeToEither MissingLambdaRunTimeApi
     <$> lookupEnv "AWS_LAMBDA_RUNTIME_API"
 
@@ -69,11 +69,11 @@ getHttpConfig = do
         , HTTP.managerConnCount           = 1
         , HTTP.managerIdleConnectionCount = 1
         }
-  pure $ HTTPConfig{..}
+  pure $ Connection{..}
 
-getNextLambdaEvent:: HTTPConfig -> LambdaClient LambdaEvent
-getNextLambdaEvent httpConfig = do
-  nextEvent <- getNextLambdaEventValue httpConfig
+getNextLambdaEvent:: Connection -> LambdaClient LambdaEvent
+getNextLambdaEvent connection = do
+  nextEvent <- getNextLambdaEventValue connection
   requestId <- RequestId <$> liftEither (getRequestId nextEvent)
 
   pure LambdaEvent
@@ -88,9 +88,9 @@ getNextLambdaEvent httpConfig = do
       = maybeToEither (LambdaContextDecodeError "Missing request Id")
       $ getResponseHeader "Lambda-Runtime-Aws-Request-Id" response
 
-getNextLambdaEventValue :: HTTPConfig -> LambdaClient (HTTP.Response JSON.Value)
-getNextLambdaEventValue HTTPConfig{..} = do
-  response <- performHttpRequest $ HTTPConfig { request = toNextEventRequest request, .. }
+getNextLambdaEventValue :: Connection -> LambdaClient (HTTP.Response JSON.Value)
+getNextLambdaEventValue Connection{..} = do
+  response <- performHttpRequest $ Connection { request = toNextEventRequest request, .. }
 
   let statusCode = HTTP.responseStatus response
 
@@ -106,11 +106,11 @@ getNextLambdaEventValue HTTPConfig{..} = do
 
 sendEventResponse
   :: (MonadCatch m, MonadIO m)
-  => HTTPConfig
+  => Connection
   -> RequestId
   -> JSON.Value
   -> m ()
-sendEventResponse HTTPConfig{..} requestId json = do
+sendEventResponse Connection{..} requestId json = do
   response <- catchConnectionError
     . flip HTTP.httpNoBody manager
     $ toEventSuccessRequest request
@@ -123,26 +123,26 @@ sendEventResponse HTTPConfig{..} requestId json = do
     throwM $ UnSuccessfulEventSending statusCode "Could not post handler result"
   where
     toEventSuccessRequest :: HTTP.Request -> HTTP.Request
-    toEventSuccessRequest req = req
+    toEventSuccessRequest request = request
       { HTTP.requestBody = HTTP.RequestBodyLBS (JSON.encode json)
       , HTTP.method      = "POST"
       , HTTP.path        = "2018-06-01/runtime/invocation/" <> convert requestId <> "/response"
       }
 
-sendBootError :: MonadIO m => HTTPConfig -> InternalLambdaClientError -> m ()
-sendBootError HTTPConfig{..} error
+sendBootError :: MonadIO m => Connection -> InternalLambdaClientError -> m ()
+sendBootError Connection{..} error
   = void
   . liftIO
   . flip HTTP.httpNoBody manager
   $ toInitErrorRequest request
   where
     toInitErrorRequest :: HTTP.Request -> HTTP.Request
-    toInitErrorRequest req = (toBaseErrorRequest error req)
+    toInitErrorRequest request = (toBaseErrorRequest error request)
       { HTTP.path = "2018-06-01/runtime/init/error"
       }
 
-performHttpRequest :: HTTPConfig -> LambdaClient (HTTP.Response JSON.Value)
-performHttpRequest HTTPConfig{..} = do
+performHttpRequest :: Connection -> LambdaClient (HTTP.Response JSON.Value)
+performHttpRequest Connection{..} = do
   response <- catchConnectionError $ HTTP.httpLbs request manager
 
   body <- liftEither

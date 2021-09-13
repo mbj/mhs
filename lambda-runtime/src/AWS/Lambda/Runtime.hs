@@ -14,26 +14,26 @@ run
   => (JSON.Value -> m JSON.Value)
   -> m ()
 run function = do
-  config <- either throwM pure =<< liftIO (runExceptT Client.getHttpConfig)
+  connection <- either throwM pure =<< liftIO (runExceptT Client.getConnection)
 
-  forever $ processEvent config function
+  forever $ processEvent connection function
 
 processEvent
   :: forall m . (MonadIO m, MonadCatch m)
-  => Client.HTTPConfig
+  => Client.Connection
   -> (JSON.Value -> m JSON.Value)
   -> m ()
-processEvent config function = do
+processEvent connection function = do
   Client.LambdaEvent{..} <- processNextLambdaAction
-    $ Client.getNextLambdaEvent config
+    $ Client.getNextLambdaEvent connection
 
-  Client.sendEventResponse config requestId =<< function event
+  Client.sendEventResponse connection requestId =<< function event
   where
     processNextLambdaAction :: Client.LambdaClient a -> m a
     processNextLambdaAction action =
       liftIO (runExceptT action) >>= \case
         Right result -> pure result
         Left error   -> do
-          Client.sendBootError config error
+          Client.sendBootError connection error
           -- throw error to give a chance to a client to catch and respond to error
           throwM error
