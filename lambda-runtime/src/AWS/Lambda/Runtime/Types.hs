@@ -8,10 +8,14 @@ import qualified Data.ByteString as BS
 data LambdaEvent = LambdaEvent
   { body      :: JSON.Value
   , requestId :: RequestId
+  , traceId   :: TraceId
   }
   deriving stock Show
 
 newtype RequestId = RequestId Text
+  deriving stock (Show)
+
+newtype TraceId = TraceId Text
   deriving stock (Show)
 
 instance Conversion BS.ByteString RequestId where

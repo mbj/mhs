@@ -62,20 +62,23 @@ getConnection = do
 
 getNextLambdaEvent:: Connection -> LambdaClient LambdaEvent
 getNextLambdaEvent connection = do
-  nextEvent <- getNextLambdaEventValue connection
-  requestId <- RequestId <$> liftEither (getRequestId nextEvent)
+  response <- getNextLambdaEventValue connection
+
+  requestId <- RequestId <$> liftEither (fetchHeader response "Lambda-Runtime-Aws-Request-Id")
+  traceId   <- TraceId   <$> liftEither (fetchHeader response "Lambda-Runtime-Trace-Id")
 
   pure LambdaEvent
-    { body = HTTP.responseBody nextEvent
+    { body = HTTP.responseBody response
     , ..
     }
   where
-    getRequestId
+    fetchHeader
       :: HTTP.Response JSON.Value
+      -> HTTP.HeaderName
       -> Either InternalLambdaClientError Text
-    getRequestId response
-      = maybeToEither (LambdaContextDecodeError "Missing request Id")
-      $ getResponseHeader "Lambda-Runtime-Aws-Request-Id" response
+    fetchHeader response header
+      = maybeToEither (LambdaContextDecodeError . convert $ "Missing header: " <> show header)
+      $ getResponseHeader header response
 
 getNextLambdaEventValue :: Connection -> LambdaClient (HTTP.Response JSON.Value)
 getNextLambdaEventValue Connection{..} = do
