@@ -78,7 +78,6 @@ library
     , http-client
     , http-types
     , mprelude
-    , mrio-core
     , mtl
     , optparse-applicative >=0.15 && <0.16 || >=0.16 && <0.17
     , text

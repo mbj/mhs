@@ -79,11 +79,10 @@ data Response = Response
   deriving stock    (Generic, Show, Eq)
 
 runALB
-  :: forall env body m . (MonadCatch m, MonadIO m, JSON.FromJSON body)
-  => env
-  -> (Request body -> RIO env Response)
+  :: forall body m . (MonadCatch m, MonadIO m, JSON.FromJSON body)
+  => (Request body -> m Response)
   -> m ()
-runALB env lambdaFn = run env $ \ value -> do
+runALB lambdaFn = run $ \ value -> do
   request <- liftIO $ parseRequest value
   JSON.toJSON <$> lambdaFn request
 

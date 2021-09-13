@@ -14,10 +14,7 @@ import qualified Data.ByteString.Lazy       as BS
 import qualified Data.ByteString.Lazy.Char8 as BSC
 
 main :: IO ()
-main = run () lambdaFn
-  where
-    lambdaFn :: JSON.Value -> RIO () JSON.Value
-    lambdaFn = pure
+main = run pure
 
 data OutputLocation
   = FileOutput String
@@ -29,25 +26,22 @@ data LambdaOptions = LambdaOptions
   }
 
 run
-  :: forall env m . MonadIO m
-  => env
-  -> (JSON.Value -> RIO env JSON.Value)
+  :: forall m . MonadIO m
+  => (JSON.Value -> m JSON.Value)
   -> m ()
-run env lambdaFn = do
+run lambdaFn = do
   LambdaOptions {..} <- liftIO $ execParser parserInfo
   jsonEvent          <- either error pure . JSON.eitherDecode $ fromString event
-  output             <- JSON.encodePretty <$> invokeLambdaFunction env jsonEvent lambdaFn
+  output             <- JSON.encodePretty <$> invokeLambdaFunction jsonEvent lambdaFn
   liftIO $ case outputLocation of
     FileOutput filePath -> BS.writeFile filePath output
     StdOutput           -> BSC.putStrLn output
 
 invokeLambdaFunction
-  :: forall env m . MonadIO m
-  => env
-  -> JSON.Value
-  -> (JSON.Value -> RIO env JSON.Value)
+  :: forall m . JSON.Value
+  -> (JSON.Value -> m JSON.Value)
   -> m JSON.Value
-invokeLambdaFunction env eventJSON lambdaFn = runRIO env $ lambdaFn eventJSON
+invokeLambdaFunction eventJSON lambdaFn = lambdaFn eventJSON
 
 parserInfo :: ParserInfo LambdaOptions
 parserInfo = wrapHelper parser "Invoke lambda handler function with a JSON event"

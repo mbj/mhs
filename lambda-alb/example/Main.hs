@@ -5,7 +5,7 @@ import AWS.Prelude
 
 import qualified System.IO  as IO
 
-handler :: Request Text -> RIO LambdaEnv Response
+handler :: Request Text -> IO Response
 handler event = do
   liftIO $ IO.hPutStr IO.stderr "Lambda Event started"
 
@@ -17,6 +17,4 @@ handler event = do
     }
 
 main :: IO ()
-main = do
-  env <- either throwM pure =<< getLambdaEnv
-  runALB env handler
+main = runALB handler

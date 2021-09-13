@@ -81,7 +81,6 @@ library:
     - http-types
     - exceptions
     - mtl
-    - mrio-core
     - mprelude
     - optparse-applicative ^>= 0.15 || ^>= 0.16
     - text

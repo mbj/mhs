@@ -10,11 +10,10 @@ import qualified AWS.Lambda.Client as Client
 import qualified Data.Aeson        as JSON
 
 run
-  :: forall env m . (MonadCatch m, MonadIO m)
-  => env
-  -> (JSON.Value -> RIO env JSON.Value)
+  :: forall m . (MonadCatch m, MonadIO m)
+  => (JSON.Value -> m JSON.Value)
   -> m ()
-run env lambdaFn = forever . processEvent $ (runRIO env . lambdaFn)
+run = forever . processEvent
 
 processEvent
   :: forall m . (MonadIO m, MonadCatch m)
