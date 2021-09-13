@@ -1,17 +1,17 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: fe8e8e9aac911a0266559e5a452b473527fe48b5aa1894da5708ae54855211ff
+-- hash: a0dd6e9a4750bbb363e438cc5608fa3723c75c19567bea16fda299571fdfdcef
 
 name:           example
 version:        0.0.0
 build-type:     Simple
 
-flag static
-  description: Build static executable binary
+flag lht
+  description: Use LHT settings
   manual: True
   default: False
 
@@ -19,13 +19,11 @@ executable hello-world
   main-is: HelloWorld.hs
   other-modules:
       Paths_example
-  ghc-options: -rtsopts -static -threaded -with-rtsopts=-N
-  cc-options: -static
-  ld-options: -static
+  ghc-options: -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       base
-  if flag(static)
-    buildable: True
-  if !flag(static)
-    buildable: False
+  if flag(lht)
+    ghc-options: -static
+    cc-options: -static
+    ld-options: -static
   default-language: Haskell2010

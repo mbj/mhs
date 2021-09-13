@@ -34,7 +34,7 @@ config :: LHT.Build.Config
 config = LHT.Build.Config
   { cbtBuildDefinition = LHT.Build.defaultCBTBuildDefinition
   , executablePath     = Path.relFile ".local/bin/hello-world"
-  , flags              = [LHT.Build.Flag packageName "static"]
+  , flags              = [LHT.Build.Flag packageName "lht"]
   , packageName        = packageName
   , targetName         = LHT.Build.TargetName "hello-world"
   }

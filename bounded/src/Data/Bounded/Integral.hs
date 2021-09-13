@@ -9,7 +9,6 @@ import GHC.TypeLits (type (<=?))
 
 
 import qualified Data.Aeson as JSON
-import qualified Data.Csv   as CSV
 
 newtype BoundNumber' (integral :: Type) (label :: Symbol) (range :: (Nat, Nat))
   = BoundNumber { unBoundNumber :: integral }
@@ -67,13 +66,6 @@ instance
   parseJSON value
     = BoundNumber
    <$> parseJSONIntegralBounded (fromType @label) (mkRange @min @max @integral) value
-
-instance
-  ( KnownNat min, KnownNat max
-  , HasValidTypeRange '(min, max) (min <=? max)
-  )
-  => CSV.FromField (BoundNumber label '(min, max)) where
-  parseField = convertFail @(BoundNumber label '(min, max)) <=< CSV.parseField @Natural
 
 instance
   ( KnownNat nat
