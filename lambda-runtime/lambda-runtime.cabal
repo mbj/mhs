@@ -38,7 +38,7 @@ library
   exposed-modules:
       AWS.Lambda.Runtime
       AWS.Lambda.Runtime.Client
-      AWS.Lambda.Runtime.Env
+      AWS.Lambda.Runtime.Environment
       AWS.Lambda.Runtime.Prelude
       AWS.Lambda.Runtime.Types
   other-modules:

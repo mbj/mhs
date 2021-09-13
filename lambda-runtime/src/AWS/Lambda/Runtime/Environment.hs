@@ -1,7 +1,7 @@
-module AWS.Lambda.Runtime.Env
-  ( LambdaEnv (..)
-  , LambdaEnvDecodeError (..)
-  , getLambdaEnv
+module AWS.Lambda.Runtime.Environment
+  ( Environment (..)
+  , DecodeError (..)
+  , get
   )
 where
 
@@ -11,11 +11,11 @@ import Data.Word (Word16)
 
 import qualified System.Envy as Envy
 
-newtype LambdaEnvDecodeError = LambdaEnvDecodeError Text
+newtype DecodeError = DecodeError Text
   deriving anyclass Exception
-  deriving stock (Show, Generic)
+  deriving stock Show
 
-data LambdaEnv = LambdaEnv
+data Environment = Environment
   { functionName       :: Text
   , functionVersion    :: Text
   , functionMemorySize :: Word16
@@ -25,12 +25,12 @@ data LambdaEnv = LambdaEnv
   deriving anyclass (ToJSON, FromJSON)
   deriving stock (Show, Generic)
 
-instance Envy.FromEnv LambdaEnv where
+instance Envy.FromEnv Environment where
   fromEnv = Envy.gFromEnvCustom Envy.Option
     { dropPrefixCount = 0
     , customPrefix    = "AWS_LAMBDA"
     }
 
-getLambdaEnv :: IO (Either LambdaEnvDecodeError LambdaEnv)
-getLambdaEnv =
-  first (LambdaEnvDecodeError . convert) <$> Envy.decodeEnv @LambdaEnv
+get :: MonadIO m => m (Either DecodeError Environment)
+get =
+  first (DecodeError . convert) <$> liftIO (Envy.decodeEnv @Environment)
