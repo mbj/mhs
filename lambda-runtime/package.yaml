@@ -50,11 +50,12 @@ ghc-options:
   - -fwarn-incomplete-patterns
 
 flags:
-  support_aesni:
-    default: false
-    manual: false
   development:
     description: Run GHC with development flags
+    default: false
+    manual: true
+  examples:
+    description: Build CLI example
     default: false
     manual: true
 
@@ -95,6 +96,10 @@ executables:
       - aeson
       - lambda-runtime
       - unordered-containers
+    buildable: false
+    when:
+    - condition: flag(examples)
+      buildable: true
 
 tests:
   test:
