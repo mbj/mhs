@@ -5,7 +5,7 @@ import AWS.Lambda.Runtime.Prelude
 import qualified Data.Aeson      as JSON
 import qualified Data.ByteString as BS
 
-data LambdaEvent = LambdaEvent
+data Event = Event
   { body      :: JSON.Value
   , requestId :: RequestId
   , traceId   :: TraceId

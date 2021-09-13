@@ -2,9 +2,8 @@ module AWS.Lambda.Runtime.Client
   ( Connection
   , InternalLambdaClientError (..)
   , LambdaClient
-  , LambdaEvent (..)
   , getConnection
-  , getNextLambdaEvent
+  , getNextEvent
   , sendBootError
   , sendEventResponse
   )
@@ -60,14 +59,14 @@ getConnection = do
         }
   pure $ Connection{..}
 
-getNextLambdaEvent:: Connection -> LambdaClient LambdaEvent
-getNextLambdaEvent connection = do
-  response <- getNextLambdaEventValue connection
+getNextEvent:: Connection -> LambdaClient Event
+getNextEvent connection = do
+  response <- getNextEventValue connection
 
   requestId <- RequestId <$> liftEither (fetchHeader response "Lambda-Runtime-Aws-Request-Id")
   traceId   <- TraceId   <$> liftEither (fetchHeader response "Lambda-Runtime-Trace-Id")
 
-  pure LambdaEvent
+  pure Event
     { body = HTTP.responseBody response
     , ..
     }
@@ -80,8 +79,8 @@ getNextLambdaEvent connection = do
       = maybeToEither (LambdaContextDecodeError . convert $ "Missing header: " <> show header)
       $ getResponseHeader header response
 
-getNextLambdaEventValue :: Connection -> LambdaClient (HTTP.Response JSON.Value)
-getNextLambdaEventValue Connection{..} = do
+getNextEventValue :: Connection -> LambdaClient (HTTP.Response JSON.Value)
+getNextEventValue Connection{..} = do
   response <- performHttpRequest $ Connection { request = toNextEventRequest request, .. }
 
   let statusCode = HTTP.responseStatus response
