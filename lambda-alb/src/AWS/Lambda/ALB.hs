@@ -8,6 +8,7 @@ where
 
 import AWS.Lambda.Runtime
 import AWS.Lambda.Runtime.Prelude
+import AWS.Lambda.Runtime.Types
 import Data.ByteString (ByteString)
 import Data.CaseInsensitive (CI)
 import Data.HashMap.Strict (HashMap)
@@ -85,8 +86,8 @@ runALB
   :: forall body m . (MonadCatch m, MonadIO m, JSON.FromJSON body)
   => (Request body -> m Response)
   -> m ()
-runALB lambdaFn = run $ \ value -> do
-  request <- liftIO $ parseRequest value
+runALB lambdaFn = run $ \LambdaEvent{..} -> do
+  request <- liftIO $ parseRequest body
   JSON.toJSON <$> lambdaFn request
 
 parseRequest

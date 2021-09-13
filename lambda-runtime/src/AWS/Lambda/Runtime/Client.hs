@@ -11,6 +11,7 @@ module AWS.Lambda.Runtime.Client
 where
 
 import AWS.Lambda.Runtime.Prelude
+import AWS.Lambda.Runtime.Types
 import Control.Exception (displayException)
 import Control.Monad.Except (ExceptT(..), liftEither, throwError, withExceptT)
 import System.Environment (lookupEnv)
@@ -24,18 +25,6 @@ data Connection = Connection
   { request :: HTTP.Request
   , manager :: HTTP.Manager
   }
-
-data LambdaEvent = LambdaEvent
-  { event     :: JSON.Value
-  , requestId :: RequestId
-  }
-  deriving stock Show
-
-newtype RequestId = RequestId Text
-  deriving stock (Show)
-
-instance Conversion BS.ByteString RequestId where
-  convert (RequestId requestId) = encodeUtf8 requestId
 
 data InternalLambdaClientError
   = ConnectionError HTTP.HttpException
@@ -77,7 +66,7 @@ getNextLambdaEvent connection = do
   requestId <- RequestId <$> liftEither (getRequestId nextEvent)
 
   pure LambdaEvent
-    { event = HTTP.responseBody nextEvent
+    { body = HTTP.responseBody nextEvent
     , ..
     }
   where
