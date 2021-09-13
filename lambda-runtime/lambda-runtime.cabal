@@ -29,7 +29,7 @@ flag development
   manual: True
   default: False
 
-flag examples
+flag example
   description: Build CLI example
   manual: True
   default: False
@@ -126,15 +126,16 @@ executable cli-example
     , base >=4.7 && <5
     , lambda-runtime
     , unordered-containers
-  buildable: False
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
         source-constraints >=0.0.2 && <0.1
   else
     ghc-options: -Wwarn
-  if flag(examples)
+  if flag(example)
     buildable: True
+  else
+    buildable: False
   default-language: Haskell2010
 
 test-suite test

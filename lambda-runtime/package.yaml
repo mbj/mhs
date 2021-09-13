@@ -54,7 +54,7 @@ flags:
     description: Run GHC with development flags
     default: false
     manual: true
-  examples:
+  example:
     description: Build CLI example
     default: false
     manual: true
@@ -96,10 +96,12 @@ executables:
       - aeson
       - lambda-runtime
       - unordered-containers
-    buildable: false
     when:
-    - condition: flag(examples)
-      buildable: true
+    - condition: flag(example)
+      then:
+        buildable: true
+      else:
+        buildable: false
 
 tests:
   test:
