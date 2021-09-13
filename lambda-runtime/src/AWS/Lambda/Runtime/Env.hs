@@ -3,7 +3,7 @@ module AWS.Lambda.Runtime.Env
   , LambdaEnvDecodeError (..)
   , getLambdaEnv
   )
-  where
+where
 
 import AWS.Lambda.Runtime.Prelude
 import Data.Aeson (FromJSON, ToJSON)
@@ -24,9 +24,6 @@ data LambdaEnv = LambdaEnv
   }
   deriving anyclass (ToJSON, FromJSON)
   deriving stock (Show, Generic)
-
-instance Envy.DefConfig LambdaEnv where
-  defConfig = LambdaEnv mempty mempty 0 mempty mempty
 
 instance Envy.FromEnv LambdaEnv where
   fromEnv = Envy.gFromEnvCustom Envy.Option
