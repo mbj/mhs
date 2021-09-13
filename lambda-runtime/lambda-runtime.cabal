@@ -37,7 +37,6 @@ flag example
 library
   exposed-modules:
       AWS.Lambda
-      AWS.Lambda.CLI
       AWS.Lambda.Client
       AWS.Lambda.Env
       AWS.Lambda.Runtime
@@ -71,7 +70,6 @@ library
   ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -fno-warn-partial-type-signatures -fno-warn-name-shadowing -fwarn-tabs -fwarn-unused-imports -fwarn-missing-signatures -fwarn-incomplete-patterns
   build-depends:
       aeson
-    , aeson-pretty
     , base >=4.7 && <5
     , bytestring
     , conversions
@@ -123,8 +121,11 @@ executable cli-example
   ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -fno-warn-partial-type-signatures -fno-warn-name-shadowing -fwarn-tabs -fwarn-unused-imports -fwarn-missing-signatures -fwarn-incomplete-patterns
   build-depends:
       aeson
-    , base >=4.7 && <5
+    , aeson-pretty
+    , base
+    , bytestring
     , lambda-runtime
+    , optparse-applicative
     , unordered-containers
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints

@@ -74,7 +74,6 @@ library:
   source-dirs: src
   dependencies:
     - aeson
-    - aeson-pretty
     - bytestring
     - conversions
     - envy
@@ -92,9 +91,12 @@ executables:
     source-dirs: example
     main: Main.hs
     dependencies:
-      - base >= 4.7 && < 5
+      - base
+      - bytestring
       - aeson
+      - aeson-pretty
       - lambda-runtime
+      - optparse-applicative
       - unordered-containers
     when:
     - condition: flag(example)
