@@ -5,6 +5,7 @@ module LHT.Build
   , TargetName(..)
   , build
   , buildZip
+  , defaultCBTBuildDefinition
   )
 where
 
@@ -31,7 +32,8 @@ newtype TargetName = TargetName Text
 data Flag = Flag PackageName Text
 
 data Config = Config
-  { executablePath :: Path.RelFile
+  { cbtBuildDefinition :: CBT.BuildDefinition
+  , executablePath :: Path.RelFile
   , flags          :: [Flag]
   , packageName    :: PackageName
   , targetName     :: TargetName
@@ -40,8 +42,8 @@ data Config = Config
 prefix :: CBT.Prefix
 prefix = CBT.Prefix "lht"
 
-buildDefinition :: CBT.BuildDefinition
-buildDefinition
+defaultCBTBuildDefinition :: CBT.BuildDefinition
+defaultCBTBuildDefinition
   =  CBT.fromDockerfileContent prefix
   $$(CBT.TH.readDockerfileContent $ Path.file "Dockerfile")
 
@@ -106,7 +108,7 @@ withBuildContainer Config{..} action = do
       ]
 
     containerDefinition =
-      (CBT.minimalContainerDefinition (getField @"imageName" buildDefinition) containerName)
+      (CBT.minimalContainerDefinition (getField @"imageName" cbtBuildDefinition) containerName)
       { CBT.command = pure command
       , CBT.detach  = CBT.Foreground
       , CBT.env     = Foldable.toList
@@ -123,7 +125,7 @@ withBuildContainer Config{..} action = do
   setupSharedDirectory hostStackWorkPath
 
   Exception.bracket_
-    (CBT.buildRun buildDefinition containerDefinition)
+    (CBT.buildRun cbtBuildDefinition containerDefinition)
     (CBT.removeContainer containerName)
     (action containerName)
 

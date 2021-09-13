@@ -32,10 +32,11 @@ testBuild =
 
 config :: LHT.Build.Config
 config = LHT.Build.Config
-  { executablePath = Path.relFile ".local/bin/hello-world"
-  , flags          = [LHT.Build.Flag packageName "static"]
-  , packageName    = packageName
-  , targetName     = LHT.Build.TargetName "hello-world"
+  { cbtBuildDefinition = LHT.Build.defaultCBTBuildDefinition
+  , executablePath     = Path.relFile ".local/bin/hello-world"
+  , flags              = [LHT.Build.Flag packageName "static"]
+  , packageName        = packageName
+  , targetName         = LHT.Build.TargetName "hello-world"
   }
   where
     packageName = LHT.Build.PackageName "example"

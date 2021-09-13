@@ -30,20 +30,20 @@ RUN echo $'\
 RUN mkdir -p -m 0700 /opt/build
 
 # Install dependencies
-RUN apk add                  \
-  --no-cache                 \
-  --                         \
-  curl                       \
-  gcc                        \
-  git                        \
-  libffi                     \
-  make                       \
-  musl-dev                   \
-  ncurses-dev                \
-  ncurses-static             \
-  openssl-libs-static        \
-  stack@mbj=2.7.3-r0         \
-  tar                        \
-  xz                         \
-  zlib-dev                   \
+RUN apk add           \
+  --no-cache          \
+  --                  \
+  curl                \
+  gcc                 \
+  git                 \
+  grep                \
+  libffi              \
+  make                \
+  musl-dev            \
+  ncurses-dev         \
+  ncurses-static      \
+  stack@mbj=2.7.3-r0  \
+  tar                 \
+  xz                  \
+  zlib-dev            \
   zlib-static
