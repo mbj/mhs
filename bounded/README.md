@@ -1,9 +1,11 @@
-# Bounded
+Bounded
+=======
 
 User definable Integral and Text bounded types that are constrained by their set bound range with
 compile time correctness guarantees.
 
-## Examples usage
+Examples usage
+--------------
 
 ```haskell
 import Data.Bounded
@@ -63,7 +65,8 @@ type OnlineCommerceId = ExternalId OnlineCommerce
 -- See tests for more examples.
 ```
 
-### Documentation
+Documentation
+-------------
 
 This README is tested by `markdown-unlit` to make sure the code builds. To keep _that_ happy, we do need a `main` in this file, so ignore the following :)
 
