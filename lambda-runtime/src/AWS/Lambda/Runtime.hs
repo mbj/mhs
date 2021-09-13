@@ -1,5 +1,6 @@
 module AWS.Lambda.Runtime
-  ( run
+  ( module AWS.Lambda.Runtime.Types
+  , run
   )
 where
 
@@ -12,7 +13,7 @@ import qualified Data.Aeson                as JSON
 
 run
   :: forall m . (MonadCatch m, MonadIO m)
-  => (LambdaEvent -> m JSON.Value)
+  => (Event -> m JSON.Value)
   -> m ()
 run function = do
   connection <- either throwM pure =<< liftIO (runExceptT Client.getConnection)
@@ -22,10 +23,10 @@ run function = do
 processEvent
   :: forall m . (MonadIO m, MonadCatch m)
   => Client.Connection
-  -> (LambdaEvent -> m JSON.Value)
+  -> (Event -> m JSON.Value)
   -> m ()
 processEvent connection function = do
-  event@Client.LambdaEvent{..} <- either throwM pure =<<
-    liftIO (runExceptT $ Client.getNextLambdaEvent connection)
+  event@Event{..} <- either throwM pure =<<
+    liftIO (runExceptT $ Client.getNextEvent connection)
 
   Client.sendEventResponse connection requestId =<< function event
