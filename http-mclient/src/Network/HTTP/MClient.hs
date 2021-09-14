@@ -17,12 +17,13 @@ import Data.Conversions (Conversion, ToText, convertUnsafe, toText)
 import Data.Conversions.FromType (fromType)
 import GHC.Records (HasField(..))
 import MPrelude
-import Network.HTTP.Media (MediaType, (//), (/:), matches, parseAccept)
+import Network.HTTP.Media (MediaType, (//), (/:))
 import Network.HTTP.Types (hContentType, statusCode)
 
 import qualified Data.ByteString.Lazy.Char8 as LBS
 import qualified Data.List                  as List
 import qualified Data.List.NonEmpty         as NE
+import qualified Network.HTTP.Media         as Media
 import qualified Network.HTTP.Client        as HTTP
 
 type Response = HTTP.Response LBS.ByteString
@@ -101,7 +102,7 @@ mkRequest' expectedStatus httpManager decodeBody request = do
 
   if | code /= expectedStatus ->
         throwError $ InvalidStatusCode code response
-     | not (List.any (`matches` contentType) accepts) ->
+     | not (List.any (`Media.matches` contentType) accepts) ->
         throwError $ UnsupportedContentType contentType response
      | otherwise              -> liftEither
          . left (flip DecodeFailure response . DecodeError . toText)
@@ -116,6 +117,6 @@ catchConnectionError action =
 getContentType :: Response -> Either HttpError MediaType
 getContentType response
   = maybe (Left $ InvalidContentType response) pure
-  . maybe (pure $ mediaType @'PlainText) parseAccept
+  . maybe (pure $ mediaType @'PlainText) Media.parseAccept
   . List.lookup hContentType
   $ HTTP.responseHeaders response
