@@ -18,9 +18,10 @@ import Data.Conversions.FromType (fromType)
 import GHC.Records (HasField(..))
 import MPrelude
 import Network.HTTP.Media (MediaType, (//), (/:))
-import Network.HTTP.Types (hContentType, statusCode)
+import Network.HTTP.Types (hAccept, hContentType, statusCode)
 
 import qualified Data.ByteString.Lazy.Char8 as LBS
+import qualified Data.CaseInsensitive       as CI
 import qualified Data.List                  as List
 import qualified Data.List.NonEmpty         as NE
 import qualified Network.HTTP.Media         as Media
@@ -91,7 +92,9 @@ mkRequest'
   -> HTTP.Request
   -> ExceptT HttpError IO a
 mkRequest' expectedStatus httpManager decodeBody request = do
-  response <- ExceptT . catchConnectionError $ HTTP.httpLbs request httpManager
+  response <- ExceptT . catchConnectionError
+    $ HTTP.httpLbs (addMediaHeaders @ctyp request) httpManager
+
   contentType <- liftEither $ getContentType response
 
   let accepts = mediaTypes @ctyp
@@ -120,3 +123,18 @@ getContentType response
   . maybe (pure $ mediaType @'PlainText) Media.parseAccept
   . List.lookup hContentType
   $ HTTP.responseHeaders response
+
+addMediaHeaders
+  :: forall ctyp . HasMediaType ctyp
+  => HTTP.Request
+  -> HTTP.Request
+addMediaHeaders request = request
+  { HTTP.requestHeaders
+      = [ (hContentType, headerValue)
+        , (hAccept, headerValue)
+        ]
+        <> HTTP.requestHeaders request
+  }
+  where
+    mediaType'  = mediaType @ctyp
+    headerValue = CI.original $ Media.mainType mediaType' <> "/" <> Media.subType mediaType'

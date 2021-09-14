@@ -69,6 +69,7 @@ library
     , base
     , bounded
     , bytestring
+    , case-insensitive
     , conversions
     , exceptions
     , http-client

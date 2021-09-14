@@ -76,6 +76,7 @@ library:
     - aeson
     - bounded
     - bytestring
+    - case-insensitive
     - conversions
     - http-client
     - http-media
