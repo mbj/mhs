@@ -6,6 +6,7 @@ module Network.HTTP.MClient
   , HttpError (..)
   , StatusCode
   , mkRequest
+  , mkRequest'
   ) where
 
 import Control.Arrow (left)
