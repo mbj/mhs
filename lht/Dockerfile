@@ -1,4 +1,4 @@
-FROM alpine:3.13
+FROM alpine:3.14
 
 # Setup for userns mapped single user
 RUN echo $'build:x:0:0:build:/opt/build:/bin/ash\n\
