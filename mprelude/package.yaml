@@ -13,7 +13,7 @@ description: |
   deduplicating repeated imports cross a larger project space.
 
 dependencies:
-- base               > 4.12 && < 14.15
+- base
 - source-constraints ^>= 0.0.2
 - text               ^>= 1.2
 - unliftio-core      ^>= 0.2

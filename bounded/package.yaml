@@ -55,7 +55,7 @@ default-extensions:
 library:
   source-dirs: src
   dependencies:
-  - base               >= 4.10 && < 4.15
+  - base
   - aeson              >= 1.3
   - conversions        >= 0.0.2
   - mtl

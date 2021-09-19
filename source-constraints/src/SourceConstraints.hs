@@ -2,8 +2,7 @@
 
 module SourceConstraints (Context(..), plugin, warnings) where
 
-import Bag
-import Control.Applicative
+import Control.Applicative ((<$>), pure)
 import Control.Monad
 import Control.Monad.IO.Class
 import Data.Attoparsec.Text
@@ -16,36 +15,52 @@ import Data.Foldable
 import Data.Function
 import Data.Generics.Aliases
 import Data.Generics.Text
+import Data.List ((++))
 import Data.Maybe
 import Data.Ord
-import Data.Semigroup
 import Data.String (String)
 import Data.Text (Text, pack)
 import Data.Tuple
-import DynFlags
-import ErrUtils
-#if MIN_VERSION_GLASGOW_HASKELL(8,10,0,0)
+#if MIN_VERSION_GLASGOW_HASKELL(9,0,0,0)
+import GHC.Data.Bag
+import GHC.Driver.Plugins
+import GHC.Driver.Session
+import GHC.Driver.Types
 import GHC.Hs
+import GHC.Types.SrcLoc
+import GHC.Unit.Module.Location
+import GHC.Utils.Error
+import GHC.Utils.Outputable
 #else
-import HsDecls
-import HsExtension
-import HsSyn
-#endif
+import Bag
+import GHC.Hs
+import DynFlags
 import HscTypes
 import Module hiding (Module)
 import Outputable hiding ((<>), empty)
 import Plugins
-import Prelude(error)
 import SrcLoc
-import System.FilePath.Posix
+import ErrUtils
+#endif
+import Prelude(error)
 import SourceConstraints.LocalModule
+import System.FilePath.Posix
 
 import qualified Data.List as List
 
 data Context = Context
   { dynFlags     :: DynFlags
   , localModules :: [LocalModule]
+#if MIN_VERSION_GLASGOW_HASKELL(9,0,0,0)
+  , sDocContext  :: SDocContext
+#endif
   }
+
+#if MIN_VERSION_GLASGOW_HASKELL(9,0,0,0)
+type HsModule' = HsModule
+#else
+type HsModule' = HsModule GhcPs
+#endif
 
 plugin :: Plugin
 plugin =
@@ -71,6 +86,11 @@ runSourceConstraints
   -> Hsc HsParsedModule
 runSourceConstraints dynFlags options ModSummary{ms_location = ModLocation{..}} parsedModule = do
   localModules <- mapM parseLocalModule (pack <$> options)
+
+#if MIN_VERSION_GLASGOW_HASKELL(9,0,0,0)
+  let sDocContext = initSDocContext dynFlags defaultUserStyle
+#endif
+
   when (allowLocation ml_hs_file) . emitWarnings $ warnings Context{..} (hpm_module parsedModule)
   pure parsedModule
   where
@@ -93,19 +113,13 @@ warnings
   => Context
   -> GenLocated a b
   -> WarningMessages
-warnings context@Context{..} (L sourceSpan node) =
+warnings context current@(L _sourceSpan node) =
   unionManyBags
-    [ maybe emptyBag mkWarning $ unlocatedWarning context node
+    [ locatedWarnings context current
     , locatedWarnings context node
     , descend node
     ]
   where
-    mkWarning =
-      unitBag . mkWarnMsg
-        dynFlags
-        (fromJust $ cast sourceSpan)
-        neverQualify
-
     descend :: Data a => a -> WarningMessages
     descend =
       unionManyBags . gmapQ
@@ -119,13 +133,14 @@ locatedWarnings context@Context{..} node =
   singleWarnings `unionBags` mkQ emptyBag absentImportDeclList node
   where
     singleWarnings = listToBag $ catMaybes
-      [ mkQ empty sortedImportStatement  node
-      , mkQ empty sortedIEThingWith      node
-      , mkQ empty sortedIEs              node
-      , mkQ empty sortedMultipleDeriving node
+      [ mkQ Nothing requireDerivingStrategy node
+      , mkQ Nothing sortedImportStatement   node
+      , mkQ Nothing sortedIEThingWith       node
+      , mkQ Nothing sortedIEs               node
+      , mkQ Nothing sortedMultipleDeriving  node
       ]
 
-    absentImportDeclList :: HsModule GhcPs -> WarningMessages
+    absentImportDeclList :: HsModule' -> WarningMessages
     absentImportDeclList HsModule{..} =
       listToBag $ catMaybes (absentList <$> candidates)
       where
@@ -133,11 +148,11 @@ locatedWarnings context@Context{..} node =
         absentList = \case
           (L _loc ImportDecl { ideclHiding = Just (False, L loc list) }) ->
             testList loc list
-          _  -> empty
+          _  -> Nothing
 
         testList :: SrcSpan -> [LIE GhcPs] -> Maybe ErrMsg
         testList srcSpan = \case
-          [] -> empty
+          [] -> Nothing
           _  -> pure $ notEmpty srcSpan
 
         notEmpty :: SrcSpan -> ErrMsg
@@ -152,12 +167,20 @@ locatedWarnings context@Context{..} node =
         candidates = List.filter isCandidate hsmodImports
 
         isCandidate :: LImportDecl GhcPs -> Bool
-        isCandidate = \case
-          (L _ ImportDecl{ideclName = L _ moduleName}) ->
-            any (`isLocalModule` moduleName) localModules
-          _ -> False
+        isCandidate (L _ ImportDecl{ideclName = L _ moduleName})
+          = any (`isLocalModule` moduleName) localModules
 
-    sortedImportStatement :: HsModule GhcPs -> Maybe ErrMsg
+#if !MIN_VERSION_GLASGOW_HASKELL(9,0,0,0)
+        isCandidate _  = False
+#endif
+
+    requireDerivingStrategy :: LHsDerivingClause GhcPs -> Maybe ErrMsg
+    requireDerivingStrategy = \case
+      (L src HsDerivingClause{deriv_clause_strategy = Nothing}) ->
+        pure $ mkWarnMsg dynFlags src neverQualify (text "Missing deriving strategy")
+      _ -> Nothing
+
+    sortedImportStatement :: HsModule' -> Maybe ErrMsg
     sortedImportStatement HsModule{..} =
       sortedLocated
         "import statement"
@@ -187,7 +210,7 @@ locatedWarnings context@Context{..} node =
           context
           (render context)
           ieWith
-      _ -> empty
+      _ -> Nothing
 
     classify str@('(':_) = Function str
     classify str@(x:_)   = if isUpper x then Type str else Function str
@@ -201,26 +224,21 @@ locatedWarnings context@Context{..} node =
       (IEModuleContents _xIE name) -> mkClass Module name
       (IEThingWith _xIE name _ieWildcard _ieWith _ieFieldLabels) ->
         mkClass Type name
-      ie -> error $ "Unsupported: " <> gshow ie
+      ie -> error $ "Unsupported: " ++ gshow ie
 
     mkClass :: (Outputable a, Outputable b) => (String -> IEClass) -> GenLocated a b -> IEClass
     mkClass constructor name = constructor $ render context name
 
-unlocatedWarning :: Data a => Context -> a -> Maybe SDoc
-unlocatedWarning _context = mkQ empty requireDerivingStrategy
-
-requireDerivingStrategy :: HsDerivingClause GhcPs -> Maybe SDoc
-requireDerivingStrategy = \case
-  HsDerivingClause{deriv_clause_strategy = Nothing} ->
-    pure $ text "Missing deriving strategy"
-  _ -> empty
-
 render :: Outputable a => Context -> a -> String
 render Context{..} outputable =
+#if MIN_VERSION_GLASGOW_HASKELL(9,0,0,0)
+  renderWithStyle sDocContext $ ppr outputable
+#else
   renderWithStyle
     dynFlags
     (ppr outputable)
     (defaultUserStyle dynFlags)
+#endif
 
 sortedLocated
   :: forall a b . (Eq b, Ord b, Outputable a)
@@ -238,7 +256,7 @@ sortedLocated name context@Context{..} ordering nodes =
         dynFlags
         (getLoc actualNode)
         neverQualify
-        (text $ "Unsorted " <> name <> ", expected: " <> render context expectedNode)
+        (text $ "Unsorted " ++ name ++ ", expected: " ++ render context expectedNode)
 
     isViolation :: ((Located a, b), (Located a, b)) -> Bool
     isViolation ((_actualNode, item), (_expectedNode, expected)) =

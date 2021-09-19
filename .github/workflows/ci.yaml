@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ghc: ['8.10']
+        ghc: ['8.10', '9.0']
         os:  [ubuntu-latest]
     steps:
     - uses: actions/checkout@v2
@@ -36,7 +36,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ghc: ['8.10']
+        ghc: ['8.10', '9.0']
         os:  [ubuntu-latest]
         project:
         - cbt

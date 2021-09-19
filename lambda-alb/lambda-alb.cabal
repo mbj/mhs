@@ -65,7 +65,7 @@ library
   ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -fno-warn-partial-type-signatures -fno-warn-name-shadowing -fwarn-tabs -fwarn-unused-imports -fwarn-missing-signatures -fwarn-incomplete-patterns
   build-depends:
       aeson
-    , base >=4.7 && <5
+    , base
     , bytestring
     , case-insensitive
     , exceptions
@@ -114,7 +114,7 @@ executable bootstrap
   ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -fno-warn-partial-type-signatures -fno-warn-name-shadowing -fwarn-tabs -fwarn-unused-imports -fwarn-missing-signatures -fwarn-incomplete-patterns
   build-depends:
       aeson
-    , base >=4.7 && <5
+    , base
     , lambda-alb
     , lambda-runtime
   if flag(development)
@@ -154,7 +154,7 @@ test-suite test
       ViewPatterns
   ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -fno-warn-partial-type-signatures -fno-warn-name-shadowing -fwarn-tabs -fwarn-unused-imports -fwarn-missing-signatures -fwarn-incomplete-patterns -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      base
     , devtools >=0.1.0 && <0.2
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints

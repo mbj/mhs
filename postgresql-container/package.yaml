@@ -9,7 +9,7 @@ github:      mbj/dbt
 license:     BSD3
 
 dependencies:
-- base                      ^>= 4.12 || ^>= 4.13 || ^>= 4.14
+- base
 - bytestring                ^>= 0.10
 - cbt                       ^>= 0.1.0
 - containers                ^>= 0.6
@@ -24,7 +24,7 @@ dependencies:
 - optparse-applicative      ^>= 0.15 || ^>= 0.16
 - pathtype                  ^>= 0.8
 - source-constraints        ^>= 0.0.1
-- template-haskell          ^>= 2.14 || ^>= 2.15 || ^>= 2.16
+- template-haskell
 - text                      ^>= 1.2
 - th-lift-instances         ^>= 0.1
 - typed-process             ^>= 0.2

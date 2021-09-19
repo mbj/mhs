@@ -11,7 +11,7 @@ description: |
 
 dependencies:
 - Diff               > 0.3 && < 0.5
-- base               > 4.12 && < 4.15
+- base
 - bytestring         ^>= 0.10
 - cmdargs            ^>= 0.10.20
 - filepath           ^>= 1.4

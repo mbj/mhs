@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: cc9ef9186e0d24cfde48aa4dc763f61200f57422c863c5e2d57e0804e3491019
+-- hash: 07912e7b6a38db106d6b32a34ec67632a28894589b2b35706f1f907c2adee3b6
 
 name:           lht
 version:        0.0.1
@@ -57,7 +57,7 @@ library
       TypeApplications
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields
   build-depends:
-      base >=4.13 && <4.14 || >=4.14 && <4.15
+      base
     , bytestring ==0.10.*
     , cbt >=0.1.0 && <0.2
     , conversions >=0.0.3 && <0.1
@@ -69,7 +69,7 @@ library
     , pathtype ==0.8.*
     , source-constraints >=0.0.1 && <0.1
     , tar ==0.5.*
-    , template-haskell >=2.15 && <2.16 || >=2.16 && <2.17
+    , template-haskell
     , text ==1.2.*
     , text-conversions ==0.3.*
     , th-lift-instances ==0.1.*
@@ -112,7 +112,7 @@ test-suite devtools
       TypeApplications
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      base >=4.13 && <4.14 || >=4.14 && <4.15
+      base
     , bytestring ==0.10.*
     , cbt >=0.1.0 && <0.2
     , conversions >=0.0.3 && <0.1
@@ -129,7 +129,7 @@ test-suite devtools
     , tar ==0.5.*
     , tasty ==1.3.*
     , tasty-hunit ==0.10.*
-    , template-haskell >=2.15 && <2.16 || >=2.16 && <2.17
+    , template-haskell
     , text ==1.2.*
     , text-conversions ==0.3.*
     , th-lift-instances ==0.1.*

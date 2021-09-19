@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b59144901572fc84699fa445524a87e1403ab7bccdebe69f9564ec16d360ef46
+-- hash: 2d590fb00fd9ff1493912549bb3eeb06cc56df5f606cc615122d552c4e91ee73
 
 name:           cbt
 version:        0.1.0
@@ -67,7 +67,7 @@ library
       ViewPatterns
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
-      base >=4.12 && <=4.15
+      base
     , bytestring ==0.10.*
     , conduit >=1.3.3 && <1.4
     , conversions >=0.0.3 && <0.1
@@ -82,7 +82,7 @@ library
     , resourcet >=1.2.4 && <1.3
     , source-constraints >=0.0.1 && <0.1
     , tar ==0.5.*
-    , template-haskell >=2.14 && <=2.17
+    , template-haskell
     , text ==1.2.*
     , th-lift-instances ==0.1.*
     , typed-process ==0.2.*
@@ -127,7 +127,7 @@ test-suite test
       ViewPatterns
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      base >=4.12 && <=4.15
+      base
     , bytestring ==0.10.*
     , cbt
     , conduit >=1.3.3 && <1.4
@@ -146,7 +146,7 @@ test-suite test
     , tar ==0.5.*
     , tasty >=1.3.1 && <1.4
     , tasty-hunit
-    , template-haskell >=2.14 && <=2.17
+    , template-haskell
     , text ==1.2.*
     , th-lift-instances ==0.1.*
     , typed-process ==0.2.*

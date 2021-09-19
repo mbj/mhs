@@ -38,6 +38,7 @@ RUN apk add           \
   git                 \
   grep                \
   libffi              \
+  gmp-dev             \
   make                \
   musl-dev            \
   ncurses-dev         \

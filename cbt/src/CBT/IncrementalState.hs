@@ -68,11 +68,10 @@ runBuild (IncrementalState state) key buildAction = do
       pure result
 
     logBuildResult :: Either error success -> RIO env ()
-    logBuildResult result =
+    logBuildResult =
       either
         (const . Log.error . convert $ "Failed building: " <> show key)
         (const . Log.info . convert $ "Success building: " <> show key)
-        result
 
     process
       :: StateMap key error success

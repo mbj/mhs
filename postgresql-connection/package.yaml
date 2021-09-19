@@ -9,7 +9,7 @@ github:      mbj/dbt
 license:     BSD3
 
 dependencies:
-- base               ^>= 4.12 || ^>= 4.13 || ^>= 4.14
+- base
 - bytestring         ^>= 0.10
 - containers         ^>= 0.6
 - conversions        ^>= 0.0.3

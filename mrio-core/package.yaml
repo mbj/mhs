@@ -14,7 +14,7 @@ flags:
     manual: true
 
 dependencies:
-- base >= 4.10 && < 10
+- base
 - exceptions
 - mtl
 - primitive

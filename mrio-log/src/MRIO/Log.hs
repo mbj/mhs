@@ -40,7 +40,7 @@ class Env env where
   getLogAction :: env -> Action (RIO env)
 
 instance (HasField "logAction" env (Action (RIO env))) => Env env where
-  getLogAction env = getField @"logAction" env
+  getLogAction = getField @"logAction"
 
 log :: Env env => Severity -> Text -> RIO env ()
 log severity message = do

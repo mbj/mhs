@@ -2,7 +2,6 @@
 
 module Main (main) where
 
-import Bag
 import Control.Applicative
 import Control.Monad
 import Control.Monad.IO.Class
@@ -10,51 +9,34 @@ import Data.Bool
 import Data.Eq
 import Data.Foldable
 import Data.Function
+import Data.List ((++))
 import Data.Maybe
-import Data.Semigroup
 import Data.String
+#if MIN_VERSION_GLASGOW_HASKELL(9,0,0,0)
+import GHC
+import GHC.Data.Bag
+import GHC.Driver.Main
+import GHC.Driver.Session
+import GHC.Driver.Types
+import GHC.Paths
+import GHC.Utils.Error
+import GHC.Utils.Outputable
+#else
+import Bag
+import DynFlags
+import ErrUtils
+import GHC
 import GHC.Paths
 import HscMain
 import HscTypes
-import Module
 import Outputable hiding ((<>), empty)
+#endif
 import SourceConstraints
 import SourceConstraints.LocalModule
-import System.IO
 import System.Environment as System
+import System.IO
 import Test.Hspec
 import Text.Heredoc
-
-import DynFlags
-  ( DynFlags(packageFlags)
-  , ModRenaming(ModRenaming)
-  , PackageArg(PackageArg)
-  , PackageFlag(ExposePackage)
-  , getDynFlags
-  )
-
-import ErrUtils
-  ( WarnMsg
-  , errMsgDoc
-  , errMsgSeverity
-  , errMsgSpan
-  , formatErrDoc
-  , getCaretDiagnostic
-  )
-
-import GHC
-  ( GhcMonad
-  , LoadHowMuch(LoadAllTargets)
-  , depanal
-  , getSession
-  , getSessionDynFlags
-  , guessTarget
-  , load
-  , runGhc
-  , setSessionDynFlags
-  , setTargets
-  , succeeded
-  )
 
 main :: IO ()
 main = System.withArgs [] . hspec $ do
@@ -100,7 +82,7 @@ main = System.withArgs [] . hspec $ do
          |  |                  ^^^^^^^^|]]
   where
     expectWarnings file messages =
-      it ("returns expected warnings from: " <> file) $ do
+      it ("returns expected warnings from: " ++ file) $ do
         actual <- getWarnings file
         actual `shouldBe` messages
 
@@ -114,11 +96,11 @@ getWarnings file = runGhc (pure libdir) $ do
   where
     parseWarnings :: GhcMonad m => m [String]
     parseWarnings = do
-      moduleGraph <- depanal empty True
+      moduleGraph <- depanal [] True
 
       let moduleSummary =
             fromMaybe
-              (panic $ "Cannot find module summary for " <> file <> " in dependency graph")
+              (panic $ "Cannot find module summary for " ++ file ++ " in dependency graph")
               (find ((== file) . msHsFilePath) $ mgModSummaries moduleGraph)
 
       env          <- getSession
@@ -127,7 +109,13 @@ getWarnings file = runGhc (pure libdir) $ do
 
       let localModules = [LocalModule $ mkModuleName "Data.Word"]
 
+#if MIN_VERSION_GLASGOW_HASKELL(9,0,0,0)
+      let sDocContext = initSDocContext dynFlags defaultUserStyle
+
+      mapM (render sDocContext) . bagToList . warnings Context{..} $ hpm_module parsedModule
+#else
       mapM (render dynFlags) . bagToList . warnings Context{..} $ hpm_module parsedModule
+#endif
 
     setupDynFlags :: GhcMonad m => m ()
     setupDynFlags = do
@@ -138,24 +126,34 @@ getWarnings file = runGhc (pure libdir) $ do
           ExposePackage
             "-package base"
             (PackageArg "base")
-            (ModRenaming True empty)
+            (ModRenaming True [])
 
     setupTargets :: GhcMonad m => m ()
     setupTargets = do
-      target <- guessTarget file empty
+      target <- guessTarget file Nothing
       setTargets [target]
       result <- load LoadAllTargets
 
       unless (succeeded result) $ panic "Loading of targets failed"
 
+#if MIN_VERSION_GLASGOW_HASKELL(9,0,0,0)
+    render :: GhcMonad m => SDocContext -> WarnMsg -> m String
+    render sDocContext warning = do
+#else
     render :: GhcMonad m => DynFlags -> WarnMsg -> m String
     render dynFlags warning = do
+#endif
       caretDiagnostic <- liftIO $
         getCaretDiagnostic
           (errMsgSeverity warning)
           (errMsgSpan warning)
 
       pure $ renderWithStyle
+#if MIN_VERSION_GLASGOW_HASKELL(9,0,0,0)
+        sDocContext
+        (formatErrDoc sDocContext (errMsgDoc warning) $+$ caretDiagnostic)
+#else
         dynFlags
         (formatErrDoc dynFlags (errMsgDoc warning) $+$ caretDiagnostic)
         (defaultUserStyle dynFlags)
+#endif
