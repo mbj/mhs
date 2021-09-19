@@ -1,4 +1,4 @@
-FROM alpine:3.12
+FROM alpine:3.14
 
 RUN echo "DBT container init" \
   && export PG_HOME=/var/lib/postgresql \
