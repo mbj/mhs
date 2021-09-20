@@ -70,12 +70,12 @@ library
   build-depends:
       aeson >=1.4 || >=1.5 && <1.6
     , aeson-pretty ==0.8.*
-    , amazonka ==1.6.1
-    , amazonka-cloudformation ==1.6.1
-    , amazonka-core ==1.6.1
-    , amazonka-s3 ==1.6.1
+    , amazonka
+    , amazonka-cloudformation
+    , amazonka-core
+    , amazonka-s3
     , attoparsec ==0.13.*
-    , base >=4.12 && <4.13 || >=4.13 && <4.14 || >=4.14 && <4.15
+    , base
     , bytestring ==0.10.*
     , conduit ==1.3.*
     , containers ==0.6.*
@@ -84,7 +84,7 @@ library
     , filepath ==1.4.*
     , hashable >=1.2 && >=1.3 && <1.4
     , http-types ==0.12.*
-    , lens >=4.17 && <4.18 || >=4.18 && <4.19 || >=4.19 && <4.20
+    , lens
     , mprelude >=0.2.0 && <0.3
     , mrio-amazonka >=0.0.1 && <0.1
     , mrio-core >=0.0.1 && <0.1
@@ -134,12 +134,12 @@ test-suite devtools
   build-depends:
       aeson >=1.4 || >=1.5 && <1.6
     , aeson-pretty ==0.8.*
-    , amazonka ==1.6.1
-    , amazonka-cloudformation ==1.6.1
-    , amazonka-core ==1.6.1
-    , amazonka-s3 ==1.6.1
+    , amazonka
+    , amazonka-cloudformation
+    , amazonka-core
+    , amazonka-s3
     , attoparsec ==0.13.*
-    , base >=4.12 && <4.13 || >=4.13 && <4.14 || >=4.14 && <4.15
+    , base
     , bytestring ==0.10.*
     , conduit ==1.3.*
     , containers ==0.6.*
@@ -149,7 +149,7 @@ test-suite devtools
     , filepath ==1.4.*
     , hashable >=1.2 && >=1.3 && <1.4
     , http-types ==0.12.*
-    , lens >=4.17 && <4.18 || >=4.18 && <4.19 || >=4.19 && <4.20
+    , lens
     , mprelude >=0.2.0 && <0.3
     , mrio-amazonka >=0.0.1 && <0.1
     , mrio-core >=0.0.1 && <0.1

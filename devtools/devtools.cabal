@@ -4,7 +4,7 @@ cabal-version: 1.18
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 18e67be00e5fdbd899c74c03c944379e1217485832ccc546bf570c5d68447b67
+-- hash: e8792fb99881b7ea906a885fc6d13861d2cfa9a6ce1df06724d56a01d0e42089
 
 name:           devtools
 version:        0.1.0
@@ -52,7 +52,7 @@ library
   ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
       Diff >0.3 && <0.5
-    , base >4.12 && <4.15
+    , base
     , bytestring ==0.10.*
     , cmdargs >=0.10.20 && <0.11
     , filepath ==1.4.*
@@ -85,7 +85,7 @@ test-suite test
   ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       Diff >0.3 && <0.5
-    , base >4.12 && <4.15
+    , base
     , bytestring ==0.10.*
     , cmdargs >=0.10.20 && <0.11
     , devtools

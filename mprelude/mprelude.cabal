@@ -4,7 +4,7 @@ cabal-version: 1.18
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4c8adaa171c2653d7fe9be8b39f2b6e7a00bda6cfab2095487e534be4a326d40
+-- hash: de43339c31b4111c23a59fdc4f897bd0b190f0c8180bd108f559b1c2c2871d3d
 
 name:           mprelude
 version:        0.2.1
@@ -60,7 +60,7 @@ library
       TemplateHaskell
   ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields
   build-depends:
-      base >4.12 && <14.15
+      base
     , source-constraints >=0.0.2 && <0.1
     , text ==1.2.*
     , unliftio-core ==0.2.*
@@ -95,7 +95,7 @@ test-suite devtools
       TemplateHaskell
   ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      base >4.12 && <14.15
+      base
     , devtools
     , source-constraints >=0.0.2 && <0.1
     , text ==1.2.*

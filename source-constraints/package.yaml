@@ -8,17 +8,16 @@ copyright:   2018 Markus Schirp
 category:    CodeQuality
 github:      mbj/source-constraints
 license:     BSD3
-tested-with: GHC ==8.8.4 || ==8.10.2
 description: |
-  Please visit the README at <https://github.com/mbj/source-constraints#readme>
+  Please visit the README at <https://github.com/mbj/mhs/blob/main/source-constraints/README.md>
   for usage information.
 
 dependencies:
 - attoparsec ^>= 0.13
-- base       ^>= 4.13 || ^>= 4.14
+- base
 - bytestring ^>= 0.10
 - filepath   ^>= 1.4
-- ghc        ^>= 8.8 || ^>= 8.10
+- ghc        ^>= 8.10 || ^>= 9.0
 - syb        ^>= 0.7
 - text       ^>= 1.2
 
@@ -85,7 +84,7 @@ tests:
     - -threaded
     - -with-rtsopts=-N
     dependencies:
-    - ghc-paths          ^>= 0.1
-    - heredoc            ^>= 0.2
-    - hspec              ^>= 2.7
+    - ghc-paths
+    - heredoc
+    - hspec
     - source-constraints

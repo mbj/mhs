@@ -9,7 +9,7 @@ github:      mbj/lht
 license:     BSD3
 
 dependencies:
-- base               ^>= 4.13 || ^>= 4.14
+- base
 - bytestring         ^>= 0.10
 - cbt                ^>= 0.1.0
 - conversions        ^>= 0.0.3
@@ -21,7 +21,7 @@ dependencies:
 - pathtype           ^>= 0.8
 - source-constraints ^>= 0.0.1
 - tar                ^>= 0.5
-- template-haskell   ^>= 2.15 || ^>= 2.16
+- template-haskell
 - text               ^>= 1.2
 - text-conversions   ^>= 0.3
 - th-lift-instances  ^>= 0.1

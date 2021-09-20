@@ -7,11 +7,11 @@ synopsis:   Injective explicit total and partial conversions
 version:    0.0.4
 
 dependencies:
-- base               > 4.12 && < 4.15
+- base
 - bytestring         ^>= 0.10
 - exceptions         ^>= 0.10
 - mtl                ^>= 2.2
-- template-haskell   ^>= 2.15 || ^>= 2.16
+- template-haskell
 - text               ^>= 1.2
 
 flags:

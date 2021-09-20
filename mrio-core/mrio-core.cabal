@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4a4ed70655f72fc543d0aa97cba74ec82e830da46d282aa7e02e82704d54d672
+-- hash: b3291116d6778e5e1cd26125aae57df8c6ebfbb0d4968162ed1470dbc11bc53b
 
 name:           mrio-core
 version:        0.0.1
@@ -51,7 +51,7 @@ library
       UndecidableInstances
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
-      base >=4.10 && <10
+      base
     , exceptions
     , mtl
     , primitive
@@ -88,7 +88,7 @@ test-suite test
       UndecidableInstances
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      base >=4.10 && <10
+      base
     , devtools
     , exceptions
     , mrio-core

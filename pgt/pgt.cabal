@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9b6e34827c2b278acaf7d79947b857ba5237b1916e8cf27bcac0aa2543b5b583
+-- hash: 513f49222b0cd9420e62ed146fead922745086ec1a041e2fa2d0819a392a62cb
 
 name:           pgt
 version:        0.0.1
@@ -55,7 +55,7 @@ library
       TemplateHaskell
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin-opt=SourceConstraints:local:Pgt -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
-      base >=4.13 && <5
+      base
     , bytestring ==0.10.*
     , containers ==0.6.*
     , conversions >=0.0.3 && <0.1
@@ -101,7 +101,7 @@ executable pgt
       TemplateHaskell
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin-opt=SourceConstraints:local:Pgt -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      base >=4.13 && <5
+      base
     , bytestring ==0.10.*
     , containers ==0.6.*
     , conversions >=0.0.3 && <0.1
@@ -147,7 +147,7 @@ test-suite test
       TemplateHaskell
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin-opt=SourceConstraints:local:Pgt -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      base >=4.13 && <5
+      base
     , bytestring ==0.10.*
     , cbt >=0.1.0 && <0.2
     , containers ==0.6.*

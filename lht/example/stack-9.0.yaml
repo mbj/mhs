@@ -1,0 +1,7 @@
+setup-info:
+  ghc:
+    linux64-lht:
+      9.0.1:
+        url: "https://downloads.haskell.org/~ghc/9.0.1/ghc-9.0.1-x86_64-alpine3.10-linux-integer-simple.tar.xz"
+        sha256: 7c1a0154c9e361b75be6cb0305533bb8a3b963c54e8092ffd1759e5710805a5c
+resolver: nightly-2021-09-18

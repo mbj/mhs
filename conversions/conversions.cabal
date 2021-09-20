@@ -55,11 +55,11 @@ library
       TypeOperators
   ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
-      base >4.12 && <4.15
+      base
     , bytestring ==0.10.*
     , exceptions ==0.10.*
     , mtl ==2.2.*
-    , template-haskell >=2.15 && <2.16 || >=2.16 && <2.17
+    , template-haskell
     , text ==1.2.*
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
@@ -99,13 +99,13 @@ test-suite test
       TypeOperators
   ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      base >4.12 && <4.15
+      base
     , bytestring ==0.10.*
     , conversions
     , devtools >=0.1.0 && <0.2
     , exceptions ==0.10.*
     , mtl ==2.2.*
-    , template-haskell >=2.15 && <2.16 || >=2.16 && <2.17
+    , template-haskell
     , text ==1.2.*
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
