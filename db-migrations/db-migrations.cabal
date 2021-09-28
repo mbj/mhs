@@ -3,8 +3,6 @@ cabal-version: 1.18
 -- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
---
--- hash: b8e0da58c6ce3deb973481b79e25ecdfdf1db0f4e99a211d924e23584607439d
 
 name:           db-migrations
 version:        0.0.1
@@ -35,6 +33,9 @@ library
   hs-source-dirs:
       src
   default-extensions:
+      AllowAmbiguousTypes
+      ConstraintKinds
+      DataKinds
       DerivingStrategies
       DuplicateRecordFields
       FlexibleContexts
@@ -59,6 +60,7 @@ library
     , memory >=0.15 && <0.16 || >=0.16 && <0.17
     , mprelude ==0.2.*
     , mrio-core >=0.0.1 && <0.1
+    , mtl ==2.2.*
     , network ==3.1.*
     , optparse-applicative >=0.15 && <0.16 || >=0.16 && <0.17
     , pathtype ==0.8.*
@@ -76,6 +78,9 @@ test-suite devtools
   other-modules:
       Paths_db_migrations
   default-extensions:
+      AllowAmbiguousTypes
+      ConstraintKinds
+      DataKinds
       DerivingStrategies
       DuplicateRecordFields
       FlexibleContexts
@@ -101,6 +106,7 @@ test-suite devtools
     , memory >=0.15 && <0.16 || >=0.16 && <0.17
     , mprelude ==0.2.*
     , mrio-core >=0.0.1 && <0.1
+    , mtl ==2.2.*
     , network ==3.1.*
     , optparse-applicative >=0.15 && <0.16 || >=0.16 && <0.17
     , pathtype ==0.8.*

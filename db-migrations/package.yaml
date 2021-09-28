@@ -25,6 +25,7 @@ dependencies:
 - memory                    ^>= 0.15 || ^>= 0.16
 - mprelude                  ^>= 0.2
 - mrio-core                 ^>= 0.0.1
+- mtl                       ^>= 2.2
 - network                   ^>= 3.1
 - optparse-applicative      ^>= 0.15 || ^>= 0.16
 - pathtype                  ^>= 0.8
@@ -51,6 +52,9 @@ ghc-options:
 - -funbox-strict-fields
 
 default-extensions:
+- AllowAmbiguousTypes
+- ConstraintKinds
+- DataKinds
 - DerivingStrategies
 - DuplicateRecordFields
 - FlexibleContexts
