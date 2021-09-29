@@ -1,0 +1,133 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.4.
+--
+-- see: https://github.com/sol/hpack
+
+name:           oauth
+version:        0.0.1
+synopsis:       Haskell Oauth library
+description:    Haskell Oauth library currently supporting only google auth
+category:       Oauth, Web
+homepage:       https://github.com/mbj/mhs#readme
+bug-reports:    https://github.com/mbj/mhs/issues
+author:         gamsnjaga@gmail.com
+maintainer:     gamsnjaga@gmail.com, epicallan.al@gmail.com, mbj@schirp-dso.com
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/mbj/mhs
+  subdir: oauth
+
+library
+  exposed-modules:
+      OAuth.OAuth2
+      OAuth.Prelude
+  other-modules:
+      Paths_oauth
+  hs-source-dirs:
+      src
+  default-extensions:
+      AllowAmbiguousTypes
+      OverloadedStrings
+      OverloadedLists
+      DeriveFoldable
+      DeriveFunctor
+      DeriveAnyClass
+      DeriveGeneric
+      DerivingStrategies
+      DeriveTraversable
+      DerivingVia
+      DataKinds
+      KindSignatures
+      DuplicateRecordFields
+      ConstraintKinds
+      EmptyCase
+      FlexibleContexts
+      GeneralizedNewtypeDeriving
+      LambdaCase
+      NoImplicitPrelude
+      MonoLocalBinds
+      MultiWayIf
+      MultiParamTypeClasses
+      RecordWildCards
+      ScopedTypeVariables
+      TypeApplications
+      ViewPatterns
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -fno-warn-partial-type-signatures -fno-warn-name-shadowing -fwarn-tabs -fwarn-unused-imports -fwarn-missing-signatures -fwarn-incomplete-patterns
+  build-depends:
+      aeson
+    , aeson-pretty
+    , base >=4.7 && <5
+    , base64-bytestring
+    , bounded
+    , bytestring
+    , conversions
+    , exceptions
+    , http-client
+    , http-mclient
+    , http-types
+    , mprelude
+    , mrio-core
+    , mtl
+    , network-uri
+    , nonce
+    , text
+    , time
+    , utf8-string
+  if flag(development)
+    ghc-options: -Werror -fplugin=SourceConstraints
+    build-depends:
+        source-constraints >=0.0.2 && <0.1
+  else
+    ghc-options: -Wwarn
+  default-language: Haskell2010
+
+test-suite test
+  type: exitcode-stdio-1.0
+  main-is: test/Test.hs
+  other-modules:
+      Paths_oauth
+  default-extensions:
+      AllowAmbiguousTypes
+      OverloadedStrings
+      OverloadedLists
+      DeriveFoldable
+      DeriveFunctor
+      DeriveAnyClass
+      DeriveGeneric
+      DerivingStrategies
+      DeriveTraversable
+      DerivingVia
+      DataKinds
+      KindSignatures
+      DuplicateRecordFields
+      ConstraintKinds
+      EmptyCase
+      FlexibleContexts
+      GeneralizedNewtypeDeriving
+      LambdaCase
+      NoImplicitPrelude
+      MonoLocalBinds
+      MultiWayIf
+      MultiParamTypeClasses
+      RecordWildCards
+      ScopedTypeVariables
+      TypeApplications
+      ViewPatterns
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -fno-warn-partial-type-signatures -fno-warn-name-shadowing -fwarn-tabs -fwarn-unused-imports -fwarn-missing-signatures -fwarn-incomplete-patterns -rtsopts -threaded -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , devtools >=0.1.0 && <0.2
+  if flag(development)
+    ghc-options: -Werror -fplugin=SourceConstraints
+    build-depends:
+        source-constraints >=0.0.2 && <0.1
+  else
+    ghc-options: -Wwarn
+  default-language: Haskell2010
