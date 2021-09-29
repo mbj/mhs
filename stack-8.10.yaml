@@ -37,6 +37,7 @@ packages:
 - mrio-amazonka
 - mrio-core
 - mrio-log
+- oauth
 - openapi
 - pgt
 - postgresql-connection
