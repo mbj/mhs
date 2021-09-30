@@ -1,8 +1,11 @@
 module OAuth.OAuth2
   ( AuthenticationResponse(..)
+  , AuthCode(..)
   , Credentials(..)
+  , Env
   , OpenIdPayload(..)
   , RefreshAccessTokenResponse(..)
+  , RefreshToken(..)
   , authenticate
   , authenticatedHttpRequest
   , authorizationRequestUrl
