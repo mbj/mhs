@@ -11,7 +11,7 @@ module MRIO.Core
 where
 
 import           Control.Applicative            ( liftA2 )
-import           Control.Monad.Catch            ( MonadThrow )
+import           Control.Monad.Catch            ( MonadThrow, MonadCatch )
 import           Control.Monad.IO.Unlift        ( MonadIO(..)
                                                 , MonadUnliftIO(..)
                                                 )
@@ -30,7 +30,7 @@ import           Prelude
 -- classes defined on the environment, instead of using an
 -- underlying monad.
 newtype RIO env a = RIO { unRIO :: ReaderT env IO a }
-  deriving newtype (Functor, Applicative, Monad, MonadIO, MonadReader env, MonadThrow)
+  deriving newtype (Functor, Applicative, Monad, MonadIO, MonadReader env, MonadThrow, MonadCatch)
 
 instance Semigroup a => Semigroup (RIO env a) where
   (<>) = liftA2 (<>)
