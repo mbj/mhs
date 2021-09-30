@@ -2,8 +2,6 @@ import MPrelude
 
 import qualified CBT
 import qualified Control.Exception     as Exception
-import qualified Data.Elf              as ELF
-import qualified Data.Foldable         as Foldable
 import qualified Devtools
 import qualified LHT.Build
 import qualified System.Path           as Path
@@ -23,12 +21,8 @@ main = do
 testBuild :: Tasty.TestTree
 testBuild =
   Tasty.testCase "test-build" $ do
-    executable <- withCurrentDirectory (Path.relDir "example") . CBT.runDefaultEnvironment $
+    void $ withCurrentDirectory (Path.relDir "example") . CBT.runDefaultEnvironment $
       LHT.Build.build config
-
-    Tasty.assertBool
-      "static binary"
-      (Foldable.null . ELF.parseSymbolTables $ ELF.parseElf executable)
 
 config :: LHT.Build.Config
 config = LHT.Build.Config

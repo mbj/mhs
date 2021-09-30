@@ -15,6 +15,7 @@ import System.Path ((</>))
 import qualified CBT
 import qualified CBT.TH
 import qualified Data.ByteString       as BS
+import qualified Data.Elf              as ELF
 import qualified Data.Foldable         as Foldable
 import qualified LHT.Zip               as Zip
 import qualified System.Environment    as Environment
@@ -59,7 +60,15 @@ build
   -> RIO env BS.ByteString
 build config@Config{..} =
   withBuildContainer config $ \containerName ->
-    CBT.readContainerFile containerName (containerHomePath </> executablePath)
+    assertStatic =<< CBT.readContainerFile containerName (containerHomePath </> executablePath)
+
+assertStatic
+  :: BS.ByteString
+  -> RIO env BS.ByteString
+assertStatic executable =
+  if Foldable.null . ELF.parseSymbolTables $ ELF.parseElf executable
+    then pure executable
+    else Exception.throwString "LHT.Build did not produce a static executable"
 
 withBuildContainer
   :: CBT.WithEnv env
