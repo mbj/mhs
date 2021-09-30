@@ -1,27 +1,31 @@
 {-# LANGUAGE QuasiQuotes #-}
 
 module Database.Migration
-  ( RunPGDump
+  ( HasMigrationEnv
+  , RunPGDump
   , apply
   , dryApply
   , dumpSchema
+  , getSchemaFileString
   , loadSchema
   , localPGDump
   , new
-  , schemaFileString
   , setup
   , status
   )
 where
 
 import Control.Bool (whenM)
+import Control.Monad.Reader (asks)
 import Data.Bifunctor (bimap)
 import Database.Migration.Prelude
 import GHC.Enum (succ)
+import GHC.Records (HasField(..))
 import Hasql.TH (resultlessStatement, uncheckedSql, vectorStatement)
 import Prelude (error)
 import System.Path ((<.>), (</>))
 import Text.Read (readMaybe)
+import UnliftIO.Exception (throwString)
 
 import qualified Crypto.Hash                as Hash
 import qualified DBT.Postgresql             as Postgresql
@@ -43,6 +47,11 @@ type Digest = Hash.Digest Hash.SHA3_256
 
 type RunPGDump env = [Text] -> RIO env LBS.ByteString
 
+type HasMigrationEnv env
+  = ( HasField "migrationDir" env Path.RelDir
+    , HasField "schemaFile"   env Path.RelFile
+    )
+
 data AppliedMigration = AppliedMigration
   { digest :: Digest
   , index  :: Natural
@@ -56,7 +65,7 @@ data MigrationFile = MigrationFile
   , sql    :: BS.ByteString
   }
 
-dryApply :: DBT.Session env => RIO env ()
+dryApply :: (HasMigrationEnv env, DBT.Session env) => RIO env ()
 dryApply = do
   files <- getNewMigrations
 
@@ -64,7 +73,7 @@ dryApply = do
     then printStatus ("No new migrations to apply" :: Text)
     else Foldable.traverse_ printMigrationFile files
 
-status :: DBT.Session env => RIO env ()
+status :: (HasMigrationEnv env, DBT.Session env) => RIO env ()
 status = do
   applied <- readAppliedMigrations
 
@@ -83,31 +92,34 @@ localPGDump arguments clientConfig =  do
     . Process.setEnv env
     $ Process.proc "pg_dump" (convert <$> arguments)
 
-dumpSchema :: RunPGDump env -> RIO env ()
+dumpSchema :: HasMigrationEnv env => RunPGDump env -> RIO env ()
 dumpSchema pgDump = do
+  schemaFileString <- getSchemaFileString
   printStatus $ "Writing schema to " <> schemaFileString
   schema     <- pgDump ["--no-comments", "--schema-only"]
   migrations <- pgDump ["--data-only", "--inserts", "--table=schema_migrations"]
   liftIO $ LBS.writeFile schemaFileString $ schema <> migrations
 
-loadSchema :: DBT.Session env => RIO env ()
+loadSchema :: (HasMigrationEnv env, DBT.Session env) => RIO env ()
 loadSchema = do
+  schemaFileString <- getSchemaFileString
   printStatus $ "Loading schema from " <> schemaFileString
   DBT.runSession $ Transaction.transaction
     Transaction.Serializable
     Transaction.Write =<<
       Transaction.sql <$> liftIO (BS.readFile schemaFileString)
 
-apply :: DBT.Session env => RIO env ()
+apply :: (HasMigrationEnv env, DBT.Session env) => RIO env ()
 apply = do
   migrations <- getNewMigrations
   printStatus $ "Applying " <> show (Foldable.length migrations) <> " pending migrations"
   Foldable.traverse_ applyMigration migrations
 
-new :: DBT.Session env => RIO env ()
+new :: (HasMigrationEnv env, DBT.Session env) => RIO env ()
 new = do
-  applied <- max . fmap appliedIndex <$> readAppliedMigrations
-  files   <- max . fmap fileIndex    <$> readMigrationFiles
+  applied       <- max . fmap appliedIndex <$> readAppliedMigrations
+  files         <- max . fmap fileIndex    <$> readMigrationFiles
+  migrationDir  <- getMigrationDir
 
   let index = succ $ max [applied, files]
       file  = Path.toString $ migrationDir </> Path.relFile (show index) <.> ".sql"
@@ -172,12 +184,15 @@ readAppliedMigrations = DBT.runSession $ do
       = maybe (error "Failed to decode sha3_256 from DB") identity
       . Hash.digestFromByteString
 
-readMigrationFiles :: RIO env [MigrationFile]
-readMigrationFiles = liftIO $
-  whenM (Path.doesDirectoryExist migrationDir)
-    $ Foldable.foldMap load =<< Path.filesInDir migrationDir
+readMigrationFiles
+  :: forall env . HasMigrationEnv env
+  => RIO env [MigrationFile]
+readMigrationFiles = do
+  migrationDir <- getMigrationDir
+  whenM (liftIO (Path.doesDirectoryExist migrationDir))
+    $ Foldable.foldMap load =<< liftIO (Path.filesInDir migrationDir)
   where
-    load :: Path.RelFile -> IO [MigrationFile]
+    load :: Path.RelFile ->  RIO env [MigrationFile]
     load file =
       whenM (pure $ isMigrationFile file)
         fmap pure . readMigration file =<< parseIndex file
@@ -185,31 +200,27 @@ readMigrationFiles = liftIO $
     isMigrationFile :: Path.RelFile -> Bool
     isMigrationFile = (== ".sql") . Path.takeExtension
 
-    parseIndex :: Path.RelFile -> IO Natural
+    parseIndex :: Path.RelFile -> RIO env Natural
     parseIndex file =
       maybe
-        (fail $ "Invalid migration file name: " <> Path.toString file)
+        (throwString $ "Invalid migration file name: " <> Path.toString file)
         pure
         (readMaybe . Path.toString $ Path.dropExtension file)
 
-    readMigration :: Path.RelFile -> Natural -> IO MigrationFile
+    readMigration :: Path.RelFile -> Natural -> RIO env MigrationFile
     readMigration path index = do
-      sql <- BS.readFile . Path.toString $ migrationDir </> path
+      migrationDir <- getMigrationDir
+      sql <- liftIO $ BS.readFile . Path.toString $ migrationDir </> path
       pure MigrationFile
         { digest = Hash.hash sql
         , ..
         }
 
-dbDir :: Path.RelDir
-dbDir = Path.relDir "db"
 
-migrationDir :: Path.RelDir
-migrationDir = dbDir </> Path.relDir "migrations"
+getMigrationDir :: HasMigrationEnv env => RIO env Path.RelDir
+getMigrationDir = asks (getField @"migrationDir")
 
-schemaFile :: Path.RelFile
-schemaFile = dbDir </> Path.relFile "schema.sql"
-
-getNewMigrations :: DBT.Session env => RIO env [MigrationFile]
+getNewMigrations :: (HasMigrationEnv env, DBT.Session env) => RIO env [MigrationFile]
 getNewMigrations = newMigrations <$> readAppliedMigrations <*> readMigrationFiles
 
 appliedIndex :: AppliedMigration -> Natural
@@ -218,8 +229,8 @@ appliedIndex = index
 fileIndex :: MigrationFile -> Natural
 fileIndex = index
 
-schemaFileString :: String
-schemaFileString = Path.toString schemaFile
+getSchemaFileString :: HasMigrationEnv env => RIO env String
+getSchemaFileString = Path.toString <$> asks (getField @"schemaFile")
 
 newMigrations :: [AppliedMigration] -> [MigrationFile] -> [MigrationFile]
 newMigrations applied = List.sortOn fileIndex . Foldable.foldMap test

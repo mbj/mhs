@@ -27,7 +27,9 @@ defaultConfig withConfig
   , ..
   }
 
-parserInfo :: ParserInfo (Config env -> RIO env ())
+parserInfo
+  :: forall env . (HasMigrationEnv env, HasMigrationEnv (DBT.ConnectionEnv env))
+  => ParserInfo (Config env -> RIO env ())
 parserInfo = wrapHelper commands "migration commands"
   where
     commands :: Parser (Config env -> RIO env ())
@@ -63,11 +65,11 @@ parserInfo = wrapHelper commands "migration commands"
       <> mkCommand
          "dump-schema"
          (\Config{..} -> dumpSchema runPGDump)
-         ("Dump database schema to " <> schemaFileString)
+         "Dump database schema"
       <> mkCommand
          "load-schema"
          (withConnection' loadSchema)
-         ("Load database schema from " <> schemaFileString)
+         "Load database schema"
 
     withConnection'
       :: RIO (DBT.ConnectionEnv env) ()
@@ -76,7 +78,8 @@ parserInfo = wrapHelper commands "migration commands"
     withConnection' = flip withConnection
 
 applyMigration
-  :: Config env
+  :: (HasMigrationEnv env, HasMigrationEnv (DBT.ConnectionEnv env))
+  => Config env
   -> RIO env ()
 applyMigration Config{..} = do
   withConfig $ \config ->
