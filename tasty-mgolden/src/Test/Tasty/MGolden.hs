@@ -151,7 +151,7 @@ addFormat :: ConsoleFormat
 addFormat = okFormat
 
 neutralFormat :: ConsoleFormat
-neutralFormat = ConsoleFormat ANSI.NormalIntensity ANSI.Dull ANSI.Black
+neutralFormat = ConsoleFormat ANSI.NormalIntensity ANSI.Dull ANSI.White
 
 removeFormat :: ConsoleFormat
 removeFormat = infoFailFormat
