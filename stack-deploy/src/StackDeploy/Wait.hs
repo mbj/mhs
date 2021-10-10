@@ -7,13 +7,14 @@ import StackDeploy.Prelude
 import StackDeploy.Types
 
 import qualified Data.Foldable                    as Foldable
+import qualified MRIO.Amazonka                    as AWS
 import qualified Network.AWS.CloudFormation.Types as CF
 
 -- | Wait for remote operation to end in a final status
 --
 -- Apply action for each event related to the remote operation.
 waitForAccept
-  :: forall env . HasAWS env
+  :: forall env . AWS.Env env
   => RemoteOperation
   -> (CF.StackEvent -> RIO env ())
   -> RIO env RemoteOperationResult

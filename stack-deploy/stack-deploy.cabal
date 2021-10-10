@@ -26,7 +26,7 @@ library
       StackDeploy.CLI
       StackDeploy.CLI.Utils
       StackDeploy.Component
-      StackDeploy.Config
+      StackDeploy.Env
       StackDeploy.Events
       StackDeploy.InstanceSpec
       StackDeploy.IO
@@ -45,6 +45,7 @@ library
   hs-source-dirs:
       src
   default-extensions:
+      ConstraintKinds
       DataKinds
       DeriveAnyClass
       DeriveGeneric
@@ -109,6 +110,7 @@ test-suite devtools
   other-modules:
       Paths_stack_deploy
   default-extensions:
+      ConstraintKinds
       DataKinds
       DeriveAnyClass
       DeriveGeneric

@@ -15,7 +15,6 @@ import Data.Conduit (ConduitT, (.|), runConduit)
 import Data.Conduit.Combinators (find, map)
 import Data.Int (Int)
 import Data.Time.Format (defaultTimeLocale, formatTime)
-import StackDeploy.Config
 import StackDeploy.IO
 import StackDeploy.InstanceSpec (InstanceSpec(..))
 import StackDeploy.Prelude
@@ -28,6 +27,7 @@ import qualified Data.Foldable                             as Foldable
 import qualified Data.Text                                 as Text
 import qualified Data.Text.Encoding                        as Text
 import qualified Data.Text.IO                              as Text
+import qualified MRIO.Amazonka                             as AWS
 import qualified Network.AWS.CloudFormation.CreateStack    as CF
 import qualified Network.AWS.CloudFormation.DeleteStack    as CF
 import qualified Network.AWS.CloudFormation.DescribeStacks as CF
@@ -35,6 +35,7 @@ import qualified Network.AWS.CloudFormation.Types          as CF
 import qualified Network.AWS.CloudFormation.UpdateStack    as CF
 import qualified Network.AWS.S3.Types                      as S3
 import qualified StackDeploy.AWS                           as AWS
+import qualified StackDeploy.Env                           as StackDeploy
 import qualified StackDeploy.InstanceSpec                  as InstanceSpec
 import qualified StackDeploy.Parameters                    as Parameters
 import qualified StackDeploy.S3                            as S3
@@ -50,7 +51,7 @@ data OperationFields a = OperationFields
   }
 
 perform
-  :: forall env . (HasAWS env, HasConfig env)
+  :: forall env . (AWS.Env env, StackDeploy.Env env)
   => Operation env
   -> RIO env RemoteOperationResult
 perform = \case
@@ -194,7 +195,7 @@ printEvent event = do
     sayReason :: Maybe Text -> RIO env ()
     sayReason = maybe (pure ()) (say . ("- " <>))
 
-getStack :: HasAWS env => InstanceSpec.Name env -> RIO env (Maybe CF.Stack)
+getStack :: AWS.Env env => InstanceSpec.Name env -> RIO env (Maybe CF.Stack)
 getStack name =
   catchJust handleNotFoundError (pure <$> getExistingStack name) pure
   where
@@ -215,14 +216,14 @@ getStack name =
     expectedMessage =
       AWS.ErrorMessage $ "Stack with id " <> toText name <> " does not exist"
 
-getStackId :: HasAWS env => InstanceSpec.Name env -> RIO env (Maybe Id)
+getStackId :: AWS.Env env => InstanceSpec.Name env -> RIO env (Maybe Id)
 getStackId = getId <=< getStack
   where
     getId :: Maybe CF.Stack -> RIO env (Maybe Id)
     getId = maybe (pure empty) ((pure <$>) . idFromStack)
 
 getExistingStack
-  :: forall env . HasAWS env
+  :: forall env . AWS.Env env
   => InstanceSpec.Name env
   -> RIO env CF.Stack
 getExistingStack name = maybe failMissingRequested pure =<< doRequest
@@ -241,12 +242,12 @@ getExistingStack name = maybe failMissingRequested pure =<< doRequest
     describeSpecificStack = set CF.dStackName (pure $ toText name) CF.describeStacks
 
 getExistingStackId
-  :: HasAWS env
+  :: AWS.Env env
   => InstanceSpec.Name env
   -> RIO env Id
 getExistingStackId = idFromStack <=< getExistingStack
 
-getOutput :: HasAWS env => InstanceSpec.Name env -> Text -> RIO env Text
+getOutput :: AWS.Env env => InstanceSpec.Name env -> Text -> RIO env Text
 getOutput name key = do
   stack <- getExistingStack name
 
@@ -260,13 +261,13 @@ getOutput name key = do
     failStack message
       = throwString . convertText $ "Stack: " <> convertText name <> " " <> message
 
-stackNames :: HasAWS env => ConduitT () (InstanceSpec.Name env) (RIO env) ()
+stackNames :: AWS.Env env => ConduitT () (InstanceSpec.Name env) (RIO env) ()
 stackNames
   =  AWS.listResource CF.describeStacks CF.dsrsStacks
   .| map (InstanceSpec.mkName . view CF.sStackName)
 
 prepareOperation
-  :: forall env a . (HasAWS env, HasConfig env)
+  :: forall env a . (AWS.Env env, StackDeploy.Env env)
   => OperationFields a
   -> InstanceSpec env
   -> Token
@@ -288,7 +289,7 @@ prepareOperation OperationFields{..} InstanceSpec{..} token
     s3Template :: a -> RIO env a
     s3Template request = do
       ask >>=
-        (maybe failMissingTemplateBucket (doUpload request =<<) . getTemplateBucketName) . getConfig
+        (maybe failMissingTemplateBucket (doUpload request =<<) . StackDeploy.getTemplateBucketName) . getField @"stackDeployConfig"
 
     doUpload :: a -> S3.BucketName -> RIO env a
     doUpload request bucketName@(S3.BucketName bucketNameText) = do

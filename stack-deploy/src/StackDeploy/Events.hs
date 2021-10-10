@@ -12,6 +12,7 @@ import StackDeploy.Types
 
 import qualified Data.Foldable                                  as Foldable
 import qualified Data.List                                      as List
+import qualified MRIO.Amazonka                                  as AWS
 import qualified Network.AWS.CloudFormation.DescribeStackEvents as CF
 import qualified Network.AWS.CloudFormation.Types               as CF
 
@@ -36,7 +37,7 @@ defaultPoll stackId = Poll
 --
 -- Apply action for each event related to the remote operation.
 pollEvents
-  :: forall env . HasAWS env
+  :: forall env . AWS.Env env
   => Poll
   -> (CF.StackEvent -> RIO env ())
   -> RIO env (Maybe CF.StackEvent)
@@ -47,7 +48,7 @@ pollEvents poll@Poll{..} eventAction = runConduit events
 
 -- | Conduit polling for new stack events
 allEvents
-  :: forall env . HasAWS env
+  :: forall env . AWS.Env env
   => Poll
   -> ConduitT () CF.StackEvent (RIO env) ()
 allEvents Poll{..} =
@@ -93,7 +94,7 @@ allEvents Poll{..} =
       pure events
 
 stackEvents
-  :: HasAWS env
+  :: AWS.Env env
   => Id
   -> ConduitT () CF.StackEvent (RIO env) ()
 stackEvents stackId = listResource req CF.dsersStackEvents
