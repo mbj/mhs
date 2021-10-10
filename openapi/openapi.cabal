@@ -4,23 +4,28 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a4dc459e548a4068d1ab9d1b496748c71e586ab52576bb50c2cfe7ce0591070f
+-- hash: 02c9c5f37dc974b6395f5a82ff2b7d7c0eb170c17c6ef4eb1d6b229a3bd302d2
 
 name:           openapi
 version:        0.0.1
 synopsis:       Openapi3 Types
-homepage:       https://github.com/mbj/openapi
-bug-reports:    https://github.com/mbj/openapi/issues
+homepage:       https://github.com/mbj/mhs#readme
+bug-reports:    https://github.com/mbj/mhs/issues
 author:         Markus Schirp
 maintainer:     mbj@schirp-dso.com
-copyright:      2019 Markus Schirp
+copyright:      2021 Markus Schirp
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
 
 source-repository head
   type: git
-  location: https://github.com/mbj/openapi
+  location: https://github.com/mbj/mhs
+
+flag development
+  description: Run GHC with development flags
+  manual: True
+  default: False
 
 library
   exposed-modules:
@@ -78,7 +83,7 @@ library
       Strict
       TupleSections
       TypeApplications
-  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -fplugin=SourceConstraints
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
       aeson ==1.5.*
     , attoparsec ==0.13.*
@@ -98,11 +103,19 @@ library
     , text-conversions ==0.3.*
     , unordered-containers ==0.2.*
     , yaml ==0.11.*
+  if flag(development)
+    ghc-options: -Werror -fplugin=SourceConstraints
+    build-depends:
+        source-constraints
+  else
+    ghc-options: -Wwarn
   default-language: Haskell2010
 
 test-suite tasty
   type: exitcode-stdio-1.0
-  main-is: Main.hs
+  main-is: Test.hs
+  other-modules:
+      Paths_openapi
   hs-source-dirs:
       test
   default-extensions:
@@ -126,7 +139,7 @@ test-suite tasty
       Strict
       TupleSections
       TypeApplications
-  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -fplugin=SourceConstraints
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       aeson ==1.5.*
     , attoparsec ==0.13.*
@@ -150,4 +163,10 @@ test-suite tasty
     , text-conversions ==0.3.*
     , unordered-containers
     , yaml ==0.11.*
+  if flag(development)
+    ghc-options: -Werror -fplugin=SourceConstraints
+    build-depends:
+        source-constraints
+  else
+    ghc-options: -Wwarn
   default-language: Haskell2010

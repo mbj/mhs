@@ -13,6 +13,8 @@ import AWS.Lambda.Runtime.Prelude
 import AWS.Lambda.Runtime.Types
 import Control.Exception (displayException)
 import Control.Monad.Except (ExceptT(..), liftEither, throwError, withExceptT)
+import Data.List (filter, map)
+import Data.Tuple (fst, snd)
 import System.Environment (lookupEnv)
 
 import qualified Data.Aeson          as JSON
@@ -114,7 +116,7 @@ sendEventResponse Connection{..} requestId json = do
     throwM $ UnSuccessfulEventSending statusCode "Could not post handler result"
   where
     toEventSuccessRequest :: HTTP.Request -> HTTP.Request
-    toEventSuccessRequest request = request
+    toEventSuccessRequest request' = request'
       { HTTP.requestBody = HTTP.RequestBodyLBS (JSON.encode json)
       , HTTP.method      = "POST"
       , HTTP.path        = "2018-06-01/runtime/invocation/" <> convert requestId <> "/response"
@@ -128,7 +130,7 @@ sendBootError Connection{..} error
   $ toInitErrorRequest request
   where
     toInitErrorRequest :: HTTP.Request -> HTTP.Request
-    toInitErrorRequest request = (toBaseErrorRequest error request)
+    toInitErrorRequest request' = (toBaseErrorRequest error request')
       { HTTP.path = "2018-06-01/runtime/init/error"
       }
 

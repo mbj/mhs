@@ -1,12 +1,10 @@
+_common/package: !include "../common/package.yaml"
+
 name:        dbt-postgresql-container
 version:     0.1.0
 synopsis:    DBT Postgresql container tool
-homepage:    https://github.com/mbj/dbt
-author:      Markus Schirp
-maintainer:  mbj@schirp-dso.com
-copyright:   2019 Markus Schirp
-github:      mbj/dbt
-license:     BSD3
+
+<<: *defaults
 
 dependencies:
 - base
@@ -31,44 +29,6 @@ dependencies:
 - unliftio                  ^>= 0.2
 - unliftio-core             ^>= 0.2
 
-ghc-options:
-- -Wall
-- -Wcompat
-- -Werror
-- -Widentities
-- -Wimplicit-prelude
-- -Wincomplete-record-updates
-- -Wincomplete-uni-patterns
-- -Wmissing-exported-signatures
-- -Wmissing-local-signatures
-- -Wmonomorphism-restriction
-- -Wredundant-constraints
-- -fplugin=SourceConstraints
-- -funbox-strict-fields
-- -optP-Wno-nonportable-include-path
-
-default-extensions:
-- AllowAmbiguousTypes
-- DataKinds
-- DerivingStrategies
-- DerivingVia
-- DuplicateRecordFields
-- FlexibleContexts
-- GeneralizedNewtypeDeriving
-- KindSignatures
-- LambdaCase
-- MonoLocalBinds
-- MultiParamTypeClasses
-- NoImplicitPrelude
-- NumericUnderscores
-- OverloadedLists
-- OverloadedStrings
-- RecordWildCards
-- ScopedTypeVariables
-- StrictData
-- TemplateHaskell
-- TypeApplications
-
 library:
   source-dirs: src
   exposed-modules:
@@ -88,11 +48,7 @@ executables:
 
 tests:
   test:
-    main: test/Test.hs
-    ghc-options:
-    - -rtsopts
-    - -threaded
-    - -with-rtsopts=-N
+    <<: *test
     dependencies:
     - dbt-postgresql-connection
     - dbt-postgresql-container

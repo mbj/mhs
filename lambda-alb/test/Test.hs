@@ -1,7 +1,6 @@
-module Main
-  ( main
-  )
-where
+module Main (main) where
+
+import System.IO (IO)
 
 import qualified Devtools
 

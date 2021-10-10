@@ -1,0 +1,80 @@
+- &defaults
+  author:     Markus Schirp
+  copyright:  2021 Markus Schirp
+  github:     mbj/mhs
+  homepage:   https://github.com/mbj/mhs#readme
+  license:    BSD3
+  maintainer: markus@schirp-dso.com
+
+  when:
+  - condition: flag(development)
+    then:
+      ghc-options:
+      - -Werror
+      - -fplugin=SourceConstraints
+      dependencies:
+      - source-constraints
+    else:
+      ghc-options: -Wwarn
+
+  ghc-options:
+  - -Wall
+  - -Wcompat
+  - -Werror
+  - -Widentities
+  - -Wimplicit-prelude
+  - -Wincomplete-record-updates
+  - -Wincomplete-uni-patterns
+  - -Wmissing-local-signatures
+  - -Wmissing-signatures
+  - -Wmonomorphism-restriction
+  - -Wredundant-constraints
+  - -fhide-source-paths
+  - -fplugin-opt=SourceConstraints:local:Blastschield
+  - -funbox-strict-fields
+  - -optP-Wno-nonportable-include-path
+
+  default-extensions:
+  - ConstraintKinds
+  - DataKinds
+  - DeriveAnyClass
+  - DeriveGeneric
+  - DerivingStrategies
+  - DerivingVia
+  - DuplicateRecordFields
+  - FlexibleContexts
+  - FlexibleInstances
+  - GeneralizedNewtypeDeriving
+  - LambdaCase
+  - MultiParamTypeClasses
+  - NoImplicitPrelude
+  - NumericUnderscores
+  - OverloadedLists
+  - OverloadedStrings
+  - RankNTypes
+  - RecordWildCards
+  - ScopedTypeVariables
+  - Strict
+  - TemplateHaskell
+  - TypeApplications
+  - TypeFamilies
+  - ViewPatterns
+
+  library:
+    source-dirs: src
+
+  flags:
+    development: &development_flag
+      description: Run GHC with development flags
+      default: false
+      manual: true
+
+- &test
+  main: Test.hs
+  source-dirs: test
+  ghc-options:
+  - -rtsopts
+  - -threaded
+  - -with-rtsopts=-N
+  dependencies:
+  - devtools

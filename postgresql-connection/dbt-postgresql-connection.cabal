@@ -4,22 +4,27 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b81d8040bed2974e7034eb387cd1483855c2104d5dbea3a3a87de44a3afed60f
+-- hash: 4f6c7539fb46bcadf680dbd8fbb5cb486a89ad5fa49a82d938f770840aed82a7
 
 name:           dbt-postgresql-connection
 version:        0.1.0
 synopsis:       DBT Postgresql database connection
-homepage:       https://github.com/mbj/dbt
+homepage:       https://github.com/mbj/mhs#readme
 bug-reports:    https://github.com/mbj/dbt/issues
 author:         Markus Schirp
-maintainer:     mbj@schirp-dso.com
-copyright:      2019 Markus Schirp
+maintainer:     markus@schirp-dso.com
+copyright:      2021 Markus Schirp
 license:        BSD3
 build-type:     Simple
 
 source-repository head
   type: git
   location: https://github.com/mbj/dbt
+
+flag development
+  description: Run GHC with development flags
+  manual: True
+  default: False
 
 library
   exposed-modules:
@@ -32,27 +37,31 @@ library
   hs-source-dirs:
       src
   default-extensions:
-      AllowAmbiguousTypes
+      ConstraintKinds
       DataKinds
+      DeriveAnyClass
+      DeriveGeneric
       DerivingStrategies
       DerivingVia
       DuplicateRecordFields
       FlexibleContexts
+      FlexibleInstances
       GeneralizedNewtypeDeriving
-      KindSignatures
       LambdaCase
-      MonoLocalBinds
       MultiParamTypeClasses
       NoImplicitPrelude
       NumericUnderscores
       OverloadedLists
       OverloadedStrings
+      RankNTypes
       RecordWildCards
       ScopedTypeVariables
-      StrictData
+      Strict
       TemplateHaskell
       TypeApplications
-  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path
+      TypeFamilies
+      ViewPatterns
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
       base
     , bytestring ==0.10.*
@@ -65,42 +74,54 @@ library
     , source-constraints >=0.0.2 && <0.1
     , text ==1.2.*
     , unliftio ==0.2.*
+  if flag(development)
+    ghc-options: -Werror -fplugin=SourceConstraints
+    build-depends:
+        source-constraints
+  else
+    ghc-options: -Wwarn
   default-language: Haskell2010
 
 test-suite test
   type: exitcode-stdio-1.0
-  main-is: test/Test.hs
+  main-is: Test.hs
   other-modules:
       Paths_dbt_postgresql_connection
+  hs-source-dirs:
+      test
   default-extensions:
-      AllowAmbiguousTypes
+      ConstraintKinds
       DataKinds
+      DeriveAnyClass
+      DeriveGeneric
       DerivingStrategies
       DerivingVia
       DuplicateRecordFields
       FlexibleContexts
+      FlexibleInstances
       GeneralizedNewtypeDeriving
-      KindSignatures
       LambdaCase
-      MonoLocalBinds
       MultiParamTypeClasses
       NoImplicitPrelude
       NumericUnderscores
       OverloadedLists
       OverloadedStrings
+      RankNTypes
       RecordWildCards
       ScopedTypeVariables
-      StrictData
+      Strict
       TemplateHaskell
       TypeApplications
-  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
+      TypeFamilies
+      ViewPatterns
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       base
     , bytestring ==0.10.*
     , containers ==0.6.*
     , conversions >=0.0.3 && <0.1
     , dbt-postgresql-connection
-    , devtools >=0.1.0 && <0.2
+    , devtools
     , hasql ==1.4.*
     , mprelude >=0.2.0 && <0.3
     , mrio-core >=0.0.1 && <0.1
@@ -108,4 +129,10 @@ test-suite test
     , source-constraints >=0.0.2 && <0.1
     , text ==1.2.*
     , unliftio ==0.2.*
+  if flag(development)
+    ghc-options: -Werror -fplugin=SourceConstraints
+    build-depends:
+        source-constraints
+  else
+    ghc-options: -Wwarn
   default-language: Haskell2010

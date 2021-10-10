@@ -1,6 +1,6 @@
 module OAuth.OAuth2
-  ( AuthenticationResponse(..)
-  , AuthCode(..)
+  ( AuthCode(..)
+  , AuthenticationResponse(..)
   , Credentials(..)
   , Env
   , OpenIdPayload(..)

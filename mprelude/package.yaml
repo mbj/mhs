@@ -1,34 +1,24 @@
+_common/package: !include "../common/package.yaml"
+
 name:        mprelude
 version:     0.2.1
-github:      mbj/mprelude
 category:    prelude
 synopsis:    A minimalish prelude.
-maintainer:  Markus Schirp <mbj@schirp-dso.com>
-license:     BSD3
 description: |
   Prelude extracted from observing NoImplicitPrelude using
   projects by https://github.com/mbj.
 
   Idea is to not design a prelude, but to observe one by
   deduplicating repeated imports cross a larger project space.
+extra-doc-files: README.md
+
+<<: *defaults
 
 dependencies:
 - base
 - source-constraints ^>= 0.0.2
 - text               ^>= 1.2
 - unliftio-core      ^>= 0.2
-
-flags:
-  development:
-    description: Run GHC with development flags
-    default: false
-    manual: true
-
-extra-doc-files:
-- README.md
-
-library:
-  source-dirs: src
 
 default-extensions:
 - CPP
@@ -49,33 +39,6 @@ default-extensions:
 - Strict
 - TemplateHaskell
 
-ghc-options:
-- -Wall
-- -Wcompat
-- -Widentities
-- -Wimplicit-prelude
-- -Wincomplete-record-updates
-- -Wincomplete-uni-patterns
-- -Wmissing-exported-signatures
-- -Wmissing-local-signatures
-- -Wmonomorphism-restriction
-- -Wredundant-constraints
-- -fplugin=SourceConstraints
-- -funbox-strict-fields
-
-when:
-  - condition: flag(development)
-    then:
-      ghc-options: -Werror
-    else:
-      ghc-options: -Wwarn
-
 tests:
-  devtools:
-    main:          test/Devtools.hs
-    ghc-options:
-    - -rtsopts
-    - -threaded
-    - -with-rtsopts=-N
-    dependencies:
-    - devtools
+  test:
+    <<: *test

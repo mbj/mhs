@@ -1,3 +1,5 @@
+_common/package: !include "../common/package.yaml"
+
 name:       mrio-log
 synopsis:   Minimal mrio based logger
 homepage:   https://github.com/mbj/mhs#readme
@@ -7,11 +9,7 @@ license:    MIT
 github:     mbj/mhs
 version:    0.0.1
 
-flags:
-  development:
-    description: Run GHC with development flags
-    default: false
-    manual: true
+<<: *defaults
 
 dependencies:
 - base
@@ -22,33 +20,6 @@ dependencies:
 - mtl
 - text
 - time
-
-ghc-options:
-- -Wall
-- -Wcompat
-- -Werror
-- -Widentities
-- -Wimplicit-prelude
-- -Wincomplete-record-updates
-- -Wincomplete-uni-patterns
-- -Wmissing-local-signatures
-- -Wmissing-signatures
-- -Wmonomorphism-restriction
-- -Wredundant-constraints
-- -fhide-source-paths
-- -funbox-strict-fields
-- -optP-Wno-nonportable-include-path
-
-when:
-  - condition: flag(development)
-    then:
-      ghc-options:
-      - -Werror
-      - -fplugin=SourceConstraints
-      dependencies:
-      - source-constraints ^>= 0.0.2
-    else:
-      ghc-options: -Wwarn
 
 default-extensions:
 - DataKinds
@@ -71,16 +42,9 @@ default-extensions:
 - TypeFamilies
 - UndecidableInstances
 
-library:
-  source-dirs: src
-
 tests:
   test:
-    main: test/Test.hs
-    ghc-options:
-    - -rtsopts
-    - -threaded
-    - -with-rtsopts=-N
+    <<: *test
     dependencies:
     - devtools
     - mrio-core

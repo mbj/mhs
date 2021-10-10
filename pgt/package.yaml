@@ -1,7 +1,9 @@
+_common/package: !include "../common/package.yaml"
+
 name:    pgt
 version: 0.0.1
-github:  mbj/pgt
-license: BSD3
+
+<<: *defaults
 
 extra-source-files:
 - examples/*.sql
@@ -28,44 +30,6 @@ dependencies:
 - unix                      ^>= 2.7
 - unliftio                  ^>= 0.2
 
-library:
-  source-dirs: src
-
-default-extensions:
-- CPP
-- DataKinds
-- DeriveAnyClass
-- DeriveGeneric
-- DerivingStrategies
-- DuplicateRecordFields
-- FlexibleContexts
-- GeneralizedNewtypeDeriving
-- MultiParamTypeClasses
-- NoImplicitPrelude
-- OverloadedLists
-- OverloadedStrings
-- RecordWildCards
-- ScopedTypeVariables
-- StrictData
-- TemplateHaskell
-
-ghc-options:
-- -Wall
-- -Wcompat
-- -Werror
-- -Widentities
-- -Wimplicit-prelude
-- -Wincomplete-record-updates
-- -Wincomplete-uni-patterns
-- -Wmissing-exported-signatures
-- -Wmissing-local-signatures
-- -Wmonomorphism-restriction
-- -Wredundant-constraints
-- -fplugin-opt=SourceConstraints:local:Pgt
-- -fplugin=SourceConstraints
-- -funbox-strict-fields
-- -optP-Wno-nonportable-include-path
-
 executables:
   pgt:
     main:        Main.hs
@@ -79,13 +43,9 @@ executables:
 
 tests:
   test:
-    main:          test/Test.hs
-    ghc-options:
-    - -rtsopts
-    - -threaded
-    - -with-rtsopts=-N
+    <<: *test
     dependencies:
-    - cbt                      ^>= 0.1.0
-    - dbt-postgresql-container ^>= 0.1.0
-    - devtools ^>= 0.1.0
+    - cbt
+    - dbt-postgresql-container
+    - devtools
     - pgt

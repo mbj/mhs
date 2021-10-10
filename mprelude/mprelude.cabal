@@ -4,7 +4,7 @@ cabal-version: 1.18
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: de43339c31b4111c23a59fdc4f897bd0b190f0c8180bd108f559b1c2c2871d3d
+-- hash: 5c4aed3651a55b3ccec94fde5cd37e74971f02bac1f5620451b1e846c843a923
 
 name:           mprelude
 version:        0.2.1
@@ -15,9 +15,11 @@ description:    Prelude extracted from observing NoImplicitPrelude using
                 Idea is to not design a prelude, but to observe one by
                 deduplicating repeated imports cross a larger project space.
 category:       prelude
-homepage:       https://github.com/mbj/mprelude#readme
-bug-reports:    https://github.com/mbj/mprelude/issues
-maintainer:     Markus Schirp <mbj@schirp-dso.com>
+homepage:       https://github.com/mbj/mhs#readme
+bug-reports:    https://github.com/mbj/mhs/issues
+author:         Markus Schirp
+maintainer:     markus@schirp-dso.com
+copyright:      2021 Markus Schirp
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
@@ -26,7 +28,7 @@ extra-doc-files:
 
 source-repository head
   type: git
-  location: https://github.com/mbj/mprelude
+  location: https://github.com/mbj/mhs
 
 flag development
   description: Run GHC with development flags
@@ -58,23 +60,28 @@ library
       ScopedTypeVariables
       Strict
       TemplateHaskell
-  ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
       base
     , source-constraints >=0.0.2 && <0.1
     , text ==1.2.*
     , unliftio-core ==0.2.*
   if flag(development)
-    ghc-options: -Werror
+    ghc-options: -Werror -fplugin=SourceConstraints
+    build-depends:
+        source-constraints
   else
     ghc-options: -Wwarn
   default-language: Haskell2010
 
-test-suite devtools
+test-suite test
   type: exitcode-stdio-1.0
-  main-is: test/Devtools.hs
+  main-is: Test.hs
   other-modules:
+      Devtools
       Paths_mprelude
+  hs-source-dirs:
+      test
   default-extensions:
       CPP
       DataKinds
@@ -93,7 +100,7 @@ test-suite devtools
       ScopedTypeVariables
       Strict
       TemplateHaskell
-  ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -rtsopts -threaded -with-rtsopts=-N
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       base
     , devtools
@@ -101,7 +108,9 @@ test-suite devtools
     , text ==1.2.*
     , unliftio-core ==0.2.*
   if flag(development)
-    ghc-options: -Werror
+    ghc-options: -Werror -fplugin=SourceConstraints
+    build-depends:
+        source-constraints
   else
     ghc-options: -Wwarn
   default-language: Haskell2010

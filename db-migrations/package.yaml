@@ -1,11 +1,11 @@
+_common/package: !include "../common/package.yaml"
+
 name:        db-migrations
 description: Please see the README on GitHub at <https://github.com/mbj/db-migrations#readme>
 version:     0.0.1
-github:      mbj/db-migrations
-license:     AllRightsReserved
 author:      Markus Schirp
-maintainer:  mbj@schirp-dso.com
-copyright:   2020 Markus Schirp
+
+<<: *defaults
 
 extra-doc-files:
 - README.md
@@ -36,21 +36,6 @@ dependencies:
 - typed-process             ^>= 0.2
 - unliftio                  ^>= 0.2
 
-ghc-options:
-- -Wall
-- -Wcompat
-- -Werror
-- -Widentities
-- -Wimplicit-prelude
-- -Wincomplete-record-updates
-- -Wincomplete-uni-patterns
-- -Wmissing-exported-signatures
-- -Wmissing-local-signatures
-- -Wmonomorphism-restriction
-- -Wredundant-constraints
-- -fplugin=SourceConstraints
-- -funbox-strict-fields
-
 default-extensions:
 - AllowAmbiguousTypes
 - ConstraintKinds
@@ -65,15 +50,8 @@ default-extensions:
 - ScopedTypeVariables
 - TypeApplications
 
-library:
-  source-dirs: src
-
 tests:
-  devtools:
-    main:         test/Test.hs
-    ghc-options:
-    - -rtsopts
-    - -threaded
-    - -with-rtsopts=-N
+  test:
+    <<: *test
     dependencies:
     - devtools ^>= 0.1.0

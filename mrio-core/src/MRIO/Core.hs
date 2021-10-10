@@ -11,7 +11,7 @@ module MRIO.Core
 where
 
 import           Control.Applicative            ( liftA2 )
-import           Control.Monad.Catch            ( MonadThrow, MonadCatch )
+import           Control.Monad.Catch            ( MonadCatch, MonadThrow )
 import           Control.Monad.IO.Unlift        ( MonadIO(..)
                                                 , MonadUnliftIO(..)
                                                 )

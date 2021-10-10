@@ -1,10 +1,11 @@
-github:     mbj/conversions
-homepage:   https://github.com/mbj/conversions#readme
-license:    MIT
+_common/package: !include "../common/package.yaml"
+
 maintainer: Markus Schirp mbj@schirp-ds.com, Allan Lukwago <epicallan.al@gmail.com>
 name:       conversions
 synopsis:   Injective explicit total and partial conversions
 version:    0.0.4
+
+<<: *defaults
 
 dependencies:
 - base
@@ -13,27 +14,6 @@ dependencies:
 - mtl                ^>= 2.2
 - template-haskell
 - text               ^>= 1.2
-
-flags:
-  development:
-    description: Run GHC with development flags
-    default: false
-    manual: true
-
-ghc-options:
-- -Wall
-- -Wcompat
-- -Widentities
-- -Wimplicit-prelude
-- -Wincomplete-record-updates
-- -Wincomplete-uni-patterns
-- -Wmissing-local-signatures
-- -Wmissing-signatures
-- -Wmonomorphism-restriction
-- -Wredundant-constraints
-- -fhide-source-paths
-- -funbox-strict-fields
-- -optP-Wno-nonportable-include-path
 
 default-extensions:
 - AllowAmbiguousTypes
@@ -59,27 +39,9 @@ default-extensions:
 - TypeFamilies
 - TypeOperators
 
-library:
-  source-dirs: src
-
-when:
-  - condition: flag(development)
-    then:
-      ghc-options:
-      - -Werror
-      - -fplugin=SourceConstraints
-      dependencies:
-      - source-constraints ^>= 0.0.2
-    else:
-      ghc-options: -Wwarn
-
 tests:
   test:
-    main: test/Test.hs
-    ghc-options:
-    - -rtsopts
-    - -threaded
-    - -with-rtsopts=-N
+    <<: *test
     dependencies:
     - conversions
     - devtools ^>= 0.1.0

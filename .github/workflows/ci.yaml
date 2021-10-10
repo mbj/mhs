@@ -68,6 +68,9 @@ jobs:
       with:
         path: ~/.stack
         key: ${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles(env.STACK_YAML, format('{0}.lock', env.STACK_YAML)) }}
+        restore-keys: |
+          ${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles(env.STACK_YAML, format('{0}.lock', env.STACK_YAML)) }}
+          ${{ matrix.os }}-${{ matrix.ghc }}
     - name: Install dependencies
       run: stack build --test --only-dependencies
     - name: Build

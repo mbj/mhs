@@ -13,6 +13,7 @@ homepage:       https://github.com/mbj/mhs#readme
 bug-reports:    https://github.com/mbj/mhs/issues
 author:         gamsnjaga@gmail.com
 maintainer:     gamsnjaga@gmail.com, epicallan.al@gmail.com, mbj@schirp-dso.com
+copyright:      2021 Markus Schirp
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
@@ -64,11 +65,11 @@ library
       ScopedTypeVariables
       TypeApplications
       ViewPatterns
-  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -fno-warn-partial-type-signatures -fno-warn-name-shadowing -fwarn-tabs -fwarn-unused-imports -fwarn-missing-signatures -fwarn-incomplete-patterns
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
       aeson
     , aeson-pretty
-    , base >=4.7 && <5
+    , base
     , base64-bytestring
     , bounded
     , bytestring
@@ -88,16 +89,18 @@ library
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
-        source-constraints >=0.0.2 && <0.1
+        source-constraints
   else
     ghc-options: -Wwarn
   default-language: Haskell2010
 
 test-suite test
   type: exitcode-stdio-1.0
-  main-is: test/Test.hs
+  main-is: Test.hs
   other-modules:
       Paths_oauth
+  hs-source-dirs:
+      test
   default-extensions:
       AllowAmbiguousTypes
       OverloadedStrings
@@ -125,14 +128,32 @@ test-suite test
       ScopedTypeVariables
       TypeApplications
       ViewPatterns
-  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -fno-warn-partial-type-signatures -fno-warn-name-shadowing -fwarn-tabs -fwarn-unused-imports -fwarn-missing-signatures -fwarn-incomplete-patterns -rtsopts -threaded -with-rtsopts=-N
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      aeson
+    , aeson-pretty
+    , base
+    , base64-bytestring
+    , bounded
+    , bytestring
+    , conversions
     , devtools >=0.1.0 && <0.2
+    , exceptions
+    , http-client
+    , http-mclient
+    , http-types
+    , mprelude
+    , mrio-core
+    , mtl
+    , network-uri
+    , nonce
+    , text
+    , time
+    , utf8-string
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
-        source-constraints >=0.0.2 && <0.1
+        source-constraints
   else
     ghc-options: -Wwarn
   default-language: Haskell2010
