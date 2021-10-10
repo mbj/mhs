@@ -13,6 +13,7 @@ homepage:       https://github.com/mbj/mhs#readme
 bug-reports:    https://github.com/mbj/mhs/issues
 author:         epicallan.al@gmail.com, Markus Schirp, Makara digital
 maintainer:     epicallan.al@gmail.com, mbj@schirp-dso.com
+copyright:      2021 Markus Schirp
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
@@ -22,15 +23,10 @@ extra-source-files:
 source-repository head
   type: git
   location: https://github.com/mbj/mhs
-  subdir: lambda-alb
 
 flag development
   description: Run GHC with development flags
   manual: True
-  default: False
-
-flag support_aesni
-  manual: False
   default: False
 
 library
@@ -41,28 +37,31 @@ library
   hs-source-dirs:
       src
   default-extensions:
-      AllowAmbiguousTypes
-      OverloadedStrings
-      DeriveFoldable
-      DeriveFunctor
+      ConstraintKinds
+      DataKinds
       DeriveAnyClass
       DeriveGeneric
       DerivingStrategies
-      DeriveTraversable
-      DataKinds
-      KindSignatures
+      DerivingVia
       DuplicateRecordFields
-      ConstraintKinds
-      EmptyCase
       FlexibleContexts
+      FlexibleInstances
       GeneralizedNewtypeDeriving
       LambdaCase
       MultiParamTypeClasses
+      NoImplicitPrelude
+      NumericUnderscores
+      OverloadedLists
+      OverloadedStrings
+      RankNTypes
       RecordWildCards
       ScopedTypeVariables
+      Strict
+      TemplateHaskell
       TypeApplications
+      TypeFamilies
       ViewPatterns
-  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -fno-warn-partial-type-signatures -fno-warn-name-shadowing -fwarn-tabs -fwarn-unused-imports -fwarn-missing-signatures -fwarn-incomplete-patterns
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
       aeson
     , base
@@ -78,7 +77,7 @@ library
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
-        source-constraints >=0.0.2 && <0.1
+        source-constraints
   else
     ghc-options: -Wwarn
   default-language: Haskell2010
@@ -90,76 +89,102 @@ executable bootstrap
   hs-source-dirs:
       example
   default-extensions:
-      AllowAmbiguousTypes
-      OverloadedStrings
-      DeriveFoldable
-      DeriveFunctor
+      ConstraintKinds
+      DataKinds
       DeriveAnyClass
       DeriveGeneric
       DerivingStrategies
-      DeriveTraversable
-      DataKinds
-      KindSignatures
+      DerivingVia
       DuplicateRecordFields
-      ConstraintKinds
-      EmptyCase
       FlexibleContexts
+      FlexibleInstances
       GeneralizedNewtypeDeriving
       LambdaCase
       MultiParamTypeClasses
+      NoImplicitPrelude
+      NumericUnderscores
+      OverloadedLists
+      OverloadedStrings
+      RankNTypes
       RecordWildCards
       ScopedTypeVariables
+      Strict
+      TemplateHaskell
       TypeApplications
+      TypeFamilies
       ViewPatterns
-  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -fno-warn-partial-type-signatures -fno-warn-name-shadowing -fwarn-tabs -fwarn-unused-imports -fwarn-missing-signatures -fwarn-incomplete-patterns
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
       aeson
     , base
+    , bytestring
+    , case-insensitive
+    , exceptions
+    , http-client
+    , http-types
     , lambda-alb
     , lambda-runtime
+    , mprelude
+    , text
+    , unordered-containers
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
-        source-constraints >=0.0.2 && <0.1
+        source-constraints
   else
     ghc-options: -Wwarn
   default-language: Haskell2010
 
 test-suite test
   type: exitcode-stdio-1.0
-  main-is: test/Test.hs
+  main-is: Test.hs
   other-modules:
       Paths_lambda_alb
+  hs-source-dirs:
+      test
   default-extensions:
-      AllowAmbiguousTypes
-      OverloadedStrings
-      DeriveFoldable
-      DeriveFunctor
+      ConstraintKinds
+      DataKinds
       DeriveAnyClass
       DeriveGeneric
       DerivingStrategies
-      DeriveTraversable
-      DataKinds
-      KindSignatures
+      DerivingVia
       DuplicateRecordFields
-      ConstraintKinds
-      EmptyCase
       FlexibleContexts
+      FlexibleInstances
       GeneralizedNewtypeDeriving
       LambdaCase
       MultiParamTypeClasses
+      NoImplicitPrelude
+      NumericUnderscores
+      OverloadedLists
+      OverloadedStrings
+      RankNTypes
       RecordWildCards
       ScopedTypeVariables
+      Strict
+      TemplateHaskell
       TypeApplications
+      TypeFamilies
       ViewPatterns
-  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -fno-warn-partial-type-signatures -fno-warn-name-shadowing -fwarn-tabs -fwarn-unused-imports -fwarn-missing-signatures -fwarn-incomplete-patterns -rtsopts -threaded -with-rtsopts=-N
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      base
-    , devtools >=0.1.0 && <0.2
+      aeson
+    , base
+    , bytestring
+    , case-insensitive
+    , devtools
+    , exceptions
+    , http-client
+    , http-types
+    , lambda-runtime
+    , mprelude
+    , text
+    , unordered-containers
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
-        source-constraints >=0.0.2 && <0.1
+        source-constraints
   else
     ghc-options: -Wwarn
   default-language: Haskell2010

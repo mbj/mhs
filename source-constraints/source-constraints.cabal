@@ -10,11 +10,11 @@ synopsis:       Source constraints GHC plugin
 description:    Please visit the README at <https://github.com/mbj/mhs/blob/main/source-constraints/README.md>
                 for usage information.
 category:       CodeQuality
-homepage:       https://github.com/mbj/source-constraints#readme
-bug-reports:    https://github.com/mbj/source-constraints/issues
+homepage:       https://github.com/mbj/mhs#readme
+bug-reports:    https://github.com/mbj/mhs/issues
 author:         Markus Schirp
-maintainer:     mbj@schirp-dso.com
-copyright:      2018 Markus Schirp
+maintainer:     markus@schirp-dso.com
+copyright:      2021 Markus Schirp
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
@@ -30,7 +30,7 @@ extra-doc-files:
 
 source-repository head
   type: git
-  location: https://github.com/mbj/source-constraints
+  location: https://github.com/mbj/mhs
 
 flag development
   description: Run GHC with development flags

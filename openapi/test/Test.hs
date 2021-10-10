@@ -93,6 +93,7 @@ parsePathTemplate
         (JSON.toJSON input, convertText $ show input)
 
 parseResponses :: TestTree
+parseResponses
   = testGroup "OpenAPI.Path.Responses parsing"
   $ accepted <> rejected
   where

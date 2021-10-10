@@ -4,7 +4,7 @@ cabal-version: 1.18
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e8792fb99881b7ea906a885fc6d13861d2cfa9a6ce1df06724d56a01d0e42089
+-- hash: 337452596ab02f6c221cfd985ad029d5a083bffb9300d1dc02459a694be204e6
 
 name:           devtools
 version:        0.1.0
@@ -14,8 +14,9 @@ description:    An attempt to group development that would typically run on CI /
 category:       Testing
 homepage:       https://github.com/mbj/mhs#readme
 bug-reports:    https://github.com/mbj/mhs/issues
-author:         Markus Schirp <mbj@schirp-dso.com>
-maintainer:     Markus Schirp <mbj@schirp-dso.com>
+author:         Markus Schirp
+maintainer:     markus@schirp-dso.com
+copyright:      2021 Markus Schirp
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
@@ -49,7 +50,7 @@ library
       OverloadedStrings
       RecordWildCards
       StrictData
-  ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -funbox-strict-fields -optP-Wno-nonportable-include-path
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
       Diff >0.3 && <0.5
     , base
@@ -65,16 +66,18 @@ library
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
-        source-constraints >=0.0.1 && <0.1
+        source-constraints
   else
     ghc-options: -Wwarn
   default-language: Haskell2010
 
 test-suite test
   type: exitcode-stdio-1.0
-  main-is: test/Test.hs
+  main-is: Test.hs
   other-modules:
       Paths_devtools
+  hs-source-dirs:
+      test
   default-extensions:
       DerivingStrategies
       LambdaCase
@@ -82,7 +85,7 @@ test-suite test
       OverloadedStrings
       RecordWildCards
       StrictData
-  ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       Diff >0.3 && <0.5
     , base
@@ -99,7 +102,7 @@ test-suite test
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
-        source-constraints >=0.0.1 && <0.1
+        source-constraints
   else
     ghc-options: -Wwarn
   default-language: Haskell2010

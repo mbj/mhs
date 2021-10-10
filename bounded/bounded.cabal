@@ -4,15 +4,17 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b185066d75b3710c86e4b85c205d3f62447dd842bc4580521dd81257979e642c
+-- hash: 3f9a1035998e31229b4aafa8faf2c6775b5a525bc0df762fd86121baa6fe7a00
 
 name:           bounded
 version:        0.0.1
 synopsis:       User definable Integral and Text bounded types
 homepage:       https://github.com/mbj/mhs#readme
 bug-reports:    https://github.com/mbj/mhs/issues
+author:         Markus Schirp
 maintainer:     Markus Schirp mbj@schirp-dso.com, Allan Lukwago <epicallan.al@gmail.com>
-license:        MIT
+copyright:      2021 Markus Schirp
+license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
 
@@ -61,7 +63,7 @@ library
       TypeFamilies
       TypeOperators
       ViewPatterns
-  ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
       aeson >=1.3
     , base
@@ -73,7 +75,7 @@ library
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
-        source-constraints >=0.0.2 && <0.1
+        source-constraints
   else
     ghc-options: -Wwarn
   default-language: Haskell2010
@@ -107,7 +109,7 @@ test-suite readme
       TypeFamilies
       TypeOperators
       ViewPatterns
-  ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N -pgmL markdown-unlit -Wno-unused-top-binds
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N -pgmL markdown-unlit -Wno-unused-top-binds
   build-depends:
       base
     , bounded
@@ -116,7 +118,7 @@ test-suite readme
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
-        source-constraints >=0.0.2 && <0.1
+        source-constraints
   else
     ghc-options: -Wwarn
   default-language: Haskell2010
@@ -157,7 +159,7 @@ test-suite test
       TypeFamilies
       TypeOperators
       ViewPatterns
-  ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       aeson >=1.3
     , base
@@ -171,7 +173,7 @@ test-suite test
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
-        source-constraints >=0.0.2 && <0.1
+        source-constraints
   else
     ghc-options: -Wwarn
   default-language: Haskell2010

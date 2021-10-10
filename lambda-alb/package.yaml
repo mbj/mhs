@@ -1,87 +1,28 @@
-name:                lambda-alb
-synopsis:            AWS lambda ALB integration
-description:         AWS lambda ALB integration
-version:             0.0.1
-github:              mbj/mhs/lambda-alb
-license:             BSD3
-author:              epicallan.al@gmail.com, Markus Schirp, Makara digital
-maintainer:          epicallan.al@gmail.com, mbj@schirp-dso.com
-category:            Web,AWS
-extra-source-files:
-- README.md
+_common/package: !include "../common/package.yaml"
+
+name:               lambda-alb
+synopsis:           AWS lambda ALB integration
+description:        AWS lambda ALB integration
+version:            0.0.1
+author:             epicallan.al@gmail.com, Markus Schirp, Makara digital
+maintainer:         epicallan.al@gmail.com, mbj@schirp-dso.com
+category:           Web,AWS
+extra-source-files: README.md
+
+<<: *defaults
 
 dependencies:
-  - base
-
-default-extensions:
-  - AllowAmbiguousTypes
-  - OverloadedStrings
-  - DeriveFoldable
-  - DeriveFunctor
-  - DeriveAnyClass
-  - DeriveGeneric
-  - DerivingStrategies
-  - DeriveTraversable
-  - DataKinds
-  - KindSignatures
-  - DuplicateRecordFields
-  - ConstraintKinds
-  - EmptyCase
-  - FlexibleContexts
-  - GeneralizedNewtypeDeriving
-  - LambdaCase
-  - MultiParamTypeClasses
-  - RecordWildCards
-  - ScopedTypeVariables
-  - TypeApplications
-  - ViewPatterns
-
-ghc-options:
-  - -Wall
-  - -Wcompat
-  - -Wincomplete-record-updates
-  - -Wincomplete-uni-patterns
-  - -Wredundant-constraints
-  - -fno-warn-partial-type-signatures
-  - -fno-warn-name-shadowing
-  - -fwarn-tabs
-  - -fwarn-unused-imports
-  - -fwarn-missing-signatures
-  - -fwarn-incomplete-patterns
-
-flags:
-  support_aesni:
-    default: false
-    manual: false
-  development:
-    description: Run GHC with development flags
-    default: false
-    manual: true
-
-when:
-  - condition: flag(development)
-    then:
-      ghc-options:
-      - -Werror
-      - -fplugin=SourceConstraints
-      dependencies:
-      - source-constraints ^>= 0.0.2
-    else:
-      ghc-options: -Wwarn
-
-library:
-  source-dirs: src
-  dependencies:
-    - aeson
-    - lambda-runtime
-    - bytestring
-    - http-client
-    - http-types
-    - exceptions
-    - mprelude
-    - unordered-containers
-    - case-insensitive
-    - text
+- aeson
+- base
+- bytestring
+- case-insensitive
+- exceptions
+- http-client
+- http-types
+- lambda-runtime
+- mprelude
+- text
+- unordered-containers
 
 executables:
   bootstrap:
@@ -95,10 +36,4 @@ executables:
 
 tests:
   test:
-    main: test/Test.hs
-    ghc-options:
-    - -rtsopts
-    - -threaded
-    - -with-rtsopts=-N
-    dependencies:
-    - devtools ^>= 0.1.0
+    <<: *test

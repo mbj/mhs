@@ -4,23 +4,28 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2d590fb00fd9ff1493912549bb3eeb06cc56df5f606cc615122d552c4e91ee73
+-- hash: e6ecf121919cea04d002e4a91a41ec0920aa68300239fb4276c328812124bb37
 
 name:           cbt
 version:        0.1.0
 synopsis:       A container backend toolkit
-homepage:       https://github.com/mbj/cbt
-bug-reports:    https://github.com/mbj/cbt/issues
+homepage:       https://github.com/mbj/mhs#readme
+bug-reports:    https://github.com/mbj/mhs/issues
 author:         Markus Schirp
-maintainer:     mbj@schirp-dso.com
-copyright:      2020 Markus Schirp
+maintainer:     markus@schirp-dso.com
+copyright:      2021 Markus Schirp
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
 
 source-repository head
   type: git
-  location: https://github.com/mbj/cbt
+  location: https://github.com/mbj/mhs
+
+flag development
+  description: Run GHC with development flags
+  manual: True
+  default: False
 
 library
   exposed-modules:
@@ -65,7 +70,7 @@ library
       TypeFamilies
       TypeSynonymInstances
       ViewPatterns
-  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
       base
     , bytestring ==0.10.*
@@ -90,13 +95,21 @@ library
     , unliftio-core ==0.2.*
     , unordered-containers ==0.2.*
     , uuid ==1.3.*
+  if flag(development)
+    ghc-options: -Werror -fplugin=SourceConstraints
+    build-depends:
+        source-constraints
+  else
+    ghc-options: -Wwarn
   default-language: Haskell2010
 
 test-suite test
   type: exitcode-stdio-1.0
-  main-is: test/Test.hs
+  main-is: Test.hs
   other-modules:
       Paths_cbt
+  hs-source-dirs:
+      test
   default-extensions:
       AllowAmbiguousTypes
       ConstraintKinds
@@ -125,7 +138,7 @@ test-suite test
       TypeFamilies
       TypeSynonymInstances
       ViewPatterns
-  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       base
     , bytestring ==0.10.*
@@ -133,7 +146,7 @@ test-suite test
     , conduit >=1.3.3 && <1.4
     , conversions >=0.0.3 && <0.1
     , cryptonite >=0.25 && <=0.29
-    , devtools >=0.1.0 && <0.2
+    , devtools
     , exceptions ==0.10.*
     , hashable ==1.3.*
     , mprelude ==0.2.*
@@ -144,7 +157,7 @@ test-suite test
     , resourcet >=1.2.4 && <1.3
     , source-constraints >=0.0.1 && <0.1
     , tar ==0.5.*
-    , tasty >=1.3.1 && <1.4
+    , tasty
     , tasty-hunit
     , template-haskell
     , text ==1.2.*
@@ -154,4 +167,10 @@ test-suite test
     , unliftio-core ==0.2.*
     , unordered-containers ==0.2.*
     , uuid ==1.3.*
+  if flag(development)
+    ghc-options: -Werror -fplugin=SourceConstraints
+    build-depends:
+        source-constraints
+  else
+    ghc-options: -Wwarn
   default-language: Haskell2010

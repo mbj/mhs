@@ -1,13 +1,15 @@
+_common/package: !include "../common/package.yaml"
+
 name:        devtools
 version:     0.1.0
-github:      mbj/mhs
 synopsis:    Haskell development tool agregate
 category:    Testing
-author:      Markus Schirp <mbj@schirp-dso.com>
 license:     BSD3
 description: |
   An attempt to group development that would typically run on CI / local
   into one tasty interface.
+
+<<: *defaults
 
 dependencies:
 - Diff               > 0.3 && < 0.5
@@ -22,15 +24,6 @@ dependencies:
 - text               ^>= 1.2
 - typed-process      ^>= 0.2
 
-flags:
-  development:
-    description: Run GHC with development flags
-    default: false
-    manual: true
-
-library:
-  source-dirs: src
-
 extra-doc-files:
 - README.md
 
@@ -42,37 +35,6 @@ default-extensions:
 - RecordWildCards
 - StrictData
 
-ghc-options:
-- -Wall
-- -Wcompat
-- -Widentities
-- -Wimplicit-prelude
-- -Wincomplete-record-updates
-- -Wincomplete-uni-patterns
-- -Wmissing-exported-signatures
-- -Wmissing-local-signatures
-- -Wmonomorphism-restriction
-- -Wredundant-constraints
-- -funbox-strict-fields
-- -optP-Wno-nonportable-include-path
-
-when:
-  - condition: flag(development)
-    then:
-      ghc-options:
-      - -Werror
-      - -fplugin=SourceConstraints
-      dependencies:
-      - source-constraints ^>= 0.0.1
-    else:
-      ghc-options: -Wwarn
-
 tests:
   test:
-    main:        test/Test.hs
-    ghc-options:
-    - -rtsopts
-    - -threaded
-    - -with-rtsopts=-N
-    dependencies:
-    - devtools
+    <<: *test

@@ -1,16 +1,14 @@
+_common/package: !include "../common/package.yaml"
+
 name:        source-constraints
 version:     0.0.2
 synopsis:    Source constraints GHC plugin
-homepage:    https://github.com/mbj/source-constraints#readme
-author:      Markus Schirp
-maintainer:  mbj@schirp-dso.com
-copyright:   2018 Markus Schirp
 category:    CodeQuality
-github:      mbj/source-constraints
-license:     BSD3
 description: |
   Please visit the README at <https://github.com/mbj/mhs/blob/main/source-constraints/README.md>
   for usage information.
+
+<<: *defaults
 
 dependencies:
 - attoparsec ^>= 0.13
@@ -23,12 +21,6 @@ dependencies:
 
 extra-doc-files:
 - README.md
-
-flags:
-  development:
-    description: Run GHC with development flags
-    default: false
-    manual: true
 
 extra-source-files:
 - test/LocalModuleExplicitImport.hs
@@ -50,11 +42,11 @@ ghc-options:
 - -Wmonomorphism-restriction
 
 when:
-  - condition: flag(development)
-    then:
-      ghc-options: -Werror
-    else:
-      ghc-options: -Wwarn
+- condition: flag(development)
+  then:
+    ghc-options: -Werror
+  else:
+    ghc-options: -Wwarn
 
 default-extensions:
 - CPP

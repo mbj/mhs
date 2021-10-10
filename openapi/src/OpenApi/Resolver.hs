@@ -1,3 +1,5 @@
+{-# OPTIONS -Wno-redundant-constraints #-}
+
 module OpenApi.Resolver (Resolver, resolve, resolveReferenceOr) where
 
 import OpenApi.Components

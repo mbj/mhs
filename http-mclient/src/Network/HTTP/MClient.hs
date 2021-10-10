@@ -24,8 +24,8 @@ import qualified Data.ByteString.Lazy.Char8 as LBS
 import qualified Data.CaseInsensitive       as CI
 import qualified Data.List                  as List
 import qualified Data.List.NonEmpty         as NE
-import qualified Network.HTTP.Media         as Media
 import qualified Network.HTTP.Client        as HTTP
+import qualified Network.HTTP.Media         as Media
 
 type Response = HTTP.Response LBS.ByteString
 

@@ -1,12 +1,12 @@
+_common/package: !include "../common/package.yaml"
+
 name:        openapi
 version:     0.0.1
 synopsis:    Openapi3 Types
-homepage:    https://github.com/mbj/openapi
 author:      Markus Schirp
 maintainer:  mbj@schirp-dso.com
-copyright:   2019 Markus Schirp
-github:      mbj/openapi
-license:     BSD3
+
+<<: *defaults
 
 dependencies:
 - aeson                ^>= 1.5
@@ -27,21 +27,6 @@ dependencies:
 - text-conversions     ^>= 0.3
 - unordered-containers ^>= 0.2
 - yaml                 ^>= 0.11
-
-extra-source-files: []
-
-ghc-options:
-- -Wall
-- -Wcompat
-- -Werror
-- -Widentities
-- -Wimplicit-prelude
-- -Wincomplete-record-updates
-- -Wincomplete-uni-patterns
-- -Wmissing-exported-signatures
-- -Wmissing-local-signatures
-- -Wmonomorphism-restriction
-- -fplugin=SourceConstraints
 
 default-extensions:
 - AllowAmbiguousTypes
@@ -65,15 +50,9 @@ default-extensions:
 - TupleSections
 - TypeApplications
 
-library:
-  source-dirs:
-  - src
-
 tests:
   tasty:
-    main:          Main.hs
-    source-dirs:   test
-    other-modules: []
+    <<: *test
     dependencies:
     - devtools
     - openapi

@@ -15,11 +15,11 @@ module Test.Tasty.MGolden
 where
 
 import Control.Applicative (empty)
-import Prelude hiding (print, putStrLn)
 import Data.Foldable (traverse_)
 import Data.Proxy (Proxy(..))
 import Data.Text (Text)
 import Data.Typeable (Typeable)
+import Prelude hiding (print, putStrLn)
 import Test.Tasty
 import Test.Tasty.Options
 import Test.Tasty.Providers

@@ -4,7 +4,7 @@ cabal-version: 1.18
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2dc3ed2a6c760c90c691b07bac303d81f1e8ec5b0f3c5785e22e53fabf799dce
+-- hash: 0ead20e902a3d7f5642c4ee4e7416ad7ff8603dd5dfd0b240c9d8a6d1f341528
 
 name:           tasty-mgolden
 version:        0.0.2
@@ -12,10 +12,11 @@ synopsis:       Golden testing provider for tasty with muti-line diff output
 description:    Please visit the README at <https://github.com/mbj/tasty-mgolden#readme>
                 for usage information.
 category:       Testing
-homepage:       https://github.com/mbj/tasty-mgolden#readme
-bug-reports:    https://github.com/mbj/tasty-mgolden/issues
-author:         Markus Schirp <mbj@schirp-dso.com>
-maintainer:     Markus Schirp <mbj@schirp-dso.com>
+homepage:       https://github.com/mbj/mhs#readme
+bug-reports:    https://github.com/mbj/mhs/issues
+author:         Markus Schirp
+maintainer:     markus@schirp-dso.com
+copyright:      2021 Markus Schirp
 license:        BSD3
 license-file:   LICENSE
 tested-with:
@@ -26,7 +27,7 @@ extra-doc-files:
 
 source-repository head
   type: git
-  location: https://github.com/mbj/tasty-mgolden
+  location: https://github.com/mbj/mhs
 
 flag development
   description: Run GHC with development flags
@@ -47,7 +48,7 @@ library
       OverloadedStrings
       RecordWildCards
       StrictData
-  ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -funbox-strict-fields
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
       Diff ==0.3.4 || >=0.4 && <0.5
     , ansi-terminal >=0.9 && <0.10 || >=0.10 && <0.11 || >=0.11 && <0.12
@@ -56,7 +57,9 @@ library
     , tasty >=1.3.1 && <1.4
     , text ==1.2.*
   if flag(development)
-    ghc-options: -Werror
+    ghc-options: -Werror -fplugin=SourceConstraints
+    build-depends:
+        source-constraints
   else
     ghc-options: -Wwarn
   default-language: Haskell2010
@@ -71,7 +74,7 @@ executable tasty-mgolden-example
       RecordWildCards
       StrictData
       ImplicitPrelude
-  ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -funbox-strict-fields -rtsopts -threaded -with-rtsopts=-N -Wno-implicit-prelude
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N -Wno-implicit-prelude
   build-depends:
       Diff ==0.3.4 || >=0.4 && <0.5
     , ansi-terminal >=0.9 && <0.10 || >=0.10 && <0.11 || >=0.11 && <0.12
@@ -83,7 +86,9 @@ executable tasty-mgolden-example
     , tasty-mgolden
     , text ==1.2.*
   if flag(development)
-    ghc-options: -Werror
+    ghc-options: -Werror -fplugin=SourceConstraints
+    build-depends:
+        source-constraints
   else
     ghc-options: -Wwarn
   default-language: Haskell2010
@@ -98,7 +103,7 @@ test-suite golden
       OverloadedStrings
       RecordWildCards
       StrictData
-  ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -funbox-strict-fields -rtsopts -threaded -with-rtsopts=-N
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       Diff ==0.3.4 || >=0.4 && <0.5
     , ansi-terminal >=0.9 && <0.10 || >=0.10 && <0.11 || >=0.11 && <0.12
@@ -113,7 +118,9 @@ test-suite golden
     , text ==1.2.*
     , typed-process
   if flag(development)
-    ghc-options: -Werror
+    ghc-options: -Werror -fplugin=SourceConstraints
+    build-depends:
+        source-constraints
   else
     ghc-options: -Wwarn
   default-language: Haskell2010
@@ -130,7 +137,7 @@ test-suite hlint
       OverloadedStrings
       RecordWildCards
       StrictData
-  ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -Wredundant-constraints -funbox-strict-fields -rtsopts -threaded -with-rtsopts=-N
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       Diff ==0.3.4 || >=0.4 && <0.5
     , ansi-terminal >=0.9 && <0.10 || >=0.10 && <0.11 || >=0.11 && <0.12
@@ -140,7 +147,9 @@ test-suite hlint
     , tasty >=1.3.1 && <1.4
     , text ==1.2.*
   if flag(development)
-    ghc-options: -Werror
+    ghc-options: -Werror -fplugin=SourceConstraints
+    build-depends:
+        source-constraints
   else
     ghc-options: -Wwarn
   default-language: Haskell2010
