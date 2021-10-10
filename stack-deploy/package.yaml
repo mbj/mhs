@@ -59,6 +59,7 @@ ghc-options:
 - -funbox-strict-fields
 
 default-extensions:
+- ConstraintKinds
 - DataKinds
 - DeriveAnyClass
 - DeriveGeneric

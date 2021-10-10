@@ -4,7 +4,6 @@ import Control.Lens ((.~), view)
 import Data.Conduit ((.|), runConduit)
 import Options.Applicative hiding (value)
 import StackDeploy.CLI.Utils
-import StackDeploy.Config
 import StackDeploy.Events
 import StackDeploy.IO
 import StackDeploy.Parameters
@@ -20,15 +19,17 @@ import qualified Data.Char                                      as Char
 import qualified Data.Conduit.Combinators                       as Conduit
 import qualified Data.Text.Encoding                             as Text
 import qualified Data.Text.IO                                   as Text
+import qualified MRIO.Amazonka                                  as AWS
 import qualified Network.AWS.CloudFormation.CancelUpdateStack   as CF
 import qualified Network.AWS.CloudFormation.DescribeStackEvents as CF
 import qualified Network.AWS.CloudFormation.Types               as CF
 import qualified StackDeploy.AWS                                as AWS
+import qualified StackDeploy.Env                                as StackDeploy
 import qualified StackDeploy.InstanceSpec                       as InstanceSpec
 import qualified StackDeploy.Template                           as Template
 
 parserInfo
-  :: forall env . (HasAWS env, HasConfig env)
+  :: forall env . (AWS.Env env, StackDeploy.Env env)
   => InstanceSpec.Provider env
   -> ParserInfo (RIO env ExitCode)
 parserInfo instanceSpecProvider = wrapHelper commands "stack commands"

@@ -1,9 +1,7 @@
 {-# OPTIONS -Wno-orphans #-}
 
 module MRIO.Amazonka
-  ( AWS.Env
-  , HasAWS
-  , HasAWSEnv(..)
+  ( Env
   , HasResourceMap(..)
   , ResourceMap
   , paginate
@@ -13,29 +11,18 @@ module MRIO.Amazonka
   )
 where
 
-import           Control.Monad                         ( (=<<) )
-import           Control.Monad.IO.Unlift               ( MonadUnliftIO
-                                                       , liftIO
-                                                       , withRunInIO
-                                                       )
-import           Control.Monad.Reader                  ( asks )
-import           Control.Monad.Trans.Resource          ( runResourceT )
-import           Control.Monad.Trans.Resource.Internal ( MonadResource
-                                                       , ReleaseMap
-                                                       , ResourceT(..)
-                                                       , liftResourceT
-                                                       )
-import           Data.Conduit                          ( ConduitT
-                                                       , transPipe
-                                                       )
-import           Data.Function                         ( ($), (.) )
-import           Data.IORef                            ( IORef )
-import           MRIO.Core
+import Control.Monad ((=<<))
+import Control.Monad.IO.Unlift (MonadUnliftIO, liftIO, withRunInIO)
+import Control.Monad.Reader (asks)
+import Control.Monad.Trans.Resource (runResourceT)
+import Control.Monad.Trans.Resource.Internal (MonadResource, ReleaseMap, ResourceT(..), liftResourceT)
+import Data.Conduit (ConduitT, transPipe)
+import Data.Function (($), (.))
+import Data.IORef (IORef)
+import GHC.Records (HasField, getField)
+import MRIO.Core
 
 import qualified Network.AWS as AWS
-
-class HasAWSEnv env where
-  awsEnv :: env -> AWS.Env
 
 type ResourceMap = IORef ReleaseMap
 
@@ -45,24 +32,24 @@ class HasResourceMap env where
 instance HasResourceMap env => MonadResource (RIO env) where
   liftResourceT (ResourceT run) = (liftIO . run) =<< asks resourceMap
 
-type HasAWS env = (MonadResource (RIO env), HasAWSEnv env)
+type Env env = (MonadResource (RIO env), HasField "awsEnv" env AWS.Env)
 
 runAWS
-  :: HasAWS env
+  :: Env env
   => AWS.AWS a
   -> RIO env a
 runAWS action = do
-  env <- asks awsEnv
+  env <- asks (getField @"awsEnv")
   AWS.runAWS env action
 
 paginate
-  :: (AWS.AWSPager a, HasAWS env)
+  :: (AWS.AWSPager a, Env env)
   => a
   -> ConduitT () (AWS.Rs a) (RIO env) ()
 paginate pager = transPipe runAWS (AWS.paginate pager)
 
 send
-  :: (AWS.AWSRequest a, HasAWS env)
+  :: (AWS.AWSRequest a, Env env)
   => a
   -> RIO env (AWS.Rs a)
 send request = runAWS $ AWS.send request

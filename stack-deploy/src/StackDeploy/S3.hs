@@ -11,6 +11,7 @@ import StackDeploy.Prelude
 
 import qualified Data.ByteString           as BS
 import qualified Data.Text.Encoding        as Text
+import qualified MRIO.Amazonka             as AWS
 import qualified Network.AWS.Data.Body     as AWS
 import qualified Network.AWS.S3.HeadObject as S3
 import qualified Network.AWS.S3.PutObject  as S3
@@ -25,7 +26,7 @@ data TargetObject = TargetObject
   , objectKey      :: S3.ObjectKey
   }
 
-syncTarget :: HasAWS env => TargetObject -> RIO env ()
+syncTarget :: AWS.Env env => TargetObject -> RIO env ()
 syncTarget TargetObject{..} =
   putIfAbsent bucketName objectKey object (uploadCallback $ objectKeyText objectKey)
 
@@ -33,7 +34,7 @@ targetObjectKeyText :: TargetObject -> Text
 targetObjectKeyText = objectKeyText . objectKey
 
 testObjectExists
-  :: HasAWS env
+  :: AWS.Env env
   => S3.BucketName
   -> S3.ObjectKey
   -> RIO env Bool
@@ -52,7 +53,7 @@ testObjectExists bucketName objectKey =
     handleNotFoundError _error = empty
 
 putIfAbsent
-  :: HasAWS env
+  :: AWS.Env env
   => S3.BucketName
   -> S3.ObjectKey
   -> AWS.HashedBody
