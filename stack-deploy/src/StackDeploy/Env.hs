@@ -1,4 +1,4 @@
-module StackDeploy.Env (Env, defaultConfig, getTemplateBucketName) where
+module StackDeploy.Env (Config(..), Env, defaultConfig) where
 
 import GHC.Records (HasField)
 import StackDeploy.Prelude
