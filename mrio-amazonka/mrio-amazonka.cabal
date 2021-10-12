@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 77040b04a3cd917906004c7628ea191ea6d5f866451f300c36fa38e7c6eb20f0
+-- hash: 3bb76cefeb6938a80efe7f7ab1f3a45dc6007e8e44ba044f3608daa24d092dca
 
 name:           mrio-amazonka
 version:        0.0.1
@@ -55,6 +55,7 @@ library
       ScopedTypeVariables
       Strict
       TemplateHaskell
+      TupleSections
       TypeApplications
       TypeFamilies
       ViewPatterns
@@ -105,6 +106,7 @@ test-suite test
       ScopedTypeVariables
       Strict
       TemplateHaskell
+      TupleSections
       TypeApplications
       TypeFamilies
       ViewPatterns

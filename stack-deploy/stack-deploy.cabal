@@ -32,6 +32,7 @@ library
       StackDeploy.CLI.Utils
       StackDeploy.Component
       StackDeploy.Env
+      StackDeploy.EnvSpec
       StackDeploy.Events
       StackDeploy.InstanceSpec
       StackDeploy.IO
@@ -71,6 +72,7 @@ library
       ScopedTypeVariables
       Strict
       TemplateHaskell
+      TupleSections
       TypeApplications
       TypeFamilies
       ViewPatterns
@@ -146,6 +148,7 @@ test-suite test
       ScopedTypeVariables
       Strict
       TemplateHaskell
+      TupleSections
       TypeApplications
       TypeFamilies
       ViewPatterns

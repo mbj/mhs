@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 42882a41207282f3378988062c4874af0c8055d4f55b6b0a81c8b527a489d81b
+-- hash: 5aed59c06e71c9de286f256ed08e811b78851431b6b53082468d82ed4a6e9d42
 
 name:           pgt
 version:        0.0.1
@@ -66,6 +66,7 @@ library
       ScopedTypeVariables
       Strict
       TemplateHaskell
+      TupleSections
       TypeApplications
       TypeFamilies
       ViewPatterns
@@ -126,6 +127,7 @@ executable pgt
       ScopedTypeVariables
       Strict
       TemplateHaskell
+      TupleSections
       TypeApplications
       TypeFamilies
       ViewPatterns
@@ -188,6 +190,7 @@ test-suite test
       ScopedTypeVariables
       Strict
       TemplateHaskell
+      TupleSections
       TypeApplications
       TypeFamilies
       ViewPatterns

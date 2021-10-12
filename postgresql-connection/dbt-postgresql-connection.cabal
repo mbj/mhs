@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4f6c7539fb46bcadf680dbd8fbb5cb486a89ad5fa49a82d938f770840aed82a7
+-- hash: 66351494913b6fe826f3b8ee9b79a22fefce18f1e92c871097196f5ded72db6c
 
 name:           dbt-postgresql-connection
 version:        0.1.0
@@ -58,6 +58,7 @@ library
       ScopedTypeVariables
       Strict
       TemplateHaskell
+      TupleSections
       TypeApplications
       TypeFamilies
       ViewPatterns
@@ -111,6 +112,7 @@ test-suite test
       ScopedTypeVariables
       Strict
       TemplateHaskell
+      TupleSections
       TypeApplications
       TypeFamilies
       ViewPatterns
