@@ -1,15 +1,17 @@
 module StackDeploy.EnvSpec where
 
 import StackDeploy.Prelude
-import StackDeploy.Utils
+import StackDeploy.Utils hiding (StackName)
 import Stratosphere
 
+import qualified Data.Aeson                       as JSON
 import qualified Data.Foldable                    as Foldable
 import qualified Data.List                        as List
 import qualified Network.AWS.CloudFormation.Types as CF
 
 data Value
-  = StackOutput Output
+  = StackName
+  | StackOutput Output
   | StackParameter Parameter
   | StackPrefix Text
   | Static Text
@@ -24,31 +26,42 @@ ecsTaskDefinitionEnvironment entries = render <$> List.sortOn envName entries
   where
     render (Entry key value) = mkPair key $ renderValue value
 
-    renderValue = \case
-      StackOutput output'  -> output' ^. outputValue
-      StackParameter param -> toRef param
-      StackPrefix value    -> mkName (Literal value)
-      Static text          -> Literal text
-
     mkPair :: Text -> Val Text -> ECSTaskDefinitionKeyValuePair
     mkPair key value
       = ecsTaskDefinitionKeyValuePair
       & ecstdkvpName  ?~ Literal key
       & ecstdkvpValue ?~ value
 
+lambdaEnvironment :: [Entry] -> LambdaFunctionEnvironment
+lambdaEnvironment entries = lambdaFunctionEnvironment & lfeVariables ?~ environmentObject
+  where
+    environmentObject :: JSON.Object
+    environmentObject = fromList $ render <$> List.sortOn envName entries
+
+    render (Entry key value) = (key, JSON.toJSON $ renderValue value)
+
 posixEnv :: CF.Stack -> [Entry] -> RIO env [(String, String)]
 posixEnv stack = traverse render . List.sortOn envName
   where
     render :: Entry -> RIO env (String, String)
     render (Entry key value) = do
-      (convert key,) . convert <$> renderValue value
+      (convert key,) . convert <$> loadValue value
 
-    renderValue :: Value -> RIO env Text
-    renderValue = \case
+    loadValue :: Value -> RIO env Text
+    loadValue = \case
       StackOutput output'  -> liftIO $ fetchOutput stack output'
       StackParameter param -> fetchParam stack param
       StackPrefix text     -> pure $ (stack ^. CF.sStackName) <> "-" <> text
+      StackName            -> pure $ stack ^. CF.sStackName
       Static text          -> pure text
+
+renderValue :: Value -> Val Text
+renderValue = \case
+  StackName            -> awsStackName
+  StackOutput output'  -> output' ^. outputValue
+  StackParameter param -> toRef param
+  StackPrefix value    -> mkName (Literal value)
+  Static text          -> Literal text
 
 fetchParam
   :: CF.Stack
