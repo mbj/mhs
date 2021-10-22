@@ -55,7 +55,8 @@ instance Eq HttpError where
 instance Exception HttpError
 
 data ContentType
-  = Json
+  = FormUrlEncoded
+  | Json
   | PlainText
   | XML
 
@@ -65,6 +66,9 @@ class HasMediaType (ctyp :: ContentType) where
 
   mediaTypes :: NE.NonEmpty MediaType
   mediaTypes = mediaType @ctyp NE.:| []
+
+instance HasMediaType 'FormUrlEncoded where
+  mediaType = "application" // "x-www-form-urlencoded"
 
 instance HasMediaType 'Json where
   mediaType = "application" // "json" /: ("charset", "utf-8")
