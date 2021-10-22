@@ -76,16 +76,24 @@ instance HasMediaType 'PlainText where
     [ "text" // "html" /: ("charset", "utf-8")]
 
 mkRequest
-  :: forall ctyp e a. (ToText e, HasMediaType ctyp)
+  :: forall contentType acceptsType e a
+  . ( ToText e
+    , HasMediaType contentType
+    , HasMediaType acceptsType
+    )
   => HTTP.Manager
   -> (LBS.ByteString -> Either e a)
   -> HTTP.Request
   -> IO (Either HttpError a)
 mkRequest httpManager decodeBody =
-  runExceptT . mkRequest' @ctyp (fromType @200) httpManager decodeBody
+  runExceptT . mkRequest' @contentType @acceptsType (fromType @200) httpManager decodeBody
 
 mkRequest'
-  :: forall ctyp a e. (ToText e, HasMediaType ctyp)
+  :: forall contentType acceptsType a e
+  . ( ToText e
+    , HasMediaType contentType
+    , HasMediaType acceptsType
+    )
   => StatusCode
   -> HTTP.Manager
   -> (LBS.ByteString -> Either e a)
@@ -93,11 +101,11 @@ mkRequest'
   -> ExceptT HttpError IO a
 mkRequest' expectedStatus httpManager decodeBody request = do
   response <- ExceptT . catchConnectionError
-    $ HTTP.httpLbs (addMediaHeaders @ctyp request) httpManager
+    $ HTTP.httpLbs (addMediaHeaders @contentType  request) httpManager
 
-  contentType <- liftEither $ getContentType response
+  responseContentType <- liftEither $ getContentType response
 
-  let accepts = mediaTypes @ctyp
+  let accepts = mediaTypes @acceptsType
   let code    = convertUnsafe @StatusCode
               . convertUnsafe @Natural
               . statusCode
@@ -105,8 +113,8 @@ mkRequest' expectedStatus httpManager decodeBody request = do
 
   if | code /= expectedStatus ->
         throwError $ InvalidStatusCode code response
-     | not (List.any (`Media.matches` contentType) accepts) ->
-        throwError $ UnsupportedContentType contentType response
+     | not (List.any (`Media.matches` responseContentType) accepts) ->
+        throwError $ UnsupportedContentType responseContentType response
      | otherwise              -> liftEither
          . left (flip DecodeFailure response . DecodeError . toText)
          . decodeBody

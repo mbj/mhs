@@ -178,7 +178,7 @@ runHttpRequest
   -> HTTP.Manager
   -> RIO env (Either HttpError b)
 runHttpRequest requestObject manager = liftIO $
-  mkRequest @'Json manager JSON.eitherDecode =<< httpRequest requestObject
+  mkRequest @'Json @'Json manager JSON.eitherDecode =<< httpRequest requestObject
 
 httpManager :: forall env . HasHTTP env => RIO env HTTP.Manager
 httpManager = asks $ getField @"httpManager"
