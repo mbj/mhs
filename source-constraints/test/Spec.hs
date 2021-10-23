@@ -12,31 +12,27 @@ import Data.Function
 import Data.List ((++))
 import Data.Maybe
 import Data.String
-#if MIN_VERSION_GLASGOW_HASKELL(9,0,0,0)
-import GHC
-import GHC.Data.Bag
-import GHC.Driver.Main
-import GHC.Driver.Session
-import GHC.Driver.Types
-import GHC.Paths
-import GHC.Utils.Error
-import GHC.Utils.Outputable
-#else
-import Bag
-import DynFlags
-import ErrUtils
-import GHC
-import GHC.Paths
-import HscMain
-import HscTypes
-import Outputable hiding ((<>), empty)
-#endif
+import Prelude (error)
 import SourceConstraints
 import SourceConstraints.LocalModule
 import System.Environment as System
 import System.IO
 import Test.Hspec
 import Text.Heredoc
+
+import GHC
+import GHC.Data.Bag
+import GHC.Driver.Main
+import GHC.Driver.Session
+import GHC.Paths
+import GHC.Utils.Error
+import GHC.Utils.Outputable
+
+#if MIN_VERSION_GLASGOW_HASKELL(9,2,0,0)
+import GHC.Unit.Module.ModSummary
+#else
+import GHC.Driver.Types
+#endif
 
 main :: IO ()
 main = System.withArgs [] . hspec $ do
@@ -100,7 +96,7 @@ getWarnings file = runGhc (pure libdir) $ do
 
       let moduleSummary =
             fromMaybe
-              (panic $ "Cannot find module summary for " ++ file ++ " in dependency graph")
+              (error $ "Cannot find module summary for " ++ file ++ " in dependency graph")
               (find ((== file) . msHsFilePath) $ mgModSummaries moduleGraph)
 
       env          <- getSession
@@ -109,13 +105,9 @@ getWarnings file = runGhc (pure libdir) $ do
 
       let localModules = [LocalModule $ mkModuleName "Data.Word"]
 
-#if MIN_VERSION_GLASGOW_HASKELL(9,0,0,0)
       let sDocContext = initSDocContext dynFlags defaultUserStyle
 
       mapM (render sDocContext) . bagToList . warnings Context{..} $ hpm_module parsedModule
-#else
-      mapM (render dynFlags) . bagToList . warnings Context{..} $ hpm_module parsedModule
-#endif
 
     setupDynFlags :: GhcMonad m => m ()
     setupDynFlags = do
@@ -134,26 +126,21 @@ getWarnings file = runGhc (pure libdir) $ do
       setTargets [target]
       result <- load LoadAllTargets
 
-      unless (succeeded result) $ panic "Loading of targets failed"
+      unless (succeeded result) $ error "Loading of targets failed"
 
-#if MIN_VERSION_GLASGOW_HASKELL(9,0,0,0)
     render :: GhcMonad m => SDocContext -> WarnMsg -> m String
     render sDocContext warning = do
-#else
-    render :: GhcMonad m => DynFlags -> WarnMsg -> m String
-    render dynFlags warning = do
-#endif
       caretDiagnostic <- liftIO $
         getCaretDiagnostic
           (errMsgSeverity warning)
           (errMsgSpan warning)
 
+#if MIN_VERSION_GLASGOW_HASKELL(9,2,0,0)
+      pure $ renderWithContext
+        sDocContext
+        (formatBulleted sDocContext (errMsgDiagnostic warning) $+$ caretDiagnostic)
+#else
       pure $ renderWithStyle
-#if MIN_VERSION_GLASGOW_HASKELL(9,0,0,0)
         sDocContext
         (formatErrDoc sDocContext (errMsgDoc warning) $+$ caretDiagnostic)
-#else
-        dynFlags
-        (formatErrDoc dynFlags (errMsgDoc warning) $+$ caretDiagnostic)
-        (defaultUserStyle dynFlags)
 #endif

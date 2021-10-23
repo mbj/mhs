@@ -103,8 +103,7 @@ status = do
 
   Foldable.traverse_ (printStatus . show) applied
 
-  Foldable.traverse_ printMigrationFile =<<
-    newMigrations applied <$> readMigrationFiles
+  Foldable.traverse_ printMigrationFile . newMigrations applied =<< readMigrationFiles
 
 
 localPGDump :: [Text] -> Postgresql.ClientConfig -> RIO env LBS.ByteString
@@ -128,8 +127,7 @@ loadSchema = do
   printStatus $ "Loading schema from " <> schemaFileString
   Connection.runSession $ Transaction.transaction
     Transaction.Serializable
-    Transaction.Write =<<
-      Transaction.sql <$> liftIO (BS.readFile schemaFileString)
+    Transaction.Write . Transaction.sql =<< liftIO (BS.readFile schemaFileString)
 
 apply :: (Env env, Connection.Env env) => RIO env ()
 apply = do
@@ -246,13 +244,13 @@ getNewMigrations :: (Env env, Connection.Env env) => RIO env [MigrationFile]
 getNewMigrations = newMigrations <$> readAppliedMigrations <*> readMigrationFiles
 
 appliedIndex :: AppliedMigration -> Natural
-appliedIndex = index
+appliedIndex = getField @"index"
 
 fileIndex :: MigrationFile -> Natural
-fileIndex = index
+fileIndex = getField @"index"
 
 getSchemaFileString :: Env env => RIO env String
-getSchemaFileString = Path.toString <$> asks (getField @"schemaFile")
+getSchemaFileString = asks (Path.toString . getField @"schemaFile")
 
 newMigrations :: [AppliedMigration] -> [MigrationFile] -> [MigrationFile]
 newMigrations applied = List.sortOn fileIndex . Foldable.foldMap test

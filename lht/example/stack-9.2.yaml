@@ -1,0 +1,8 @@
+setup-info:
+  ghc:
+    linux64-lht:
+      9.2.2:
+        url: "https://downloads.haskell.org/~ghc/9.2.2/ghc-9.2.2-x86_64-alpine3.12-linux-gmp.tar.xz"
+        sha256: 624523826e24eae33c03490267cddecc1d80c047f2a3f4b03580f1040112d5c0
+resolver: nightly-2022-03-13
+compiler: ghc-9.2.2

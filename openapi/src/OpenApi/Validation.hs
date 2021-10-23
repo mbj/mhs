@@ -222,4 +222,4 @@ push :: Text -> Validator () -> Validator ()
 push name = local (pushPath name)
 
 pushPath :: Text -> Context -> Context
-pushPath name context@Context{..} = context { path = path <> [name] }
+pushPath name Context{..} = Context { path = path <> [name], .. }

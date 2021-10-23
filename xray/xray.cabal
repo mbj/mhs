@@ -3,8 +3,6 @@ cabal-version: 1.12
 -- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
---
--- hash: 467169c94024820c0ee8edd41e4deb344a7ee8f7d3d6c1f631a35626f72c4d3b
 
 name:           xray
 version:        0.0.4

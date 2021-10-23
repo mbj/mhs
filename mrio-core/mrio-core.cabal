@@ -3,8 +3,6 @@ cabal-version: 1.12
 -- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
---
--- hash: ce9fcf9df854d840df0f2471176776b6abf889083f2ed92e08e044c5499aa570
 
 name:           mrio-core
 version:        0.0.1

@@ -1,6 +1,5 @@
 module DBT.Postgresql.Container
   ( buildDefinition
-  , imageName
   , populateDatabaseImage
   , withDatabaseContainer
   , withDatabaseContainerImage
@@ -22,9 +21,6 @@ import qualified Data.Text.Encoding   as Text
 import qualified System.Path          as Path
 import qualified System.Process.Typed as Process
 import qualified UnliftIO.Exception   as Exception
-
-imageName :: CBT.ImageName
-imageName = getField @"imageName" buildDefinition
 
 withDatabaseContainerProcess
   :: CBT.WithEnv env
@@ -93,8 +89,14 @@ withDatabaseContainerImage containerName targetImageName
   . runAction containerName
   where
     containerDefinition' :: CBT.ContainerDefinition
-    containerDefinition' = (containerDefinition containerName)
-      { CBT.imageName = targetImageName }
+    containerDefinition' = setImageName (containerDefinition containerName) targetImageName
+
+setImageName :: CBT.ContainerDefinition -> CBT.ImageName -> CBT.ContainerDefinition
+setImageName CBT.ContainerDefinition{..} imageName'
+  = CBT.ContainerDefinition
+  { CBT.imageName = imageName'
+  , ..
+  }
 
 runAction
   :: forall env a . (CBT.WithEnv env)

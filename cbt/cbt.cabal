@@ -3,8 +3,6 @@ cabal-version: 1.12
 -- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
---
--- hash: f0b7050bde383d8c7087151538a99a419d4f4d14c17825a354483e2c80b6a6b7
 
 name:           cbt
 version:        0.1.0

@@ -1,3 +1,8 @@
+{-# LANGUAGE CPP #-}
+#if MIN_VERSION_GLASGOW_HASKELL(9,2,0,0)
+{-# OPTIONS -Wno-ambiguous-fields #-}
+#endif
+
 module Test.TraceHeader (testTree) where
 
 import Control.Monad

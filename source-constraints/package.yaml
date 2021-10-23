@@ -33,13 +33,18 @@ extra-source-files:
 ghc-options:
 - -Wall
 - -Wcompat
+- -Werror
 - -Widentities
 - -Wimplicit-prelude
 - -Wincomplete-record-updates
 - -Wincomplete-uni-patterns
-- -Wmissing-exported-signatures
 - -Wmissing-local-signatures
+- -Wmissing-signatures
 - -Wmonomorphism-restriction
+- -Wredundant-constraints
+- -fhide-source-paths
+- -funbox-strict-fields
+- -optP-Wno-nonportable-include-path
 
 when:
 - condition: flag(development)
