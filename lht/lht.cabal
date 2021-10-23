@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9c8a19f78d4d89ca4df357c9116ebd3638b456b8747e468993ab130668825e0b
+-- hash: a4fdb3cc87fa215303297b870c455601ff6f731410fd5f843526282082d49812
 
 name:           lht
 version:        0.0.1
@@ -67,7 +67,7 @@ library
     , cbt >=0.1.0 && <0.2
     , conversions >=0.0.3 && <0.1
     , directory ==1.3.*
-    , elf ==0.30.*
+    , elf >=0.30 && <0.31 || >=0.31 && <0.32
     , exceptions ==0.10.*
     , http-types ==0.12.*
     , mprelude ==0.2.*
@@ -132,7 +132,7 @@ test-suite test
     , conversions >=0.0.3 && <0.1
     , devtools
     , directory ==1.3.*
-    , elf ==0.30.*
+    , elf >=0.30 && <0.31 || >=0.31 && <0.32
     , exceptions ==0.10.*
     , http-types ==0.12.*
     , lht

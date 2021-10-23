@@ -1,4 +1,4 @@
-resolver: nightly-2021-10-02
+resolver: nightly-2021-10-23
 extra-deps:
 - http-client-0.6.4.1@sha256:ea569e3ebc00e7bb68162fbdf85aa63e653b974eaff63df7b972e4296687e25c,5322
 - mprelude
