@@ -8,14 +8,14 @@ version:    0.0.1
 <<: *defaults
 
 dependencies:
-- amazonka           ^>= 1.6.1
+- amazonka           >= 1.6.1 && < 2
 - base
-- conduit            ^>= 1.3
+- conduit            >= 1.3
 - mrio-core
-- mtl                ^>= 2.2
-- resourcet          ^>= 1.2.4
+- mtl
+- resourcet          >= 1.2.4
 - source-constraints
-- unliftio-core      ^>= 0.2
+- unliftio-core      >= 0.2
 
 tests:
   test:

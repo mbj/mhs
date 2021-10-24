@@ -8,39 +8,38 @@ license:     BSD3
 <<: *defaults
 
 dependencies:
-- aeson                   >= 1.4 || ^>= 1.5
-- aeson-pretty            ^>= 0.8
+- aeson                   >= 1.4
+- aeson-pretty            >= 0.8
 - amazonka
 - amazonka-cloudformation
 - amazonka-core
 - amazonka-s3
-- attoparsec              ^>= 0.13
+- attoparsec              >= 0.13
 - base
-- bytestring              ^>= 0.10
-- conduit                 ^>= 1.3
-- containers              ^>= 0.6
-- conversions             ^>= 0.0.3
-- exceptions              ^>= 0.10
-- filepath                ^>= 1.4
-- hashable                >= 1.2 && ^>= 1.3
-- http-types              ^>= 0.12
+- bytestring
+- conduit                 >= 1.3
+- containers              >= 0.6
+- conversions
+- exceptions              >= 0.10
+- filepath                >= 1.4
+- hashable                >= 1.2
+- http-types              >= 0.12
 - lens
-- mprelude                ^>= 0.2.0
-- mrio-core               ^>= 0.0.1
-- mrio-amazonka           ^>= 0.0.1
-- mtl                     ^>= 2.2
-- optparse-applicative    ^>= 0.14 || ^>= 0.15 || ^>= 0.16
-- random                  ^>= 1.1 || ^>= 1.2
-- source-constraints      ^>= 0.0.1
-- stratosphere            >= 0.58 && < 1
-- tasty                   ^>= 1.3
-- tasty-mgolden           ^>= 0.0.1
-- text                    ^>= 1.2
-- text-conversions        ^>= 0.3
-- time                    >= 1.8 && ^>= 1.9
-- unliftio                ^>= 0.2
-- unordered-containers    ^>= 0.2
-- vector                  ^>= 0.12
+- mprelude
+- mrio-core
+- mrio-amazonka
+- mtl
+- optparse-applicative    >= 0.14
+- random                  >= 1.1
+- source-constraints      >= 0.0.1
+- stratosphere            >= 0.58
+- tasty                   >= 1.3
+- tasty-mgolden           >= 0.0.1
+- text
+- time
+- unliftio                >= 0.2
+- unordered-containers    >= 0.2
+- vector                  >= 0.12
 
 tests:
   test:

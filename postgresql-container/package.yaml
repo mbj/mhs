@@ -8,26 +8,26 @@ synopsis:    DBT Postgresql container tool
 
 dependencies:
 - base
-- bytestring                ^>= 0.10
-- cbt                       ^>= 0.1.0
-- containers                ^>= 0.6
-- conversions               ^>= 0.0.3
-- dbt-postgresql-connection ^>= 0.1.0
-- hasql                     ^>= 1.4
-- mprelude                  ^>= 0.2.0
-- mrio-log                  ^>= 0.0.1
-- mrio-core                 ^>= 0.0.1
-- mtl                       ^>= 2.2
-- network                   ^>= 3.1
-- optparse-applicative      ^>= 0.15 || ^>= 0.16
-- pathtype                  ^>= 0.8
-- source-constraints        ^>= 0.0.1
+- bytestring
+- cbt
+- containers                >= 0.6
+- conversions
+- dbt-postgresql-connection
+- hasql                     >= 1.4
+- mprelude
+- mrio-log
+- mrio-core
+- mtl                       >= 2.2
+- network
+- optparse-applicative      >= 0.15
+- pathtype                  >= 0.8
+- source-constraints
 - template-haskell
-- text                      ^>= 1.2
-- th-lift-instances         ^>= 0.1
-- typed-process             ^>= 0.2
-- unliftio                  ^>= 0.2
-- unliftio-core             ^>= 0.2
+- text
+- th-lift-instances         >= 0.1
+- typed-process             >= 0.2
+- unliftio                  >= 0.2
+- unliftio-core             >= 0.2
 
 library:
   source-dirs: src

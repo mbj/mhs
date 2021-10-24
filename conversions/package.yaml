@@ -9,11 +9,11 @@ version:    0.0.4
 
 dependencies:
 - base
-- bytestring         ^>= 0.10
-- exceptions         ^>= 0.10
-- mtl                ^>= 2.2
+- bytestring
+- exceptions
+- mtl
 - template-haskell
-- text               ^>= 1.2
+- text
 
 default-extensions:
 - AllowAmbiguousTypes
@@ -44,4 +44,4 @@ tests:
     <<: *test
     dependencies:
     - conversions
-    - devtools ^>= 0.1.0
+    - devtools

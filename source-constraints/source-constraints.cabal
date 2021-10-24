@@ -57,13 +57,13 @@ library
       Strict
   ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction
   build-depends:
-      attoparsec ==0.13.*
+      attoparsec >=0.13
     , base
-    , bytestring ==0.10.*
-    , filepath ==1.4.*
+    , bytestring >=0.10
+    , filepath >=1.4
     , ghc >=8.10 && <8.11 || >=9.0 && <9.1
-    , syb ==0.7.*
-    , text ==1.2.*
+    , syb >=0.7
+    , text
   if flag(development)
     ghc-options: -Werror
   else
@@ -87,17 +87,17 @@ test-suite hspec
       Strict
   ghc-options: -Wall -Wcompat -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-exported-signatures -Wmissing-local-signatures -Wmonomorphism-restriction -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      attoparsec ==0.13.*
+      attoparsec >=0.13
     , base
-    , bytestring ==0.10.*
-    , filepath ==1.4.*
+    , bytestring >=0.10
+    , filepath >=1.4
     , ghc >=8.10 && <8.11 || >=9.0 && <9.1
     , ghc-paths
     , heredoc
     , hspec
     , source-constraints
-    , syb ==0.7.*
-    , text ==1.2.*
+    , syb >=0.7
+    , text
   if flag(development)
     ghc-options: -Werror
   else

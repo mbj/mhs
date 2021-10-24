@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5aed59c06e71c9de286f256ed08e811b78851431b6b53082468d82ed4a6e9d42
+-- hash: 28cfc1b97c6aa70cf9ec4e194d429bfee192d75455b306dabddd5e3ebb9a09a4
 
 name:           pgt
 version:        0.0.1
@@ -73,24 +73,23 @@ library
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
       base
-    , bytestring ==0.10.*
-    , containers ==0.6.*
-    , conversions >=0.0.3 && <0.1
-    , dbt-postgresql-connection >=0.1.0 && <0.2
-    , directory ==1.3.*
-    , filepath ==1.4.*
-    , mprelude >=0.2.0 && <0.3
-    , optparse-applicative >=0.15 && <0.16 || >=0.16 && <0.17
-    , ordered-containers ==0.2.*
-    , pathtype >=0.8.1 && <0.9
-    , source-constraints >=0.0.1 && <0.1
-    , tasty >=1.3.1 && <1.4
-    , tasty-mgolden >=0.0.1 && <0.1
-    , text ==1.2.*
-    , text-conversions ==0.3.*
-    , typed-process ==0.2.*
-    , unix ==2.7.*
-    , unliftio ==0.2.*
+    , bytestring
+    , containers >=0.6
+    , conversions >=0.0.3
+    , dbt-postgresql-connection >=0.1.0
+    , directory >=1.3
+    , filepath >=1.4
+    , mprelude
+    , optparse-applicative >=0.15
+    , ordered-containers >=0.2
+    , pathtype >=0.8.1
+    , source-constraints
+    , tasty >=1.3.1
+    , tasty-mgolden >=0.0.1
+    , text
+    , typed-process >=0.2
+    , unix
+    , unliftio >=0.2
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
@@ -134,25 +133,24 @@ executable pgt
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       base
-    , bytestring ==0.10.*
-    , containers ==0.6.*
-    , conversions >=0.0.3 && <0.1
-    , dbt-postgresql-connection >=0.1.0 && <0.2
-    , directory ==1.3.*
-    , filepath ==1.4.*
-    , mprelude >=0.2.0 && <0.3
-    , optparse-applicative >=0.15 && <0.16 || >=0.16 && <0.17
-    , ordered-containers ==0.2.*
-    , pathtype >=0.8.1 && <0.9
+    , bytestring
+    , containers >=0.6
+    , conversions >=0.0.3
+    , dbt-postgresql-connection >=0.1.0
+    , directory >=1.3
+    , filepath >=1.4
+    , mprelude
+    , optparse-applicative >=0.15
+    , ordered-containers >=0.2
+    , pathtype >=0.8.1
     , pgt
-    , source-constraints >=0.0.1 && <0.1
-    , tasty >=1.3.1 && <1.4
-    , tasty-mgolden >=0.0.1 && <0.1
-    , text ==1.2.*
-    , text-conversions ==0.3.*
-    , typed-process ==0.2.*
-    , unix ==2.7.*
-    , unliftio ==0.2.*
+    , source-constraints
+    , tasty >=1.3.1
+    , tasty-mgolden >=0.0.1
+    , text
+    , typed-process >=0.2
+    , unix
+    , unliftio >=0.2
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
@@ -197,28 +195,27 @@ test-suite test
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       base
-    , bytestring ==0.10.*
+    , bytestring
     , cbt
-    , containers ==0.6.*
-    , conversions >=0.0.3 && <0.1
-    , dbt-postgresql-connection >=0.1.0 && <0.2
+    , containers >=0.6
+    , conversions >=0.0.3
+    , dbt-postgresql-connection >=0.1.0
     , dbt-postgresql-container
     , devtools
-    , directory ==1.3.*
-    , filepath ==1.4.*
-    , mprelude >=0.2.0 && <0.3
-    , optparse-applicative >=0.15 && <0.16 || >=0.16 && <0.17
-    , ordered-containers ==0.2.*
-    , pathtype >=0.8.1 && <0.9
+    , directory >=1.3
+    , filepath >=1.4
+    , mprelude
+    , optparse-applicative >=0.15
+    , ordered-containers >=0.2
+    , pathtype >=0.8.1
     , pgt
-    , source-constraints >=0.0.1 && <0.1
-    , tasty >=1.3.1 && <1.4
-    , tasty-mgolden >=0.0.1 && <0.1
-    , text ==1.2.*
-    , text-conversions ==0.3.*
-    , typed-process ==0.2.*
-    , unix ==2.7.*
-    , unliftio ==0.2.*
+    , source-constraints
+    , tasty >=1.3.1
+    , tasty-mgolden >=0.0.1
+    , text
+    , typed-process >=0.2
+    , unix
+    , unliftio >=0.2
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:

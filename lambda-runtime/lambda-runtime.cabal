@@ -81,7 +81,7 @@ library
     , http-types
     , mprelude
     , mtl
-    , optparse-applicative >=0.15 && <0.16 || >=0.16 && <0.17
+    , optparse-applicative >=0.15
     , text
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
@@ -196,7 +196,7 @@ test-suite test
     , http-types
     , mprelude
     , mtl
-    , optparse-applicative >=0.15 && <0.16 || >=0.16 && <0.17
+    , optparse-applicative >=0.15
     , text
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints

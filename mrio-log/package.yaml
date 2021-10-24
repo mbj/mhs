@@ -3,9 +3,6 @@ _common/package: !include "../common/package.yaml"
 name:       mrio-log
 synopsis:   Minimal mrio based logger
 homepage:   https://github.com/mbj/mhs#readme
-maintainer: Markus Schirp mbj@schirp-dso.com
-copyright:  2021 Markus Schirp
-license:    MIT
 github:     mbj/mhs
 version:    0.0.1
 

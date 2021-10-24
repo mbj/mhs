@@ -11,13 +11,13 @@ description: |
 <<: *defaults
 
 dependencies:
-- attoparsec ^>= 0.13
+- attoparsec >= 0.13
 - base
-- bytestring ^>= 0.10
-- filepath   ^>= 1.4
+- bytestring >= 0.10
+- filepath   >= 1.4
 - ghc        ^>= 8.10 || ^>= 9.0
-- syb        ^>= 0.7
-- text       ^>= 1.2
+- syb        >= 0.7
+- text
 
 extra-doc-files:
 - README.md

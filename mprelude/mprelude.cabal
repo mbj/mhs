@@ -4,7 +4,7 @@ cabal-version: 1.18
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5c4aed3651a55b3ccec94fde5cd37e74971f02bac1f5620451b1e846c843a923
+-- hash: 70dedde4fa76535ab2ce586496ddca3191a1466ca4510790a9a426124684609e
 
 name:           mprelude
 version:        0.2.1
@@ -63,9 +63,9 @@ library
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
       base
-    , source-constraints >=0.0.2 && <0.1
-    , text ==1.2.*
-    , unliftio-core ==0.2.*
+    , source-constraints
+    , text
+    , unliftio-core >=0.2
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
@@ -104,9 +104,9 @@ test-suite test
   build-depends:
       base
     , devtools
-    , source-constraints >=0.0.2 && <0.1
-    , text ==1.2.*
-    , unliftio-core ==0.2.*
+    , source-constraints
+    , text
+    , unliftio-core >=0.2
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:

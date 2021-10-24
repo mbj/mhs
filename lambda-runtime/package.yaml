@@ -21,7 +21,7 @@ dependencies:
 - exceptions
 - mtl
 - mprelude
-- optparse-applicative ^>= 0.15 || ^>= 0.16
+- optparse-applicative >= 0.15
 - text
 
 flags:

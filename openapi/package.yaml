@@ -9,24 +9,23 @@ maintainer:  mbj@schirp-dso.com
 <<: *defaults
 
 dependencies:
-- aeson                ^>= 1.5
-- attoparsec           ^>= 0.13
+- aeson                >= 1.5
+- attoparsec           >= 0.13
 - base
-- bytestring           ^>= 0.10
-- conduit              ^>= 1.3
-- containers           ^>= 0.6
-- conversions          ^>= 0.0.3
-- exceptions           ^>= 0.10
-- http-types           ^>= 0.12
-- mprelude             ^>= 0.2.0
-- mtl                  ^>= 2.2
-- pathtype             ^>= 0.8
-- scientific           ^>= 0.3
-- source-constraints   ^>= 0.0.1
-- text                 ^>= 1.2
-- text-conversions     ^>= 0.3
-- unordered-containers ^>= 0.2
-- yaml                 ^>= 0.11
+- bytestring
+- conduit              >= 1.3
+- containers           >= 0.6
+- conversions
+- exceptions           >= 0.10
+- http-types           >= 0.12
+- mprelude
+- mtl
+- pathtype             >= 0.8
+- scientific           >= 0.3
+- source-constraints   >= 0.0.1
+- text
+- unordered-containers >= 0.2
+- yaml                 >= 0.11
 
 default-extensions:
 - AllowAmbiguousTypes
