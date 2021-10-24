@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 66351494913b6fe826f3b8ee9b79a22fefce18f1e92c871097196f5ded72db6c
+-- hash: 7d6ba70da7c2ba40311b296443a475cc8fdb45b4813e59fdaca1ec29edf3b522
 
 name:           dbt-postgresql-connection
 version:        0.1.0
@@ -65,16 +65,16 @@ library
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
       base
-    , bytestring ==0.10.*
-    , containers ==0.6.*
-    , conversions >=0.0.3 && <0.1
-    , hasql ==1.4.*
-    , mprelude >=0.2.0 && <0.3
-    , mrio-core >=0.0.1 && <0.1
-    , mtl ==2.2.*
-    , source-constraints >=0.0.2 && <0.1
-    , text ==1.2.*
-    , unliftio ==0.2.*
+    , bytestring
+    , containers
+    , conversions
+    , hasql >=1.4
+    , mprelude
+    , mrio-core
+    , mtl >=2.2
+    , source-constraints
+    , text
+    , unliftio >=0.2
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
@@ -119,18 +119,18 @@ test-suite test
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       base
-    , bytestring ==0.10.*
-    , containers ==0.6.*
-    , conversions >=0.0.3 && <0.1
+    , bytestring
+    , containers
+    , conversions
     , dbt-postgresql-connection
     , devtools
-    , hasql ==1.4.*
-    , mprelude >=0.2.0 && <0.3
-    , mrio-core >=0.0.1 && <0.1
-    , mtl ==2.2.*
-    , source-constraints >=0.0.2 && <0.1
-    , text ==1.2.*
-    , unliftio ==0.2.*
+    , hasql >=1.4
+    , mprelude
+    , mrio-core
+    , mtl >=2.2
+    , source-constraints
+    , text
+    , unliftio >=0.2
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:

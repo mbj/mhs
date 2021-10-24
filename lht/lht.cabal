@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a4fdb3cc87fa215303297b870c455601ff6f731410fd5f843526282082d49812
+-- hash: 2d7bdc785ab438fcdd8df2578b5b43f2816a5ad356d3ad324cbc3f0a4fea5670
 
 name:           lht
 version:        0.0.1
@@ -63,29 +63,28 @@ library
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
       base
-    , bytestring ==0.10.*
-    , cbt >=0.1.0 && <0.2
-    , conversions >=0.0.3 && <0.1
-    , directory ==1.3.*
-    , elf >=0.30 && <0.31 || >=0.31 && <0.32
-    , exceptions ==0.10.*
-    , http-types ==0.12.*
-    , mprelude ==0.2.*
-    , mrio-core >=0.0.1 && <0.1
-    , pathtype ==0.8.*
-    , source-constraints >=0.0.1 && <0.1
-    , tar ==0.5.*
+    , bytestring
+    , cbt
+    , conversions
+    , directory
+    , elf >=0.30
+    , exceptions
+    , http-types >=0.12
+    , mprelude >=0.2
+    , mrio-core
+    , pathtype >=0.8
+    , source-constraints
+    , tar >=0.5
     , template-haskell
-    , text ==1.2.*
-    , text-conversions ==0.3.*
-    , th-lift-instances ==0.1.*
-    , time ==1.9.*
-    , typed-process ==0.2.*
-    , unix ==2.7.*
-    , unliftio ==0.2.*
-    , unliftio-core ==0.2.*
-    , uuid ==1.3.*
-    , zip-archive ==0.4.*
+    , text
+    , th-lift-instances >=0.1
+    , time
+    , typed-process >=0.2
+    , unix
+    , unliftio >=0.2
+    , unliftio-core >=0.2
+    , uuid >=1.3
+    , zip-archive >=0.4
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
@@ -127,33 +126,32 @@ test-suite test
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       base
-    , bytestring ==0.10.*
-    , cbt >=0.1.0 && <0.2
-    , conversions >=0.0.3 && <0.1
+    , bytestring
+    , cbt
+    , conversions
     , devtools
-    , directory ==1.3.*
-    , elf >=0.30 && <0.31 || >=0.31 && <0.32
-    , exceptions ==0.10.*
-    , http-types ==0.12.*
+    , directory
+    , elf >=0.30
+    , exceptions
+    , http-types >=0.12
     , lht
-    , mprelude ==0.2.*
-    , mrio-core >=0.0.1 && <0.1
-    , pathtype ==0.8.*
-    , source-constraints >=0.0.1 && <0.1
-    , tar ==0.5.*
-    , tasty ==1.3.*
-    , tasty-hunit ==0.10.*
+    , mprelude >=0.2
+    , mrio-core
+    , pathtype >=0.8
+    , source-constraints
+    , tar >=0.5
+    , tasty
+    , tasty-hunit
     , template-haskell
-    , text ==1.2.*
-    , text-conversions ==0.3.*
-    , th-lift-instances ==0.1.*
-    , time ==1.9.*
-    , typed-process ==0.2.*
-    , unix ==2.7.*
-    , unliftio ==0.2.*
-    , unliftio-core ==0.2.*
-    , uuid ==1.3.*
-    , zip-archive ==0.4.*
+    , text
+    , th-lift-instances >=0.1
+    , time
+    , typed-process >=0.2
+    , unix
+    , unliftio >=0.2
+    , unliftio-core >=0.2
+    , uuid >=1.3
+    , zip-archive >=0.4
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:

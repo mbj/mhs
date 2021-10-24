@@ -10,9 +10,9 @@ synopsis:       Minimal mrio based logger
 homepage:       https://github.com/mbj/mhs#readme
 bug-reports:    https://github.com/mbj/mhs/issues
 author:         Markus Schirp
-maintainer:     Markus Schirp mbj@schirp-dso.com
+maintainer:     markus@schirp-dso.com
 copyright:      2021 Markus Schirp
-license:        MIT
+license:        BSD3
 build-type:     Simple
 
 source-repository head

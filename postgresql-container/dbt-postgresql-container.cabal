@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a13116fbe1679378403408b237fdda67f87afae0d0e3b56c45f8b8bd6c95181c
+-- hash: 1c9d9fd1c8b8c9412855adc9fb8dac966e653599b7fd3b149228aac9d49db47a
 
 name:           dbt-postgresql-container
 version:        0.1.0
@@ -64,26 +64,26 @@ library
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
       base
-    , bytestring ==0.10.*
-    , cbt >=0.1.0 && <0.2
-    , containers ==0.6.*
-    , conversions >=0.0.3 && <0.1
-    , dbt-postgresql-connection >=0.1.0 && <0.2
-    , hasql ==1.4.*
-    , mprelude >=0.2.0 && <0.3
-    , mrio-core >=0.0.1 && <0.1
-    , mrio-log >=0.0.1 && <0.1
-    , mtl ==2.2.*
-    , network ==3.1.*
-    , optparse-applicative >=0.15 && <0.16 || >=0.16 && <0.17
-    , pathtype ==0.8.*
-    , source-constraints >=0.0.1 && <0.1
+    , bytestring
+    , cbt
+    , containers >=0.6
+    , conversions
+    , dbt-postgresql-connection
+    , hasql >=1.4
+    , mprelude
+    , mrio-core
+    , mrio-log
+    , mtl >=2.2
+    , network
+    , optparse-applicative >=0.15
+    , pathtype >=0.8
+    , source-constraints
     , template-haskell
-    , text ==1.2.*
-    , th-lift-instances ==0.1.*
-    , typed-process ==0.2.*
-    , unliftio ==0.2.*
-    , unliftio-core ==0.2.*
+    , text
+    , th-lift-instances >=0.1
+    , typed-process >=0.2
+    , unliftio >=0.2
+    , unliftio-core >=0.2
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
@@ -127,27 +127,27 @@ executable dbt
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       base
-    , bytestring ==0.10.*
-    , cbt >=0.1.0 && <0.2
-    , containers ==0.6.*
-    , conversions >=0.0.3 && <0.1
-    , dbt-postgresql-connection >=0.1.0 && <0.2
+    , bytestring
+    , cbt
+    , containers >=0.6
+    , conversions
+    , dbt-postgresql-connection
     , dbt-postgresql-container
-    , hasql ==1.4.*
-    , mprelude >=0.2.0 && <0.3
-    , mrio-core >=0.0.1 && <0.1
-    , mrio-log >=0.0.1 && <0.1
-    , mtl ==2.2.*
-    , network ==3.1.*
-    , optparse-applicative >=0.15 && <0.16 || >=0.16 && <0.17
-    , pathtype ==0.8.*
-    , source-constraints >=0.0.1 && <0.1
+    , hasql >=1.4
+    , mprelude
+    , mrio-core
+    , mrio-log
+    , mtl >=2.2
+    , network
+    , optparse-applicative >=0.15
+    , pathtype >=0.8
+    , source-constraints
     , template-haskell
-    , text ==1.2.*
-    , th-lift-instances ==0.1.*
-    , typed-process ==0.2.*
-    , unliftio ==0.2.*
-    , unliftio-core ==0.2.*
+    , text
+    , th-lift-instances >=0.1
+    , typed-process >=0.2
+    , unliftio >=0.2
+    , unliftio-core >=0.2
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
@@ -192,30 +192,30 @@ test-suite test
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       base
-    , bytestring ==0.10.*
-    , cbt >=0.1.0 && <0.2
-    , containers ==0.6.*
-    , conversions >=0.0.3 && <0.1
+    , bytestring
+    , cbt
+    , containers >=0.6
+    , conversions
     , dbt-postgresql-connection
     , dbt-postgresql-container
     , devtools >=0.1.0 && <0.2
-    , hasql ==1.4.*
-    , mprelude >=0.2.0 && <0.3
-    , mrio-core >=0.0.1 && <0.1
-    , mrio-log >=0.0.1 && <0.1
-    , mtl ==2.2.*
-    , network ==3.1.*
-    , optparse-applicative >=0.15 && <0.16 || >=0.16 && <0.17
-    , pathtype ==0.8.*
-    , source-constraints >=0.0.1 && <0.1
+    , hasql >=1.4
+    , mprelude
+    , mrio-core
+    , mrio-log
+    , mtl >=2.2
+    , network
+    , optparse-applicative >=0.15
+    , pathtype >=0.8
+    , source-constraints
     , tasty
     , tasty-mgolden
     , template-haskell
-    , text ==1.2.*
-    , th-lift-instances ==0.1.*
-    , typed-process ==0.2.*
-    , unliftio ==0.2.*
-    , unliftio-core ==0.2.*
+    , text
+    , th-lift-instances >=0.1
+    , typed-process >=0.2
+    , unliftio >=0.2
+    , unliftio-core >=0.2
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:

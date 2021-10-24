@@ -16,9 +16,9 @@ extra-doc-files: README.md
 
 dependencies:
 - base
-- source-constraints ^>= 0.0.2
-- text               ^>= 1.2
-- unliftio-core      ^>= 0.2
+- source-constraints
+- text
+- unliftio-core      >= 0.2
 
 default-extensions:
 - CPP

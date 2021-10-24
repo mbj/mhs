@@ -32,30 +32,29 @@ default-extensions:
 - TypeOperators
 - ViewPatterns
 
+dependencies:
+- aeson       >= 1.3
+- base
+- conversions
+- mtl
+- scientific
+- symbols
+- text
+
 library:
   source-dirs: src
-  dependencies:
-  - base
-  - aeson              >= 1.3
-  - conversions        >= 0.0.2
-  - mtl
-  - scientific
-  - symbols
-  - text               >= 1.2
 
 tests:
   test:
     <<: *test
     dependencies:
-    - aeson              >= 1.3
-    - base
     - bounded
     - should-not-typecheck
-    - source-constraints ^>= 0.0.2
+    - source-constraints
     - tasty
     - tasty-hunit
     - type-spec
-    - devtools >= 0.1.0
+    - devtools
 
   readme:
     main: README.lhs
