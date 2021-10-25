@@ -34,7 +34,7 @@ expandSelector (Selector path) = expandStatus =<< liftIO (FS.getFileStatus strin
   where
     expandStatus :: FS.FileStatus -> m (OSet Path.RelFile)
     expandStatus status
-      | FS.isRegularFile status = pure . OSet.singleton $ Path.relFile stringPath
+      | FS.isRegularFile status = pure . expandRegular $ Path.relFile stringPath
       | FS.isDirectory status   = expandDirectory $ Path.relDir stringPath
       | otherwise               = fail $ "Path: " <> stringPath <> " is not a regular file or directory"
 
@@ -64,11 +64,14 @@ expandDirectory directory =
       where
         stringCandidate = Path.toString candidate
 
-    expandRegular :: Path.RelFile -> OSet Path.RelFile
-    expandRegular candidate =
-      if Path.takeExtension candidate == ".sql"
-         then OSet.singleton candidate
-         else OSet.empty
+expandRegular :: Path.RelFile -> OSet Path.RelFile
+expandRegular candidate =
+  if isCandidate candidate
+     then OSet.singleton candidate
+     else OSet.empty
 
 flatten :: (Foldable f, Ord a) => f (OSet a) -> OSet a
 flatten = Foldable.foldl' (|<>) OSet.empty
+
+isCandidate :: Path.RelFile -> Bool
+isCandidate = List.isSuffixOf ".test.sql" . Path.toString
