@@ -14,7 +14,7 @@ import qualified Test.Tasty               as Tasty
 main :: IO ()
 main = do
   Text.putStrLn ""
-  success <- PGT.expand selectors
+  success <- PGT.expand ([PGT.Selector $ Path.rel "examples"] :: [PGT.Selector])
 
   CBT.runDefaultEnvironment $ do
     containerName <- CBT.nextContainerName $ CBT.Prefix "pgt"
@@ -48,10 +48,3 @@ setupSchema pgConfig = do
       , "--quiet"
       , "--set", "ON_ERROR_STOP=1"
       ]
-
-selectors :: [PGT.Selector]
-selectors =
- [ PGT.Selector $ Path.rel "examples/success.sql"
- , PGT.Selector $ Path.rel "examples/write-1.sql"
- , PGT.Selector $ Path.rel "examples/write-2.sql"
- ]
