@@ -1,13 +1,14 @@
 module Network.HTTP.MClient
   ( ContentType (..)
   , DecodeError (..)
-  , HasHTTP
+  , Env
   , HasMediaType (..)
   , HttpError (..)
   , StatusCode
   , mkRequest
   , mkRequest'
-  ) where
+  )
+where
 
 import Control.Arrow (left)
 import Control.Monad.Catch (Exception, catch)
@@ -31,7 +32,7 @@ type Response = HTTP.Response LBS.ByteString
 
 type StatusCode = BoundNumber "Status code" '(199, 600)
 
-type HasHTTP env = HasField "httpManager" env HTTP.Manager
+type Env env = HasField "httpManager" env HTTP.Manager
 
 newtype DecodeError = DecodeError Text
   deriving (Conversion Text) via Text
