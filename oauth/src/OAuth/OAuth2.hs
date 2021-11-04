@@ -17,7 +17,6 @@ where
 import Data.Bifunctor (second)
 import Data.ByteString (ByteString)
 import Data.Maybe (fromJust)
-import Network.HTTP.MClient
 import Network.URI (URI)
 import OAuth.Prelude
 import Prelude(Integer, (!!))
@@ -29,6 +28,7 @@ import qualified Data.ByteString.Lazy       as BL
 import qualified Data.Text                  as Text
 import qualified Data.Text.Encoding         as Text
 import qualified Network.HTTP.Client        as HTTP
+import qualified Network.HTTP.MClient       as HTTP
 import qualified Network.HTTP.Types         as HTTP
 import qualified Network.HTTP.Types.URI     as URI
 
@@ -48,7 +48,7 @@ instance JSON.FromJSON Credentials where
 
 type Env env
   = ( HasField "googleOAuth2Credentials" env Credentials
-    , HasHTTP env
+    , HTTP.Env env
     )
 
 newtype AuthCode = AuthCode Text
@@ -176,11 +176,11 @@ runHttpRequest
   :: forall a b env . (JSON.ToJSON a, JSON.FromJSON b)
   => a
   -> HTTP.Manager
-  -> RIO env (Either HttpError b)
+  -> RIO env (Either HTTP.HttpError b)
 runHttpRequest requestObject manager = liftIO $
-  mkRequest @'Json @'Json manager JSON.eitherDecode =<< httpRequest requestObject
+  HTTP.mkRequest @'HTTP.Json @'HTTP.Json manager JSON.eitherDecode =<< httpRequest requestObject
 
-httpManager :: forall env . HasHTTP env => RIO env HTTP.Manager
+httpManager :: forall env . HTTP.Env env => RIO env HTTP.Manager
 httpManager = asks $ getField @"httpManager"
 
 httpRequest

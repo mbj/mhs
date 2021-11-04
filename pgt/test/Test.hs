@@ -51,7 +51,7 @@ setupSchema pgConfig = do
 
 selectors :: [PGT.Selector]
 selectors =
- [ PGT.Selector $ Path.rel "examples/success.sql"
- , PGT.Selector $ Path.rel "examples/write-1.sql"
- , PGT.Selector $ Path.rel "examples/write-2.sql"
+ [ PGT.Selector $ Path.rel "examples/success.test.sql"
+ , PGT.Selector $ Path.rel "examples/write-1.test.sql"
+ , PGT.Selector $ Path.rel "examples/write-2.test.sql"
  ]
