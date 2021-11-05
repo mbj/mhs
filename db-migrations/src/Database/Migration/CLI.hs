@@ -1,37 +1,24 @@
-module Database.Migration.CLI
-  ( Config(..)
-  , WithClientConfig
-  , defaultConfig
-  , parserInfo
-  )
-where
+module Database.Migration.CLI (parserInfo) where
 
 import Database.Migration
 import Database.Migration.Prelude
 import Options.Applicative
 
-defaultConfig :: WithClientConfig env -> Config env
-defaultConfig withConfig
-  = Config
-  { runPGDump = withConfig . localPGDump
-  , ..
-  }
-
 parserInfo
   :: forall env . Env env
-  => ParserInfo (Config env -> RIO env ())
+  => ParserInfo (DynamicConfig env -> RIO env ())
 parserInfo = wrapHelper commands "migration commands"
   where
-    commands :: Parser (Config env -> RIO env ())
+    commands :: Parser (DynamicConfig env -> RIO env ())
     commands = hsubparser
       $  mkCommand
          "apply"
-         applyMigration
-         "Apply pending DB migrations"
+         applyDump
+         "Apply pending DB migrations with dumping new schema"
       <>  mkCommand
          "apply-no-schema"
          (withConnection' apply)
-         "Apply pending DB migrations"
+         "Apply pending DB migrations without dumping new schema"
       <> mkCommand
          "apply-dry"
          (withConnection' dryApply)
@@ -54,23 +41,15 @@ parserInfo = wrapHelper commands "migration commands"
          "Setup DB migrations, create schema_migrations table"
       <> mkCommand
          "dump-schema"
-         (\Config{..} -> dumpSchema runPGDump)
+         dumpSchema
          "Dump database schema"
       <> mkCommand
          "load-schema"
          (withConnection' loadSchema)
          "Load database schema"
 
-    withConnection' :: RIO ConnectionEnv a -> Config env -> RIO env a
-    withConnection' = flip withConnectionEnv
-
-applyMigration
-  :: Env env
-  => Config env
-  -> RIO env ()
-applyMigration config@Config{..} = do
-  withConnectionEnv config apply
-  dumpSchema runPGDump
+    withConnection' :: RIO ConnectionEnv a -> DynamicConfig env -> RIO env a
+    withConnection' = flip withDynamicConnectionEnv
 
 wrapHelper :: Parser b -> String -> ParserInfo b
 wrapHelper parser desc = info parser $ progDesc desc
