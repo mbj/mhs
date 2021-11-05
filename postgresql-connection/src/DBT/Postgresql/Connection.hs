@@ -1,14 +1,14 @@
 module DBT.Postgresql.Connection
-  ( ConnectionEnv(..)
-  , runConnectionEnv
+  ( Env
+  , runSession
+  , runSessionEither
   , withConnection
   , withConnectionEither
-  , withConnectionEnv
   , withConnectionSession
   )
 where
 
-import Control.Monad.Reader (ask)
+import Control.Monad.Reader (asks)
 import DBT.Postgresql.Prelude
 
 import qualified DBT.Postgresql     as Postgresql
@@ -20,18 +20,7 @@ import qualified Hasql.Connection   as Hasql
 import qualified Hasql.Session      as Hasql
 import qualified UnliftIO.Exception as Exception
 
-data ConnectionEnv env = ConnectionEnv
-  { connection :: Hasql.Connection
-  , parent     :: env
-  }
-
-runConnectionEnv
-  :: RIO (ConnectionEnv env) a
-  -> Hasql.Connection
-  -> RIO env a
-runConnectionEnv action connection = do
-  parent <- ask
-  runRIO ConnectionEnv{..} action
+type Env env = HasField "hasqlConnection" env Hasql.Connection
 
 withConnection
   :: Postgresql.ClientConfig
@@ -40,11 +29,11 @@ withConnection
 withConnection config =
   either (Exception.throwString . show) pure <=< withConnectionEither config
 
-withConnectionEnv
-  :: Postgresql.ClientConfig
-  -> RIO (ConnectionEnv env) a
-  -> RIO env a
-withConnectionEnv config = withConnection config . runConnectionEnv
+runSession :: Env env => Hasql.Session a -> RIO env a
+runSession = either Exception.throwIO pure <=< runSessionEither
+
+runSessionEither :: Env env => Hasql.Session a -> RIO env (Either Hasql.QueryError a)
+runSessionEither session = liftIO . Hasql.run session =<< asks (getField @"hasqlConnection")
 
 withConnectionEither
   :: forall a env . Postgresql.ClientConfig
