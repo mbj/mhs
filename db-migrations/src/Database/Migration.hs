@@ -1,12 +1,14 @@
 {-# LANGUAGE QuasiQuotes #-}
 
 module Database.Migration
-  ( Config(..)
-  , ConnectionEnv(..)
+  ( ConnectionEnv(..)
+  , DynamicConfig(..)
   , Env
   , RunPGDump
   , WithClientConfig
   , apply
+  , applyDump
+  , defaultDynamicConfig
   , dryApply
   , dumpSchema
   , getSchemaFileString
@@ -16,6 +18,7 @@ module Database.Migration
   , setup
   , status
   , withConnectionEnv
+  , withDynamicConnectionEnv
   )
 where
 
@@ -50,6 +53,8 @@ import qualified System.Process.Typed       as Process
 
 type Digest = Hash.Digest Hash.SHA3_256
 
+type WithClientConfig env = forall a . (Postgresql.ClientConfig -> RIO env a) -> RIO env a
+
 type RunPGDump env = [Text] -> RIO env LBS.ByteString
 
 type Env env
@@ -68,6 +73,18 @@ data MigrationFile = MigrationFile
   , index  :: Natural
   , path   :: Path.RelFile
   , sql    :: BS.ByteString
+  }
+
+
+data DynamicConfig env = DynamicConfig
+  { runPGDump  :: RunPGDump env
+  , withClientConfig :: WithClientConfig env
+  }
+
+data ConnectionEnv = ConnectionEnv
+  { hasqlConnection :: Hasql.Connection
+  , migrationDir    :: Path.RelDir
+  , schemaFile      :: Path.RelFile
   }
 
 dryApply :: (Env env, Connection.Env env) => RIO env ()
@@ -97,12 +114,12 @@ localPGDump arguments clientConfig =  do
     . Process.setEnv env
     $ Process.proc "pg_dump" (convert <$> arguments)
 
-dumpSchema :: Env env => RunPGDump env -> RIO env ()
-dumpSchema pgDump = do
+dumpSchema :: Env env => DynamicConfig env -> RIO env ()
+dumpSchema DynamicConfig{..} = do
   schemaFileString <- getSchemaFileString
   printStatus $ "Writing schema to " <> schemaFileString
-  schema     <- pgDump ["--no-comments", "--schema-only"]
-  migrations <- pgDump ["--data-only", "--inserts", "--table=schema_migrations"]
+  schema     <- runPGDump ["--no-comments", "--schema-only"]
+  migrations <- runPGDump ["--data-only", "--inserts", "--table=schema_migrations"]
   liftIO $ LBS.writeFile schemaFileString $ schema <> migrations
 
 loadSchema :: (Env env, Connection.Env env) => RIO env ()
@@ -249,28 +266,38 @@ newMigrations applied = List.sortOn fileIndex . Foldable.foldMap test
 printStatus :: ToText a => a -> RIO env ()
 printStatus = liftIO . Text.putStrLn . convert
 
-type WithClientConfig env = forall a . (Postgresql.ClientConfig -> RIO env a) -> RIO env a
-
-data Config env = Config
-  { runPGDump  :: RunPGDump env
-  , withConfig :: WithClientConfig env
-  }
-
-data ConnectionEnv = ConnectionEnv
-  { hasqlConnection :: Hasql.Connection
-  , migrationDir    :: Path.RelDir
-  , schemaFile      :: Path.RelFile
-  }
-
 withConnectionEnv
   :: Env env
-  => Config env
+  => Postgresql.ClientConfig
   -> RIO ConnectionEnv a
   -> RIO env a
-withConnectionEnv Config{..} action' = do
+withConnectionEnv clientConfig action' = do
   migrationDir <- asks (getField @"migrationDir")
   schemaFile   <- asks (getField @"schemaFile")
 
-  withConfig $ \config ->
-    Connection.withConnection config $ \hasqlConnection ->
-      runRIO ConnectionEnv{..} action'
+  Connection.withConnection clientConfig $ \hasqlConnection ->
+    runRIO ConnectionEnv{..} action'
+
+withDynamicConnectionEnv
+  :: Env env
+  => DynamicConfig env
+  -> RIO ConnectionEnv a
+  -> RIO env a
+withDynamicConnectionEnv DynamicConfig{..} action = do
+  withClientConfig $ \clientConfig ->
+    withConnectionEnv clientConfig action
+
+defaultDynamicConfig :: WithClientConfig env -> DynamicConfig env
+defaultDynamicConfig withClientConfig
+  = DynamicConfig
+  { runPGDump = withClientConfig . localPGDump
+  , ..
+  }
+
+applyDump
+  :: Env env
+  => DynamicConfig env
+  -> RIO env ()
+applyDump dynamicConfig = do
+  withDynamicConnectionEnv dynamicConfig apply
+  dumpSchema dynamicConfig
