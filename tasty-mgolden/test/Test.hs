@@ -15,7 +15,10 @@ import qualified System.IO.Temp       as System
 import qualified System.Process.Typed as Process
 
 main :: IO ()
-main = System.withArgs [] $ defaultMain tests
+main = do
+  -- Avoid concurrency as workflow test is unsafe
+  System.setEnv "TASTY_NUM_THREADS" "1"
+  System.withArgs [] $ defaultMain tests
 
 tests :: TestTree
 tests =
