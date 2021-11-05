@@ -1,8 +1,11 @@
 {-# LANGUAGE QuasiQuotes #-}
 
 module Database.Migration
-  ( Env
+  ( Config(..)
+  , ConnectionEnv(..)
+  , Env
   , RunPGDump
+  , WithClientConfig
   , apply
   , dryApply
   , dumpSchema
@@ -12,6 +15,7 @@ module Database.Migration
   , new
   , setup
   , status
+  , withConnectionEnv
   )
 where
 
@@ -36,6 +40,7 @@ import qualified Data.ByteString.Lazy       as LBS
 import qualified Data.Foldable              as Foldable
 import qualified Data.List                  as List
 import qualified Data.Text.IO               as Text
+import qualified Hasql.Connection           as Hasql
 import qualified Hasql.Session              as Hasql
 import qualified Hasql.Transaction          as Transaction
 import qualified Hasql.Transaction.Sessions as Transaction
@@ -243,3 +248,29 @@ newMigrations applied = List.sortOn fileIndex . Foldable.foldMap test
 
 printStatus :: ToText a => a -> RIO env ()
 printStatus = liftIO . Text.putStrLn . convert
+
+type WithClientConfig env = forall a . (Postgresql.ClientConfig -> RIO env a) -> RIO env a
+
+data Config env = Config
+  { runPGDump  :: RunPGDump env
+  , withConfig :: WithClientConfig env
+  }
+
+data ConnectionEnv = ConnectionEnv
+  { hasqlConnection :: Hasql.Connection
+  , migrationDir    :: Path.RelDir
+  , schemaFile      :: Path.RelFile
+  }
+
+withConnectionEnv
+  :: Env env
+  => Config env
+  -> RIO ConnectionEnv a
+  -> RIO env a
+withConnectionEnv Config{..} action' = do
+  migrationDir <- asks (getField @"migrationDir")
+  schemaFile   <- asks (getField @"schemaFile")
+
+  withConfig $ \config ->
+    Connection.withConnection config $ \hasqlConnection ->
+      runRIO ConnectionEnv{..} action'

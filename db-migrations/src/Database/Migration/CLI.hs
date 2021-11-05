@@ -6,35 +6,15 @@ module Database.Migration.CLI
   )
 where
 
-import Control.Monad.Reader (asks)
 import Database.Migration
 import Database.Migration.Prelude
-import GHC.Records (getField)
 import Options.Applicative
-
-import qualified DBT.Postgresql            as Postgresql
-import qualified DBT.Postgresql.Connection as DBT
-import qualified Hasql.Connection          as Hasql
-import qualified System.Path               as Path
-
-type WithClientConfig env = forall a . (Postgresql.ClientConfig -> RIO env a) -> RIO env a
-
-data Config env = Config
-  { runPGDump  :: RunPGDump env
-  , withConfig :: WithClientConfig env
-  }
 
 defaultConfig :: WithClientConfig env -> Config env
 defaultConfig withConfig
   = Config
   { runPGDump = withConfig . localPGDump
   , ..
-  }
-
-data ConnectionEnv = ConnectionEnv
-  { hasqlConnection :: Hasql.Connection
-  , migrationDir    :: Path.RelDir
-  , schemaFile      :: Path.RelFile
   }
 
 parserInfo
@@ -81,32 +61,16 @@ parserInfo = wrapHelper commands "migration commands"
          (withConnection' loadSchema)
          "Load database schema"
 
-    withConnection'
-      :: RIO ConnectionEnv ()
-      -> Config env
-      -> RIO env ()
-    withConnection' = flip withConnection
+    withConnection' :: RIO ConnectionEnv a -> Config env -> RIO env a
+    withConnection' = flip withConnectionEnv
 
 applyMigration
   :: Env env
   => Config env
   -> RIO env ()
 applyMigration config@Config{..} = do
-  withConnection config apply
+  withConnectionEnv config apply
   dumpSchema runPGDump
-
-withConnection
-  :: Env env
-  => Config env
-  -> RIO ConnectionEnv ()
-  -> RIO env ()
-withConnection Config{..} action' = do
-  migrationDir <- asks (getField @"migrationDir")
-  schemaFile   <- asks (getField @"schemaFile")
-
-  withConfig $ \config ->
-    DBT.withConnection config $ \hasqlConnection ->
-      runRIO ConnectionEnv{..} action'
 
 wrapHelper :: Parser b -> String -> ParserInfo b
 wrapHelper parser desc = info parser $ progDesc desc
