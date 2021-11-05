@@ -6,12 +6,16 @@ module Database.Migration.CLI
   )
 where
 
+import Control.Monad.Reader (asks)
 import Database.Migration
 import Database.Migration.Prelude
+import GHC.Records (getField)
 import Options.Applicative
 
 import qualified DBT.Postgresql            as Postgresql
 import qualified DBT.Postgresql.Connection as DBT
+import qualified Hasql.Connection          as Hasql
+import qualified System.Path               as Path
 
 type WithClientConfig env = forall a . (Postgresql.ClientConfig -> RIO env a) -> RIO env a
 
@@ -27,8 +31,14 @@ defaultConfig withConfig
   , ..
   }
 
+data ConnectionEnv = ConnectionEnv
+  { hasqlConnection :: Hasql.Connection
+  , migrationDir    :: Path.RelDir
+  , schemaFile      :: Path.RelFile
+  }
+
 parserInfo
-  :: forall env . (HasMigrationEnv env, HasMigrationEnv (DBT.ConnectionEnv env))
+  :: forall env . Env env
   => ParserInfo (Config env -> RIO env ())
 parserInfo = wrapHelper commands "migration commands"
   where
@@ -72,27 +82,31 @@ parserInfo = wrapHelper commands "migration commands"
          "Load database schema"
 
     withConnection'
-      :: RIO (DBT.ConnectionEnv env) ()
+      :: RIO ConnectionEnv ()
       -> Config env
       -> RIO env ()
     withConnection' = flip withConnection
 
 applyMigration
-  :: (HasMigrationEnv env, HasMigrationEnv (DBT.ConnectionEnv env))
+  :: Env env
   => Config env
   -> RIO env ()
-applyMigration Config{..} = do
-  withConfig $ \config ->
-    DBT.withConnection config $ DBT.runConnectionEnv apply
+applyMigration config@Config{..} = do
+  withConnection config apply
   dumpSchema runPGDump
 
 withConnection
-  :: Config env
-  -> RIO (DBT.ConnectionEnv env) ()
+  :: Env env
+  => Config env
+  -> RIO ConnectionEnv ()
   -> RIO env ()
-withConnection Config{..} action' =
+withConnection Config{..} action' = do
+  migrationDir <- asks (getField @"migrationDir")
+  schemaFile   <- asks (getField @"schemaFile")
+
   withConfig $ \config ->
-    DBT.withConnection config $ DBT.runConnectionEnv action'
+    DBT.withConnection config $ \hasqlConnection ->
+      runRIO ConnectionEnv{..} action'
 
 wrapHelper :: Parser b -> String -> ParserInfo b
 wrapHelper parser desc = info parser $ progDesc desc

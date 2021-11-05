@@ -1,7 +1,7 @@
 {-# LANGUAGE QuasiQuotes #-}
 
 module Database.Migration
-  ( HasMigrationEnv
+  ( Env
   , RunPGDump
   , apply
   , dryApply
@@ -29,7 +29,7 @@ import UnliftIO.Exception (throwString)
 
 import qualified Crypto.Hash                as Hash
 import qualified DBT.Postgresql             as Postgresql
-import qualified DBT.Postgresql.Session     as DBT
+import qualified DBT.Postgresql.Connection  as Connection
 import qualified Data.ByteArray             as BA
 import qualified Data.ByteString            as BS
 import qualified Data.ByteString.Lazy       as LBS
@@ -47,7 +47,7 @@ type Digest = Hash.Digest Hash.SHA3_256
 
 type RunPGDump env = [Text] -> RIO env LBS.ByteString
 
-type HasMigrationEnv env
+type Env env
   = ( HasField "migrationDir" env Path.RelDir
     , HasField "schemaFile"   env Path.RelFile
     )
@@ -65,7 +65,7 @@ data MigrationFile = MigrationFile
   , sql    :: BS.ByteString
   }
 
-dryApply :: (HasMigrationEnv env, DBT.Session env) => RIO env ()
+dryApply :: (Env env, Connection.Env env) => RIO env ()
 dryApply = do
   files <- getNewMigrations
 
@@ -73,7 +73,7 @@ dryApply = do
     then printStatus ("No new migrations to apply" :: Text)
     else Foldable.traverse_ printMigrationFile files
 
-status :: (HasMigrationEnv env, DBT.Session env) => RIO env ()
+status :: (Env env, Connection.Env env) => RIO env ()
 status = do
   applied <- readAppliedMigrations
 
@@ -92,7 +92,7 @@ localPGDump arguments clientConfig =  do
     . Process.setEnv env
     $ Process.proc "pg_dump" (convert <$> arguments)
 
-dumpSchema :: HasMigrationEnv env => RunPGDump env -> RIO env ()
+dumpSchema :: Env env => RunPGDump env -> RIO env ()
 dumpSchema pgDump = do
   schemaFileString <- getSchemaFileString
   printStatus $ "Writing schema to " <> schemaFileString
@@ -100,22 +100,22 @@ dumpSchema pgDump = do
   migrations <- pgDump ["--data-only", "--inserts", "--table=schema_migrations"]
   liftIO $ LBS.writeFile schemaFileString $ schema <> migrations
 
-loadSchema :: (HasMigrationEnv env, DBT.Session env) => RIO env ()
+loadSchema :: (Env env, Connection.Env env) => RIO env ()
 loadSchema = do
   schemaFileString <- getSchemaFileString
   printStatus $ "Loading schema from " <> schemaFileString
-  DBT.runSession $ Transaction.transaction
+  Connection.runSession $ Transaction.transaction
     Transaction.Serializable
     Transaction.Write =<<
       Transaction.sql <$> liftIO (BS.readFile schemaFileString)
 
-apply :: (HasMigrationEnv env, DBT.Session env) => RIO env ()
+apply :: (Env env, Connection.Env env) => RIO env ()
 apply = do
   migrations <- getNewMigrations
   printStatus $ "Applying " <> show (Foldable.length migrations) <> " pending migrations"
   Foldable.traverse_ applyMigration migrations
 
-new :: (HasMigrationEnv env, DBT.Session env) => RIO env ()
+new :: (Env env, Connection.Env env) => RIO env ()
 new = do
   applied       <- max . fmap appliedIndex <$> readAppliedMigrations
   files         <- max . fmap fileIndex    <$> readMigrationFiles
@@ -134,8 +134,8 @@ new = do
     max :: (Foldable t, Num a, Ord a) => t a -> a
     max xs = if Foldable.null xs then 0 else Foldable.maximum xs
 
-setup :: DBT.Session env => RIO env ()
-setup = DBT.runSession $ Hasql.sql
+setup :: Connection.Env env => RIO env ()
+setup = Connection.runSession $ Hasql.sql
   [uncheckedSql|
     CREATE TABLE IF NOT EXISTS
       schema_migrations
@@ -148,10 +148,10 @@ setup = DBT.runSession $ Hasql.sql
 printMigrationFile :: MigrationFile -> RIO env ()
 printMigrationFile MigrationFile{..} = printStatus $ Path.toString path
 
-applyMigration :: DBT.Session env => MigrationFile -> RIO env ()
+applyMigration :: Connection.Env env => MigrationFile -> RIO env ()
 applyMigration MigrationFile{..} = do
   printStatus $ "Applying migration: " <> Path.toString path
-  DBT.runSession . Transaction.transaction Transaction.Serializable Transaction.Write $ do
+  Connection.runSession . Transaction.transaction Transaction.Serializable Transaction.Write $ do
     Transaction.sql sql
 
     Transaction.statement (BS.pack $ BA.unpack digest, convertUnsafe index)
@@ -165,8 +165,8 @@ applyMigration MigrationFile{..} = do
 
   printStatus ("Success" :: Text)
 
-readAppliedMigrations :: DBT.Session env => RIO env [AppliedMigration]
-readAppliedMigrations = DBT.runSession $ do
+readAppliedMigrations :: Connection.Env env => RIO env [AppliedMigration]
+readAppliedMigrations = Connection.runSession $ do
   rows <- Foldable.toList <$> Hasql.statement ()
     [vectorStatement|
       SELECT
@@ -185,7 +185,7 @@ readAppliedMigrations = DBT.runSession $ do
       . Hash.digestFromByteString
 
 readMigrationFiles
-  :: forall env . HasMigrationEnv env
+  :: forall env . Env env
   => RIO env [MigrationFile]
 readMigrationFiles = do
   migrationDir <- getMigrationDir
@@ -217,10 +217,10 @@ readMigrationFiles = do
         }
 
 
-getMigrationDir :: HasMigrationEnv env => RIO env Path.RelDir
+getMigrationDir :: Env env => RIO env Path.RelDir
 getMigrationDir = asks (getField @"migrationDir")
 
-getNewMigrations :: (HasMigrationEnv env, DBT.Session env) => RIO env [MigrationFile]
+getNewMigrations :: (Env env, Connection.Env env) => RIO env [MigrationFile]
 getNewMigrations = newMigrations <$> readAppliedMigrations <*> readMigrationFiles
 
 appliedIndex :: AppliedMigration -> Natural
@@ -229,7 +229,7 @@ appliedIndex = index
 fileIndex :: MigrationFile -> Natural
 fileIndex = index
 
-getSchemaFileString :: HasMigrationEnv env => RIO env String
+getSchemaFileString :: Env env => RIO env String
 getSchemaFileString = Path.toString <$> asks (getField @"schemaFile")
 
 newMigrations :: [AppliedMigration] -> [MigrationFile] -> [MigrationFile]

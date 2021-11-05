@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 7d6ba70da7c2ba40311b296443a475cc8fdb45b4813e59fdaca1ec29edf3b522
+-- hash: 60f85c804d889e276d37da0072be673b4473a430145e5ebf65281219c99bb21f
 
 name:           dbt-postgresql-connection
 version:        0.1.0
@@ -31,7 +31,6 @@ library
       DBT.Postgresql
       DBT.Postgresql.Connection
       DBT.Postgresql.Prelude
-      DBT.Postgresql.Session
   other-modules:
       Paths_dbt_postgresql_connection
   hs-source-dirs:
