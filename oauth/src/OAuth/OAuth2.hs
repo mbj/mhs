@@ -154,7 +154,7 @@ authenticate code = do
           , ..
           }
 
-  httpManager >>= runHttpRequest requestObject >>= eitherThrow
+  sendRequest >>= runHttpRequest requestObject >>= eitherThrow
 
 refreshAccessToken
   :: forall env . Env env
@@ -169,19 +169,19 @@ refreshAccessToken refreshToken = do
           , ..
           }
 
-  httpManager >>= runHttpRequest requestObject >>= eitherThrow
+  sendRequest >>= runHttpRequest requestObject >>= eitherThrow
 
 
 runHttpRequest
   :: forall a b env . (JSON.ToJSON a, JSON.FromJSON b)
   => a
-  -> HTTP.Manager
+  -> HTTP.SendRequest
   -> RIO env (Either HTTP.HttpError b)
-runHttpRequest requestObject manager = liftIO $
-  HTTP.mkRequest @'HTTP.Json @'HTTP.Json manager JSON.eitherDecode =<< httpRequest requestObject
+runHttpRequest requestObject sendRequest' = liftIO $
+  HTTP.mkRequest @'HTTP.Json @'HTTP.Json sendRequest' JSON.eitherDecode =<< httpRequest requestObject
 
-httpManager :: forall env . HTTP.Env env => RIO env HTTP.Manager
-httpManager = asks $ getField @"httpManager"
+sendRequest :: forall env . HTTP.Env env => RIO env HTTP.SendRequest
+sendRequest = asks $ getField @"httpSendRequest"
 
 httpRequest
   :: forall a . (JSON.ToJSON a)
