@@ -7,7 +7,6 @@
 module XRay.Connection
   ( Connection
   , ConnectionConfig
-  , DaemonAddressFormatError
   , close
   , connect
   , formatSegment
@@ -26,25 +25,18 @@ import Prelude(Integral, fromIntegral)
 import XRay.Prelude
 import XRay.Segment
 
-import qualified Control.Exception    as Control
 import qualified Data.Aeson.Encoding  as JSON
 import qualified Data.Aeson.Types     as JSON
 import qualified Data.Attoparsec.Text as Text
 import qualified Network.Socket       as Socket
+import qualified UnliftIO.Exception   as Exception
 
 newtype Connection       = Connection       Socket.Socket
 newtype ConnectionConfig = ConnectionConfig Socket.SockAddr
 
-newtype DaemonAddressFormatError = DaemonAddressFormatError Text
-
-instance Show DaemonAddressFormatError where
-  show (DaemonAddressFormatError input) = "Invalid address format: " <> show input
-
-instance Control.Exception DaemonAddressFormatError
-
 parseConnectionConfig :: MonadUnliftIO m => Text -> m ConnectionConfig
 parseConnectionConfig input
-  = maybe (throwIO $ DaemonAddressFormatError input) pure
+  = maybe (Exception.throwString $ "Invalid address format: " <> show input) pure
   $ parseMaybe (ConnectionConfig <$> sockAddrParser) input
 
 connect :: ConnectionConfig -> IO Connection

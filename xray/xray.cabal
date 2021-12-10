@@ -1,28 +1,33 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b358a7afcde2e72a3f1e13733bdc8c9a0021eb5f324b29e83415c1e8719f6a97
+-- hash: e2079e29575ac6c048f750a9b4b8bb565abbea40abfdb141cce965dd44ae5348
 
 name:           xray
 version:        0.0.1
 synopsis:       Recording and submitting traces for Amazon XRay
-homepage:       https://github.com/mbj/xray
-bug-reports:    https://github.com/mbj/xray/issues
-maintainer:     Markus Schirp mbj@schirp-dso.com
-copyright:      Markus Schirp
-license:        MIT
+homepage:       https://github.com/mbj/mhs#readme
+bug-reports:    https://github.com/mbj/mhs/issues
+author:         Markus Schirp
+maintainer:     markus@schirp-dso.com
+copyright:      2021 Markus Schirp
+license:        BSD3
 build-type:     Simple
 
 source-repository head
   type: git
-  location: https://github.com/mbj/xray
+  location: https://github.com/mbj/mhs
+
+flag development
+  description: Run GHC with development flags
+  manual: True
+  default: False
 
 library
   exposed-modules:
-      XRay.BoundText
       XRay.Config
       XRay.Connection
       XRay.Environment
@@ -36,31 +41,63 @@ library
       Paths_xray
   hs-source-dirs:
       src
-  default-extensions: AllowAmbiguousTypes DataKinds DeriveGeneric DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts FlexibleInstances GeneralizedNewtypeDeriving KindSignatures LambdaCase MultiParamTypeClasses NoImplicitPrelude OverloadedLists OverloadedStrings PolyKinds RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TupleSections TypeApplications TypeFamilies TypeOperators
-  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path
+  default-extensions:
+      ConstraintKinds
+      DataKinds
+      DeriveAnyClass
+      DeriveGeneric
+      DerivingStrategies
+      DerivingVia
+      DuplicateRecordFields
+      FlexibleContexts
+      FlexibleInstances
+      GeneralizedNewtypeDeriving
+      LambdaCase
+      MultiParamTypeClasses
+      NoImplicitPrelude
+      NumericUnderscores
+      OverloadedLists
+      OverloadedStrings
+      RankNTypes
+      RecordWildCards
+      ScopedTypeVariables
+      Strict
+      TemplateHaskell
+      TupleSections
+      TypeApplications
+      TypeFamilies
+      ViewPatterns
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
-      aeson >=1.4 && <1.5 || >=1.5 && <1.6
-    , attoparsec >=0.13 && <0.14
-    , base >=4.13 && <4.14 || >=4.14 && <4.15
-    , binary >=0.8 && <0.9
-    , bytestring >=0.10 && <0.11
-    , conversions >=0.0.4 && <0.1
-    , hashable >=1.3 && <1.4
-    , http-types >=0.12 && <0.13
-    , mprelude >=0.2.0 && <0.3
-    , mrio-core >=0.0.1 && <0.1
-    , mtl >=2.2 && <2.3
+      aeson
+    , attoparsec
+    , base
+    , binary
+    , bounded
+    , bytestring
+    , conversions
+    , hashable
+    , http-types
+    , mprelude
+    , mrio-core
+    , mtl
     , network (>=3.1 && <3.2) && >=3.1.2
-    , pathtype >=0.8 && <0.9
-    , random >=1.1 && <1.2
-    , scientific >=0.3 && <0.4
-    , source-constraints >=0.0.2 && <0.1
-    , symbols >=0.3 && <0.4
-    , template-haskell >=2.15 && <2.16 || >=2.16 && <2.17
-    , text >=1.2 && <1.3
-    , time >=1.9 && <1.10
-    , unliftio >=0.2 && <0.3
-    , unordered-containers >=0.2 && <0.3
+    , pathtype
+    , random
+    , scientific
+    , source-constraints
+    , symbols
+    , template-haskell
+    , text
+    , time
+    , unliftio
+    , unordered-containers
+  if flag(development)
+    ghc-options: -Werror -fplugin=SourceConstraints
+    build-depends:
+        source-constraints
+  else
+    ghc-options: -Wwarn
   default-language: Haskell2010
 
 test-suite test
@@ -71,33 +108,65 @@ test-suite test
       Paths_xray
   hs-source-dirs:
       test
-  default-extensions: AllowAmbiguousTypes DataKinds DeriveGeneric DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts FlexibleInstances GeneralizedNewtypeDeriving KindSignatures LambdaCase MultiParamTypeClasses NoImplicitPrelude OverloadedLists OverloadedStrings PolyKinds RecordWildCards ScopedTypeVariables StrictData TemplateHaskell TupleSections TypeApplications TypeFamilies TypeOperators
-  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin=SourceConstraints -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
+  default-extensions:
+      ConstraintKinds
+      DataKinds
+      DeriveAnyClass
+      DeriveGeneric
+      DerivingStrategies
+      DerivingVia
+      DuplicateRecordFields
+      FlexibleContexts
+      FlexibleInstances
+      GeneralizedNewtypeDeriving
+      LambdaCase
+      MultiParamTypeClasses
+      NoImplicitPrelude
+      NumericUnderscores
+      OverloadedLists
+      OverloadedStrings
+      RankNTypes
+      RecordWildCards
+      ScopedTypeVariables
+      Strict
+      TemplateHaskell
+      TupleSections
+      TypeApplications
+      TypeFamilies
+      ViewPatterns
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      aeson >=1.4 && <1.5 || >=1.5 && <1.6
-    , attoparsec >=0.13 && <0.14
-    , base >=4.13 && <4.14 || >=4.14 && <4.15
-    , binary >=0.8 && <0.9
-    , bytestring >=0.10 && <0.11
-    , conversions >=0.0.4 && <0.1
-    , devtools >=0.1 && <0.2
-    , hashable >=1.3 && <1.4
-    , http-types >=0.12 && <0.13
-    , mprelude >=0.2.0 && <0.3
-    , mrio-core >=0.0.1 && <0.1
-    , mtl >=2.2 && <2.3
+      aeson
+    , attoparsec
+    , base
+    , binary
+    , bounded
+    , bytestring
+    , conversions
+    , devtools
+    , hashable
+    , http-types
+    , mprelude
+    , mrio-core
+    , mtl
     , network (>=3.1 && <3.2) && >=3.1.2
-    , pathtype >=0.8 && <0.9
-    , random >=1.1 && <1.2
-    , scientific >=0.3 && <0.4
-    , source-constraints >=0.0.2 && <0.1
-    , symbols >=0.3 && <0.4
+    , pathtype
+    , random
+    , scientific
+    , source-constraints
+    , symbols
     , tasty
     , tasty-hunit
-    , template-haskell >=2.15 && <2.16 || >=2.16 && <2.17
-    , text >=1.2 && <1.3
-    , time >=1.9 && <1.10
-    , unliftio >=0.2 && <0.3
-    , unordered-containers >=0.2 && <0.3
+    , template-haskell
+    , text
+    , time
+    , unliftio
+    , unordered-containers
     , xray
+  if flag(development)
+    ghc-options: -Werror -fplugin=SourceConstraints
+    build-depends:
+        source-constraints
+  else
+    ghc-options: -Wwarn
   default-language: Haskell2010

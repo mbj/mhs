@@ -46,9 +46,9 @@ jobs:
         - dbt-postgresql-container
         - devtools
         - http-mclient
-        - lht
         - lambda-alb
         - lambda-runtime
+        - lht
         - mrio-amazonka
         - mrio-core
         - mrio-log
@@ -57,6 +57,7 @@ jobs:
         - pgt
         - source-constraints
         - tasty-mgolden
+        - xray
     steps:
     - uses: actions/checkout@v2
     - uses: haskell/actions/setup@v1

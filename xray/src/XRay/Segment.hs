@@ -50,9 +50,9 @@ import Data.Text.Encoding (decodeUtf8)
 import Data.Time.Clock.System (SystemTime(MkSystemTime, systemNanoseconds, systemSeconds))
 import Data.Word (Word64)
 import GHC.Real (fromIntegral)
+import GHC.TypeLits (Symbol)
 import Network.HTTP.Types.Status (Status(statusCode))
 import System.Random (Random)
-import XRay.BoundText
 import XRay.JSON
 import XRay.Parser
 import XRay.Prelude
@@ -65,7 +65,7 @@ import qualified UnliftIO.Exception   as Exception
 -- | XRayString type specific to XRay restrictions
 --
 -- > Values are strings up to 250 characters unless noted otherwise.
-type XRayString a = BoundText a '(1, 250)
+type XRayString (a :: Symbol) = BoundText' a '(1, 250)
 
 -- | Timestamp used for XRay segments
 newtype Timestamp = Timestamp SystemTime
@@ -115,7 +115,7 @@ instance JSON.ToJSON Segment where
 -- | Logical name of the service that handled the request
 --
 -- > The logical name of the service that handled the request, up to 200 characters.
-type SegmentName = BoundText "SegmentName" '(1, 200)
+type SegmentName = BoundText' "SegmentName" '(1, 200)
 
 data SegmentType = Subsegment
   deriving stock (Generic, Show)
@@ -320,7 +320,7 @@ causeAddException :: Cause -> Exception -> Cause
 causeAddException cause exception =
   cause { exceptions = exception : getField @"exceptions" cause }
 
-toException :: ExceptionId -> SomeException -> Exception
+toException :: ExceptionId -> Exception.SomeException -> Exception
 toException id exception = do
   Exception
     { cause     = empty
@@ -332,7 +332,7 @@ toException id exception = do
     , ..
     }
 
-exceptionMessage :: SomeException -> ExceptionMessage
+exceptionMessage :: Exception.SomeException -> ExceptionMessage
 exceptionMessage exception = convertUnsafe truncated
   where
     text      = convert @Text $ Exception.displayException exception
