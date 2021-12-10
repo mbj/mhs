@@ -4,6 +4,7 @@ module Network.HTTP.MClient
   , Env
   , HasMediaType (..)
   , HttpError (..)
+  , SendRequest
   , StatusCode
   , mkRequest
   , mkRequest'
@@ -32,7 +33,9 @@ type Response = HTTP.Response LBS.ByteString
 
 type StatusCode = BoundNumber "Status code" '(199, 600)
 
-type Env env = HasField "httpManager" env HTTP.Manager
+type SendRequest = HTTP.Request -> IO (HTTP.Response LBS.ByteString)
+
+type Env env = HasField "httpSendRequest" env SendRequest
 
 newtype DecodeError = DecodeError Text
   deriving (Conversion Text) via Text
@@ -86,12 +89,12 @@ mkRequest
     , HasMediaType contentType
     , HasMediaType acceptsType
     )
-  => HTTP.Manager
+  => SendRequest
   -> (LBS.ByteString -> Either e a)
   -> HTTP.Request
   -> IO (Either HttpError a)
-mkRequest httpManager decodeBody =
-  runExceptT . mkRequest' @contentType @acceptsType (fromType @200) httpManager decodeBody
+mkRequest sendRequest decodeBody =
+  runExceptT . mkRequest' @contentType @acceptsType (fromType @200) sendRequest decodeBody
 
 mkRequest'
   :: forall contentType acceptsType a e
@@ -100,13 +103,13 @@ mkRequest'
     , HasMediaType acceptsType
     )
   => StatusCode
-  -> HTTP.Manager
+  -> SendRequest
   -> (LBS.ByteString -> Either e a)
   -> HTTP.Request
   -> ExceptT HttpError IO a
-mkRequest' expectedStatus httpManager decodeBody request = do
+mkRequest' expectedStatus sendRequest decodeBody request = do
   response <- ExceptT . catchConnectionError
-    $ HTTP.httpLbs (addMediaHeaders @contentType  request) httpManager
+    $ sendRequest (addMediaHeaders @contentType  request)
 
   responseContentType <- liftEither $ getContentType response
 
