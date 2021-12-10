@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e2079e29575ac6c048f750a9b4b8bb565abbea40abfdb141cce965dd44ae5348
+-- hash: a590c4c25afbb77dd9404e2e5707e7661fbed68c5493ff6a3dbd31fdcf2e5b7f
 
 name:           xray
 version:        0.0.1
@@ -28,9 +28,9 @@ flag development
 
 library
   exposed-modules:
+      XRay
       XRay.Config
       XRay.Connection
-      XRay.Environment
       XRay.JSON
       XRay.Parser
       XRay.Prelude

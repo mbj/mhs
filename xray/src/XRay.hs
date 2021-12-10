@@ -1,6 +1,6 @@
 {-# LANGUAGE RankNTypes #-}
 
-module XRay.Environment where
+module XRay where
 
 import Control.Monad.Reader (asks)
 import MRIO.Core
@@ -24,7 +24,7 @@ data Environment = Environment
   , sendSegment    :: forall env . Segment -> RIO env ()
   }
 
-class HasEnv env where
+class Env env where
   environment :: env -> Environment
 
 defaultEnvironment :: Config -> Connection -> Environment
@@ -38,7 +38,7 @@ defaultEnvironment config connection =
     , ..
     }
 
-startSegment :: HasEnv env => TraceHeader -> SegmentName -> RIO env Segment
+startSegment :: Env env => TraceHeader -> SegmentName -> RIO env Segment
 startSegment TraceHeader{..} name = do
   Environment{config = Config{..}, ..} <- asks environment
   id        <- newSegmentId
