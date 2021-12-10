@@ -26,6 +26,13 @@ packages:
   original:
     hackage: megaparsec-9.1.0@sha256:0e9bd4714f3682b99d447f05553eda25590c15d7f2108222f62010e844c58ac0,3107
 - completed:
+    hackage: network-3.1.2.5@sha256:433a5e076aaa8eb3e4158abae78fb409c6bd754e9af99bc2e87583d2bcd8404a,4888
+    pantry-tree:
+      size: 3971
+      sha256: 957e4dbb988f47164c821807297a6020c1108cd3265582ac2aa9292708cb62c9
+  original:
+    hackage: network-3.1.2.5@sha256:433a5e076aaa8eb3e4158abae78fb409c6bd754e9af99bc2e87583d2bcd8404a,4888
+- completed:
     hackage: postgresql-syntax-0.4@sha256:df8b65a33f4088eddad25cedbec814e5f34f8e8ae55065139b73bd6da0d66f21,4176
     pantry-tree:
       size: 1227
@@ -33,19 +40,19 @@ packages:
   original:
     hackage: postgresql-syntax-0.4@sha256:df8b65a33f4088eddad25cedbec814e5f34f8e8ae55065139b73bd6da0d66f21,4176
 - completed:
-    hackage: symbols-0.3.0.0@sha256:5d051bccbd4bcb33fa8ce076bd3cd2bacc90973682f7340976758947eaa128a9,964
-    pantry-tree:
-      size: 529
-      sha256: 06746077732f4d49d3277821303292314d51df9a63efecd47217fc0946233026
-  original:
-    hackage: symbols-0.3.0.0@sha256:5d051bccbd4bcb33fa8ce076bd3cd2bacc90973682f7340976758947eaa128a9,964
-- completed:
     hackage: stratosphere-0.58.0@sha256:f87e078696a13eaf35c08ef694803b3744d36ceeea4eecd6ac712577a9438245,142880
     pantry-tree:
       size: 239498
       sha256: db619e09c6b8caf52ffbb91cfd4ed609c738d7042eb88d8a7082c17b1b3ffae0
   original:
     hackage: stratosphere-0.58.0@sha256:f87e078696a13eaf35c08ef694803b3744d36ceeea4eecd6ac712577a9438245,142880
+- completed:
+    hackage: symbols-0.3.0.0@sha256:5d051bccbd4bcb33fa8ce076bd3cd2bacc90973682f7340976758947eaa128a9,964
+    pantry-tree:
+      size: 529
+      sha256: 06746077732f4d49d3277821303292314d51df9a63efecd47217fc0946233026
+  original:
+    hackage: symbols-0.3.0.0@sha256:5d051bccbd4bcb33fa8ce076bd3cd2bacc90973682f7340976758947eaa128a9,964
 - completed:
     subdir: amazonka
     name: amazonka

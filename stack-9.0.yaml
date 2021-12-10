@@ -80,3 +80,4 @@ packages:
 - source-constraints
 - stack-deploy
 - tasty-mgolden
+- xray
