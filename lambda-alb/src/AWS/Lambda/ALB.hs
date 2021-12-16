@@ -1,17 +1,17 @@
 module AWS.Lambda.ALB
   ( Headers(..)
+  , Method(..)
   , Request(..)
   , Response(..)
-  , runALB
+  , run
   )
 where
 
-import AWS.Lambda.Runtime
 import AWS.Lambda.Runtime.Prelude
 import Data.ByteString (ByteString)
-import Data.CaseInsensitive (CI)
 import Data.HashMap.Strict (HashMap)
 
+import qualified AWS.Lambda.Runtime   as Lambda.Runtime
 import qualified Data.Aeson           as JSON
 import qualified Data.Aeson.Types     as JSON
 import qualified Data.CaseInsensitive as CI
@@ -22,13 +22,13 @@ newtype RequestDecodeFailure = RequestDecodeFailure Text
   deriving anyclass (Exception)
   deriving stock (Eq, Show)
 
-newtype Headers = Headers [(CI Text, Text)]
+newtype Headers = Headers [HTTP.Header]
   deriving stock (Eq, Show)
 
 instance JSON.ToJSON Headers where
   toJSON (Headers list)
     = JSON.Object . HashMap.fromList
-    $ bimap CI.original JSON.String <$> list
+    $ bimap (decodeUtf8 . CI.original) (JSON.String . decodeUtf8) <$> list
 
 instance JSON.FromJSON Headers where
   parseJSON = JSON.withObject "Headers" parseHeaders
@@ -36,13 +36,13 @@ instance JSON.FromJSON Headers where
       parseHeaders :: HashMap Text JSON.Value -> JSON.Parser Headers
       parseHeaders xs = Headers <$> traverse toHeader (HashMap.toList xs)
 
-      toHeader :: (Text, JSON.Value) -> JSON.Parser (CI Text, Text)
+      toHeader :: (Text, JSON.Value) -> JSON.Parser HTTP.Header
       toHeader (headerName, value) = do
         headerValue <- JSON.withText
-            ("Header Value for " <> convert headerName)
-            pure
-            value
-        pure (CI.mk headerName, headerValue)
+          ("Header Value for " <> convert headerName)
+          (pure . convert)
+          value
+        pure (CI.mk $ convert headerName, headerValue)
 
 newtype Method = Method HTTP.StdMethod
   deriving stock (Show, Eq, Ord)
@@ -67,7 +67,7 @@ data Request a = Request
   , queryStringParameters :: HashMap Text Text
   , isBase64Encoded       :: Bool
   , requestContext        :: JSON.Value
-  , body               :: a
+  , body                  :: a
   }
   deriving anyclass (JSON.FromJSON)
   deriving stock    (Generic, Show, Eq)
@@ -81,11 +81,11 @@ data Response = Response
   deriving anyclass (JSON.ToJSON, JSON.FromJSON)
   deriving stock    (Generic, Show, Eq)
 
-runALB
+run
   :: forall body m . (MonadCatch m, MonadIO m, JSON.FromJSON body)
   => (Request body -> m Response)
   -> m ()
-runALB lambdaFn = run $ \Event{..} -> do
+run lambdaFn = Lambda.Runtime.run $ \Lambda.Runtime.Event{..} -> do
   request <- liftIO $ parseRequest body
   JSON.toJSON <$> lambdaFn request
 

@@ -17,4 +17,4 @@ handler event = do
     }
 
 main :: IO ()
-main = runALB handler
+main = run handler
