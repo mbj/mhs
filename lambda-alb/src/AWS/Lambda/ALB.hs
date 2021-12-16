@@ -2,15 +2,15 @@ module AWS.Lambda.ALB
   ( Headers(..)
   , Request(..)
   , Response(..)
-  , runALB
+  , run
   )
 where
 
-import AWS.Lambda.Runtime
 import AWS.Lambda.Runtime.Prelude
 import Data.ByteString (ByteString)
 import Data.HashMap.Strict (HashMap)
 
+import qualified AWS.Lambda.Runtime   as Lambda.Runtime
 import qualified Data.Aeson           as JSON
 import qualified Data.Aeson.Types     as JSON
 import qualified Data.CaseInsensitive as CI
@@ -80,11 +80,11 @@ data Response = Response
   deriving anyclass (JSON.ToJSON, JSON.FromJSON)
   deriving stock    (Generic, Show, Eq)
 
-runALB
+run
   :: forall body m . (MonadCatch m, MonadIO m, JSON.FromJSON body)
   => (Request body -> m Response)
   -> m ()
-runALB lambdaFn = run $ \Event{..} -> do
+run lambdaFn = Lambda.Runtime.run $ \Lambda.Runtime.Event{..} -> do
   request <- liftIO $ parseRequest body
   JSON.toJSON <$> lambdaFn request
 
