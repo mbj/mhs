@@ -1,5 +1,6 @@
 module AWS.Lambda.ALB
   ( Headers(..)
+  , Method(..)
   , Request(..)
   , Response(..)
   , run
