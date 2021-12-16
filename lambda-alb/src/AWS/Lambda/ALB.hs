@@ -67,7 +67,7 @@ data Request a = Request
   , queryStringParameters :: HashMap Text Text
   , isBase64Encoded       :: Bool
   , requestContext        :: JSON.Value
-  , body               :: a
+  , body                  :: a
   }
   deriving anyclass (JSON.FromJSON)
   deriving stock    (Generic, Show, Eq)
