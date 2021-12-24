@@ -83,6 +83,7 @@ library
     , mtl
     , optparse-applicative >=0.15
     , text
+    , xray
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
@@ -139,6 +140,7 @@ executable cli-example
     , optparse-applicative
     , text
     , unordered-containers
+    , xray
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
@@ -198,6 +200,7 @@ test-suite test
     , mtl
     , optparse-applicative >=0.15
     , text
+    , xray
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:

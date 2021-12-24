@@ -44,7 +44,7 @@ where
 
 import Data.Attoparsec.Text (Parser)
 import Data.ByteString.Builder (toLazyByteString, word64HexFixed)
-import Data.HashMap.Strict (HashMap)
+import Data.Map.Strict (Map)
 import Data.Scientific (Scientific, scientific)
 import Data.Text.Encoding (decodeUtf8)
 import Data.Time.Clock.System (SystemTime(MkSystemTime, systemNanoseconds, systemSeconds))
@@ -234,9 +234,9 @@ data HttpRequest = HttpRequest
 instance JSON.ToJSON HttpRequest where
   toJSON = JSON.genericToJSON jsonOptions
 
-type HttpMethod = XRayString "HttpMethod"
-type HttpClientIp = XRayString "HttpClientIp"
-type HttpUrl = XRayString "HttpUrl"
+type HttpMethod    = XRayString "HttpMethod"
+type HttpClientIp  = XRayString "HttpClientIp"
+type HttpUrl       = XRayString "HttpUrl"
 type HttpUserAgent = XRayString "HttpUserAgent"
 
 -- | Type of AWS resource running the XRay application
@@ -288,7 +288,7 @@ type EcsContainerId = XRayString "EcsContainerId"
 -- | Segment Annotations
 --
 -- @see https://docs.aws.amazon.com/xray/latest/devguide/xray-api-segmentdocuments.html#api-segmentdocuments-annotations
-type Annotations = HashMap (XRayString "AnnotationName") AnnotationValue
+type Annotations = Map (XRayString "AnnotationName") AnnotationValue
 
 data AnnotationValue
   = AnnotationBool Bool

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a590c4c25afbb77dd9404e2e5707e7661fbed68c5493ff6a3dbd31fdcf2e5b7f
+-- hash: 451dcd462dee9880cf8dce00c5ce835986aaaa525259be2100362166c180f114
 
 name:           xray
 version:        0.0.1
@@ -75,8 +75,8 @@ library
     , binary
     , bounded
     , bytestring
+    , containers
     , conversions
-    , hashable
     , http-types
     , mprelude
     , mrio-core
@@ -91,7 +91,6 @@ library
     , text
     , time
     , unliftio
-    , unordered-containers
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
@@ -142,9 +141,9 @@ test-suite test
     , binary
     , bounded
     , bytestring
+    , containers
     , conversions
     , devtools
-    , hashable
     , http-types
     , mprelude
     , mrio-core
@@ -161,7 +160,6 @@ test-suite test
     , text
     , time
     , unliftio
-    , unordered-containers
     , xray
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints

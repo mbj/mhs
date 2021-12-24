@@ -13,8 +13,8 @@ dependencies:
 - binary
 - bounded
 - bytestring
+- containers
 - conversions
-- hashable
 - http-types
 - mprelude
 - mrio-core
@@ -29,7 +29,6 @@ dependencies:
 - text
 - time
 - unliftio
-- unordered-containers
 
 library:
   source-dirs: src
