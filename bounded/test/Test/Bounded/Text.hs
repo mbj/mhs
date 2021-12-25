@@ -28,6 +28,7 @@ valueSpec = testGroup "BoundText value tests"
   [ acceptsValidJson
   , invalidExamples
   , rejectsInvalidJson
+  , truncateExamples
   , validExamples
   ]
   where
@@ -59,6 +60,11 @@ valueSpec = testGroup "BoundText value tests"
       fromType @"CA" @?= mkExample "CA"
       fromType @"OR" @?= mkExample "OR"
 
+    truncateExamples :: TestTree
+    truncateExamples = testCase "Truncates when requested" $ do
+      convertTruncate @1 @2 @"label" "ab"  @?= pure (fromType @"ab")
+      convertTruncate @1 @2 @"label" "abc" @?= pure (fromType @"ab")
+      convertTruncate @1 @2 @"label" ""    @?= empty
 
 mkExample :: Text -> Example
 mkExample = convertUnsafe

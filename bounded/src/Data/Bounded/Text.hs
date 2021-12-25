@@ -3,7 +3,9 @@ module Data.Bounded.Text
   ( BoundText
   , BoundText'
   , BoundTextError
-  ) where
+  , convertTruncate
+  )
+where
 
 import Data.Bounded.JSON
 import Data.Bounded.Prelude
@@ -74,7 +76,6 @@ instance
   , MonadError BoundTextError m
   )
   => Conversion (m (BoundText' label '(min, max))) a where
-
     convert (convert -> value) =
       if actual >= min && actual <= max
         then pure $ BoundText value
@@ -91,3 +92,24 @@ instance
 
         min :: Natural
         min = fromType @min
+
+convertTruncate
+  :: forall min max label . (KnownNat min, KnownNat max)
+  => Text
+  -> Maybe (BoundText' label '(min, max))
+convertTruncate value =
+  if actual >= min
+    then
+      if actual <= max
+        then pure $ BoundText value
+        else pure $ BoundText $ Text.take (convertUnsafe max) value
+      else empty
+  where
+    actual :: Natural
+    actual = convertUnsafe $ Text.length value
+
+    max :: Natural
+    max = fromType @max
+
+    min :: Natural
+    min = fromType @min
