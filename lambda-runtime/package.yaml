@@ -12,17 +12,18 @@ extra-source-files: README.md
 <<: *defaults
 
 dependencies:
-- base
 - aeson
+- base
 - bytestring
 - conversions
+- exceptions
 - http-client
 - http-types
-- exceptions
-- mtl
 - mprelude
+- mtl
 - optparse-applicative >= 0.15
 - text
+- xray
 
 flags:
   development:
@@ -40,13 +41,13 @@ executables:
     source-dirs: example
     main: Main.hs
     dependencies:
-      - base
-      - bytestring
-      - aeson
-      - aeson-pretty
-      - lambda-runtime
-      - optparse-applicative
-      - unordered-containers
+    - aeson
+    - aeson-pretty
+    - base
+    - bytestring
+    - lambda-runtime
+    - optparse-applicative
+    - unordered-containers
     when:
     - condition: flag(example)
       then:

@@ -5,13 +5,10 @@
 -- Implements the UDP transport for the daemon protocol:
 -- see https://github.com/aws/aws-xray-daemon#sending-segment-documents
 module XRay.Connection
-  ( Connection
-  , ConnectionConfig
-  , close
-  , connect
-  , formatSegment
-  , parseConnectionConfig
-  , send
+  ( SendSegment
+  , connectDaemon
+  , connectNull
+  , renderSegment
   )
 where
 
@@ -31,28 +28,27 @@ import qualified Data.Attoparsec.Text as Text
 import qualified Network.Socket       as Socket
 import qualified UnliftIO.Exception   as Exception
 
-newtype Connection       = Connection       Socket.Socket
-newtype ConnectionConfig = ConnectionConfig Socket.SockAddr
+type SendSegment = Segment -> IO ()
 
-parseConnectionConfig :: MonadUnliftIO m => Text -> m ConnectionConfig
-parseConnectionConfig input
+connectNull :: Segment -> IO ()
+connectNull = const $ pure ()
+
+connectDaemon :: Text -> IO (Segment -> IO ())
+connectDaemon = connect <=< parseSocketAddress
+
+parseSocketAddress :: MonadUnliftIO m => Text -> m Socket.SockAddr
+parseSocketAddress input
   = maybe (Exception.throwString $ "Invalid address format: " <> show input) pure
-  $ parseMaybe (ConnectionConfig <$> sockAddrParser) input
+  $ parseMaybe sockAddrParser input
 
-connect :: ConnectionConfig -> IO Connection
-connect (ConnectionConfig address) = do
-  socket <- Socket.socket Socket.AF_INET Socket.Datagram Socket.defaultProtocol
-  Socket.connect socket address
-  pure $ Connection socket
+connect :: Socket.SockAddr -> IO (Segment -> IO ())
+connect address = do
+  socket <- liftIO $ Socket.socket Socket.AF_INET Socket.Datagram Socket.defaultProtocol
+  liftIO $ Socket.connect socket address
+  pure (liftIO . sendAll socket . renderSegment)
 
-close :: Connection -> IO ()
-close (Connection socket) = Socket.close socket
-
-send :: Connection -> Segment -> IO ()
-send (Connection sock) segment = sendAll sock $ formatSegment segment
-
-formatSegment :: Segment -> ByteString
-formatSegment segment = convert . toLazyByteString $ builder
+renderSegment :: Segment -> ByteString
+renderSegment segment = convert . toLazyByteString $ builder
   where
     builder
       =  JSON.fromEncoding format

@@ -21,6 +21,7 @@ import qualified Data.Aeson          as JSON
 import qualified Data.ByteString     as BS
 import qualified Network.HTTP.Client as HTTP
 import qualified Network.HTTP.Types  as HTTP
+import qualified XRay.TraceHeader    as XRay
 
 data Connection = Connection
   { request :: HTTP.Request
@@ -30,6 +31,7 @@ data Connection = Connection
 data InternalLambdaClientError
   = ConnectionError HTTP.HttpException
   | InvalidLambdaRunTimeApi Text
+  | InvalidTraceId Text
   | LambdaContextDecodeError Text
   | MissingLambdaRunTimeApi
   | PayloadTooLarge Text
@@ -66,7 +68,7 @@ getNextEvent connection = do
   response <- getNextEventValue connection
 
   requestId <- RequestId <$> liftEither (fetchHeader response "Lambda-Runtime-Aws-Request-Id")
-  traceId   <- TraceId   <$> liftEither (fetchHeader response "Lambda-Runtime-Trace-Id")
+  traceId   <- parseTraceHeader =<< liftEither (fetchHeader response "Lambda-Runtime-Trace-Id")
 
   pure Event
     { body = HTTP.responseBody response
@@ -80,6 +82,12 @@ getNextEvent connection = do
     fetchHeader response header
       = maybeToEither (LambdaContextDecodeError . convert $ "Missing header: " <> show header)
       $ getResponseHeader header response
+
+parseTraceHeader :: Text -> LambdaClient XRay.TraceHeader
+parseTraceHeader value
+  = liftEither
+  . first (const $ InvalidTraceId value)
+  $ XRay.parseTraceHeader value
 
 getNextEventValue :: Connection -> LambdaClient (HTTP.Response JSON.Value)
 getNextEventValue Connection{..} = do
