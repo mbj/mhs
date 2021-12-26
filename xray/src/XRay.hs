@@ -57,7 +57,7 @@ newSegment name traceId parentId = do
       , inProgress = True
       , parentId   = parentId
       , throttle   = False
-      , type'      = Subsegment <$ parentId
+      , type'      = empty
       , user       = empty
       , ..
       }
