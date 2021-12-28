@@ -34,6 +34,8 @@ module XRay.Segment
   , SegmentName
   , SegmentType(..)
   , Service(..)
+  , Sql(..)
+  , SqlPreparation(..)
   , Timestamp(..)
   , User
   , segmentAddException
@@ -101,6 +103,7 @@ data Segment = Segment
   , origin      :: Maybe Origin
   , parentId    :: Maybe SegmentId
   , service     :: Maybe Service
+  , sql         :: Maybe Sql
   , startTime   :: Timestamp
   , throttle    :: Bool  -- ^ Request was throttled
   , traceId     :: TraceId
@@ -238,6 +241,34 @@ type HttpMethod    = XRayString "HttpMethod"
 type HttpClientIp  = XRayString "HttpClientIp"
 type HttpUrl       = XRayString "HttpUrl"
 type HttpUserAgent = XRayString "HttpUserAgent"
+
+-- | SQL Statement data
+--
+--  Used to record a traced SQL statement
+--
+-- @see https://docs.aws.amazon.com/xray/latest/devguide/xray-api-segmentdocuments.html#api-segmentdocuments-sql
+data Sql = Sql
+  { connectionString :: Maybe (XRayString "SqlConnectionString")
+  , databaseType     :: Maybe (XRayString "SqlDatabaseType")
+  , databaseVersion  :: Maybe (XRayString "SqlDatabaseType")
+  , driverVersion    :: Maybe (XRayString "SqlDriverVersion")
+  , preparation      :: Maybe SqlPreparation
+  , sanitizedQuery   :: Maybe (XRayString "SqlSanitizedQuery")
+  , url              :: Maybe (XRayString "SqlURL")
+  , user             :: Maybe (XRayString "SqlUser")
+  }
+  deriving (Generic, Show)
+
+instance JSON.ToJSON Sql where
+  toJSON = JSON.genericToJSON jsonOptions
+
+data SqlPreparation = PreparedCall | PreparedStatement
+  deriving (Show)
+
+instance JSON.ToJSON SqlPreparation where
+  toJSON = \case
+    PreparedCall      -> JSON.String "call"
+    PreparedStatement -> JSON.String "statement"
 
 -- | Type of AWS resource running the XRay application
 data Origin = EC2Instance | ECSContainer | ElasticBeanstalkEnvironment
