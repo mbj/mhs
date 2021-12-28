@@ -56,6 +56,7 @@ newSegment name traceId parentId = do
       , http       = empty
       , inProgress = True
       , parentId   = parentId
+      , sql        = empty
       , throttle   = False
       , type'      = empty
       , user       = empty
