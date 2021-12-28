@@ -121,6 +121,6 @@ uuid-types 1.0.5
 vector 0.12.3.1
 vector-algorithms 0.8.0.4
 wcwidth 0.0.2
-xray 0.0.1
+xray 0.0.2
 yaml 0.11.7.0
 zlib 0.6.2.3

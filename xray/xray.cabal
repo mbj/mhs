@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 451dcd462dee9880cf8dce00c5ce835986aaaa525259be2100362166c180f114
+-- hash: 3a5a163b96bec30a130cbff4336f7142271bcdd10c9a093ab7958ff05e821399
 
 name:           xray
-version:        0.0.1
+version:        0.0.2
 synopsis:       Recording and submitting traces for Amazon XRay
 homepage:       https://github.com/mbj/mhs#readme
 bug-reports:    https://github.com/mbj/mhs/issues

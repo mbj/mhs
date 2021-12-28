@@ -55,6 +55,7 @@ newSegment name traceId parentId = do
       , fault      = False
       , http       = empty
       , inProgress = True
+      , namespace  = empty
       , parentId   = parentId
       , sql        = empty
       , throttle   = False

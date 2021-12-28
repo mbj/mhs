@@ -28,6 +28,7 @@ module XRay.Segment
   , HttpResponse(..)
   , HttpUrl
   , HttpUserAgent
+  , Namespace(..)
   , Origin(..)
   , Segment(..)
   , SegmentId(..)
@@ -100,6 +101,7 @@ data Segment = Segment
   , id          :: SegmentId
   , inProgress  :: Bool
   , name        :: SegmentName
+  , namespace   :: Maybe Namespace
   , origin      :: Maybe Origin
   , parentId    :: Maybe SegmentId
   , service     :: Maybe Service
@@ -332,6 +334,14 @@ instance JSON.ToJSON AnnotationValue where
     (AnnotationBool value)   -> JSON.toJSON value
     (AnnotationNumber value) -> JSON.toJSON value
     (AnnotationString value) -> JSON.toJSON value
+
+data Namespace = NamespaceAWS | NamespaceRemote
+  deriving stock Show
+
+instance JSON.ToJSON Namespace where
+  toJSON = \case
+    NamespaceAWS    -> JSON.String "aws"
+    NamespaceRemote -> JSON.String "remote"
 
 segmentAddException :: Segment -> Exception -> Segment
 segmentAddException segment exception = segment
