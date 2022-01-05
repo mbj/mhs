@@ -2,14 +2,13 @@ module AWS.Lambda.Runtime.Types where
 
 import AWS.Lambda.Runtime.Prelude
 
-import qualified Data.Aeson       as JSON
 import qualified Data.ByteString  as BS
 import qualified XRay.TraceHeader as XRay
 
-data Event = Event
-  { body      :: JSON.Value
-  , requestId :: RequestId
-  , traceId   :: XRay.TraceHeader
+data Event a = Event
+  { body        :: a
+  , requestId   :: RequestId
+  , traceHeader :: XRay.TraceHeader
   }
   deriving stock Show
 

@@ -34,7 +34,7 @@ data InternalLambdaClientError
   | InvalidTraceId Text
   | LambdaContextDecodeError Text
   | MissingLambdaRunTimeApi
-  | PayloadTooLarge Text
+  | PayloadTooLarge
   | ResponseBodyDecodeFailure Text
   | UnSuccessfulEventRetrieval HTTP.Status Text
   | UnSuccessfulEventSending HTTP.Status Text
@@ -63,12 +63,12 @@ getConnection = do
         }
   pure $ Connection{..}
 
-getNextEvent:: Connection -> LambdaClient Event
+getNextEvent:: JSON.FromJSON a => Connection -> LambdaClient (Event a)
 getNextEvent connection = do
   response <- getNextEventValue connection
 
-  requestId <- RequestId <$> liftEither (fetchHeader response "Lambda-Runtime-Aws-Request-Id")
-  traceId   <- parseTraceHeader =<< liftEither (fetchHeader response "Lambda-Runtime-Trace-Id")
+  requestId   <- RequestId <$> liftEither (fetchHeader response "Lambda-Runtime-Aws-Request-Id")
+  traceHeader <- parseTraceHeader =<< liftEither (fetchHeader response "Lambda-Runtime-Trace-Id")
 
   pure Event
     { body = HTTP.responseBody response
@@ -76,7 +76,7 @@ getNextEvent connection = do
     }
   where
     fetchHeader
-      :: HTTP.Response JSON.Value
+      :: HTTP.Response a
       -> HTTP.HeaderName
       -> Either InternalLambdaClientError Text
     fetchHeader response header
@@ -89,7 +89,7 @@ parseTraceHeader value
   . first (const $ InvalidTraceId value)
   $ XRay.parseTraceHeader value
 
-getNextEventValue :: Connection -> LambdaClient (HTTP.Response JSON.Value)
+getNextEventValue :: JSON.FromJSON a => Connection -> LambdaClient (HTTP.Response a)
 getNextEventValue Connection{..} = do
   response <- performHttpRequest $ Connection { request = toNextEventRequest request, .. }
 
@@ -106,26 +106,26 @@ getNextEventValue Connection{..} = do
       }
 
 sendEventResponse
-  :: (MonadCatch m, MonadIO m)
+  :: (JSON.ToJSON a, MonadCatch m, MonadIO m)
   => Connection
   -> RequestId
-  -> JSON.Value
+  -> a
   -> m ()
-sendEventResponse Connection{..} requestId json = do
+sendEventResponse Connection{..} requestId value = do
   response <- catchConnectionError
     . flip HTTP.httpNoBody manager
     $ toEventSuccessRequest request
 
   let statusCode = HTTP.responseStatus response
 
-  when (statusCode == HTTP.status413) . throwM . PayloadTooLarge $ showc json
+  when (statusCode == HTTP.status413) $ throwM PayloadTooLarge
 
   unless (HTTP.statusIsSuccessful statusCode) .
     throwM $ UnSuccessfulEventSending statusCode "Could not post handler result"
   where
     toEventSuccessRequest :: HTTP.Request -> HTTP.Request
     toEventSuccessRequest request' = request'
-      { HTTP.requestBody = HTTP.RequestBodyLBS (JSON.encode json)
+      { HTTP.requestBody = HTTP.RequestBodyLBS (JSON.encode value)
       , HTTP.method      = "POST"
       , HTTP.path        = "2018-06-01/runtime/invocation/" <> convert requestId <> "/response"
       }
@@ -142,7 +142,7 @@ sendBootError Connection{..} error
       { HTTP.path = "2018-06-01/runtime/init/error"
       }
 
-performHttpRequest :: Connection -> LambdaClient (HTTP.Response JSON.Value)
+performHttpRequest :: JSON.FromJSON a => Connection -> LambdaClient (HTTP.Response a)
 performHttpRequest Connection{..} = do
   response <- catchConnectionError $ HTTP.httpLbs request manager
 

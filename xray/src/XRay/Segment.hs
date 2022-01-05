@@ -23,7 +23,6 @@ module XRay.Segment
   , ExceptionMessage
   , Http(..)
   , HttpClientIp
-  , HttpMethod
   , HttpRequest(..)
   , HttpResponse(..)
   , HttpUrl
@@ -46,6 +45,7 @@ module XRay.Segment
 where
 
 import Data.Attoparsec.Text (Parser)
+import Data.Bifunctor (second)
 import Data.ByteString.Builder (toLazyByteString, word64HexFixed)
 import Data.Map.Strict (Map)
 import Data.Scientific (Scientific, scientific)
@@ -54,16 +54,17 @@ import Data.Time.Clock.System (SystemTime(MkSystemTime, systemNanoseconds, syste
 import Data.Word (Word64)
 import GHC.Real (fromIntegral)
 import GHC.TypeLits (Symbol)
-import Network.HTTP.Types.Status (Status(statusCode))
 import System.Random (Random)
 import XRay.JSON
 import XRay.Parser
 import XRay.Prelude
 import XRay.TraceId
 
-import qualified Data.Aeson.Types     as JSON
-import qualified Data.Text            as Text
-import qualified UnliftIO.Exception   as Exception
+import qualified Data.Aeson.Types    as JSON
+import qualified Data.HashMap.Strict as HashMap
+import qualified Data.Text           as Text
+import qualified Network.HTTP.Types  as HTTP
+import qualified UnliftIO.Exception  as Exception
 
 -- | XRayString type specific to XRay restrictions
 --
@@ -215,7 +216,7 @@ instance JSON.ToJSON Http where
 
 data HttpResponse = HttpResponse
   { contentLength :: Maybe Natural
-  , status        :: Maybe Status
+  , status        :: Maybe HTTP.Status
   }
   deriving stock (Generic, Show)
 
@@ -223,12 +224,12 @@ instance JSON.ToJSON HttpResponse where
   toJSON HttpResponse{..}
     = JSON.Object
     [ ("content_length", JSON.toJSON contentLength)
-    , ("status",         JSON.toJSON (statusCode <$> status))
+    , ("status",         JSON.toJSON (HTTP.statusCode <$> status))
     ]
 
 data HttpRequest = HttpRequest
   { clientIp      :: Maybe HttpClientIp
-  , method        :: Maybe HttpMethod
+  , method        :: Maybe HTTP.StdMethod
   , traced        :: Maybe Bool
   , url           :: Maybe HttpUrl
   , userAgent     :: Maybe HttpUserAgent
@@ -237,9 +238,20 @@ data HttpRequest = HttpRequest
   deriving stock (Generic, Show)
 
 instance JSON.ToJSON HttpRequest where
-  toJSON = JSON.genericToJSON jsonOptions
+  toJSON HttpRequest{..} = JSON.Object . HashMap.fromList $
+    fmap
+      (second JSON.toJSON)
+      [ ("client_ip",       JSON.toJSON <$> clientIp)
+      , ("method",          methodJSON <$> method)
+      , ("traced",          JSON.toJSON <$> traced)
+      , ("url",             JSON.toJSON <$> url)
+      , ("user_agent",      JSON.toJSON <$> userAgent)
+      , ("x_forwarded_for", JSON.toJSON <$> xForwardedFor)
+      ]
+    where
+      methodJSON :: HTTP.StdMethod -> JSON.Value
+      methodJSON = JSON.toJSON . show
 
-type HttpMethod    = XRayString "HttpMethod"
 type HttpClientIp  = XRayString "HttpClientIp"
 type HttpUrl       = XRayString "HttpUrl"
 type HttpUserAgent = XRayString "HttpUserAgent"

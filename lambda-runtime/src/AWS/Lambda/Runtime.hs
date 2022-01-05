@@ -15,7 +15,7 @@ import qualified Data.Aeson                as JSON
 
 run
   :: forall m . (MonadCatch m, MonadIO m)
-  => (Event -> m JSON.Value)
+  => (Event JSON.Value -> m JSON.Value)
   -> m ()
 run function = do
   connection <- eitherThrow =<< liftIO (runExceptT Client.getConnection)
@@ -25,7 +25,7 @@ run function = do
 processNextEvent
   :: forall m . (MonadIO m, MonadCatch m)
   => Client.Connection
-  -> (Event -> m JSON.Value)
+  -> (Event JSON.Value -> m JSON.Value)
   -> m ()
 processNextEvent connection function = do
   event@Event{..} <- eitherThrow =<< liftIO (runExceptT $ Client.getNextEvent connection)
