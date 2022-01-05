@@ -71,7 +71,7 @@ withSegment
   -> Maybe SegmentId
   -> (Segment -> Segment)
   -> (a -> Segment -> Segment)
-  -> RIO env a
+  -> (SegmentId -> RIO env a)
   -> RIO env a
 withSegment
   segmentName
@@ -87,7 +87,7 @@ withSegment
 
     liftIO $ sendSegment segment
 
-    result  <- action
+    result  <- action $ getField @"id" segment
 
     liftIO $ do
       endTime <- getTimestamp
