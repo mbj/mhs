@@ -11,10 +11,12 @@ import Data.Conversions          as Exports
 import GHC.Records               as Exports (HasField(..))
 import MPrelude                  as Exports
 import MRIO.Core                 as Exports
-import qualified Data.ByteString as BS
+
+import qualified Data.ByteString    as BS
+import qualified Data.Text.Encoding as Text
 
 encodeUtf8 :: Conversion Text a => a -> BS.ByteString
-encodeUtf8 = convert . convert @Text
+encodeUtf8 = Text.encodeUtf8 . convert @Text
 
 safeHead :: [a] -> Maybe a
 safeHead = \case

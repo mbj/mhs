@@ -8,7 +8,6 @@ module AWS.Lambda.ALB
 where
 
 import AWS.Lambda.Runtime.Prelude
-import Data.ByteString (ByteString)
 import Data.HashMap.Strict (HashMap)
 
 import qualified AWS.Lambda.Runtime   as Lambda.Runtime
@@ -16,6 +15,7 @@ import qualified Data.Aeson           as JSON
 import qualified Data.Aeson.Types     as JSON
 import qualified Data.CaseInsensitive as CI
 import qualified Data.HashMap.Strict  as HashMap
+import qualified Data.Text.Encoding   as Text
 import qualified Network.HTTP.Types   as HTTP
 
 newtype RequestDecodeFailure = RequestDecodeFailure Text
@@ -40,9 +40,9 @@ instance JSON.FromJSON Headers where
       toHeader (headerName, value) = do
         headerValue <- JSON.withText
           ("Header Value for " <> convert headerName)
-          (pure . convert)
+          (pure . Text.encodeUtf8)
           value
-        pure (CI.mk $ convert headerName, headerValue)
+        pure (CI.mk $ Text.encodeUtf8 headerName, headerValue)
 
 newtype Method = Method HTTP.StdMethod
   deriving stock (Show, Eq, Ord)
@@ -58,7 +58,7 @@ instance JSON.FromJSON Method where
       parse
         = either (fail . show) (pure . Method)
         . HTTP.parseMethod
-        . convert @ByteString
+        . Text.encodeUtf8
 
 data Request a = Request
   { path                  :: Text
