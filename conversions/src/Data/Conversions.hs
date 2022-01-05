@@ -34,7 +34,6 @@ import           Prelude                 hiding ( max
 import qualified Data.ByteString               as BS
 import qualified Data.ByteString.Lazy          as LBS
 import qualified Data.Text                     as Text
-import qualified Data.Text.Encoding            as Text
 import qualified Data.Text.Lazy                as Text.Lazy
 import qualified GHC.Show                      as Show
 import qualified Language.Haskell.TH.Syntax    as TH
@@ -147,9 +146,6 @@ instance Conversion LBS.ByteString BS.ByteString where
 
 instance Conversion BS.ByteString LBS.ByteString where
   convert = LBS.toStrict
-
-instance Conversion BS.ByteString Text where
-  convert = Text.encodeUtf8
 
 instance Conversion Text.Lazy.Text Text where
   convert = Text.Lazy.fromStrict
