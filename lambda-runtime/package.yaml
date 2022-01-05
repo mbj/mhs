@@ -21,6 +21,7 @@ dependencies:
 - http-types
 - mprelude
 - mtl
+- mrio-core
 - optparse-applicative >= 0.15
 - text
 - xray

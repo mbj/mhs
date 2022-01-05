@@ -80,6 +80,7 @@ library
     , http-client
     , http-types
     , mprelude
+    , mrio-core
     , mtl
     , optparse-applicative >=0.15
     , text
@@ -136,6 +137,7 @@ executable cli-example
     , http-types
     , lambda-runtime
     , mprelude
+    , mrio-core
     , mtl
     , optparse-applicative
     , text
@@ -197,6 +199,7 @@ test-suite test
     , http-client
     , http-types
     , mprelude
+    , mrio-core
     , mtl
     , optparse-applicative >=0.15
     , text

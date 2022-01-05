@@ -3,6 +3,10 @@ module AWS.Lambda.ALB
   , Method(..)
   , Request(..)
   , Response(..)
+  , ResponseBody
+  , mkTextResponseBody
+  , responseBodyByteString
+  , responseBodyContentLength
   , run
   )
 where
@@ -13,6 +17,7 @@ import Data.HashMap.Strict (HashMap)
 import qualified AWS.Lambda.Runtime   as Lambda.Runtime
 import qualified Data.Aeson           as JSON
 import qualified Data.Aeson.Types     as JSON
+import qualified Data.ByteString      as BS
 import qualified Data.CaseInsensitive as CI
 import qualified Data.HashMap.Strict  as HashMap
 import qualified Data.Text.Encoding   as Text
@@ -47,6 +52,9 @@ instance JSON.FromJSON Headers where
 newtype Method = Method HTTP.StdMethod
   deriving stock (Show, Eq, Ord)
 
+instance Conversion HTTP.StdMethod Method where
+  convert (Method value) = value
+
 instance JSON.ToJSON Method where
   toJSON (Method stdMethod)
     = JSON.String . decodeUtf8 $ HTTP.renderStdMethod stdMethod
@@ -73,13 +81,33 @@ data Request a = Request
   deriving stock    (Generic, Show, Eq)
 
 data Response = Response
-  { isBase64Encoded :: Bool
-  , statusCode      :: Natural
-  , headers         :: Headers
-  , body            :: Text
+  { statusCode :: HTTP.Status
+  , headers    :: Headers
+  , body       :: ResponseBody
   }
-  deriving anyclass (JSON.ToJSON, JSON.FromJSON)
-  deriving stock    (Generic, Show, Eq)
+
+instance JSON.ToJSON Response where
+  toJSON Response{..}
+    = JSON.Object
+    [ ("body",            JSON.toJSON $ textBody body)
+    , ("headers",         JSON.toJSON headers)
+    , ("isBase64Encoded", JSON.toJSON False)
+    , ("statusCode",      JSON.toJSON $ HTTP.statusCode statusCode)
+    ]
+
+data ResponseBody = TextResponseBody Text BS.ByteString
+
+responseBodyContentLength :: ResponseBody -> Natural
+responseBodyContentLength (TextResponseBody _text byteString) = convertUnsafe $ BS.length byteString
+
+responseBodyByteString :: ResponseBody -> BS.ByteString
+responseBodyByteString (TextResponseBody _text byteString) = byteString
+
+textBody :: ResponseBody -> Text
+textBody (TextResponseBody text _bytestring) = text
+
+mkTextResponseBody :: Text -> ResponseBody
+mkTextResponseBody value = TextResponseBody value (Text.encodeUtf8 value)
 
 run
   :: forall body m . (MonadCatch m, MonadIO m, JSON.FromJSON body)
