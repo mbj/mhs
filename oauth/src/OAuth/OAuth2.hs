@@ -1,7 +1,7 @@
 module OAuth.OAuth2
   ( AuthCode(..)
   , AuthenticationResponse(..)
-  , Credentials(..)
+  , Config(..)
   , Env
   , OpenIdPayload(..)
   , RefreshAccessTokenResponse(..)
@@ -16,7 +16,6 @@ where
 
 import Data.Bifunctor (second)
 import Data.ByteString (ByteString)
-import Data.Maybe (fromJust)
 import Network.URI (URI)
 import OAuth.Prelude
 import Prelude(Integer, (!!))
@@ -32,22 +31,18 @@ import qualified Network.HTTP.MClient       as HTTP
 import qualified Network.HTTP.Types         as HTTP
 import qualified Network.HTTP.Types.URI     as URI
 
-data Credentials = Credentials
-  { authProviderX509CertUrl :: Text
-  , authUri                 :: Text
-  , clientId                :: Text
-  , clientSecret            :: Text
-  , projectId               :: Text
-  , redirectUris            :: [Text]
-  , tokenUri                :: Text
+data Config = Config
+  { authURL      :: Text
+  , clientId     :: Text
+  , clientSecret :: Text
   }
   deriving stock (Eq, Generic, Show)
 
-instance JSON.FromJSON Credentials where
+instance JSON.FromJSON Config where
   parseJSON = JSON.genericParseJSON oAuth2JsonOptions
 
 type Env env
-  = ( HasField "googleOAuth2Credentials" env Credentials
+  = ( HasField "oauthConfig" env Config
     , HTTP.Env env
     )
 
@@ -81,7 +76,7 @@ data AuthenticationResponse = AuthenticationResponse
   { accessToken  :: Text
   , expiresIn    :: Integer
   , idToken      :: Text
-  , refreshToken :: Text
+  , refreshToken :: Maybe Text
   , scope        :: Text
   , tokenType    :: Text
   }
@@ -125,15 +120,16 @@ data RefreshAccessTokenResponse = RefreshAccessTokenResponse
 instance JSON.FromJSON RefreshAccessTokenResponse where
   parseJSON = JSON.genericParseJSON oAuth2JsonOptions
 
-authorizationRequestUrl :: Credentials -> [Text] -> Text
-authorizationRequestUrl Credentials{..} scopes =
-  Text.decodeUtf8 $ "https://accounts.google.com/o/oauth2/v2/auth" <> query
+authorizationRequestUrl :: Env env => [Text] -> Text -> RIO env Text
+authorizationRequestUrl scopes redirectUri = do
+  config <- asks (getField @"oauthConfig")
+  pure $ getField @"authURL" config <> Text.decodeUtf8 (query config)
   where
-    query :: ByteString
-    query = URI.renderSimpleQuery True $ second Text.encodeUtf8 <$>
+    query :: Config -> ByteString
+    query config = URI.renderSimpleQuery True $ second Text.encodeUtf8 <$>
       [ ("access_type",   "offline")
-      , ("client_id",     clientId)
-      , ("redirect_uri",  fromJust $ safeHead redirectUris)
+      , ("client_id",     getField @"clientId" config)
+      , ("redirect_uri",  redirectUri)
       , ("response_type", "code")
       , ("scope",         Text.intercalate " " $ ["openid", "email"] <> scopes)
       ]
@@ -141,15 +137,16 @@ authorizationRequestUrl Credentials{..} scopes =
 authenticate
   :: forall env . Env env
   => AuthCode
+  -> Text
   -> RIO env AuthenticationResponse
-authenticate code = do
-  Credentials{..} <- asks (getField @"googleOAuth2Credentials")
-  nonce           <- liftIO $ Nonce.withGenerator Nonce.nonce128urlT
+authenticate code redirectUri = do
+  Config{..} <- asks (getField @"oauthConfig")
+  nonce      <- liftIO $ Nonce.withGenerator Nonce.nonce128urlT
 
   let requestObject =
         AuthenticationRequest
           { grantType   = "authorization_code"
-          , redirectUri = "urn:ietf:wg:oauth:2.0:oob"
+          , redirectUri = redirectUri
           , state       = []
           , ..
           }
@@ -161,7 +158,7 @@ refreshAccessToken
   => RefreshToken
   -> RIO env RefreshAccessTokenResponse
 refreshAccessToken refreshToken = do
-  Credentials{..} <- asks (getField @"googleOAuth2Credentials")
+  Config{..} <- asks (getField @"oauthConfig")
 
   let requestObject =
         RefreshAccessTokenRequest
