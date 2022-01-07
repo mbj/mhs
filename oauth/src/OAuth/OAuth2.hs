@@ -3,13 +3,11 @@ module OAuth.OAuth2
   , AuthenticationResponse(..)
   , Config(..)
   , Env
-  , OpenIdPayload(..)
   , RefreshAccessTokenResponse(..)
   , RefreshToken(..)
   , authenticate
   , authenticatedHttpRequest
   , authorizationRequestUrl
-  , openIdPayload
   , refreshAccessToken
   )
 where
@@ -18,12 +16,10 @@ import Data.Bifunctor (second)
 import Data.ByteString (ByteString)
 import Network.URI (URI)
 import OAuth.Prelude
-import Prelude(Integer, (!!))
+import Prelude(Integer)
 
 import qualified Crypto.Nonce               as Nonce
 import qualified Data.Aeson                 as JSON
-import qualified Data.ByteString.Base64.URL as Base64
-import qualified Data.ByteString.Lazy       as BL
 import qualified Data.Text                  as Text
 import qualified Data.Text.Encoding         as Text
 import qualified Network.HTTP.Client        as HTTP
@@ -83,15 +79,6 @@ data AuthenticationResponse = AuthenticationResponse
   deriving stock (Eq, Generic, Show)
 
 instance JSON.FromJSON AuthenticationResponse where
-  parseJSON = JSON.genericParseJSON oAuth2JsonOptions
-
-data OpenIdPayload = OpenIdPayload
-  { email         :: Text
-  , emailVerified :: Bool
-  }
-  deriving stock (Eq, Generic, Show)
-
-instance JSON.FromJSON OpenIdPayload where
   parseJSON = JSON.genericParseJSON oAuth2JsonOptions
 
 data RefreshAccessTokenRequest = RefreshAccessTokenRequest
@@ -201,15 +188,6 @@ authenticatedHttpRequest uri accessToken = do
         [ (HTTP.hAuthorization, encodeUtf8 $ "Bearer " <> accessToken)
         ]
     }
-
-openIdPayload :: Text -> Either String OpenIdPayload
-openIdPayload idToken = case payloadJson of
-    Left  msg  -> Left msg
-    Right json -> JSON.eitherDecode $ BL.fromStrict json
-  where
-    payloadJson :: Either String ByteString
-    payloadJson =
-      Base64.decodeUnpadded $ encodeUtf8 (Text.splitOn "." idToken !! 1)
 
 tokenEndpoint :: Text
 tokenEndpoint = "https://oauth2.googleapis.com/token"
