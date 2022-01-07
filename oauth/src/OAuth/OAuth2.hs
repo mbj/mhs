@@ -29,6 +29,7 @@ data Config = Config
   { authURL      :: Text
   , clientId     :: Text
   , clientSecret :: Text
+  , tokenURL     :: Text
   }
   deriving stock (Eq, Generic, Show)
 
@@ -136,7 +137,7 @@ authenticate code redirectUri = do
           , ..
           }
 
-  sendRequest >>= runHttpRequest requestObject >>= eitherThrow
+  sendRequest >>= runHttpRequest tokenURL requestObject >>= eitherThrow
 
 refreshAccessToken
   :: forall env . Env env
@@ -151,34 +152,33 @@ refreshAccessToken refreshToken = do
           , ..
           }
 
-  sendRequest >>= runHttpRequest requestObject >>= eitherThrow
+  sendRequest >>= runHttpRequest tokenURL requestObject >>= eitherThrow
 
 
 runHttpRequest
   :: forall a b env . (JSON.ToJSON a, JSON.FromJSON b)
-  => a
+  => Text
+  -> a
   -> HTTP.SendRequest
   -> RIO env (Either HTTP.HttpError b)
-runHttpRequest requestObject sendRequest' = liftIO $
-  HTTP.mkRequest @'HTTP.Json @'HTTP.Json sendRequest' JSON.eitherDecode =<< httpRequest requestObject
+runHttpRequest tokenURL requestObject sendRequest' = liftIO $
+  HTTP.mkRequest @'HTTP.Json @'HTTP.Json sendRequest' JSON.eitherDecode =<< httpRequest tokenURL requestObject
 
 sendRequest :: forall env . HTTP.Env env => RIO env HTTP.SendRequest
 sendRequest = asks $ getField @"httpSendRequest"
 
 httpRequest
   :: forall a . (JSON.ToJSON a)
-  => a
+  => Text
+  -> a
   -> IO HTTP.Request
-httpRequest requestObject = do
-  baseRequest <- HTTP.parseRequest $ Text.unpack tokenEndpoint
+httpRequest tokenURL requestObject = do
+  baseRequest <- HTTP.parseRequest (convert tokenURL)
 
   pure baseRequest
     { HTTP.method      = HTTP.methodPost
     , HTTP.requestBody = HTTP.RequestBodyLBS $ JSON.encode requestObject
     }
-
-tokenEndpoint :: Text
-tokenEndpoint = "https://oauth2.googleapis.com/token"
 
 oAuth2JsonOptions :: JSON.Options
 oAuth2JsonOptions = JSON.defaultOptions
