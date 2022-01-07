@@ -6,7 +6,6 @@ module OAuth.OAuth2
   , RefreshAccessTokenResponse(..)
   , RefreshToken(..)
   , authenticate
-  , authenticatedHttpRequest
   , authorizationRequestUrl
   , refreshAccessToken
   )
@@ -14,7 +13,6 @@ where
 
 import Data.Bifunctor (second)
 import Data.ByteString (ByteString)
-import Network.URI (URI)
 import OAuth.Prelude
 import Prelude(Integer)
 
@@ -177,16 +175,6 @@ httpRequest requestObject = do
   pure baseRequest
     { HTTP.method      = HTTP.methodPost
     , HTTP.requestBody = HTTP.RequestBodyLBS $ JSON.encode requestObject
-    }
-
-authenticatedHttpRequest :: URI -> Text -> IO HTTP.Request
-authenticatedHttpRequest uri accessToken = do
-  baseRequest <- HTTP.requestFromURI uri
-
-  pure baseRequest
-    { HTTP.requestHeaders =
-        [ (HTTP.hAuthorization, encodeUtf8 $ "Bearer " <> accessToken)
-        ]
     }
 
 tokenEndpoint :: Text
