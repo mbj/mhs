@@ -6,6 +6,7 @@ import OpenApi.Prelude
 import OpenApi.ReferenceOr
 import OpenApi.RequestBody
 import OpenApi.Responses
+import OpenApi.SecurityRequirement
 import OpenApi.Tag
 import OpenApi.TaggedText
 
@@ -18,6 +19,7 @@ data Operation = Operation
   , parameters  :: Maybe [ReferenceOr Parameter]
   , requestBody :: Maybe (ReferenceOr RequestBody)
   , responses   :: Responses
+  , security    :: Maybe [SecurityRequirement]
   , summary     :: Maybe (TaggedText "OperationSummary")
   , tags        :: Maybe [TagName]
   }
