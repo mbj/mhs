@@ -1,5 +1,3 @@
-{-# LANGUAGE RankNTypes #-}
-
 module SourceConstraints (Context(..), plugin, warnings) where
 
 import Control.Applicative ((<$>), pure)
@@ -21,7 +19,6 @@ import Data.Ord
 import Data.String (String)
 import Data.Text (Text, pack)
 import Data.Tuple
-#if MIN_VERSION_GLASGOW_HASKELL(9,0,0,0)
 import GHC.Data.Bag
 import GHC.Driver.Plugins
 import GHC.Driver.Session
@@ -31,17 +28,6 @@ import GHC.Types.SrcLoc
 import GHC.Unit.Module.Location
 import GHC.Utils.Error
 import GHC.Utils.Outputable
-#else
-import Bag
-import GHC.Hs
-import DynFlags
-import HscTypes
-import Module hiding (Module)
-import Outputable hiding ((<>), empty)
-import Plugins
-import SrcLoc
-import ErrUtils
-#endif
 import Prelude(error)
 import SourceConstraints.LocalModule
 import System.FilePath.Posix
@@ -51,16 +37,10 @@ import qualified Data.List as List
 data Context = Context
   { dynFlags     :: DynFlags
   , localModules :: [LocalModule]
-#if MIN_VERSION_GLASGOW_HASKELL(9,0,0,0)
   , sDocContext  :: SDocContext
-#endif
   }
 
-#if MIN_VERSION_GLASGOW_HASKELL(9,0,0,0)
 type HsModule' = HsModule
-#else
-type HsModule' = HsModule GhcPs
-#endif
 
 plugin :: Plugin
 plugin =
@@ -87,9 +67,7 @@ runSourceConstraints
 runSourceConstraints dynFlags options ModSummary{ms_location = ModLocation{..}} parsedModule = do
   localModules <- mapM parseLocalModule (pack <$> options)
 
-#if MIN_VERSION_GLASGOW_HASKELL(9,0,0,0)
   let sDocContext = initSDocContext dynFlags defaultUserStyle
-#endif
 
   when (allowLocation ml_hs_file) . emitWarnings $ warnings Context{..} (hpm_module parsedModule)
   pure parsedModule
@@ -170,10 +148,6 @@ locatedWarnings context@Context{..} node =
         isCandidate (L _ ImportDecl{ideclName = L _ moduleName})
           = any (`isLocalModule` moduleName) localModules
 
-#if !MIN_VERSION_GLASGOW_HASKELL(9,0,0,0)
-        isCandidate _  = False
-#endif
-
     requireDerivingStrategy :: LHsDerivingClause GhcPs -> Maybe ErrMsg
     requireDerivingStrategy = \case
       (L src HsDerivingClause{deriv_clause_strategy = Nothing}) ->
@@ -230,15 +204,7 @@ locatedWarnings context@Context{..} node =
     mkClass constructor name = constructor $ render context name
 
 render :: Outputable a => Context -> a -> String
-render Context{..} outputable =
-#if MIN_VERSION_GLASGOW_HASKELL(9,0,0,0)
-  renderWithStyle sDocContext $ ppr outputable
-#else
-  renderWithStyle
-    dynFlags
-    (ppr outputable)
-    (defaultUserStyle dynFlags)
-#endif
+render Context{..} outputable = renderWithStyle sDocContext $ ppr outputable
 
 sortedLocated
   :: forall a b . (Eq b, Ord b, Outputable a)
