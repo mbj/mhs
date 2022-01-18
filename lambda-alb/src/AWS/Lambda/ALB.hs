@@ -1,6 +1,5 @@
 module AWS.Lambda.ALB
   ( Headers(..)
-  , Method(..)
   , Request(..)
   , Response(..)
   , ResponseBody
@@ -12,6 +11,7 @@ module AWS.Lambda.ALB
 where
 
 import AWS.Lambda.Runtime.Prelude
+import Data.Aeson ((.:))
 import Data.HashMap.Strict (HashMap)
 
 import qualified AWS.Lambda.Runtime   as Lambda.Runtime
@@ -49,36 +49,32 @@ instance JSON.FromJSON Headers where
           value
         pure (CI.mk $ Text.encodeUtf8 headerName, headerValue)
 
-newtype Method = Method HTTP.StdMethod
-  deriving stock (Show, Eq, Ord)
-
-instance Conversion HTTP.StdMethod Method where
-  convert (Method value) = value
-
-instance JSON.ToJSON Method where
-  toJSON (Method stdMethod)
-    = JSON.String . decodeUtf8 $ HTTP.renderStdMethod stdMethod
-
-instance JSON.FromJSON Method where
-  parseJSON = JSON.withText "HTTP Method" parse
-    where
-      parse :: Text -> JSON.Parser Method
-      parse
-        = either (fail . show) (pure . Method)
-        . HTTP.parseMethod
-        . Text.encodeUtf8
-
 data Request a = Request
   { path                  :: Text
-  , httpMethod            :: Method
+  , httpMethod            :: HTTP.StdMethod
   , headers               :: Headers
   , queryStringParameters :: HashMap Text Text
   , isBase64Encoded       :: Bool
   , requestContext        :: JSON.Value
   , body                  :: a
   }
-  deriving anyclass (JSON.FromJSON)
-  deriving stock    (Generic, Show, Eq)
+  deriving stock (Generic, Show, Eq)
+
+instance JSON.FromJSON a => JSON.FromJSON (Request a) where
+  parseJSON = JSON.withObject "ALB Request" $ \object -> do
+    path                  <- object .: "path"
+    httpMethod            <- parseMethod =<< object .: "httpMethod"
+    headers               <- object .: "headers"
+    queryStringParameters <- object .: "queryStringParameters"
+    isBase64Encoded       <- object .: "isBase64Encoded"
+    requestContext        <- object .: "requestContext"
+    body                  <- object .: "body"
+    pure Request{..}
+    where
+      parseMethod = JSON.withText "HTTP Method"
+        $ either (fail . show) pure
+        . HTTP.parseMethod
+        . Text.encodeUtf8
 
 data Response = Response
   { statusCode :: HTTP.Status
