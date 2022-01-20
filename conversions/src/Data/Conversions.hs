@@ -108,6 +108,9 @@ instance Conversion a a where
 instance Conversion Integer Int where
   convert = fromIntegral
 
+instance Conversion Integer Word64 where
+  convert = fromIntegral
+
 instance Conversion Integer Word32 where
   convert = fromIntegral
 
@@ -115,6 +118,12 @@ instance Conversion Integer Word16 where
   convert = fromIntegral
 
 instance Conversion Integer Word8 where
+  convert = fromIntegral
+
+instance Conversion Int Word16 where
+  convert = fromIntegral
+
+instance Conversion Int Word8 where
   convert = fromIntegral
 
 instance Conversion Natural Word32 where
@@ -132,6 +141,9 @@ instance Conversion Integer Natural where
 instance (MonadError (BoundError Integer Int) m) => Conversion (m Int) Integer where
   convert = convertBoundedFromIntegral
 
+instance (MonadError (BoundError Integer Word64) m) => Conversion (m Word64) Integer where
+  convert = convertBoundedFromIntegral
+
 instance (MonadError (BoundError Integer Word32) m) => Conversion (m Word32)  Integer where
   convert = convertBoundedFromIntegral
 
@@ -139,6 +151,18 @@ instance (MonadError (BoundError Integer Word16) m) => Conversion (m Word16) Int
   convert = convertBoundedFromIntegral
 
 instance (MonadError (BoundError Integer Word8) m) => Conversion (m Word8) Integer where
+  convert = convertBoundedFromIntegral
+
+instance (MonadError (BoundError Int Word64) m) => Conversion (m Word64) Int where
+  convert = checkedFromIntegralToBounded
+
+instance (MonadError (BoundError Int Word32) m) => Conversion (m Word32) Int where
+  convert = checkedFromIntegralToBounded
+
+instance (MonadError (BoundError Int Word16) m) => Conversion (m Word16) Int where
+  convert = convertBoundedFromIntegral
+
+instance (MonadError (BoundError Int Word8) m) => Conversion (m Word8) Int where
   convert = convertBoundedFromIntegral
 
 instance Conversion LBS.ByteString BS.ByteString where
@@ -184,6 +208,14 @@ convertErrorFromIntegral value =
  where
   maxBound' :: Natural
   maxBound' = fromIntegral $ maxBound @a
+
+checkedFromIntegralToBounded
+  :: forall a b m
+   . (Integral a, Integral b, Bounded b, Show a, Show b, MonadError (BoundError a b) m)
+  => a
+  -> m b
+checkedFromIntegralToBounded value =
+  maybe (throwError $ BoundError value) pure $ checkedFromIntegral value
 
 convertBoundedFromIntegral
   :: forall a b m
