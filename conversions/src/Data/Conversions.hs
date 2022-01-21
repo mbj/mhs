@@ -77,6 +77,9 @@ instance (MonadError (UserBoundError Int64 Natural) m) => Conversion (m Natural)
 instance (MonadError (UserBoundError Word Natural) m) => Conversion (m Natural) Word where
   convert = convertErrorFromIntegral
 
+instance (MonadError (UserBoundError Word8 Natural) m) => Conversion (m Natural) Word8 where
+  convert = convertErrorFromIntegral
+
 instance (MonadError (UserBoundError Word16 Natural) m) => Conversion (m Natural) Word16 where
   convert = convertErrorFromIntegral
 
@@ -91,6 +94,9 @@ instance (MonadError (UserBoundError Integer Text) m) => Conversion (m Natural) 
     $ checkedFromIntegral value
 
 instance (MonadError (UserBoundError Natural Int) m) => Conversion (m Int) Natural where
+  convert = convertErrorFromNatural
+
+instance (MonadError (UserBoundError Natural Int8) m) => Conversion (m Int8) Natural where
   convert = convertErrorFromNatural
 
 instance (MonadError (UserBoundError Natural Int16) m) => Conversion (m Int16) Natural where
