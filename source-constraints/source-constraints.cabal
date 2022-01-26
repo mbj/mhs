@@ -61,7 +61,7 @@ library
     , base
     , bytestring >=0.10
     , filepath >=1.4
-    , ghc >=8.10 && <8.11 || >=9.0 && <9.1
+    , ghc >=9.0 && <9.1 || >=9.2 && <9.3
     , syb >=0.7
     , text
   if flag(development)
@@ -91,7 +91,7 @@ test-suite hspec
     , base
     , bytestring >=0.10
     , filepath >=1.4
-    , ghc >=8.10 && <8.11 || >=9.0 && <9.1
+    , ghc >=9.0 && <9.1 || >=9.2 && <9.3
     , ghc-paths
     , heredoc
     , hspec
