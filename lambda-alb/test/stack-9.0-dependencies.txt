@@ -60,7 +60,7 @@ http-client 0.6.4.1
 http-types 0.12.3
 indexed-traversable 0.1.1
 integer-logarithms 1.0.3.1
-lambda-alb 0.0.1
+lambda-alb 0.0.2
 lambda-runtime 0.0.1
 libyaml 0.1.2
 memory 0.16.0
