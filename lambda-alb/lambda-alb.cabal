@@ -32,6 +32,7 @@ flag development
 library
   exposed-modules:
       AWS.Lambda.ALB
+      AWS.Lambda.Header
   other-modules:
       Paths_lambda_alb
   hs-source-dirs:
