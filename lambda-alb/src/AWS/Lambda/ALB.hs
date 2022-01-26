@@ -1,5 +1,7 @@
 module AWS.Lambda.ALB
-  ( Headers(..)
+  ( Header
+  , HeaderName
+  , Headers(..)
   , Request(..)
   , Response(..)
   , ResponseBody
