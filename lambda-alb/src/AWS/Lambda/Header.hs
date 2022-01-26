@@ -35,3 +35,10 @@ instance JSON.FromJSON Headers where
           (pure . Text.encodeUtf8)
           value
         pure (CI.mk headerName, headerValue)
+
+hAccept,hAuthorization, hCacheControl, hContentType, hOrigin :: HeaderName
+hAccept        = "Accept"
+hAuthorization = "Authorization"
+hCacheControl  = "Cache-Control"
+hContentType   = "Content-Type"
+hOrigin        = "Origin"
