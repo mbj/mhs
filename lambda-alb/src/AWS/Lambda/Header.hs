@@ -1,18 +1,16 @@
 module AWS.Lambda.Header where
 
 import AWS.Lambda.Runtime.Prelude
-import Data.ByteString (ByteString)
 import Data.HashMap.Strict (HashMap)
 
 import qualified Data.Aeson           as JSON
 import qualified Data.Aeson.Types     as JSON
 import qualified Data.CaseInsensitive as CI
 import qualified Data.HashMap.Strict  as HashMap
-import qualified Data.Text.Encoding   as Text
 
 type HeaderName = CI.CI Text
 
-type Header = (HeaderName, ByteString)
+type Header = (HeaderName, Text)
 
 newtype Headers = Headers [Header]
   deriving stock (Eq, Show)
@@ -20,7 +18,7 @@ newtype Headers = Headers [Header]
 instance JSON.ToJSON Headers where
   toJSON (Headers list)
     = JSON.Object . HashMap.fromList
-    $ bimap CI.original (JSON.String . decodeUtf8) <$> list
+    $ bimap CI.original JSON.String <$> list
 
 instance JSON.FromJSON Headers where
   parseJSON = JSON.withObject "Headers" parseHeaders
@@ -29,12 +27,10 @@ instance JSON.FromJSON Headers where
       parseHeaders xs = Headers <$> traverse toHeader (HashMap.toList xs)
 
       toHeader :: (Text, JSON.Value) -> JSON.Parser Header
-      toHeader (headerName, value) = do
-        headerValue <- JSON.withText
-          ("Header Value for " <> convert headerName)
-          (pure . Text.encodeUtf8)
-          value
-        pure (CI.mk headerName, headerValue)
+      toHeader (headerName, value) = case value of
+        JSON.String text -> pure (CI.mk headerName, text)
+        _                -> fail $ "Failure parsing header " <> convert headerName <> " : " <> show value
+
 
 hAccept,hAuthorization, hCacheControl, hContentType, hOrigin :: HeaderName
 hAccept        = "Accept"
