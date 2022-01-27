@@ -126,7 +126,7 @@ integer-gmp 1.1
 integer-logarithms 1.0.3.1
 invariant 0.5.4
 kan-extensions 5.2.3
-lambda-alb 0.0.2
+lambda-alb 0.0.3
 lambda-runtime 0.0.1
 lens 5.0.1
 lht 0.0.1
