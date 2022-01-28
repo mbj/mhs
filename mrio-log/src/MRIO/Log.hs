@@ -4,8 +4,8 @@
 {-# LANGUAGE RankNTypes          #-}
 
 module MRIO.Log
-  ( Action
-  , Env(..)
+  ( Action(..)
+  , Env
   , Message(..)
   , Severity(..)
   , debug
@@ -34,13 +34,9 @@ import qualified Data.Text.Encoding       as Text
 import qualified Data.Time.Clock          as Clock
 import qualified System.IO                as IO
 
-type Action m = Message -> m ()
+newtype Action = Action (Message -> IO ())
 
-class Env env where
-  getLogAction :: env -> Action (RIO env)
-
-instance (HasField "logAction" env (Action (RIO env))) => Env env where
-  getLogAction = getField @"logAction"
+type Env env = HasField "logAction" env Action
 
 log :: Env env => Severity -> Text -> RIO env ()
 log severity message = do
@@ -64,13 +60,16 @@ exception :: forall e env . (Env env, Exception e) => e -> RIO env ()
 exception = error . convert . displayException
 
 logMessage :: forall env . Env env => Message -> RIO env ()
-logMessage message = ($ message) =<< asks getLogAction
+logMessage message =
+  asks (getField @"logAction")
+    >>= (\(Action action) -> liftIO $ action message)
 
-formatCLIAction :: MonadIO m => Formatter -> Action m
+formatCLIAction :: Formatter -> Action
 formatCLIAction formatter
-  = (liftIO . BS.hPutStrLn IO.stderr)
+  = Action
+  $ BS.hPutStrLn IO.stderr
   . Text.encodeUtf8
   . render formatter
 
-defaultCLIAction :: MonadIO m => Action m
+defaultCLIAction :: Action
 defaultCLIAction = formatCLIAction defaultCLIFormatter

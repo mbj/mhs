@@ -23,7 +23,7 @@ type WithEnv env = (HasEnvironment env, Log.Env env)
 data Environment = Environment
   { debug     :: Bool
   , builds    :: IncrementalState ImageName ImageBuildError ()
-  , logAction :: Log.Action (RIO Environment)
+  , logAction :: Log.Action
   }
 
 class HasEnvironment env where
