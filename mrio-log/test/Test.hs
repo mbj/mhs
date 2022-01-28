@@ -8,7 +8,7 @@ import qualified Devtools
 import qualified MRIO.Log as Log
 
 data Env = Env
-  { logAction :: Log.Action (RIO Env)
+  { logAction :: Log.Action
   , logBuffer :: IORef [Log.Message]
   , appName   :: Text
   }
@@ -39,7 +39,7 @@ testEnv = testCase "test app" $ do
      logBuffer <- newIORef []
 
      pure $ Env
-       { logAction = \message -> liftIO $ modifyIORef' logBuffer (message:)
+       { logAction = Log.Action $ \message -> liftIO $ modifyIORef' logBuffer (message:)
        , appName   = "Test App"
        , ..
        }
