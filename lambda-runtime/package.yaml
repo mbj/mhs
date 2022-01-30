@@ -3,7 +3,7 @@ _common/package: !include "../common/package.yaml"
 name:               lambda-runtime
 synopsis:           A runtime environment for Haskell applications running on AWS Lambda.
 description:        A runtime environment for Haskell applications running on AWS Lambda.
-version:            0.0.1
+version:            0.0.2
 author:             epicallan.al@gmail.com, Markus Schirp, Makara digital
 maintainer:         epicallan.al@gmail.com, mbj@schirp-dso.com
 category:           Web,AWS
