@@ -3,14 +3,13 @@ module AWS.Lambda.Runtime
   , Client.getConnection
   , processNextEvent
   , run
-  , runTraced
+  , runWithSegment
   )
 where
 
 import AWS.Lambda.Runtime.Prelude
 import AWS.Lambda.Runtime.Types
 import Control.Monad.Except (runExceptT)
-import Data.Conversions.FromType
 import MRIO.Core
 
 import qualified AWS.Lambda.Runtime.Client as Client
@@ -28,26 +27,27 @@ run function = do
 
   forever $ processNextEvent connection function
 
-runTraced
+runWithSegment
   :: (XRay.Env env, JSON.FromJSON a, JSON.ToJSON b)
-  => (Event a -> XRay.Segment -> XRay.Segment)
+  => XRay.SegmentName
+  -> (Event a -> XRay.Segment -> XRay.Segment)
   -> (b -> XRay.Segment -> XRay.Segment)
-  -> (TracedEvent a -> RIO env b)
+  -> (XRay.SegmentId -> Event a -> RIO env b)
   -> RIO env ()
-runTraced initSegment finishSegment action = do
+runWithSegment segmentName initSegment finishSegment action = do
   connection <- eitherThrow =<< liftIO (runExceptT Client.getConnection)
 
   forever $ do
-    event@Event{traceHeader = traceHeader@XRay.TraceHeader{..}, ..} <-
+    event@Event{traceHeader = XRay.TraceHeader{..}, ..} <-
       eitherThrow =<< liftIO (runExceptT $ Client.getNextEvent connection)
 
     result <- XRay.withSegment
-      (fromType @"Event")
+      segmentName
       traceId
       parentId
       (initSegment event)
       finishSegment
-      (\segmentId -> action TracedEvent{..})
+      (`action` event)
 
     Client.sendEventResponse connection requestId (JSON.toJSON result)
 

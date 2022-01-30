@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           lambda-runtime
-version:        0.0.1
+version:        0.0.2
 synopsis:       A runtime environment for Haskell applications running on AWS Lambda.
 description:    A runtime environment for Haskell applications running on AWS Lambda.
 category:       Web,AWS
