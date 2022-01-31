@@ -38,7 +38,7 @@ module XRay.Segment
   , SqlPreparation(..)
   , Timestamp(..)
   , User
-  , segmentAddException
+  , addException
   , segmentIdParser
   , toException
   )
@@ -355,9 +355,10 @@ instance JSON.ToJSON Namespace where
     NamespaceAWS    -> JSON.String "aws"
     NamespaceRemote -> JSON.String "remote"
 
-segmentAddException :: Segment -> Exception -> Segment
-segmentAddException segment exception = segment
-  { cause = pure $ causeAddException present exception }
+addException :: Segment -> Exception -> Segment
+addException segment exception = segment
+  { cause = pure $ causeAddException present
+  }
   where
     present :: Cause
     present = fromMaybe emptyCause (getField @"cause" segment)
@@ -369,9 +370,9 @@ segmentAddException segment exception = segment
       , workingDirectory = empty
       }
 
-causeAddException :: Cause -> Exception -> Cause
-causeAddException cause exception =
-  cause { exceptions = exception : getField @"exceptions" cause }
+    causeAddException :: Cause ->  Cause
+    causeAddException cause =
+      cause { exceptions = exception : getField @"exceptions" cause }
 
 toException :: ExceptionId -> Exception.SomeException -> Exception
 toException id exception = do
