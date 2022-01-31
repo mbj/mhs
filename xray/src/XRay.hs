@@ -13,6 +13,7 @@ import XRay.Segment
 import XRay.TraceId
 
 import qualified Data.Time.Clock.System as Clock
+import qualified UnliftIO.Exception     as Exception
 
 data Environment = Environment
   { config         :: Config
@@ -65,7 +66,7 @@ newSegment name traceId parentId = do
       }
 
 withSegment
-  :: Env env
+  :: forall env a . Env env
   => SegmentName
   -> TraceId
   -> Maybe SegmentId
@@ -80,21 +81,28 @@ withSegment
   specializeInProgress
   specializeFinal
   action
-  = do
-    Environment{..} <- asks (getField @"xrayEnvironment")
+  = recordSegment =<< asks (getField @"xrayEnvironment")
+  where
+    recordSegment Environment{..} = do
+      segment <- specializeInProgress <$> newSegment segmentName traceId parentId
 
-    segment <- specializeInProgress <$> newSegment segmentName traceId parentId
+      liftIO $ sendSegment segment
 
-    liftIO $ sendSegment segment
+      Exception.tryAny (action $ getField @"id" segment)
+        >>= either (finalizeException segment) (finalizeResult segment)
+      where
+        finalizeException :: Segment -> Exception.SomeException -> RIO env a
+        finalizeException segment exception = do
+          exceptionId <- liftIO newExceptionId
+          finalize $ (addException segment (toException exceptionId exception)) { fault = True }
+          Exception.throwIO exception
 
-    result  <- action $ getField @"id" segment
+        finalizeResult :: Segment -> a -> RIO env a
+        finalizeResult segment result =
+          finalize (specializeFinal result segment) $> result
 
-    liftIO $ do
-      endTime <- getTimestamp
-
-      sendSegment $ specializeFinal result segment
-        { endTime    = pure endTime
-        , inProgress = False
-        }
-
-      pure result
+        finalize :: Segment -> RIO env ()
+        finalize segment = do
+          liftIO $ do
+            endTime <- getTimestamp
+            sendSegment $ segment { endTime = pure endTime, inProgress = False }
