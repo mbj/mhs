@@ -14,7 +14,6 @@ basement 0.0.12
 bifunctors 5.5.11
 binary 0.8.8.0
 blaze-builder 0.4.2.2
-bounded 0.0.1
 bytestring 0.10.12.1
 call-stack 0.4.0
 case-insensitive 1.2.1.0
@@ -56,8 +55,7 @@ hlint 3.3.4
 hpc 0.6.1.0
 hscolour 1.24.4
 http-client 0.6.4.1
-http-mclient 0.0.2
-http-media 0.8.0.0
+http-mclient 0.0.3
 http-types 0.12.3
 indexed-traversable 0.1.1
 integer-logarithms 1.0.3.1
@@ -66,6 +64,7 @@ memory 0.16.0
 mime-types 0.1.0.9
 mono-traversable 1.0.15.3
 mprelude 0.2.1
+mrio-core 0.0.1
 mtl 2.2.2
 network 3.1.2.5
 network-uri 2.6.4.1
@@ -88,7 +87,6 @@ stm 2.5.0.0
 streaming-commons 0.2.2.1
 strict 0.4.0.1
 syb 0.7.2.1
-symbols 0.3.0.0
 tagged 0.8.6.1
 tasty 1.4.2
 tasty-expected-failure 0.12.3
