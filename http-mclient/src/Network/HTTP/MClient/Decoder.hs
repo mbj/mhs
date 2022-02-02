@@ -70,7 +70,7 @@ decodeExpectedContentType accepted decoder response =
         else Left $ UnexpectedContentType responseContentType
 
 decodeJSON  :: JSON.FromJSON a => ResponseDecoder a
-decodeJSON = decodeExpectedContentType "application/json" $ \response ->
+decodeJSON = decodeExpectedContentType "application/json; charset=utf-8" $ \response ->
   left (BodyDecodeFailure . toText) $ JSON.eitherDecode' (HTTP.responseBody response)
 
 send
