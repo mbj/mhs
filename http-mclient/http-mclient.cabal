@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           http-mclient
-version:        0.0.1
+version:        0.0.2
 synopsis:       Minimal http-client
 description:    Minimal http-client built on top of http-client library
 category:       Web
@@ -32,6 +32,7 @@ flag development
 library
   exposed-modules:
       Network.HTTP.MClient
+      Network.HTTP.MClient.Decoder
   other-modules:
       Paths_http_mclient
   hs-source-dirs:
@@ -74,6 +75,7 @@ library
     , mprelude
     , mtl
     , text
+    , unliftio
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
@@ -128,6 +130,7 @@ test-suite test
     , mprelude
     , mtl
     , text
+    , unliftio
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:

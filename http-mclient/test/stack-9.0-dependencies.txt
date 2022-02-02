@@ -56,7 +56,7 @@ hlint 3.3.4
 hpc 0.6.1.0
 hscolour 1.24.4
 http-client 0.6.4.1
-http-mclient 0.0.1
+http-mclient 0.0.2
 http-media 0.8.0.0
 http-types 0.12.3
 indexed-traversable 0.1.1
@@ -108,6 +108,7 @@ typed-process 0.2.6.3
 unbounded-delays 0.1.1.1
 uniplate 1.6.13
 unix 2.7.2.2
+unliftio 0.2.20
 unliftio-core 0.2.0.1
 unordered-containers 0.2.14.0
 utf8-string 1.0.2
