@@ -1,156 +1,131 @@
 module Network.HTTP.MClient
-  ( ContentType (..)
-  , DecodeError (..)
-  , Env
-  , HasMediaType (..)
-  , HttpError (..)
+  ( Env
+  , ResponseDecoder
+  , ResponseError
   , SendRequest
-  , StatusCode
-  , mkRequest
-  , mkRequest'
+  , addContentType
+  , decodeContentType
+  , decodeContentTypes
+  , decodeJSON
+  , decodeJSONBody
+  , decodeJSONOk
+  , decodeJSONStatus
+  , decodeStatus
+  , decodeStatuses
+  , send
+  , setJSONBody
   )
 where
 
 import Control.Arrow (left)
-import Control.Monad.Catch (Exception, catch)
-import Control.Monad.Except (ExceptT (..), liftEither, runExceptT, throwError)
-import Data.Bounded.Integral (BoundNumber)
-import Data.Conversions (Conversion, ToText, convertUnsafe, toText)
-import Data.Conversions.FromType (fromType)
+import Control.Monad.Reader (asks)
+import Data.Conversions (toText)
 import GHC.Records (HasField(..))
 import MPrelude
-import Network.HTTP.Media (MediaType, (//), (/:))
-import Network.HTTP.Types (hAccept, hContentType, statusCode)
+import MRIO.Core
 
+import qualified Data.Aeson                 as JSON
+import qualified Data.ByteString            as BS
 import qualified Data.ByteString.Lazy.Char8 as LBS
-import qualified Data.CaseInsensitive       as CI
 import qualified Data.List                  as List
-import qualified Data.List.NonEmpty         as NE
 import qualified Network.HTTP.Client        as HTTP
-import qualified Network.HTTP.Media         as Media
-
-type Response = HTTP.Response LBS.ByteString
-
-type StatusCode = BoundNumber "Status code" '(199, 600)
+import qualified Network.HTTP.Types         as HTTP
+import qualified UnliftIO.Exception         as Exception
 
 type SendRequest = HTTP.Request -> IO (HTTP.Response LBS.ByteString)
 
 type Env env = HasField "httpSendRequest" env SendRequest
 
-newtype DecodeError = DecodeError Text
-  deriving (Conversion Text) via Text
-  deriving stock (Eq, Show)
+data ResponseError
+  = BodyDecodeFailure Text
+  | HTTPError HTTP.HttpExceptionContent
+  | UnexpectedContentType BS.ByteString
+  | MissingContentType
+  | UnexpectedStatusCode HTTP.Status
+  deriving stock Show
 
-data HttpError =
-    ConnectionError HTTP.HttpException
-  | DecodeFailure DecodeError Response
-  | InvalidStatusCode StatusCode Response
-  | InvalidContentType Response
-  | UnsupportedContentType MediaType Response
-  deriving stock (Show)
+instance Exception.Exception ResponseError
 
-instance Eq HttpError where
-  DecodeFailure t r          == DecodeFailure t' r'          = t == t' && r == r'
-  InvalidStatusCode code r   == InvalidStatusCode code' r'   = r == r' && code == code'
-  InvalidContentType r       == InvalidContentType r'        = r == r'
-  UnsupportedContentType m r == UnsupportedContentType m' r' = m == m' && r == r'
-  _                          == _                            = False
+type Result a = Either ResponseError a
 
-instance Exception HttpError
+type ResponseDecoder a = HTTP.Response LBS.ByteString -> Result a
 
-data ContentType
-  = FormUrlEncoded
-  | Json
-  | PlainText
-  | XML
+decodeStatus
+  :: HTTP.Status
+  -> ResponseDecoder a
+  -> ResponseDecoder a
+decodeStatus expectedStatus decoder = decodeStatuses [(expectedStatus, decoder)]
 
-class HasMediaType (ctyp :: ContentType) where
-  mediaType :: MediaType
-  mediaType = NE.head (mediaTypes @ctyp)
-
-  mediaTypes :: NE.NonEmpty MediaType
-  mediaTypes = mediaType @ctyp NE.:| []
-
-instance HasMediaType 'FormUrlEncoded where
-  mediaType = "application" // "x-www-form-urlencoded"
-
-instance HasMediaType 'Json where
-  mediaType = "application" // "json" /: ("charset", "utf-8")
-
-instance HasMediaType 'PlainText where
-  mediaTypes
-    = "text" // "plain" /: ("charset", "utf-8")
-    NE.:|
-    [ "text" // "html" /: ("charset", "utf-8")]
-
-mkRequest
-  :: forall contentType acceptsType e a
-  . ( ToText e
-    , HasMediaType contentType
-    , HasMediaType acceptsType
-    )
-  => SendRequest
-  -> (LBS.ByteString -> Either e a)
-  -> HTTP.Request
-  -> IO (Either HttpError a)
-mkRequest sendRequest decodeBody =
-  runExceptT . mkRequest' @contentType @acceptsType (fromType @200) sendRequest decodeBody
-
-mkRequest'
-  :: forall contentType acceptsType a e
-  . ( ToText e
-    , HasMediaType contentType
-    , HasMediaType acceptsType
-    )
-  => StatusCode
-  -> SendRequest
-  -> (LBS.ByteString -> Either e a)
-  -> HTTP.Request
-  -> ExceptT HttpError IO a
-mkRequest' expectedStatus sendRequest decodeBody request = do
-  response <- ExceptT . catchConnectionError
-    $ sendRequest (addMediaHeaders @contentType  request)
-
-  responseContentType <- liftEither $ getContentType response
-
-  let accepts = mediaTypes @acceptsType
-  let code    = convertUnsafe @StatusCode
-              . convertUnsafe @Natural
-              . statusCode
-              $ HTTP.responseStatus response
-
-  if | code /= expectedStatus ->
-        throwError $ InvalidStatusCode code response
-     | not (List.any (`Media.matches` responseContentType) accepts) ->
-        throwError $ UnsupportedContentType responseContentType response
-     | otherwise              -> liftEither
-         . left (flip DecodeFailure response . DecodeError . toText)
-         . decodeBody
-         $ HTTP.responseBody response
-
-catchConnectionError ::  IO a -> IO (Either HttpError a)
-catchConnectionError action =
-  catch (Right <$> action)
-    $ \e -> pure . Left . ConnectionError $ (e :: HTTP.HttpException)
-
-getContentType :: Response -> Either HttpError MediaType
-getContentType response
-  = maybe (Left $ InvalidContentType response) pure
-  . maybe (pure $ mediaType @'PlainText) Media.parseAccept
-  . List.lookup hContentType
-  $ HTTP.responseHeaders response
-
-addMediaHeaders
-  :: forall ctyp . HasMediaType ctyp
-  => HTTP.Request
-  -> HTTP.Request
-addMediaHeaders request = request
-  { HTTP.requestHeaders
-      = [ (hContentType, headerValue)
-        , (hAccept, headerValue)
-        ]
-        <> HTTP.requestHeaders request
-  }
+decodeStatuses
+  :: [(HTTP.Status, ResponseDecoder a)]
+  -> ResponseDecoder a
+decodeStatuses decoders response
+  = maybe (Left $ UnexpectedStatusCode statusCode) ($ response)
+  $ List.lookup statusCode decoders
   where
-    mediaType'  = mediaType @ctyp
-    headerValue = CI.original $ Media.mainType mediaType' <> "/" <> Media.subType mediaType'
+    statusCode = HTTP.responseStatus response
+
+decodeContentType :: BS.ByteString -> ResponseDecoder a -> ResponseDecoder a
+decodeContentType accepted decoder = decodeContentTypes [(accepted, decoder)]
+
+decodeContentTypes :: [(BS.ByteString, ResponseDecoder a)] -> ResponseDecoder a
+decodeContentTypes contentTypes response
+  = maybe (Left MissingContentType) withResponseContentType
+  $ List.lookup HTTP.hContentType (HTTP.responseHeaders response)
+  where
+    withResponseContentType contentType =
+      maybe
+        (Left $ UnexpectedContentType contentType)
+        ($ response)
+        (List.lookup contentType contentTypes)
+
+decodeJSON  :: JSON.FromJSON a => ResponseDecoder a
+decodeJSON = decodeContentType jsonContentType decodeJSONBody
+
+decodeJSONBody :: JSON.FromJSON a => ResponseDecoder a
+decodeJSONBody = left (BodyDecodeFailure . toText) . JSON.eitherDecode' . HTTP.responseBody
+
+decodeJSONStatus :: JSON.FromJSON a => HTTP.Status -> ResponseDecoder a
+decodeJSONStatus expectedStatus = decodeStatus expectedStatus decodeJSON
+
+decodeJSONOk :: JSON.FromJSON a => ResponseDecoder a
+decodeJSONOk = decodeJSONStatus HTTP.status200
+
+setJSONBody :: JSON.ToJSON a => a -> HTTP.Request -> HTTP.Request
+setJSONBody value request
+  = addContentType jsonContentType
+  $ request
+  { HTTP.requestBody = HTTP.RequestBodyLBS $ JSON.encode value
+  }
+
+addContentType :: BS.ByteString -> HTTP.Request -> HTTP.Request
+addContentType = addHeader HTTP.hContentType
+
+addHeader :: HTTP.HeaderName -> BS.ByteString -> HTTP.Request -> HTTP.Request
+addHeader headerName value request =
+  request { HTTP.requestHeaders = (headerName,value):HTTP.requestHeaders request }
+
+jsonContentType :: BS.ByteString
+jsonContentType = "application/json; charset=utf-8"
+
+send
+  :: Env env
+  => ResponseDecoder a
+  -> HTTP.Request
+  -> RIO env (Result a)
+send decoder request = do
+  sendRequest <- asks (getField @"httpSendRequest")
+  liftIO $ send' sendRequest decoder request
+
+send'
+  :: SendRequest
+  -> ResponseDecoder a
+  -> HTTP.Request
+  -> IO (Result a)
+send' sendRequest decoder request = do
+  either (Left . HTTPError) decoder <$> Exception.tryJust selectException (sendRequest request)
+  where
+    selectException :: HTTP.HttpException -> Maybe HTTP.HttpExceptionContent
+    selectException = \case
+      (HTTP.HttpExceptionRequest _request content) -> pure content
+      _other                                       -> empty

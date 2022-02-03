@@ -137,7 +137,7 @@ authenticate code redirectUri = do
           , ..
           }
 
-  sendRequest >>= runHttpRequest tokenURL requestObject >>= eitherThrow
+  runHttpRequest tokenURL requestObject
 
 refreshAccessToken
   :: forall env . Env env
@@ -152,33 +152,26 @@ refreshAccessToken refreshToken = do
           , ..
           }
 
-  sendRequest >>= runHttpRequest tokenURL requestObject >>= eitherThrow
+  runHttpRequest tokenURL requestObject
 
 
 runHttpRequest
-  :: forall a b env . (JSON.ToJSON a, JSON.FromJSON b)
+  :: forall a b env . (HTTP.Env env, JSON.ToJSON a, JSON.FromJSON b)
   => Text
   -> a
-  -> HTTP.SendRequest
-  -> RIO env (Either HTTP.HttpError b)
-runHttpRequest tokenURL requestObject sendRequest' = liftIO $
-  HTTP.mkRequest @'HTTP.Json @'HTTP.Json sendRequest' JSON.eitherDecode =<< httpRequest tokenURL requestObject
-
-sendRequest :: forall env . HTTP.Env env => RIO env HTTP.SendRequest
-sendRequest = asks $ getField @"httpSendRequest"
+  -> RIO env b
+runHttpRequest tokenURL requestObject =
+  eitherThrow =<< HTTP.send HTTP.decodeJSON =<< httpRequest tokenURL requestObject
 
 httpRequest
-  :: forall a . (JSON.ToJSON a)
+  :: forall a env . (JSON.ToJSON a)
   => Text
   -> a
-  -> IO HTTP.Request
+  -> RIO env HTTP.Request
 httpRequest tokenURL requestObject = do
   baseRequest <- HTTP.parseRequest (convert tokenURL)
 
-  pure baseRequest
-    { HTTP.method      = HTTP.methodPost
-    , HTTP.requestBody = HTTP.RequestBodyLBS $ JSON.encode requestObject
-    }
+  pure . HTTP.setJSONBody requestObject $ baseRequest { HTTP.method = HTTP.methodPost }
 
 oAuth2JsonOptions :: JSON.Options
 oAuth2JsonOptions = JSON.defaultOptions
