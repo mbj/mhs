@@ -4,6 +4,7 @@ module Network.HTTP.MClient
   , ResponseError
   , SendRequest
   , addContentType
+  , addHeader
   , decodeContentType
   , decodeContentTypes
   , decodeJSON
