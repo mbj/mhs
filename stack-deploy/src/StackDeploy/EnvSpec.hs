@@ -1,4 +1,12 @@
-module StackDeploy.EnvSpec where
+module StackDeploy.EnvSpec
+  ( Entry(..)
+  , Value(..)
+  , ecsTaskDefinitionEnvironment
+  , lambdaEnvironment
+  , loadStackValue
+  , posixEnv
+  )
+where
 
 import StackDeploy.Prelude
 import StackDeploy.Utils hiding (StackName)
@@ -45,15 +53,15 @@ posixEnv stack = traverse render . List.sortOn envName
   where
     render :: Entry -> RIO env (String, String)
     render (Entry key value) = do
-      (convert key,) . convert <$> loadValue value
+      (convert key,) . convert <$> loadStackValue stack value
 
-    loadValue :: Value -> RIO env Text
-    loadValue = \case
-      StackOutput output'  -> liftIO $ fetchOutput stack output'
-      StackParameter param -> fetchParam stack param
-      StackPrefix text     -> pure $ (stack ^. CF.sStackName) <> "-" <> text
-      StackName            -> pure $ stack ^. CF.sStackName
-      Static text          -> pure text
+loadStackValue :: CF.Stack -> Value -> RIO env Text
+loadStackValue stack = \case
+  StackOutput output'  -> liftIO $ fetchOutput stack output'
+  StackParameter param -> fetchParam stack param
+  StackPrefix text     -> pure $ (stack ^. CF.sStackName) <> "-" <> text
+  StackName            -> pure $ stack ^. CF.sStackName
+  Static text          -> pure text
 
 renderValue :: Value -> Val Text
 renderValue = \case
