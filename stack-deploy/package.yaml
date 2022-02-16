@@ -1,7 +1,7 @@
 _common/package: !include "../common/package.yaml"
 
 name:        stack-deploy
-version:     0.0.1
+version:     0.0.2
 synopsis:    Utilities around cloudformation templates
 license:     BSD3
 
