@@ -56,9 +56,10 @@ instance JSON.FromJSON a => JSON.FromJSON (Request a) where
         . Text.encodeUtf8
 
 data Response = Response
-  { body       :: ResponseBody
-  , headers    :: Headers
-  , statusCode :: HTTP.Status
+  { body            :: ResponseBody
+  , isBase64Encoded :: Bool
+  , headers         :: Headers
+  , statusCode      :: HTTP.Status
   }
 
 instance JSON.ToJSON Response where
@@ -66,7 +67,7 @@ instance JSON.ToJSON Response where
     = JSON.Object
     [ ("body",            JSON.toJSON $ textBody body)
     , ("headers",         JSON.toJSON headers)
-    , ("isBase64Encoded", JSON.toJSON False)
+    , ("isBase64Encoded", JSON.toJSON isBase64Encoded)
     , ("statusCode",      JSON.toJSON $ HTTP.statusCode statusCode)
     ]
 
