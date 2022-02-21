@@ -56,9 +56,9 @@ instance JSON.FromJSON a => JSON.FromJSON (Request a) where
         . Text.encodeUtf8
 
 data Response = Response
-  { statusCode :: HTTP.Status
+  { body       :: ResponseBody
   , headers    :: Headers
-  , body       :: ResponseBody
+  , statusCode :: HTTP.Status
   }
 
 instance JSON.ToJSON Response where

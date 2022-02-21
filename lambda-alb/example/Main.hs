@@ -11,9 +11,9 @@ handler event = do
   liftIO $ IO.hPutStr IO.stderr "Lambda Event started"
 
   pure $ Response
-    { statusCode = HTTP.status200
+    { body       = mkTextResponseBody $ "hello world at " <> path event
     , headers    = Headers [("content-type", "application/json")]
-    , body       = mkTextResponseBody $ "hello world at " <> path event
+    , statusCode = HTTP.status200
     }
 
 main :: IO ()
