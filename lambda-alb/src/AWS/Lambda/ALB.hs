@@ -5,6 +5,7 @@ module AWS.Lambda.ALB
   , Request(..)
   , Response(..)
   , ResponseBody
+  , mkByteStringResponseBody
   , mkTextResponseBody
   , responseBodyByteString
   , responseBodyContentLength
@@ -17,12 +18,13 @@ import AWS.Lambda.Runtime.Prelude
 import Data.Aeson ((.:))
 import Data.HashMap.Strict (HashMap)
 
-import qualified AWS.Lambda.Runtime   as Lambda.Runtime
-import qualified Data.Aeson           as JSON
-import qualified Data.Aeson.Types     as JSON
-import qualified Data.ByteString      as BS
-import qualified Data.Text.Encoding   as Text
-import qualified Network.HTTP.Types   as HTTP
+import qualified AWS.Lambda.Runtime     as Lambda.Runtime
+import qualified Data.Aeson             as JSON
+import qualified Data.Aeson.Types       as JSON
+import qualified Data.ByteString        as BS
+import qualified Data.ByteString.Base64 as Base64
+import qualified Data.Text.Encoding     as Text
+import qualified Network.HTTP.Types     as HTTP
 
 newtype RequestDecodeFailure = RequestDecodeFailure Text
   deriving anyclass (Exception)
@@ -66,20 +68,36 @@ instance JSON.ToJSON Response where
     = JSON.Object
     [ ("body",            JSON.toJSON $ textBody body)
     , ("headers",         JSON.toJSON headers)
-    , ("isBase64Encoded", JSON.toJSON False)
+    , ("isBase64Encoded", JSON.toJSON $ isByteString body)
     , ("statusCode",      JSON.toJSON $ HTTP.statusCode statusCode)
     ]
 
-data ResponseBody = TextResponseBody Text BS.ByteString
+data ResponseBody
+  = ByteStringResponseBody BS.ByteString
+  | TextResponseBody Text BS.ByteString
+
+isByteString :: ResponseBody -> Bool
+isByteString = \case
+  ByteStringResponseBody{} -> True
+  TextResponseBody{}       -> False
 
 responseBodyContentLength :: ResponseBody -> Natural
-responseBodyContentLength (TextResponseBody _text byteString) = convertUnsafe $ BS.length byteString
+responseBodyContentLength = \case
+  (ByteStringResponseBody byteString) -> convertUnsafe $ BS.length byteString
+  (TextResponseBody _text byteString) -> convertUnsafe $ BS.length byteString
 
 responseBodyByteString :: ResponseBody -> BS.ByteString
-responseBodyByteString (TextResponseBody _text byteString) = byteString
+responseBodyByteString = \case
+  (ByteStringResponseBody byteString) -> byteString
+  (TextResponseBody _text byteString) -> byteString
 
 textBody :: ResponseBody -> Text
-textBody (TextResponseBody text _bytestring) = text
+textBody = \case
+  (TextResponseBody text _byteString) -> text
+  (ByteStringResponseBody byteString) -> Text.decodeUtf8 (Base64.encode byteString)
+
+mkByteStringResponseBody :: BS.ByteString -> ResponseBody
+mkByteStringResponseBody = ByteStringResponseBody
 
 mkTextResponseBody :: Text -> ResponseBody
 mkTextResponseBody value = TextResponseBody value (Text.encodeUtf8 value)
