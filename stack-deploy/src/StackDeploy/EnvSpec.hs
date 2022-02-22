@@ -3,7 +3,8 @@ module StackDeploy.EnvSpec
   , Value(..)
   , ecsTaskDefinitionEnvironment
   , lambdaEnvironment
-  , loadStackValue
+  , loadEnv
+  , loadStack
   , posixEnv
   )
 where
@@ -16,6 +17,7 @@ import qualified Data.Aeson                       as JSON
 import qualified Data.Foldable                    as Foldable
 import qualified Data.List                        as List
 import qualified Network.AWS.CloudFormation.Types as CF
+import qualified UnliftIO.Environment             as Environment
 
 data Value
   = StackName
@@ -52,16 +54,19 @@ posixEnv :: CF.Stack -> [Entry] -> RIO env [(String, String)]
 posixEnv stack = traverse render . List.sortOn envName
   where
     render :: Entry -> RIO env (String, String)
-    render (Entry key value) = do
-      (convert key,) . convert <$> loadStackValue stack value
+    render entry@Entry{..} = do
+      (convert envName,) . convert <$> loadStack stack entry
 
-loadStackValue :: CF.Stack -> Value -> RIO env Text
-loadStackValue stack = \case
+loadStack :: CF.Stack -> Entry -> RIO env Text
+loadStack stack Entry{..} = case envValue of
   StackOutput output'  -> liftIO $ fetchOutput stack output'
   StackParameter param -> fetchParam stack param
   StackPrefix text     -> pure $ (stack ^. CF.sStackName) <> "-" <> text
   StackName            -> pure $ stack ^. CF.sStackName
   Static text          -> pure text
+
+loadEnv :: Entry -> RIO env Text
+loadEnv Entry{..} = convert <$> Environment.getEnv (convert envName)
 
 renderValue :: Value -> Val Text
 renderValue = \case
