@@ -11,6 +11,7 @@ base 4.15.0.0
 base-compat 0.11.2
 base-compat-batteries 0.11.2
 base-orphans 0.8.5
+base64-bytestring 1.2.1.0
 basement 0.0.12
 bifunctors 5.5.11
 binary 0.8.8.0
@@ -60,7 +61,7 @@ http-client 0.6.4.1
 http-types 0.12.3
 indexed-traversable 0.1.1
 integer-logarithms 1.0.3.1
-lambda-alb 0.0.3
+lambda-alb 0.0.4
 lambda-runtime 0.0.2
 libyaml 0.1.2
 memory 0.16.0

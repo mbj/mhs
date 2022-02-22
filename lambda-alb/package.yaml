@@ -3,7 +3,7 @@ _common/package: !include "../common/package.yaml"
 name:               lambda-alb
 synopsis:           AWS lambda ALB integration
 description:        AWS lambda ALB integration
-version:            0.0.3
+version:            0.0.4
 author:             epicallan.al@gmail.com, Markus Schirp, Makara digital
 maintainer:         epicallan.al@gmail.com, mbj@schirp-dso.com
 category:           Web,AWS
@@ -14,6 +14,7 @@ extra-source-files: README.md
 dependencies:
 - aeson
 - base
+- base64-bytestring
 - bytestring
 - case-insensitive
 - exceptions
