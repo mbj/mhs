@@ -32,7 +32,7 @@ eitherRecentYear = convert possiblyWrongYearFromDB
 -- | Unsafe construction of a year; providing a value greater than
 -- 2020 should result into a runtime error
 unsafeRecentYear :: Year
-unsafeRecentYear = convertUnsafe possiblyWrongYearFromDB
+unsafeRecentYear = convertImpure possiblyWrongYearFromDB
 
 recentYearNumber :: Natural
 recentYearNumber = convert recentYear
@@ -50,7 +50,7 @@ firstNameText :: Text
 firstNameText = convert firstName
 
 firstName' :: FirstName
-firstName' = convertUnsafe firstNameText
+firstName' = convertImpure firstNameText
 
 -- | Using Bounded text with phantomTypes
 

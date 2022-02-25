@@ -387,7 +387,7 @@ toException id exception = do
     }
 
 exceptionMessage :: Exception.SomeException -> ExceptionMessage
-exceptionMessage exception = convertUnsafe truncated
+exceptionMessage exception = convertImpure truncated
   where
     text      = convert @Text $ Exception.displayException exception
     truncated =

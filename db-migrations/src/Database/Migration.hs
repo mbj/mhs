@@ -176,7 +176,7 @@ applyMigration MigrationFile{..} = do
   Connection.runSession . Transaction.transaction Transaction.Serializable Transaction.Write $ do
     Transaction.sql sql
 
-    Transaction.statement (BS.pack $ BA.unpack digest, convertUnsafe index)
+    Transaction.statement (BS.pack $ BA.unpack digest, convertImpure index)
       [resultlessStatement|
         INSERT INTO
           schema_migrations
@@ -199,7 +199,7 @@ readAppliedMigrations = Connection.runSession $ do
       ORDER BY
         index
     |]
-  pure $ uncurry AppliedMigration . bimap fromByteString convertUnsafe <$> rows
+  pure $ uncurry AppliedMigration . bimap fromByteString convertImpure <$> rows
   where
     fromByteString :: BS.ByteString -> Hash.Digest Hash.SHA3_256
     fromByteString

@@ -5,7 +5,7 @@ cabal-version: 1.18
 -- see: https://github.com/sol/hpack
 
 name:           db-migrations
-version:        0.0.1
+version:        0.0.2
 description:    Please see the README on GitHub at <https://github.com/mbj/db-migrations#readme>
 homepage:       https://github.com/mbj/mhs#readme
 bug-reports:    https://github.com/mbj/mhs/issues

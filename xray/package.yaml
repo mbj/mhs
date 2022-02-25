@@ -1,7 +1,7 @@
 _common/package: !include "../common/package.yaml"
 
 name:        xray
-version:     0.0.3
+version:     0.0.4
 synopsis:   Recording and submitting traces for Amazon XRay
 
 <<: *defaults

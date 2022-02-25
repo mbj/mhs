@@ -24,7 +24,7 @@ parseJSONTextBoundedLength field (min, max) = JSON.withText field parseLength
       | otherwise    = pure text
       where
         length :: Natural
-        length = convertUnsafe $ Text.length text
+        length = convertImpure $ Text.length text
 
         failMessage :: String -> JSON.Parser Text
         failMessage message = fail $ "parsing " <> field <> " failed, " <> message
