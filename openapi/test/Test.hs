@@ -59,6 +59,8 @@ parsePathTemplate
       , ("/1",           PathTemplate [static' "1"])
       , ("/__foo__",     PathTemplate [static' "__foo__"])
       , ("/foo",         PathTemplate [static' "foo"])
+      , ("/foo.csv",     PathTemplate [static' "foo.csv"])
+      , ("/foo..csv",    PathTemplate [static' "foo..csv"])
       , ("/foo-bar",     PathTemplate [static' "foo-bar"])
       , ("/foo/bar",     PathTemplate [static' "foo", static' "bar"])
       , ("/foo/{bar}",   PathTemplate [static' "foo", dynamic "bar"])
@@ -77,12 +79,15 @@ parsePathTemplate
       [ ""
       , "foo"
       , "//"
+      , ".csv"
       , "/foo/"
       , "/foo/{id}/"
       , "/foo/{}"
       , "/{id}/"
       , "{id}"
       , "{}"
+      , "{"
+      , "}"
       ]
 
     mkRejected' :: Text -> TestTree
