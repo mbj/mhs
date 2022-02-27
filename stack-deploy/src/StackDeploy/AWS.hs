@@ -1,23 +1,16 @@
-module StackDeploy.AWS
-  ( module Exports
-  , AWS.paginate
-  , AWS.send
-  , listResource
-  )
-where
+module StackDeploy.AWS (listResource) where
 
 import Data.Conduit (ConduitT, (.|))
 import Data.Conduit.Combinators (concatMap)
-import Network.AWS (AWSPager)
-import Network.AWS.Lens
-import Network.AWS.Types as Exports
+-- import Network.AWS.Types as Exports
 import StackDeploy.Prelude
 
+import qualified Amazonka
 import qualified MRIO.Amazonka as AWS
 
 listResource
-  :: (AWS.Env env, AWSPager a)
+  :: (AWS.Env env, Amazonka.AWSPager a)
   => a
-  -> Lens' (Rs a) [b]
+  -> (Amazonka.AWSResponse a -> [b])
   -> ConduitT () b (RIO env) ()
-listResource action getList = AWS.paginate action .| concatMap (view getList)
+listResource action map = AWS.paginate action .| concatMap map

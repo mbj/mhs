@@ -1,4 +1,4 @@
-import Data.HashMap.Strict (HashMap)
+import Data.Aeson.KeyMap (KeyMap)
 import Data.Maybe (catMaybes)
 import OpenApi.Paths
 import OpenApi.Prelude
@@ -10,10 +10,10 @@ import OpenApi.TaggedText
 import Test.Tasty
 import Test.Tasty.HUnit
 
-import qualified Data.Aeson                as JSON
-import qualified Data.Aeson.Types          as JSON
-import qualified Data.HashMap.Strict       as HashMap
-import qualified Data.Map.Strict           as Map
+import qualified Data.Aeson        as JSON
+import qualified Data.Aeson.KeyMap as KeyMap
+import qualified Data.Aeson.Types  as JSON
+import qualified Data.Map.Strict   as Map
 import qualified Devtools
 import qualified Network.HTTP.Types.Status as HTTP
 
@@ -159,11 +159,11 @@ mkAccepted (input, expected) = do
         JSON.Object $ normalizeAttributes properties
       other -> other
 
-    normalizeAttributes :: HashMap Text JSON.Value -> HashMap Text JSON.Value
+    normalizeAttributes :: KeyMap JSON.Value -> KeyMap JSON.Value
     normalizeAttributes map
-      = HashMap.fromList . catMaybes $ normalizePair <$> HashMap.toList map
+      = KeyMap.fromList . catMaybes $ normalizePair <$> KeyMap.toList map
 
-    normalizePair :: (Text, JSON.Value) -> Maybe (Text, JSON.Value)
+    normalizePair :: (JSON.Key, JSON.Value) -> Maybe (JSON.Key, JSON.Value)
     normalizePair (key, value) =
       if value == JSON.Null
          then empty

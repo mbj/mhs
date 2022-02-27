@@ -4,9 +4,9 @@ import OpenApi.Prelude
 import OpenApi.Referencable
 import OpenApi.Reference
 
-import qualified Data.Aeson          as JSON
-import qualified Data.Aeson.Types    as JSON
-import qualified Data.HashMap.Strict as HashMap
+import qualified Data.Aeson        as JSON
+import qualified Data.Aeson.KeyMap as KeyMap
+import qualified Data.Aeson.Types  as JSON
 
 data ReferenceOr a = ReferenceTo (Reference a) | Literal a
   deriving stock (Eq, Show)
@@ -17,11 +17,11 @@ instance (Referencable a, JSON.FromJSON a) => JSON.FromJSON (ReferenceOr a) wher
       parseObject :: JSON.Object -> JSON.Parser (ReferenceOr a)
       parseObject object
         = maybe (Literal <$> JSON.parseJSON input) (parseReference object)
-        $ HashMap.lookup "$ref" object
+        $ KeyMap.lookup "$ref" object
 
       parseReference :: JSON.Object -> JSON.Value -> JSON.Parser (ReferenceOr a)
       parseReference object value =
-        if HashMap.size object == 1
+        if KeyMap.size object == 1
           then ReferenceTo <$> JSON.parseJSON value
           else fail "$ref key with siblings"
 

@@ -21,30 +21,31 @@ import StackDeploy.Prelude
 import StackDeploy.Types
 import StackDeploy.Wait
 
-import qualified Data.ByteString                           as BS
-import qualified Data.ByteString.Lazy                      as LBS
-import qualified Data.Foldable                             as Foldable
-import qualified Data.Text                                 as Text
-import qualified Data.Text.Encoding                        as Text
-import qualified Data.Text.IO                              as Text
-import qualified MRIO.Amazonka                             as AWS
-import qualified Network.AWS.CloudFormation.CreateStack    as CF
-import qualified Network.AWS.CloudFormation.DeleteStack    as CF
-import qualified Network.AWS.CloudFormation.DescribeStacks as CF
-import qualified Network.AWS.CloudFormation.Types          as CF
-import qualified Network.AWS.CloudFormation.UpdateStack    as CF
-import qualified Network.AWS.S3.Types                      as S3
-import qualified StackDeploy.AWS                           as AWS
-import qualified StackDeploy.Env                           as StackDeploy
-import qualified StackDeploy.InstanceSpec                  as InstanceSpec
-import qualified StackDeploy.Parameters                    as Parameters
-import qualified StackDeploy.S3                            as S3
-import qualified StackDeploy.Template                      as Template
+import qualified Amazonka
+import qualified Amazonka.CloudFormation.CreateStack    as CF
+import qualified Amazonka.CloudFormation.DeleteStack    as CF
+import qualified Amazonka.CloudFormation.DescribeStacks as CF
+import qualified Amazonka.CloudFormation.Types          as CF
+import qualified Amazonka.CloudFormation.UpdateStack    as CF
+import qualified Amazonka.S3.Types                      as S3
+import qualified Data.ByteString                        as BS
+import qualified Data.ByteString.Lazy                   as LBS
+import qualified Data.Foldable                          as Foldable
+import qualified Data.Text                              as Text
+import qualified Data.Text.Encoding                     as Text
+import qualified Data.Text.IO                           as Text
+import qualified MRIO.Amazonka                          as AWS
+import qualified StackDeploy.AWS                        as AWS
+import qualified StackDeploy.Env                        as StackDeploy
+import qualified StackDeploy.InstanceSpec               as InstanceSpec
+import qualified StackDeploy.Parameters                 as Parameters
+import qualified StackDeploy.S3                         as S3
+import qualified StackDeploy.Template                   as Template
 
 data OperationFields a = OperationFields
   { tokenField        :: Lens' a (Maybe Text)
-  , capabilitiesField :: Lens' a [CF.Capability]
-  , parametersField   :: Lens' a [CF.Parameter]
+  , capabilitiesField :: Lens' a (Maybe [CF.Capability])
+  , parametersField   :: Lens' a (Maybe [CF.Parameter])
   , roleARNField      :: Lens' a (Maybe Text)
   , templateBodyField :: Lens' a (Maybe Text)
   , templateURLField  :: Lens' a (Maybe Text)
@@ -74,21 +75,21 @@ perform = \case
     create :: InstanceSpec env -> RIO env RemoteOperationResult
     create instanceSpec@InstanceSpec{..} = do
       token   <- newToken
-      stackId <- accessStackId CF.csrsStackId =<< doCreate token
+      stackId <- accessStackId CF.createStackResponse_stackId =<< doCreate token
       waitFor RemoteOperation{..}
       where
-        doCreate :: Token -> RIO env (AWS.Rs CF.CreateStack)
+        doCreate :: Token -> RIO env (Amazonka.AWSResponse CF.CreateStack)
         doCreate token =
-          prepareOperation operationFields instanceSpec token (CF.createStack $ toText name)
+          prepareOperation operationFields instanceSpec token (CF.newCreateStack $ toText name)
             >>= AWS.send
 
         operationFields = OperationFields
-          { capabilitiesField = CF.csCapabilities
-          , parametersField   = CF.csParameters
-          , roleARNField      = CF.csRoleARN
-          , templateBodyField = CF.csTemplateBody
-          , templateURLField  = CF.csTemplateURL
-          , tokenField        = CF.csClientRequestToken
+          { capabilitiesField = CF.createStack_capabilities
+          , parametersField   = CF.createStack_parameters
+          , roleARNField      = CF.createStack_roleARN
+          , templateBodyField = CF.createStack_templateBody
+          , templateURLField  = CF.createStack_templateURL
+          , tokenField        = CF.createStack_clientRequestToken
           }
 
     delete :: RemoteOperation -> RIO env RemoteOperationResult
@@ -99,8 +100,8 @@ perform = \case
         doDelete
           = void
           . AWS.send
-          . setText CF.dsClientRequestToken token
-          . CF.deleteStack $ toText stackId
+          . setText CF.deleteStack_clientRequestToken token
+          . CF.newDeleteStack $ toText stackId
 
     update
       :: InstanceSpec env
@@ -115,28 +116,26 @@ perform = \case
       where
         doUpdate :: RIO env ()
         doUpdate =
-          prepareOperation operationFields instanceSpec token (CF.updateStack $ toText stackId)
+          prepareOperation operationFields instanceSpec token (CF.newUpdateStack $ toText stackId)
             >>= void . AWS.send
 
-        handleNoUpdateError :: AWS.Error -> Maybe RemoteOperationResult
+        handleNoUpdateError :: Amazonka.Error -> Maybe RemoteOperationResult
         handleNoUpdateError
-          ( AWS.ServiceError
-            AWS.ServiceError'
-            { _serviceCode =
-               AWS.ErrorCode "ValidationError"
-            , _serviceMessage =
-              Just (AWS.ErrorMessage "No updates are to be performed.")
+          ( Amazonka.ServiceError
+            Amazonka.ServiceError'
+            { _serviceErrorCode = Amazonka.ErrorCode "ValidationError"
+            , _serviceErrorMessage = Just (Amazonka.ErrorMessage "No updates are to be performed.")
             }
           ) = pure RemoteOperationSuccess
         handleNoUpdateError _error = empty
 
         operationFields = OperationFields
-          { capabilitiesField = CF.usCapabilities
-          , parametersField   = CF.usParameters
-          , roleARNField      = CF.usRoleARN
-          , templateBodyField = CF.usTemplateBody
-          , templateURLField  = CF.usTemplateURL
-          , tokenField        = CF.usClientRequestToken
+          { capabilitiesField = CF.updateStack_capabilities
+          , parametersField   = CF.updateStack_parameters
+          , roleARNField      = CF.updateStack_roleARN
+          , templateBodyField = CF.updateStack_templateBody
+          , templateURLField  = CF.updateStack_templateURL
+          , tokenField        = CF.updateStack_clientRequestToken
           }
 
     waitFor :: RemoteOperation -> RIO env RemoteOperationResult
@@ -159,29 +158,29 @@ printEvent event = do
     , resourceType
     , resourceStatus
     ]
-  sayReason $ view CF.seResourceStatusReason event
+  sayReason $ getField @"resourceStatusReason" event
   where
     logicalResourceId =
       fromMaybe
         "[unknown-logical-resource-id]"
-        (view CF.seLogicalResourceId event)
+        (getField @"logicalResourceId" event)
 
     physicalResourceId =
       fromMaybe
         "[unknown-physical-resource-id]"
-        (view CF.sePhysicalResourceId event)
+        (getField @"physicalResourceId" event)
 
     resourceType =
       fromMaybe
         "[unknown-resource-type]"
-        (view CF.seResourceType event)
+        (getField @"resourceType" event)
 
     resourceStatus :: Text
     resourceStatus =
       maybe
         "[unknown-resource-type]"
         (convertText . show)
-        (view CF.seResourceStatus event)
+        (getField @"resourceStatus" event)
 
     timeFormat :: String
     timeFormat = "%Y-%m-%dT%H:%M:%S"
@@ -190,7 +189,7 @@ printEvent event = do
     timestamp
       = convertText
       . formatTime defaultTimeLocale timeFormat
-      $ view CF.seTimestamp event
+      $ view CF.stackEvent_timestamp event
 
     sayReason :: Maybe Text -> RIO env ()
     sayReason = maybe (pure ()) (say . ("- " <>))
@@ -199,12 +198,12 @@ getStack :: AWS.Env env => InstanceSpec.Name env -> RIO env (Maybe CF.Stack)
 getStack name =
   catchJust handleNotFoundError (pure <$> getExistingStack name) pure
   where
-    handleNotFoundError :: AWS.Error -> Maybe (Maybe CF.Stack)
+    handleNotFoundError :: Amazonka.Error -> Maybe (Maybe CF.Stack)
     handleNotFoundError
-      (AWS.ServiceError
-        AWS.ServiceError'
-        { _serviceCode    = AWS.ErrorCode "ValidationError"
-        , _serviceMessage = Just actualMessage
+      (Amazonka.ServiceError
+        Amazonka.ServiceError'
+        { _serviceErrorCode    = Amazonka.ErrorCode "ValidationError"
+        , _serviceErrorMessage = Just actualMessage
         }
       )
       = if actualMessage == expectedMessage
@@ -212,9 +211,9 @@ getStack name =
         else empty
     handleNotFoundError _error = empty
 
-    expectedMessage :: AWS.ErrorMessage
+    expectedMessage :: Amazonka.ErrorMessage
     expectedMessage =
-      AWS.ErrorMessage $ "Stack with id " <> toText name <> " does not exist"
+      Amazonka.ErrorMessage $ "Stack with id " <> toText name <> " does not exist"
 
 getStackId :: AWS.Env env => InstanceSpec.Name env -> RIO env (Maybe Id)
 getStackId = getId <=< getStack
@@ -230,8 +229,8 @@ getExistingStack name = maybe failMissingRequested pure =<< doRequest
   where
     doRequest :: RIO env (Maybe CF.Stack)
     doRequest = runConduit
-      $ AWS.listResource describeSpecificStack CF.dsrsStacks
-      .| find ((toText name ==) . view CF.sStackName)
+      $ AWS.listResource describeSpecificStack (fromMaybe [] . getField @"stacks")
+      .| find ((toText name ==) . getField @"stackName")
 
     failMissingRequested :: RIO env a
     failMissingRequested
@@ -239,7 +238,7 @@ getExistingStack name = maybe failMissingRequested pure =<< doRequest
       $ "Successful request to stack " <> convertText name <> " did not return the stack"
 
     describeSpecificStack :: CF.DescribeStacks
-    describeSpecificStack = set CF.dStackName (pure $ toText name) CF.describeStacks
+    describeSpecificStack = set CF.describeStacks_stackName (pure $ toText name) CF.newDescribeStacks
 
 getExistingStackId
   :: AWS.Env env
@@ -253,9 +252,8 @@ getOutput name key = do
 
   maybe
     (failStack $ "Output " <> convertText key <> " missing")
-    (maybe (failStack $ "Output " <> convertText key <> " has no value") pure . view CF.oOutputValue)
-    (Foldable.find ((==) (pure key) . view CF.oOutputKey) (view CF.sOutputs stack))
-
+    (maybe (failStack $ "Output " <> convertText key <> " has no value") pure . getField @"outputValue")
+    (Foldable.find ((==) (pure key) . getField @"outputKey") (fromMaybe [] $ getField @"outputs" stack))
   where
     failStack :: Text -> RIO env a
     failStack message
@@ -263,8 +261,8 @@ getOutput name key = do
 
 stackNames :: AWS.Env env => ConduitT () (InstanceSpec.Name env) (RIO env) ()
 stackNames
-  =  AWS.listResource CF.describeStacks CF.dsrsStacks
-  .| map (InstanceSpec.mkName . view CF.sStackName)
+  =  AWS.listResource CF.newDescribeStacks (fromMaybe [] . getField @"stacks")
+  .| map (InstanceSpec.mkName . getField @"stackName")
 
 prepareOperation
   :: forall env a . (AWS.Env env, StackDeploy.Env env)
@@ -275,8 +273,8 @@ prepareOperation
   -> RIO env a
 prepareOperation OperationFields{..} InstanceSpec{..} token
   = setTemplateBody
-  . set     capabilitiesField capabilities
-  . set     parametersField   (Parameters.cfParameters parameters)
+  . set     capabilitiesField (pure capabilities)
+  . set     parametersField   (pure $ Parameters.cfParameters parameters)
   . set     roleARNField      (toText <$> roleARN)
   . setText tokenField        token
   where
@@ -326,7 +324,7 @@ finalMessage = \case
   RemoteOperationSuccess -> "succcess"
 
 idFromStack :: CF.Stack -> RIO env Id
-idFromStack = accessStackId CF.sStackId
+idFromStack = accessStackId CF.stack_stackId
 
 accessStackId :: Lens' a (Maybe Text) -> a -> RIO env Id
 accessStackId lens

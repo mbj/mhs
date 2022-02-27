@@ -4,11 +4,10 @@ import StackDeploy.Prelude
 import Stratosphere
 import Stratosphere.Helpers
 
-import qualified Data.Aeson                       as JSON
-import qualified Data.Foldable                    as Foldable
-import qualified Data.HashMap.Strict              as HashMap
-import qualified Data.Vector                      as Vector
-import qualified Network.AWS.CloudFormation.Types as CF
+import qualified Amazonka.CloudFormation.Types as CF
+import qualified Data.Aeson                    as JSON
+import qualified Data.Foldable                 as Foldable
+import qualified Data.Vector                   as Vector
 
 mkName :: Val Text -> Val Text
 mkName name = Join "-" [awsStackName, name]
@@ -44,7 +43,7 @@ allowResourcePolicy
   -> [Text]
   -> a
 allowResourcePolicy constructor resources name actions
-  = constructor (HashMap.singleton "Statement" statement) (Literal name)
+  = constructor [("Statement", statement)] (Literal name)
   where
     statement :: JSON.Value
     statement = JSON.object
@@ -54,7 +53,7 @@ allowResourcePolicy constructor resources name actions
       ]
 
 assumeRole :: Text -> JSON.Object
-assumeRole service = HashMap.fromList
+assumeRole service =
   [ ("Version", JSON.String "2012-10-17")
   , ("Statement"
     , JSON.object
@@ -77,12 +76,12 @@ fetchOutput
 fetchOutput stack soutput =
   maybe
     (failOutputKey "missing")
-    (maybe (failOutputKey "has no value") pure . view CF.oOutputValue)
+    (maybe (failOutputKey "has no value") pure . getField @"outputValue")
     $ Foldable.find
-      ((==) (pure key) . view CF.oOutputKey)
-      (view CF.sOutputs stack)
+      ((==) (pure key) . getField @"outputKey")
+      (fromMaybe [] (getField @"outputs" stack))
   where
-    key = view Stratosphere.outputName soutput
+    key = getField @"_outputName" soutput
 
     failOutputKey :: Text -> m a
     failOutputKey message
@@ -93,7 +92,7 @@ fetchOutput stack soutput =
     failStack message
       = fail
       . convertText
-      $ "Stack: " <> view CF.sStackName stack <> " " <> message
+      $ "Stack: " <> getField @"stackName" stack <> " " <> message
 
 resolveSecretsmanagerSecret :: Val Text -> Val Text
 resolveSecretsmanagerSecret arn = wrap $ Join ":" ["resolve", "secretsmanager", arn]

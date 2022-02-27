@@ -1,7 +1,7 @@
 _common/package: !include "../common/package.yaml"
 
 name:        openapi
-version:     0.0.2
+version:     0.0.3
 synopsis:    Openapi3 Types
 author:      Markus Schirp
 maintainer:  mbj@schirp-dso.com
@@ -9,7 +9,7 @@ maintainer:  mbj@schirp-dso.com
 <<: *defaults
 
 dependencies:
-- aeson                >= 1.5
+- aeson                >= 2.0
 - attoparsec           >= 0.13
 - base
 - bytestring

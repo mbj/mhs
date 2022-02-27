@@ -14,10 +14,10 @@ import StackDeploy.Parameters (Parameters)
 import StackDeploy.Prelude
 import StackDeploy.Template (Template)
 
-import qualified Network.AWS.CloudFormation.Types as CF
-import qualified StackDeploy.Parameters           as Parameters
-import qualified StackDeploy.Provider             as Provider
-import qualified StackDeploy.Template             as Template
+import qualified Amazonka.CloudFormation.Types as CF
+import qualified StackDeploy.Parameters        as Parameters
+import qualified StackDeploy.Provider          as Provider
+import qualified StackDeploy.Template          as Template
 
 newtype RoleARN = RoleARN Text
   deriving (Conversion Text) via Text

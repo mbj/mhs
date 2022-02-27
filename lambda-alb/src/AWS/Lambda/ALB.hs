@@ -16,7 +16,7 @@ where
 import AWS.Lambda.Header
 import AWS.Lambda.Runtime.Prelude
 import Data.Aeson ((.:))
-import Data.HashMap.Strict (HashMap)
+import Data.Map.Strict (Map)
 
 import qualified AWS.Lambda.Runtime     as Lambda.Runtime
 import qualified Data.Aeson             as JSON
@@ -34,7 +34,7 @@ data Request a = Request
   { path                  :: Text
   , httpMethod            :: HTTP.StdMethod
   , headers               :: Headers
-  , queryStringParameters :: HashMap Text Text
+  , queryStringParameters :: Map Text Text
   , isBase64Encoded       :: Bool
   , requestContext        :: JSON.Value
   , body                  :: a

@@ -1,7 +1,7 @@
 module StackDeploy.Events (Poll(..), defaultPoll, pollEvents) where
 
 import Control.Concurrent (threadDelay)
-import Control.Lens ((.~), view)
+import Control.Lens ((?~))
 import Data.Conduit (ConduitT, (.|), await, runConduit, yield)
 import Data.Conduit.Combinators (find, iterM, takeWhile, yieldMany)
 import Data.Conduit.List (consume)
@@ -10,11 +10,11 @@ import StackDeploy.AWS
 import StackDeploy.Prelude
 import StackDeploy.Types
 
-import qualified Data.Foldable                                  as Foldable
-import qualified Data.List                                      as List
-import qualified MRIO.Amazonka                                  as AWS
-import qualified Network.AWS.CloudFormation.DescribeStackEvents as CF
-import qualified Network.AWS.CloudFormation.Types               as CF
+import qualified Amazonka.CloudFormation.DescribeStackEvents as CF
+import qualified Amazonka.CloudFormation.Types               as CF
+import qualified Data.Foldable                               as Foldable
+import qualified Data.List                                   as List
+import qualified MRIO.Amazonka                               as AWS
 
 data Poll = Poll
   { delay          :: forall m . MonadIO m => m ()
@@ -83,7 +83,7 @@ allEvents Poll{..} =
         else maybe (pure ()) go (listToMaybe events)
 
     isExpectedEvent :: CF.StackEvent -> CF.StackEvent -> Bool
-    isExpectedEvent = (==) `on` view CF.seEventId
+    isExpectedEvent = (==) `on` getField @"eventId"
 
     poll
       :: ConduitT () CF.StackEvent (RIO env) ()
@@ -97,9 +97,9 @@ stackEvents
   :: AWS.Env env
   => Id
   -> ConduitT () CF.StackEvent (RIO env) ()
-stackEvents stackId = listResource req CF.dsersStackEvents
+stackEvents stackId = listResource request (fromMaybe [] . getField @"stackEvents")
   where
-    req = CF.describeStackEvents & CF.dseStackName .~ pure (toText stackId)
+    request = CF.newDescribeStackEvents & CF.describeStackEvents_stackName ?~ toText stackId
 
 -- | takeUntil but returns the first matching item instead of discarding it
 takeUntilInclusive :: forall a m . Monad m => (a -> Bool) -> ConduitT a a m ()

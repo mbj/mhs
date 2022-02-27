@@ -1,7 +1,7 @@
 _common/package: !include "../common/package.yaml"
 
 name:        stack-deploy
-version:     0.0.3
+version:     0.0.4
 synopsis:    Utilities around cloudformation templates
 license:     BSD3
 
@@ -10,10 +10,10 @@ license:     BSD3
 dependencies:
 - aeson                   >= 1.4
 - aeson-pretty            >= 0.8
-- amazonka
-- amazonka-cloudformation
-- amazonka-core
-- amazonka-s3
+- amazonka                >= 2.0
+- amazonka-cloudformation >= 2.0
+- amazonka-core           >= 2.0
+- amazonka-s3             >= 2.0
 - attoparsec              >= 0.13
 - base
 - bytestring

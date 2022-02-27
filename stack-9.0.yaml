@@ -1,21 +1,18 @@
-resolver: nightly-2021-10-29
+resolver: nightly-2022-02-26
 extra-deps:
-- http-client-0.6.4.1@sha256:ea569e3ebc00e7bb68162fbdf85aa63e653b974eaff63df7b972e4296687e25c,5322
 - mprelude
-- stratosphere-0.58.0@sha256:f87e078696a13eaf35c08ef694803b3744d36ceeea4eecd6ac712577a9438245,142880
-- symbols-0.3.0.0@sha256:5d051bccbd4bcb33fa8ce076bd3cd2bacc90973682f7340976758947eaa128a9,964
 - git: https://github.com/brendanhay/amazonka
-  commit: 020bc7bde47bb235e448c76088dc44d6cec13e9b
+  commit: f73a957d05f64863e867cf39d0db260718f0fadd
   subdirs:
-  - amazonka
-  - amazonka-s3
-  - core
-- git: https://github.com/mbj/amazonka
-  commit: 33aa6b71309793829b534fb29f6532d71c32b106
-  subdirs:
-  - amazonka-cloudformation
-- git: https://github.com/mbj/hasql-th
-  commit: 7a76df01f03651d4b3418038331f0f5235613867
+  - lib/amazonka
+  - lib/amazonka-core
+  - lib/services/amazonka-cloudformation
+  - lib/services/amazonka-s3
+  - lib/services/amazonka-sso
+  - lib/services/amazonka-sts
+- git: https://github.com/mbj/stratosphere
+  commit: cfe9c16022c7b0dc161345f05e51e8ddf2223dfd
+- symbols-0.3.0.0@sha256:5d051bccbd4bcb33fa8ce076bd3cd2bacc90973682f7340976758947eaa128a9,964
 flags:
   bounded:
     development: true

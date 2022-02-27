@@ -1,14 +1,13 @@
 module StackDeploy.Wait (waitForAccept) where
 
-import Control.Lens (view)
 import Data.Set (Set)
 import StackDeploy.Events
 import StackDeploy.Prelude
 import StackDeploy.Types
 
-import qualified Data.Foldable                    as Foldable
-import qualified MRIO.Amazonka                    as AWS
-import qualified Network.AWS.CloudFormation.Types as CF
+import qualified Amazonka.CloudFormation.Types as CF
+import qualified Data.Foldable                 as Foldable
+import qualified MRIO.Amazonka                 as AWS
 
 -- | Wait for remote operation to end in a final status
 --
@@ -30,7 +29,7 @@ waitForAccept RemoteOperation{..} action =
       maybe
         (throwString "Last event has no resource status")
         remoteOperationResult
-        . view CF.seResourceStatus
+        . getField @"resourceStatus"
 
     pollConfig = (defaultPoll stackId)
       { eventFilter    = isToken token
@@ -40,15 +39,15 @@ waitForAccept RemoteOperation{..} action =
 
     remoteOperationResult :: CF.ResourceStatus -> RIO env RemoteOperationResult
     remoteOperationResult = \case
-      CF.CreateComplete         -> pure RemoteOperationSuccess
-      CF.CreateFailed           -> pure RemoteOperationFailure
-      CF.DeleteComplete         -> pure RemoteOperationSuccess
-      CF.DeleteFailed           -> pure RemoteOperationFailure
-      CF.RollbackComplete       -> pure RemoteOperationFailure
-      CF.RollbackFailed         -> pure RemoteOperationFailure
-      CF.UpdateComplete         -> pure RemoteOperationSuccess
-      CF.UpdateFailed           -> pure RemoteOperationFailure
-      CF.UpdateRollbackComplete -> pure RemoteOperationFailure
+      CF.ResourceStatus_CREATE_COMPLETE          -> pure RemoteOperationSuccess
+      CF.ResourceStatus_CREATE_FAILED            -> pure RemoteOperationFailure
+      CF.ResourceStatus_DELETE_COMPLETE          -> pure RemoteOperationSuccess
+      CF.ResourceStatus_DELETE_FAILED            -> pure RemoteOperationFailure
+      CF.ResourceStatus_ROLLBACK_COMPLETE        -> pure RemoteOperationFailure
+      CF.ResourceStatus_ROLLBACK_FAILED          -> pure RemoteOperationFailure
+      CF.ResourceStatus_UPDATE_COMPLETE          -> pure RemoteOperationSuccess
+      CF.ResourceStatus_UPDATE_FAILED            -> pure RemoteOperationFailure
+      CF.ResourceStatus_UPDATE_ROLLBACK_COMPLETE -> pure RemoteOperationFailure
       status                    -> throwString $ message status
       where
         message :: Show a => a -> String
@@ -57,32 +56,32 @@ waitForAccept RemoteOperation{..} action =
 isStackEvent :: Set CF.ResourceStatus -> CF.StackEvent -> Bool
 isStackEvent allowedStatus event = isStackEventType && isExpectedResourceStatus
   where
-    resourceStatus = view CF.seResourceStatus event
+    resourceStatus = getField @"resourceStatus" event
 
     isExpectedResourceStatus =
       resourceStatus `Foldable.elem` (pure <$> Foldable.toList allowedStatus)
 
     isStackEventType =
-      view CF.seResourceType event == pure "AWS::CloudFormation::Stack"
+      getField @"resourceType" event == pure "AWS::CloudFormation::Stack"
 
 finalResourceStatus :: Set CF.ResourceStatus
 finalResourceStatus =
-  [ CF.CreateComplete
-  , CF.CreateFailed
-  , CF.DeleteComplete
-  , CF.DeleteFailed
-  , CF.RollbackComplete
-  , CF.UpdateComplete
-  , CF.UpdateFailed
-  , CF.UpdateRollbackComplete
+  [ CF.ResourceStatus_CREATE_COMPLETE
+  , CF.ResourceStatus_CREATE_FAILED
+  , CF.ResourceStatus_DELETE_COMPLETE
+  , CF.ResourceStatus_DELETE_FAILED
+  , CF.ResourceStatus_ROLLBACK_COMPLETE
+  , CF.ResourceStatus_UPDATE_COMPLETE
+  , CF.ResourceStatus_UPDATE_FAILED
+  , CF.ResourceStatus_UPDATE_ROLLBACK_COMPLETE
   ]
 
 initialResourceStatus :: Set CF.ResourceStatus
 initialResourceStatus =
-  [ CF.CreateInProgress
-  , CF.DeleteInProgress
-  , CF.UpdateInProgress
+  [ CF.ResourceStatus_CREATE_IN_PROGRESS
+  , CF.ResourceStatus_DELETE_IN_PROGRESS
+  , CF.ResourceStatus_UPDATE_IN_PROGRESS
   ]
 
 isToken :: Token -> CF.StackEvent -> Bool
-isToken token event = pure (toText token) == view CF.seClientRequestToken event
+isToken token event = pure (toText token) == getField @"clientRequestToken" event

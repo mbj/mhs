@@ -9,9 +9,10 @@ import OpenApi.ReferenceOr
 import OpenApi.Response
 
 import qualified Data.Aeson                as JSON
+import qualified Data.Aeson.Key            as JSON.Key
+import qualified Data.Aeson.KeyMap         as JSON.KeyMap
 import qualified Data.Aeson.Types          as JSON
 import qualified Data.Attoparsec.Text      as Text
-import qualified Data.HashMap.Strict       as HashMap
 import qualified Data.Map.Strict           as Map
 import qualified Network.HTTP.Types.Status as HTTP
 
@@ -24,20 +25,20 @@ data Responses = Responses
 instance JSON.FromJSON Responses where
   parseJSON = JSON.withObject "responses" $ \object -> do
     default' <- object .:? "default"
-    patterns <- parsePatterns . HashMap.toList $ HashMap.delete "default" object
+    patterns <- parsePatterns . JSON.KeyMap.toList $ JSON.KeyMap.delete "default" object
     pure Responses{..}
     where
       parsePatterns
-        :: [(Text, JSON.Value)]
+        :: [(JSON.Key, JSON.Value)]
         -> JSON.Parser (Map ResponseStatusPattern (ReferenceOr Response))
       parsePatterns pairs = Map.fromList <$> traverse (uncurry parsePair) pairs
 
       parsePair
-        :: Text
+        :: JSON.Key
         -> JSON.Value
         -> JSON.Parser (ResponseStatusPattern, ReferenceOr Response)
       parsePair key value =
-        (,) <$> parseResponseStatusPattern key <*> JSON.parseJSON value
+        (,) <$> parseResponseStatusPattern (JSON.Key.toText key) <*> JSON.parseJSON value
 
       parseResponseStatusPattern :: Text -> JSON.Parser ResponseStatusPattern
       parseResponseStatusPattern input =
@@ -50,19 +51,19 @@ instance JSON.FromJSON Responses where
           =<< (mkStatus <$> Text.decimal) <* Text.endOfInput
 
 instance JSON.ToJSON Responses where
-  toJSON Responses{..} = JSON.Object . HashMap.fromList $ catMaybes pairs
+  toJSON Responses{..} = JSON.Object . JSON.KeyMap.fromList $ catMaybes pairs
     where
-      pairs :: [Maybe (Text, JSON.Value)]
+      pairs :: [Maybe (JSON.Key, JSON.Value)]
       pairs
         = (("default",) . JSON.toJSON <$> default')
         : (pure <$> responsePairs)
 
-      responsePairs :: [(Text, JSON.Value)]
+      responsePairs :: [(JSON.Key, JSON.Value)]
       responsePairs = uncurry mkPattern <$> Map.toList patterns
 
-      mkPattern :: ResponseStatusPattern -> ReferenceOr Response -> (Text, JSON.Value)
+      mkPattern :: ResponseStatusPattern -> ReferenceOr Response -> (JSON.Key, JSON.Value)
       mkPattern (ResponseStatusExact httpStatus) =
-        (convertText . show $ HTTP.statusCode httpStatus,) . JSON.toJSON
+        (JSON.Key.fromText . convertText . show $ HTTP.statusCode httpStatus,) . JSON.toJSON
 
 newtype ResponseStatusPattern = ResponseStatusExact HTTP.Status
   deriving stock (Eq, Ord, Show)
