@@ -9,15 +9,15 @@ where
 import Control.Monad (unless)
 import StackDeploy.Prelude
 
-import qualified Data.ByteString           as BS
-import qualified Data.Text.Encoding        as Text
-import qualified MRIO.Amazonka             as AWS
-import qualified Network.AWS.Data.Body     as AWS
-import qualified Network.AWS.S3.HeadObject as S3
-import qualified Network.AWS.S3.PutObject  as S3
-import qualified Network.AWS.S3.Types      as S3
-import qualified Network.HTTP.Types        as HTTP
-import qualified StackDeploy.AWS           as AWS
+import qualified Amazonka.Data.Body     as AWS
+import qualified Amazonka.S3.HeadObject as S3
+import qualified Amazonka.S3.PutObject  as S3
+import qualified Amazonka.S3.Types      as S3
+import qualified Amazonka.Types         as AWS
+import qualified Data.ByteString        as BS
+import qualified Data.Text.Encoding     as Text
+import qualified MRIO.Amazonka          as AWS
+import qualified Network.HTTP.Types     as HTTP
 
 data TargetObject = TargetObject
   { uploadCallback :: forall m . MonadIO m => Text -> m ()
@@ -34,23 +34,18 @@ targetObjectKeyText :: TargetObject -> Text
 targetObjectKeyText = objectKeyText . objectKey
 
 testObjectExists
-  :: AWS.Env env
+  :: forall env . AWS.Env env
   => S3.BucketName
   -> S3.ObjectKey
   -> RIO env Bool
 testObjectExists bucketName objectKey =
-  catchJust handleNotFoundError
-    ((void . AWS.send $ S3.headObject bucketName objectKey) >> pure True)
-    pure
+  either withError (const $ pure True) =<< AWS.sendEither (S3.newHeadObject bucketName objectKey)
   where
-    handleNotFoundError :: AWS.Error -> Maybe Bool
-    handleNotFoundError
-      ( AWS.ServiceError
-        AWS.ServiceError'
-        { _serviceStatus = HTTP.Status { HTTP.statusCode = 404 } }
-      )
-      = pure False
-    handleNotFoundError _error = empty
+    withError :: AWS.Error -> RIO env Bool
+    withError = \case
+      (AWS.ServiceError AWS.ServiceError' { _serviceErrorStatus = HTTP.Status { HTTP.statusCode = 404 } }) ->
+         pure False
+      error -> throwM error
 
 putIfAbsent
   :: AWS.Env env
@@ -64,7 +59,7 @@ putIfAbsent bucketName objectKey object callback = do
 
   unless exists $ do
     callback
-    void . AWS.send $ S3.putObject bucketName objectKey (AWS.Hashed object)
+    void . AWS.send $ S3.newPutObject bucketName objectKey (AWS.Hashed object)
 
 hashedTargetObject
   :: S3.BucketName

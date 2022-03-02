@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5d9c2a723106248eded3c452a94f0c086e35bbd473811691dc60d3a0132a3214
+-- hash: a92be04e7ffd57710bc3d43d21acf31fa77a231b03e3dd47dca9620674b793a3
 
 name:           openapi
-version:        0.0.2
+version:        0.0.3
 synopsis:       Openapi3 Types
 homepage:       https://github.com/mbj/mhs#readme
 bug-reports:    https://github.com/mbj/mhs/issues
@@ -85,7 +85,7 @@ library
       TypeApplications
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
-      aeson >=1.5
+      aeson >=2.0
     , attoparsec >=0.13
     , base
     , bytestring
@@ -140,7 +140,7 @@ test-suite tasty
       TypeApplications
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      aeson >=1.5
+      aeson >=2.0
     , attoparsec >=0.13
     , base
     , bytestring

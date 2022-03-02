@@ -1,13 +1,13 @@
 _common/package: !include "../common/package.yaml"
 
 name:        xray
-version:     0.0.2
+version:     0.0.3
 synopsis:   Recording and submitting traces for Amazon XRay
 
 <<: *defaults
 
 dependencies:
-- aeson
+- aeson      >= 2.0
 - attoparsec
 - base
 - binary

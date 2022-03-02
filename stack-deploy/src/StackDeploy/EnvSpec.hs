@@ -13,11 +13,12 @@ import StackDeploy.Prelude
 import StackDeploy.Utils hiding (StackName)
 import Stratosphere
 
-import qualified Data.Aeson                       as JSON
-import qualified Data.Foldable                    as Foldable
-import qualified Data.List                        as List
-import qualified Network.AWS.CloudFormation.Types as CF
-import qualified UnliftIO.Environment             as Environment
+import qualified Amazonka.CloudFormation.Types as CF
+import qualified Data.Aeson                    as JSON
+import qualified Data.Aeson.Key                as JSON.Key
+import qualified Data.Foldable                 as Foldable
+import qualified Data.List                     as List
+import qualified UnliftIO.Environment          as Environment
 
 data Value
   = StackName
@@ -48,7 +49,7 @@ lambdaEnvironment entries = lambdaFunctionEnvironment & lfeVariables ?~ environm
     environmentObject :: JSON.Object
     environmentObject = fromList $ render <$> List.sortOn envName entries
 
-    render (Entry key value) = (key, JSON.toJSON $ renderValue value)
+    render (Entry key value) = (JSON.Key.fromText key, JSON.toJSON $ renderValue value)
 
 posixEnv :: CF.Stack -> [Entry] -> RIO env [(String, String)]
 posixEnv stack = traverse render . List.sortOn envName
@@ -61,8 +62,8 @@ loadStack :: CF.Stack -> Entry -> RIO env Text
 loadStack stack Entry{..} = case envValue of
   StackOutput output'  -> liftIO $ fetchOutput stack output'
   StackParameter param -> fetchParam stack param
-  StackPrefix text     -> pure $ (stack ^. CF.sStackName) <> "-" <> text
-  StackName            -> pure $ stack ^. CF.sStackName
+  StackPrefix text     -> pure $ (stack ^. CF.stack_stackName) <> "-" <> text
+  StackName            -> pure $ stack ^. CF.stack_stackName
   Static text          -> pure text
 
 loadEnv :: Entry -> RIO env Text
@@ -83,10 +84,10 @@ fetchParam
 fetchParam stack param =
   maybe
     (failOutputKey "missing")
-    (maybe (failOutputKey "has no value") pure . view CF.pParameterValue)
+    (maybe (failOutputKey "has no value") pure . getField @"parameterValue")
     $ Foldable.find
-      ((==) (pure key) . view CF.pParameterKey)
-      (view CF.sParameters stack)
+      ((==) (pure key) . getField @"parameterKey")
+      (fromMaybe [] $ getField @"parameters" stack)
   where
     key = param ^. Stratosphere.parameterName
 
@@ -99,4 +100,4 @@ fetchParam stack param =
     failStack message
       = throwString
       . convertText
-      $ "Stack: " <> (stack ^. CF.sStackName) <> " " <> message
+      $ "Stack: " <> (stack ^. CF.stack_stackName) <> " " <> message

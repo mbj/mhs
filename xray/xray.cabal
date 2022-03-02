@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 798eb850dfd117f5aea441176c805266cc86a8ae71cbb21970f3774aaaaf521c
+-- hash: 467169c94024820c0ee8edd41e4deb344a7ee8f7d3d6c1f631a35626f72c4d3b
 
 name:           xray
-version:        0.0.2
+version:        0.0.3
 synopsis:       Recording and submitting traces for Amazon XRay
 homepage:       https://github.com/mbj/mhs#readme
 bug-reports:    https://github.com/mbj/mhs/issues
@@ -69,7 +69,7 @@ library
       ViewPatterns
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
-      aeson
+      aeson >=2.0
     , attoparsec
     , base
     , binary
@@ -136,7 +136,7 @@ test-suite test
       ViewPatterns
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      aeson
+      aeson >=2.0
     , attoparsec
     , base
     , binary

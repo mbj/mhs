@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           stack-deploy
-version:        0.0.3
+version:        0.0.4
 synopsis:       Utilities around cloudformation templates
 homepage:       https://github.com/mbj/mhs#readme
 bug-reports:    https://github.com/mbj/mhs/issues
@@ -80,10 +80,10 @@ library
   build-depends:
       aeson >=1.4
     , aeson-pretty >=0.8
-    , amazonka
-    , amazonka-cloudformation
-    , amazonka-core
-    , amazonka-s3
+    , amazonka >=2.0
+    , amazonka-cloudformation >=2.0
+    , amazonka-core >=2.0
+    , amazonka-s3 >=2.0
     , attoparsec >=0.13
     , base
     , bytestring
@@ -155,10 +155,10 @@ test-suite test
   build-depends:
       aeson >=1.4
     , aeson-pretty >=0.8
-    , amazonka
-    , amazonka-cloudformation
-    , amazonka-core
-    , amazonka-s3
+    , amazonka >=2.0
+    , amazonka-cloudformation >=2.0
+    , amazonka-core >=2.0
+    , amazonka-s3 >=2.0
     , attoparsec >=0.13
     , base
     , bytestring

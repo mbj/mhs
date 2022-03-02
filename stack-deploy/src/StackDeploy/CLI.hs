@@ -1,6 +1,6 @@
 module StackDeploy.CLI (parserInfo) where
 
-import Control.Lens ((.~), view)
+import Control.Lens ((.~))
 import Data.Conduit ((.|), runConduit)
 import Options.Applicative hiding (value)
 import StackDeploy.CLI.Utils
@@ -13,20 +13,20 @@ import StackDeploy.Types
 import StackDeploy.Wait
 import System.Exit (ExitCode(..))
 
-import qualified Data.Attoparsec.Text                           as Text
-import qualified Data.ByteString.Lazy                           as LBS
-import qualified Data.Char                                      as Char
-import qualified Data.Conduit.Combinators                       as Conduit
-import qualified Data.Text.Encoding                             as Text
-import qualified Data.Text.IO                                   as Text
-import qualified MRIO.Amazonka                                  as AWS
-import qualified Network.AWS.CloudFormation.CancelUpdateStack   as CF
-import qualified Network.AWS.CloudFormation.DescribeStackEvents as CF
-import qualified Network.AWS.CloudFormation.Types               as CF
-import qualified StackDeploy.AWS                                as AWS
-import qualified StackDeploy.Env                                as StackDeploy
-import qualified StackDeploy.InstanceSpec                       as InstanceSpec
-import qualified StackDeploy.Template                           as Template
+import qualified Amazonka.CloudFormation.CancelUpdateStack   as CF
+import qualified Amazonka.CloudFormation.DescribeStackEvents as CF
+import qualified Amazonka.CloudFormation.Types               as CF
+import qualified Data.Attoparsec.Text                        as Text
+import qualified Data.ByteString.Lazy                        as LBS
+import qualified Data.Char                                   as Char
+import qualified Data.Conduit.Combinators                    as Conduit
+import qualified Data.Text.Encoding                          as Text
+import qualified Data.Text.IO                                as Text
+import qualified MRIO.Amazonka                               as AWS
+import qualified StackDeploy.AWS                             as AWS
+import qualified StackDeploy.Env                             as StackDeploy
+import qualified StackDeploy.InstanceSpec                    as InstanceSpec
+import qualified StackDeploy.Template                        as Template
 
 parserInfo
   :: forall env . (AWS.Env env, StackDeploy.Env env)
@@ -74,7 +74,7 @@ parserInfo instanceSpecProvider = wrapHelper commands "stack commands"
 
     cancel :: InstanceSpec.Name env -> RIO env ExitCode
     cancel name = do
-      void . AWS.send . CF.cancelUpdateStack $ toText name
+      void . AWS.send . CF.newCancelUpdateStack $ toText name
       success
 
     create :: InstanceSpec.Name env -> Parameters -> RIO env ExitCode
@@ -102,7 +102,7 @@ parserInfo instanceSpecProvider = wrapHelper commands "stack commands"
 
     outputs :: InstanceSpec.Name env -> RIO env ExitCode
     outputs name = do
-      traverse_ printOutput . view CF.sOutputs =<< getExistingStack name
+      traverse_ printOutput . fromMaybe [] . getField @"outputs" =<< getExistingStack name
       success
       where
         printOutput :: CF.Output -> RIO env ()
@@ -132,10 +132,10 @@ parserInfo instanceSpecProvider = wrapHelper commands "stack commands"
 
     events :: InstanceSpec.Name env -> RIO env ExitCode
     events name = do
-      runConduit $ AWS.listResource req CF.dsersStackEvents .| Conduit.mapM_ printEvent
+      runConduit $ AWS.listResource req (fromMaybe [] . getField @"stackEvents") .| Conduit.mapM_ printEvent
       success
       where
-        req = CF.describeStackEvents & CF.dseStackName .~ pure (toText name)
+        req = CF.newDescribeStackEvents & CF.describeStackEvents_stackName .~ pure (toText name)
 
     watch :: InstanceSpec.Name env -> RIO env ExitCode
     watch name = do

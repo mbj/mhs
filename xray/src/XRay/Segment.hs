@@ -60,8 +60,8 @@ import XRay.Parser
 import XRay.Prelude
 import XRay.TraceId
 
+import qualified Data.Aeson.KeyMap   as KeyMap
 import qualified Data.Aeson.Types    as JSON
-import qualified Data.HashMap.Strict as HashMap
 import qualified Data.Text           as Text
 import qualified Network.HTTP.Types  as HTTP
 import qualified UnliftIO.Exception  as Exception
@@ -238,7 +238,7 @@ data HttpRequest = HttpRequest
   deriving stock (Generic, Show)
 
 instance JSON.ToJSON HttpRequest where
-  toJSON HttpRequest{..} = JSON.Object . HashMap.fromList $
+  toJSON HttpRequest{..} = JSON.Object . KeyMap.fromList $
     fmap
       (second JSON.toJSON)
       [ ("client_ip",       JSON.toJSON <$> clientIp)
