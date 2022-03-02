@@ -244,8 +244,8 @@ checkedFromIntegral value = guard' (fromIntegral converted == value) converted
 convertEither :: forall b a e . (Conversion (Either e b) a) => a -> Either e b
 convertEither = convert
 
-convertUnsafe :: forall b a e . (Conversion (Either e b) a, Show e) => a -> b
-convertUnsafe = either (error . show) id . convertEither @b @a @e
+convertImpure :: forall b a e . (Conversion (Either e b) a, Show e) => a -> b
+convertImpure = either (error . show) id . convertEither @b @a @e
 
 convertThrow
   :: forall b a e m

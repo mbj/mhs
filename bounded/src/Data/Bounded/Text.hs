@@ -82,7 +82,7 @@ instance
         else throwError $ BoundTextError{..}
       where
         actual :: Natural
-        actual = convertUnsafe $ Text.length value
+        actual = convertImpure $ Text.length value
 
         label :: String
         label = labelName @label
@@ -102,11 +102,11 @@ convertTruncate value =
     then
       if actual <= max
         then pure $ BoundText value
-        else pure $ BoundText $ Text.take (convertUnsafe max) value
+        else pure $ BoundText $ Text.take (convertImpure max) value
       else empty
   where
     actual :: Natural
-    actual = convertUnsafe $ Text.length value
+    actual = convertImpure $ Text.length value
 
     max :: Natural
     max = fromType @max

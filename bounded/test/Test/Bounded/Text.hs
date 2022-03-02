@@ -67,7 +67,7 @@ valueSpec = testGroup "BoundText value tests"
       convertTruncate @1 @2 @"label" ""    @?= empty
 
 mkExample :: Text -> Example
-mkExample = convertUnsafe
+mkExample = convertImpure
 
 type IsValidExample text
   = ShouldBe (IsInRange (Length text) 2 2) (() :: Constraint, () :: Constraint)

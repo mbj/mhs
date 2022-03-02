@@ -83,8 +83,8 @@ isByteString = \case
 
 responseBodyContentLength :: ResponseBody -> Natural
 responseBodyContentLength = \case
-  (ByteStringResponseBody byteString) -> convertUnsafe $ BS.length byteString
-  (TextResponseBody _text byteString) -> convertUnsafe $ BS.length byteString
+  (ByteStringResponseBody byteString) -> convertImpure $ BS.length byteString
+  (TextResponseBody _text byteString) -> convertImpure $ BS.length byteString
 
 responseBodyByteString :: ResponseBody -> BS.ByteString
 responseBodyByteString = \case

@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 967f5ab78b6d2a42777227a7610d9065f54882e7576c2c1727cb2e18bfdebeaf
+-- hash: 6455ad961fcb91ca196463bf690b1faffa060ae4a3872543567bedcaf8d82088
 
 name:           bounded
-version:        0.0.1
+version:        0.0.2
 synopsis:       User definable Integral and Text bounded types
 homepage:       https://github.com/mbj/mhs#readme
 bug-reports:    https://github.com/mbj/mhs/issues

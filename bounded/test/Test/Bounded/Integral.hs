@@ -80,7 +80,7 @@ valueSpec = testGroup "BoundNumber value tests"
         examples = mkExample <$> exampleRange
 
 mkExample :: Natural -> Example
-mkExample = convertUnsafe
+mkExample = convertImpure
 
 type IsValidExample nat
   = ShouldBe (IsInRange nat 1 5) (() :: Constraint, () :: Constraint)
