@@ -179,7 +179,7 @@ printEvent event = do
     resourceStatus =
       maybe
         "[unknown-resource-type]"
-        (convertText . show)
+        CF.fromResourceStatus
         (getField @"resourceStatus" event)
 
     timeFormat :: String
