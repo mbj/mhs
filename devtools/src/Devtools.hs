@@ -10,7 +10,6 @@ where
 
 import Devtools.Config
 import Devtools.Prelude
-import System.IO (putStrLn)
 
 import qualified Devtools.Dependencies as Dependencies
 import qualified Devtools.HLint        as HLint
@@ -26,9 +25,7 @@ defaultMain :: IO ()
 defaultMain = main defaultConfig
 
 main :: Config -> IO ()
-main config = do
-  putStrLn empty
-  Tasty.defaultMain =<< testTree config
+main = Tasty.defaultMain <=< testTree
 
 testTree :: Config -> IO Tasty.TestTree
 testTree Config{..} = do
