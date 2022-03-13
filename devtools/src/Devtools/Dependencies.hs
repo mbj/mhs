@@ -34,7 +34,7 @@ testTree filename targets =
       [ "ls"
       , "dependencies"
       , "--test"
-      ] <> (targetString <$> targets)
+      ] <> (convert <$> targets)
 
 getFilename :: IO FilePath
 getFilename = do
