@@ -3,11 +3,9 @@ cabal-version: 1.18
 -- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
---
--- hash: eb185e6dc63ac279967cc89151f9a2430405fc7a498f7839f348619c3c5ffb6a
 
 name:           devtools
-version:        0.1.0
+version:        0.1.1
 synopsis:       Haskell development tool agregate
 description:    An attempt to group development that would typically run on CI / local
                 into one tasty interface.
@@ -54,6 +52,7 @@ library
   build-depends:
       Diff >=0.4
     , base
+    , bounded
     , bytestring
     , cmdargs >=0.10.20
     , conversions
@@ -90,6 +89,7 @@ test-suite test
   build-depends:
       Diff >=0.4
     , base
+    , bounded
     , bytestring
     , cmdargs >=0.10.20
     , conversions

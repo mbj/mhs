@@ -1,3 +1,5 @@
+{-# LANGUAGE TypeApplications #-}
+
 module Devtools.Dependencies
   ( getFilename
   , testTree
@@ -17,8 +19,12 @@ import qualified System.Process.Typed  as Process
 import qualified Test.Tasty            as Tasty
 import qualified Test.Tasty.MGolden    as Tasty
 
-testTree :: FilePath -> [Target] -> Tasty.TestTree
-testTree filename targets =
+testTree
+  :: FilePath
+  -> [Target]
+  -> [StackFlag]
+  -> Tasty.TestTree
+testTree filename targets stackFlags =
   Tasty.goldenTest "dependencies" filename readDependenciesText
   where
     readDependenciesText :: IO Text
@@ -29,12 +35,18 @@ testTree filename targets =
     readDependencies
       = fst <$> Process.readProcess_ (Process.proc "stack" arguments)
 
+    flagsToArgument :: StackFlag -> String
+    flagsToArgument (name, value)
+      = convert
+      $ convert @Text name <> " " <> convert @Text value
+
     arguments :: [String]
     arguments =
       [ "ls"
       , "dependencies"
       , "--test"
-      ] <> (convert <$> targets)
+      ] <> (flagsToArgument <$> stackFlags)
+        <> (convert <$> targets)
 
 getFilename :: IO FilePath
 getFilename = do

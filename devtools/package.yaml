@@ -1,7 +1,7 @@
 _common/package: !include "../common/package.yaml"
 
 name:        devtools
-version:     0.1.0
+version:     0.1.1
 synopsis:    Haskell development tool agregate
 category:    Testing
 license:     BSD3
@@ -14,9 +14,11 @@ description: |
 dependencies:
 - Diff          >= 0.4
 - base
+- bounded
 - bytestring
 - conversions
 - cmdargs       >= 0.10.20
+- conversions
 - filepath      >= 1.4
 - hlint         >= 3.2
 - mprelude

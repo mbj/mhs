@@ -19,6 +19,7 @@ defaultConfig :: Config
 defaultConfig = Config
   { hlintArguments = []
   , targets        = []
+  , stackFlags     = []
   }
 
 defaultMain :: IO ()
@@ -33,6 +34,6 @@ testTree Config{..} = do
 
   pure $ Tasty.testGroup
     "devtools"
-    [ Dependencies.testTree filename targets
+    [ Dependencies.testTree filename targets stackFlags
     , HLint.testTree hlintArguments
     ]

@@ -15,6 +15,7 @@ base-compat-batteries 0.11.2
 base-orphans 0.8.6
 bifunctors 5.5.11
 binary 0.8.8.0
+bounded 0.0.2
 bytestring 0.10.12.1
 call-stack 0.4.0
 clock 0.8.3
@@ -33,7 +34,7 @@ data-default-instances-dlist 0.0.1
 data-default-instances-old-locale 0.0.1
 data-fix 0.3.2
 deepseq 1.4.5.0
-devtools 0.1.0
+devtools 0.1.1
 directory 1.3.6.2
 distributive 0.6.2.1
 dlist 1.0
@@ -80,6 +81,7 @@ splitmix 0.1.0.4
 stm 2.5.0.0
 strict 0.4.0.1
 syb 0.7.2.1
+symbols 0.3.0.0
 tagged 0.8.6.1
 tasty 1.4.2.1
 tasty-expected-failure 0.12.3
