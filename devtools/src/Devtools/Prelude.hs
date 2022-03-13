@@ -1,3 +1,4 @@
 module Devtools.Prelude (module Exports) where
 
-import MPrelude as Exports
+import Data.Conversions as Exports
+import MPrelude         as Exports
