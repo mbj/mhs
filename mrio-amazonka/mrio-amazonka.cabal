@@ -3,8 +3,6 @@ cabal-version: 1.12
 -- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
---
--- hash: 7d8f434ac97908baa134ed2949fdaaa108b0e84b8fb9afb46203eb7e1a98c2f3
 
 name:           mrio-amazonka
 version:        0.0.2

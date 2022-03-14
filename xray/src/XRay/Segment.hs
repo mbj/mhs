@@ -271,13 +271,13 @@ data Sql = Sql
   , url              :: Maybe (XRayString "SqlURL")
   , user             :: Maybe (XRayString "SqlUser")
   }
-  deriving (Generic, Show)
+  deriving stock (Generic, Show)
 
 instance JSON.ToJSON Sql where
   toJSON = JSON.genericToJSON jsonOptions
 
 data SqlPreparation = PreparedCall | PreparedStatement
-  deriving (Show)
+  deriving stock (Show)
 
 instance JSON.ToJSON SqlPreparation where
   toJSON = \case
@@ -356,9 +356,7 @@ instance JSON.ToJSON Namespace where
     NamespaceRemote -> JSON.String "remote"
 
 addException :: Segment -> Exception -> Segment
-addException segment exception = segment
-  { cause = pure $ causeAddException present
-  }
+addException segment exception = setCause segment $ causeAddException present
   where
     present :: Cause
     present = fromMaybe emptyCause (getField @"cause" segment)
@@ -373,6 +371,9 @@ addException segment exception = segment
     causeAddException :: Cause ->  Cause
     causeAddException cause =
       cause { exceptions = exception : getField @"exceptions" cause }
+
+setCause :: Segment -> Cause -> Segment
+setCause Segment{..} cause' = Segment { cause = pure cause', .. }
 
 toException :: ExceptionId -> Exception.SomeException -> Exception
 toException id exception = do

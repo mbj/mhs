@@ -3,8 +3,6 @@ cabal-version: 1.12
 -- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
---
--- hash: 1c9d9fd1c8b8c9412855adc9fb8dac966e653599b7fd3b149228aac9d49db47a
 
 name:           dbt-postgresql-container
 version:        0.1.0
