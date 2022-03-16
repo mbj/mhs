@@ -3,11 +3,8 @@ module OAuth.OAuth2
   , AuthenticationResponse(..)
   , Config(..)
   , Env
-  , RefreshAccessTokenResponse(..)
-  , RefreshToken(..)
   , authenticate
   , authorizationRequestUrl
-  , refreshAccessToken
   )
 where
 
@@ -45,10 +42,6 @@ newtype AuthCode = AuthCode Text
   deriving newtype (JSON.ToJSON, JSON.FromJSON)
   deriving stock (Eq, Generic, Show)
 
-newtype RefreshToken = RefreshToken Text
-  deriving newtype (JSON.ToJSON, JSON.FromJSON)
-  deriving stock (Eq, Show)
-
 data AuthenticationRequest = AuthenticationRequest
   { clientId     :: Text
   , clientSecret :: Text
@@ -78,32 +71,6 @@ data AuthenticationResponse = AuthenticationResponse
   deriving stock (Eq, Generic, Show)
 
 instance JSON.FromJSON AuthenticationResponse where
-  parseJSON = JSON.genericParseJSON oAuth2JsonOptions
-
-data RefreshAccessTokenRequest = RefreshAccessTokenRequest
-  { clientId     :: Text
-  , clientSecret :: Text
-  , grantType    :: Text
-  , refreshToken :: RefreshToken
-  }
-  deriving stock (Eq, Generic, Show)
-
-instance JSON.ToJSON RefreshAccessTokenRequest where
-  toJSON     = JSON.genericToJSON oAuth2JsonOptions
-  toEncoding = JSON.genericToEncoding oAuth2JsonOptions
-
-instance JSON.FromJSON RefreshAccessTokenRequest where
-  parseJSON = JSON.genericParseJSON oAuth2JsonOptions
-
-data RefreshAccessTokenResponse = RefreshAccessTokenResponse
-  { accessToken :: Text
-  , expiresIn   :: Integer
-  , scope       :: Text
-  , tokenType   :: Text
-  }
-  deriving stock (Eq, Generic, Show)
-
-instance JSON.FromJSON RefreshAccessTokenResponse where
   parseJSON = JSON.genericParseJSON oAuth2JsonOptions
 
 authorizationRequestUrl :: Env env => [Text] -> Text -> RIO env Text
@@ -138,22 +105,6 @@ authenticate code redirectUri = do
           }
 
   runHttpRequest tokenURL requestObject
-
-refreshAccessToken
-  :: forall env . Env env
-  => RefreshToken
-  -> RIO env RefreshAccessTokenResponse
-refreshAccessToken refreshToken = do
-  Config{..} <- asks (getField @"oauthConfig")
-
-  let requestObject =
-        RefreshAccessTokenRequest
-          { grantType = "refresh_token"
-          , ..
-          }
-
-  runHttpRequest tokenURL requestObject
-
 
 runHttpRequest
   :: forall a b env . (HTTP.Env env, JSON.ToJSON a, JSON.FromJSON b)

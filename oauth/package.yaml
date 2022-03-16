@@ -3,7 +3,7 @@ _common/package: !include "../common/package.yaml"
 name:               oauth
 synopsis:           Haskell Oauth library
 description:        Haskell Oauth library currently supporting only google auth
-version:            0.0.1
+version:            0.0.2
 github:             mbj/mhs/oauth
 license:            BSD3
 author:             gamsnjaga@gmail.com
