@@ -14,25 +14,21 @@ extra-source-files: README.md
 <<: *defaults
 
 dependencies:
-- base
 - aeson
-- aeson-pretty
+- base
 - base64-bytestring
 - bounded
 - bytestring
 - conversions
+- exceptions
 - http-client
 - http-mclient
 - http-types
-- exceptions
-- mtl
-- mrio-core
 - mprelude
-- network-uri
-- nonce
+- mrio-core
+- mtl
+- random
 - text
-- time
-- utf8-string
 
 default-extensions:
 - AllowAmbiguousTypes

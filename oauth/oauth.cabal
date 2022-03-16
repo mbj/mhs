@@ -68,7 +68,6 @@ library
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
       aeson
-    , aeson-pretty
     , base
     , base64-bytestring
     , bounded
@@ -81,11 +80,8 @@ library
     , mprelude
     , mrio-core
     , mtl
-    , network-uri
-    , nonce
+    , random
     , text
-    , time
-    , utf8-string
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
@@ -131,7 +127,6 @@ test-suite test
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       aeson
-    , aeson-pretty
     , base
     , base64-bytestring
     , bounded
@@ -145,11 +140,8 @@ test-suite test
     , mprelude
     , mrio-core
     , mtl
-    , network-uri
-    , nonce
+    , random
     , text
-    , time
-    , utf8-string
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:

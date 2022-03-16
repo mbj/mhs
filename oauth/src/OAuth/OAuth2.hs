@@ -1,32 +1,56 @@
+{-# OPTIONS -Werror #-}
 module OAuth.OAuth2
-  ( AuthCode(..)
-  , AuthenticationResponse(..)
+  ( AuthCode
+  , AuthorizationRequest(..)
   , Config(..)
   , Env
-  , authenticate
-  , authorizationRequestUrl
+  , RedirectURI
+  , State
+  , TokenResponse(..)
+  , authorizationRequestURI
+  , getAuthorizationRequest
+  , getTokenRequest
+  , requestToken
   )
 where
 
+import Control.Monad (replicateM)
 import Data.Bifunctor (second)
+import Data.Bounded
 import Data.ByteString (ByteString)
+import Data.Word (Word8)
 import OAuth.Prelude
 import Prelude(Integer)
 
-import qualified Crypto.Nonce               as Nonce
-import qualified Data.Aeson                 as JSON
-import qualified Data.Text                  as Text
-import qualified Data.Text.Encoding         as Text
-import qualified Network.HTTP.Client        as HTTP
-import qualified Network.HTTP.MClient       as HTTP
-import qualified Network.HTTP.Types         as HTTP
-import qualified Network.HTTP.Types.URI     as URI
+import qualified Data.Aeson             as JSON
+import qualified Data.ByteString        as BS
+import qualified Data.ByteString.Base64 as Base64
+import qualified Data.Text              as Text
+import qualified Data.Text.Encoding     as Text
+import qualified Network.HTTP.Client    as HTTP
+import qualified Network.HTTP.MClient   as HTTP
+import qualified Network.HTTP.Types     as HTTP
+import qualified Network.HTTP.Types.URI as URI
+import qualified System.Random          as System
+
+type AccessType            = BoundText "OAuth2 AccessType"
+type AuthCode              = BoundText "OAuth2 AuthCode"
+type AuthorizationEndpoint = BoundText "OAuth2 AuthorizationEndpoint"
+type ClientId              = BoundText "OAuth2 ClientId"
+type ClientSecret          = BoundText "OAuth2 ClientSecret"
+type GrantType             = BoundText "OAuth2 GrantType"
+type Nonce                 = BoundText "OAuth2 Nonce"
+type RedirectURI           = BoundText "OAuth2 RedirectURI"
+type ResponseType          = BoundText "OAuth2 ResponseType"
+type Scope                 = BoundText "OAuth2 Scope"
+type State                 = BoundText "OAuth2 State"
+type TokenEndpoint         = BoundText "OAuth2 TokenEndpoint"
 
 data Config = Config
-  { authURL      :: Text
-  , clientId     :: Text
-  , clientSecret :: Text
-  , tokenURL     :: Text
+  { authorizationEndpoint :: AuthorizationEndpoint
+  , clientId              :: ClientId
+  , clientSecret          :: ClientSecret
+  , tokenEndpoint         :: TokenEndpoint
   }
   deriving stock (Eq, Generic, Show)
 
@@ -38,29 +62,23 @@ type Env env
     , HTTP.Env env
     )
 
-newtype AuthCode = AuthCode Text
-  deriving newtype (JSON.ToJSON, JSON.FromJSON)
-  deriving stock (Eq, Generic, Show)
-
-data AuthenticationRequest = AuthenticationRequest
-  { clientId     :: Text
-  , clientSecret :: Text
-  , code         :: AuthCode
-  , grantType    :: Text
-  , nonce        :: Text
-  , redirectUri  :: Text
-  , state        :: [(Text, Text)]
+data TokenRequest = TokenRequest
+  { tokenEndpoint :: TokenEndpoint
+  , clientId      :: ClientId
+  , clientSecret  :: ClientSecret
+  , code          :: AuthCode
+  , grantType     :: GrantType
+  , nonce         :: Nonce
+  , redirectURI   :: RedirectURI
+  , state         :: State
   }
   deriving stock (Eq, Generic, Show)
 
-instance JSON.ToJSON AuthenticationRequest where
+instance JSON.ToJSON TokenRequest where
   toJSON     = JSON.genericToJSON oAuth2JsonOptions
   toEncoding = JSON.genericToEncoding oAuth2JsonOptions
 
-instance JSON.FromJSON AuthenticationRequest where
-  parseJSON = JSON.genericParseJSON oAuth2JsonOptions
-
-data AuthenticationResponse = AuthenticationResponse
+data TokenResponse = TokenResponse
   { accessToken  :: Text
   , expiresIn    :: Integer
   , idToken      :: Text
@@ -70,57 +88,76 @@ data AuthenticationResponse = AuthenticationResponse
   }
   deriving stock (Eq, Generic, Show)
 
-instance JSON.FromJSON AuthenticationResponse where
+instance JSON.FromJSON TokenResponse where
   parseJSON = JSON.genericParseJSON oAuth2JsonOptions
 
-authorizationRequestUrl :: Env env => [Text] -> Text -> RIO env Text
-authorizationRequestUrl scopes redirectUri = do
-  config <- asks (getField @"oauthConfig")
-  pure $ getField @"authURL" config <> Text.decodeUtf8 (query config)
+data AuthorizationRequest = AuthorizationRequest
+  { authorizationEndpoint :: AuthorizationEndpoint
+  , accessType            :: AccessType
+  , clientId              :: ClientId
+  , redirectURI           :: RedirectURI
+  , responseType          :: ResponseType
+  , scopes                :: [Scope]
+  , state                 :: State
+  }
+
+getAuthorizationRequest
+  :: Config
+  -> AccessType
+  -> RedirectURI
+  -> ResponseType
+  -> [Scope]
+  -> RIO env AuthorizationRequest
+getAuthorizationRequest Config{..} accessType redirectURI responseType scopes = do
+  state <- convertImpure <$> getRandomText
+  pure AuthorizationRequest{..}
+
+authorizationRequestURI :: AuthorizationRequest -> Text
+authorizationRequestURI AuthorizationRequest{..} =
+  convert authorizationEndpoint <> Text.decodeUtf8 query
   where
-    query :: Config -> ByteString
-    query config = URI.renderSimpleQuery True $ second Text.encodeUtf8 <$>
-      [ ("access_type",   "offline")
-      , ("client_id",     getField @"clientId" config)
-      , ("redirect_uri",  redirectUri)
-      , ("response_type", "code")
-      , ("scope",         Text.intercalate " " $ ["openid", "email"] <> scopes)
+    query :: ByteString
+    query = URI.renderSimpleQuery True $ second Text.encodeUtf8 <$>
+      [ ("access_type",   convert accessType)
+      , ("client_id",     convert clientId)
+      , ("redirect_uri",  convert redirectURI)
+      , ("response_type", convert responseType)
+      , ("scope",         Text.intercalate " " $ convert <$> scopes)
+      , ("state",         convert state)
       ]
 
-authenticate
-  :: forall env . Env env
-  => AuthCode
-  -> Text
-  -> RIO env AuthenticationResponse
-authenticate code redirectUri = do
-  Config{..} <- asks (getField @"oauthConfig")
-  nonce      <- liftIO $ Nonce.withGenerator Nonce.nonce128urlT
+getTokenRequest
+  :: Config
+  -> AuthCode
+  -> GrantType
+  -> RedirectURI
+  -> State
+  -> RIO env TokenRequest
+getTokenRequest Config{..} code grantType redirectURI state = do
+  nonce <- convertImpure <$> getRandomText
+  pure TokenRequest{..}
 
-  let requestObject =
-        AuthenticationRequest
-          { grantType   = "authorization_code"
-          , redirectUri = redirectUri
-          , state       = []
-          , ..
-          }
-
-  runHttpRequest tokenURL requestObject
+requestToken
+  :: HTTP.Env env
+  => TokenRequest
+  -> RIO env TokenResponse
+requestToken request@TokenRequest{..} = runHttpRequest (convert tokenEndpoint) request
 
 runHttpRequest
   :: forall a b env . (HTTP.Env env, JSON.ToJSON a, JSON.FromJSON b)
   => Text
   -> a
   -> RIO env b
-runHttpRequest tokenURL requestObject =
-  eitherThrow =<< HTTP.send HTTP.decodeJSON =<< httpRequest tokenURL requestObject
+runHttpRequest url requestObject =
+  eitherThrow =<< HTTP.send HTTP.decodeJSONOk =<< httpRequest url requestObject
 
 httpRequest
   :: forall a env . (JSON.ToJSON a)
   => Text
   -> a
   -> RIO env HTTP.Request
-httpRequest tokenURL requestObject = do
-  baseRequest <- HTTP.parseRequest (convert tokenURL)
+httpRequest uri requestObject = do
+  baseRequest <- HTTP.parseRequest (convert uri)
 
   pure . HTTP.setJSONBody requestObject $ baseRequest { HTTP.method = HTTP.methodPost }
 
@@ -128,3 +165,6 @@ oAuth2JsonOptions :: JSON.Options
 oAuth2JsonOptions = JSON.defaultOptions
   { JSON.fieldLabelModifier = JSON.camelTo2 '_'
   }
+
+getRandomText :: RIO env Text
+getRandomText = liftIO $ Text.decodeUtf8 . Base64.encode . BS.pack <$> replicateM 32 (System.randomIO @Word8)
