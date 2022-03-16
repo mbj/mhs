@@ -10,13 +10,13 @@ nobody:x:65534:\n\A'\
 
 # Setup apk public key
 RUN echo $'-----BEGIN PUBLIC KEY-----\n\
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoWXZ75rvmn8I5GoTmxsA\n\
-LGv5eWrNf/lrOeiPAoux3H2nCwO0+Qd/Fd0u453B8yq5pmcuyebYvjSle4vH0C7m\n\
-g1x2PN57sZLawJbO47ywKw7yN5iWhLTq8R8Zbou9m7o0fSuukGPKzleOFn2MxLw3\n\
-0uqcv45Vcsw2msgwfXluycjyCWfoV+dvCeu1pqVLLaG8FP108Pn2yn7IzIvt5abd\n\
-pg+6jh4W8t1P2LZ3D0YI8P3+0+d9tcVQe2TAaNFjALWB6GY0D9vncVI+WjPi2NxE\n\
-ZHUir6fe0rAx7hLAhyo9SPSCeOQhO8oBijoIE3C5d+cZebUNNuhPGZwKRPmeKDOj\n\
-hQIDAQAB\n\
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmDBxtI4tBKeyOg/jVIRF\n\
+I82kpx10xhnxty/Rv/9AoMH231twNowKzJkZeZ9dgri7z7k7Ub1mKmYAdZKSC1Vu\n\
+fnuLjbPiIZfZdH+PL2pInV5Yr55QXyoTd+9vC5+L7fI1OrgFVmiRWxKl2nDAUGNl\n\
+xQPmHpStAKi+Np9eWgc2xTiImLgnPM7Ofic+4+jJladIA2MMJU7nFYbBY+AypNEa\n\
+jEEk+gX7qsv/aP7trT98uuik/xfKK8E2IP4uIisTsPAlbhd/bEob4NkSUrHBCLzX\n\
+PnmDDWaQUSHdbuW2x56d76jR9AOPznAi6YgOmhhWYxtn6SiQcOxbD3uIAGF5wQtO\n\
+9QIDAQAB\n\
 -----END PUBLIC KEY-----'\
 >> /etc/apk/keys/mbj.rsa.pub
 
@@ -43,7 +43,7 @@ RUN apk add           \
   musl-dev            \
   ncurses-dev         \
   ncurses-static      \
-  stack@mbj=2.7.3-r0  \
+  stack@mbj=2.7.5-r0  \
   tar                 \
   xz                  \
   zlib-dev            \
