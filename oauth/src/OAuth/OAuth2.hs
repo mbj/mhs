@@ -1,4 +1,5 @@
-{-# OPTIONS -Werror #-}
+{-# LANGUAGE TupleSections #-}
+
 module OAuth.OAuth2
   ( AuthCode
   , AuthorizationRequest(..)
@@ -93,7 +94,7 @@ instance JSON.FromJSON TokenResponse where
 
 data AuthorizationRequest = AuthorizationRequest
   { authorizationEndpoint :: AuthorizationEndpoint
-  , accessType            :: AccessType
+  , accessType            :: Maybe AccessType
   , clientId              :: ClientId
   , redirectURI           :: RedirectURI
   , responseType          :: ResponseType
@@ -103,14 +104,13 @@ data AuthorizationRequest = AuthorizationRequest
 
 getAuthorizationRequest
   :: Config
-  -> AccessType
   -> RedirectURI
   -> ResponseType
   -> [Scope]
   -> RIO env AuthorizationRequest
-getAuthorizationRequest Config{..} accessType redirectURI responseType scopes = do
+getAuthorizationRequest Config{..} redirectURI responseType scopes = do
   state <- convertImpure <$> getRandomText
-  pure AuthorizationRequest{..}
+  pure AuthorizationRequest{accessType = empty, ..}
 
 authorizationRequestURI :: AuthorizationRequest -> Text
 authorizationRequestURI AuthorizationRequest{..} =
@@ -118,13 +118,16 @@ authorizationRequestURI AuthorizationRequest{..} =
   where
     query :: ByteString
     query = URI.renderSimpleQuery True $ second Text.encodeUtf8 <$>
-      [ ("access_type",   convert accessType)
-      , ("client_id",     convert clientId)
+      [ ("client_id",     convert clientId)
       , ("redirect_uri",  convert redirectURI)
       , ("response_type", convert responseType)
       , ("scope",         Text.intercalate " " $ convert <$> scopes)
       , ("state",         convert state)
       ]
+      <> optional "access_type" (convert @Text <$> accessType)
+
+    optional :: BS.ByteString -> Maybe Text -> [(BS.ByteString, Text)]
+    optional key = maybe [] (pure . (key,))
 
 getTokenRequest
   :: Config
