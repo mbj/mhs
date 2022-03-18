@@ -7,10 +7,10 @@ module OAuth.OAuth2
   , Env
   , RedirectURI
   , State
+  , TokenRequest(..)
   , TokenResponse(..)
   , authorizationRequestURI
   , getAuthorizationRequest
-  , getTokenRequest
   , requestToken
   )
 where
@@ -30,7 +30,6 @@ import qualified Data.Text              as Text
 import qualified Data.Text.Encoding     as Text
 import qualified Network.HTTP.Client    as HTTP
 import qualified Network.HTTP.MClient   as HTTP
-import qualified Network.HTTP.Types     as HTTP
 import qualified Network.HTTP.Types.URI as URI
 import qualified System.Random          as System
 
@@ -40,7 +39,6 @@ type AuthorizationEndpoint = BoundText "OAuth2 AuthorizationEndpoint"
 type ClientId              = BoundText "OAuth2 ClientId"
 type ClientSecret          = BoundText "OAuth2 ClientSecret"
 type GrantType             = BoundText "OAuth2 GrantType"
-type Nonce                 = BoundText "OAuth2 Nonce"
 type RedirectURI           = BoundText "OAuth2 RedirectURI"
 type ResponseType          = BoundText "OAuth2 ResponseType"
 type Scope                 = BoundText "OAuth2 Scope"
@@ -64,14 +62,9 @@ type Env env
     )
 
 data TokenRequest = TokenRequest
-  { tokenEndpoint :: TokenEndpoint
-  , clientId      :: ClientId
-  , clientSecret  :: ClientSecret
-  , code          :: AuthCode
-  , grantType     :: GrantType
-  , nonce         :: Nonce
-  , redirectURI   :: RedirectURI
-  , state         :: State
+  { code          :: Maybe AuthCode
+  , grantType     :: Maybe GrantType
+  , redirectURI   :: Maybe RedirectURI
   }
   deriving stock (Eq, Generic, Show)
 
@@ -129,40 +122,27 @@ authorizationRequestURI AuthorizationRequest{..} =
     optional :: BS.ByteString -> Maybe Text -> [(BS.ByteString, Text)]
     optional key = maybe [] (pure . (key,))
 
-getTokenRequest
-  :: Config
-  -> AuthCode
-  -> GrantType
-  -> RedirectURI
-  -> State
-  -> RIO env TokenRequest
-getTokenRequest Config{..} code grantType redirectURI state = do
-  nonce <- convertImpure <$> getRandomText
-  pure TokenRequest{..}
-
 requestToken
   :: HTTP.Env env
-  => TokenRequest
+  => Config
+  -> TokenRequest
   -> RIO env TokenResponse
-requestToken request@TokenRequest{..} = runHttpRequest (convert tokenEndpoint) request
+requestToken Config{..} TokenRequest{..} = do
+  baseRequest <- HTTP.parseRequest (convert @String $ convert @Text tokenEndpoint)
 
-runHttpRequest
-  :: forall a b env . (HTTP.Env env, JSON.ToJSON a, JSON.FromJSON b)
-  => Text
-  -> a
-  -> RIO env b
-runHttpRequest url requestObject =
-  eitherThrow =<< HTTP.send HTTP.decodeJSONOk =<< httpRequest url requestObject
+  eitherThrow =<< HTTP.send HTTP.decodeJSONOk (HTTP.urlEncodedBody pairs baseRequest)
+  where
+    pairs :: [(BS.ByteString, BS.ByteString)]
+    pairs
+      =  [ ("client_id",     encodeUtf8 clientId)
+         , ("client_secret", encodeUtf8 clientSecret)
+         ]
+      <> optional "code"         code
+      <> optional "grant_type"   grantType
+      <> optional "redirect_uri" redirectURI
 
-httpRequest
-  :: forall a env . (JSON.ToJSON a)
-  => Text
-  -> a
-  -> RIO env HTTP.Request
-httpRequest uri requestObject = do
-  baseRequest <- HTTP.parseRequest (convert uri)
-
-  pure . HTTP.setJSONBody requestObject $ baseRequest { HTTP.method = HTTP.methodPost }
+    optional :: Conversion Text a => BS.ByteString -> Maybe a -> [(BS.ByteString, BS.ByteString)]
+    optional key = maybe [] (pure . (key,) . encodeUtf8)
 
 oAuth2JsonOptions :: JSON.Options
 oAuth2JsonOptions = JSON.defaultOptions
