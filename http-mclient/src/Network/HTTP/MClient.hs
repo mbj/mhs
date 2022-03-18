@@ -81,7 +81,10 @@ decodeContentTypes contentTypes response
         (List.lookup contentType contentTypes)
 
 decodeJSON  :: JSON.FromJSON a => ResponseDecoder a
-decodeJSON = decodeContentType jsonContentType decodeJSONBody
+decodeJSON = decodeContentTypes
+ [ (jsonContentType,       decodeJSONBody)
+ , (jsonLegacyContentType, decodeJSONBody)
+ ]
 
 decodeJSONBody :: JSON.FromJSON a => ResponseDecoder a
 decodeJSONBody = left (BodyDecodeFailure . toText) . JSON.eitherDecode' . HTTP.responseBody
@@ -108,6 +111,9 @@ addHeader headerName value request =
 
 jsonContentType :: BS.ByteString
 jsonContentType = "application/json; charset=utf-8"
+
+jsonLegacyContentType :: BS.ByteString
+jsonLegacyContentType = "application/json"
 
 send
   :: Env env
