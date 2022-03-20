@@ -7,7 +7,7 @@ cabal-version: 1.12
 name:           oauth
 version:        0.0.4
 synopsis:       Haskell Oauth library
-description:    Haskell Oauth library currently supporting only google auth
+description:    Haskell Oauth library, mostly datatypes.
 category:       Oauth, Web
 homepage:       https://github.com/mbj/mhs#readme
 bug-reports:    https://github.com/mbj/mhs/issues
