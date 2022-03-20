@@ -1,13 +1,7 @@
-resolver: nightly-2022-03-13
-compiler: ghc-9.2.2
+resolver: nightly-2022-03-19
 extra-deps:
-- base-compat-0.12.1@sha256:20e50848d9dfee1523fafe8950060b04fae43d402c15553da5c7cacd116f7846,6960
-- base-compat-batteries-0.12.1
-- cryptonite-0.30@sha256:12c85dea7be63e5ad90bcb487eb3846bf3c413347f94336fa1dede7b28f9936a,18301
-- ghc-lib-parser-ex-9.2.0.3@sha256:a90c3a6aa85f59848d9f8c3928ab7203299a4b560db6f300976d9b1f7da127ee,3655
-- lens-5.1@sha256:2cd46b613b9fb37e6eb64c518fd41cfdf55b15bd217d8780163b5c75974920bf,15013
-- memory-0.17.0@sha256:c8809b0b3026193c813a88c1f626758c923fae7e0b0d6b96b91c6ce5e14173ec,4468
 - mprelude
+- symbols-0.3.0.0@sha256:5d051bccbd4bcb33fa8ce076bd3cd2bacc90973682f7340976758947eaa128a9,964
 - git: https://github.com/brendanhay/amazonka
   commit: f73a957d05f64863e867cf39d0db260718f0fadd
   subdirs:
@@ -19,7 +13,6 @@ extra-deps:
   - lib/services/amazonka-sts
 - git: https://github.com/mbj/stratosphere
   commit: cfe9c16022c7b0dc161345f05e51e8ddf2223dfd
-- symbols-0.3.0.0@sha256:5d051bccbd4bcb33fa8ce076bd3cd2bacc90973682f7340976758947eaa128a9,964
 - git: https://github.com/ndmitchell/hlint
   commit: 4f02b443306d1cab7cedb620ead1c727e9f4ee25
 flags:
