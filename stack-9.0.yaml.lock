@@ -102,7 +102,7 @@ packages:
     hackage: symbols-0.3.0.0@sha256:5d051bccbd4bcb33fa8ce076bd3cd2bacc90973682f7340976758947eaa128a9,964
 snapshots:
 - completed:
-    size: 611883
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2022/2/26.yaml
-    sha256: 606e8c657287ebfb98e297b76d3af5e4f6cc31a8a6bd6d4239075b844925bb75
-  original: nightly-2022-02-26
+    size: 616897
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/19/0.yaml
+    sha256: bbf2be02f17940bac1f87cb462d4fb0c3355de6dcfc53d84f4f9ad3ee2164f65
+  original: lts-19.0
