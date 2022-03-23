@@ -16,13 +16,21 @@ import qualified Data.Text            as Text
 
 type Paths = Map PathTemplate PathItem
 
-data PathSegment = PathSegmentStatic Text | PathSegmentDynamic ParameterName
+type ParameterSuffix = TaggedText "ParameterSuffix"
+
+data PathSegment
+  = PathSegmentStatic Text
+  | PathSegmentDynamic ParameterName (Maybe ParameterSuffix)
   deriving stock (Eq, Ord, Show)
 
 instance Conversion Text PathSegment where
   convert = \case
-    PathSegmentDynamic parameterName -> "{" <> convertText parameterName <> "}"
+    PathSegmentDynamic parameterName maybeSuffix -> dynamicPathText parameterName maybeSuffix
     PathSegmentStatic text -> text
+    where
+      dynamicPathText :: ParameterName -> Maybe ParameterSuffix -> Text
+      dynamicPathText parameterName suffix
+        = "{" <> toText parameterName <> "}" <> maybe mempty toText suffix
 
 newtype PathTemplate = PathTemplate [PathSegment]
   deriving stock (Eq, Ord, Show)
@@ -65,7 +73,11 @@ parsePathTemplateText input =
     anyPathSegment :: Text.Parser PathSegment
     anyPathSegment = dynamicPathSegment <|> (PathSegmentStatic <$> staticPart)
 
-    dynamicPathSegment = skip '{' *> (PathSegmentDynamic . TaggedText <$> segmentName) <* skip '}'
+    dynamicPathSegment ::  Text.Parser PathSegment
+    dynamicPathSegment = do
+      dynamic <- skip '{' *> segmentName <* skip '}'
+      suffix  <- fmap (pure . TaggedText . toText) staticPart <|> pure empty
+      pure $ PathSegmentDynamic (TaggedText dynamic) suffix
 
     segmentChar char = any ($ char) ([Char.isDigit, Char.isLower, Char.isUpper, (== '_'), (== '-')] :: [Char -> Bool])
 

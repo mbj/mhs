@@ -55,22 +55,25 @@ parsePathTemplate
   where
     accepted :: [TestTree]
     accepted = mkAccepted <$>
-      [ ("/",            PathTemplate empty)
-      , ("/1",           PathTemplate [static' "1"])
-      , ("/__foo__",     PathTemplate [static' "__foo__"])
-      , ("/foo",         PathTemplate [static' "foo"])
-      , ("/foo.csv",     PathTemplate [static' "foo.csv"])
-      , ("/foo..csv",    PathTemplate [static' "foo..csv"])
-      , ("/foo-bar",     PathTemplate [static' "foo-bar"])
-      , ("/foo/bar",     PathTemplate [static' "foo", static' "bar"])
-      , ("/foo/{bar}",   PathTemplate [static' "foo", dynamic "bar"])
-      , ("/foo_bar",     PathTemplate [static' "foo_bar"])
-      , ("/{foo}",       PathTemplate [dynamic "foo"])
-      , ("/{foo}/bar",   PathTemplate [dynamic "foo", static' "bar"])
-      , ("/{foo}/{bar}", PathTemplate [dynamic "foo", dynamic "bar"])
+      [ ("/",              PathTemplate empty)
+      , ("/1",             PathTemplate [static' "1"])
+      , ("/__foo__",       PathTemplate [static' "__foo__"])
+      , ("/foo",           PathTemplate [static' "foo"])
+      , ("/foo.csv",       PathTemplate [static' "foo.csv"])
+      , ("/foo..csv",      PathTemplate [static' "foo..csv"])
+      , ("/foo-bar",       PathTemplate [static' "foo-bar"])
+      , ("/foo/bar",       PathTemplate [static' "foo", static' "bar"])
+      , ("/foo/{bar}",     PathTemplate [static' "foo", dynamic "bar"])
+      , ("/foo_bar",       PathTemplate [static' "foo_bar"])
+      , ("/{foo}",         PathTemplate [dynamic "foo"])
+      , ("/{foo}/bar",     PathTemplate [dynamic "foo", static' "bar"])
+      , ("/{foo}/{bar}",   PathTemplate [dynamic "foo", dynamic "bar"])
+      , ("/{bar}.csv",     PathTemplate [dynamic' "bar" ".csv"])
+      , ("/foo/{bar}.csv", PathTemplate [static' "foo", dynamic' "bar" ".csv"])
       ]
 
-    dynamic = PathSegmentDynamic . TaggedText
+    dynamic parameter = PathSegmentDynamic (TaggedText parameter) empty
+    dynamic' parameter = PathSegmentDynamic (TaggedText parameter) . pure . TaggedText
 
     static' = PathSegmentStatic
 
