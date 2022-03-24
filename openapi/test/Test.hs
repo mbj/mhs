@@ -55,19 +55,21 @@ parsePathTemplate
   where
     accepted :: [TestTree]
     accepted = mkAccepted <$>
-      [ ("/",            PathTemplate empty)
-      , ("/1",           PathTemplate [static' "1"])
-      , ("/__foo__",     PathTemplate [static' "__foo__"])
-      , ("/foo",         PathTemplate [static' "foo"])
-      , ("/foo.csv",     PathTemplate [static' "foo.csv"])
-      , ("/foo..csv",    PathTemplate [static' "foo..csv"])
-      , ("/foo-bar",     PathTemplate [static' "foo-bar"])
-      , ("/foo/bar",     PathTemplate [static' "foo", static' "bar"])
-      , ("/foo/{bar}",   PathTemplate [static' "foo", dynamic "bar"])
-      , ("/foo_bar",     PathTemplate [static' "foo_bar"])
-      , ("/{foo}",       PathTemplate [dynamic "foo"])
-      , ("/{foo}/bar",   PathTemplate [dynamic "foo", static' "bar"])
-      , ("/{foo}/{bar}", PathTemplate [dynamic "foo", dynamic "bar"])
+      [ ("",                 PathTemplate [])
+      , ("/",                PathTemplate [static' "/"])
+      , ("/1",               PathTemplate [static' "/1"])
+      , ("/__foo__",         PathTemplate [static' "/__foo__"])
+      , ("/foo",             PathTemplate [static' "/foo"])
+      , ("/foo.csv",         PathTemplate [static' "/foo.csv"])
+      , ("/foo..csv",        PathTemplate [static' "/foo..csv"])
+      , ("/foo-bar",         PathTemplate [static' "/foo-bar"])
+      , ("/foo/bar",         PathTemplate [static' "/foo/bar"])
+      , ("/foo_bar",         PathTemplate [static' "/foo_bar"])
+      , ("/{foo}",           PathTemplate [static' "/", dynamic "foo"])
+      , ("/{foo}/bar",       PathTemplate [static' "/", dynamic "foo", static' "/bar"])
+      , ("/{foo}/{bar}",     PathTemplate [static' "/", dynamic "foo", static' "/", dynamic "bar"])
+      , ("/{foo}{bar}",      PathTemplate [static' "/", dynamic "foo", dynamic "bar"])
+      , ("/{foo}/{bar}.txt", PathTemplate [static' "/", dynamic "foo", static' "/", dynamic "bar", static' ".txt"])
       ]
 
     dynamic = PathSegmentDynamic . TaggedText
@@ -76,15 +78,7 @@ parsePathTemplate
 
     rejected :: [TestTree]
     rejected = mkRejected' <$>
-      [ ""
-      , "foo"
-      , "//"
-      , ".csv"
-      , "/foo/"
-      , "/foo/{id}/"
-      , "/foo/{}"
-      , "/{id}/"
-      , "{id}"
+      [ "/foo/{}"
       , "{}"
       , "{"
       , "}"
