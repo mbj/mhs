@@ -28,55 +28,40 @@ newtype PathTemplate = PathTemplate [PathSegment]
   deriving stock (Eq, Ord, Show)
 
 instance Conversion Text PathTemplate where
-  convert (PathTemplate segments) = Text.intercalate "/" $ toText <$> segments
+  convert (PathTemplate segments) = Text.intercalate "" $ toText <$> segments
 
 instance JSON.FromJSON PathTemplate where
-  parseJSON = JSON.withText "path item" parsePathTemplateText
+  parseJSON = JSON.withText "path template" parsePathTemplateText
 
 instance JSON.FromJSONKey PathTemplate where
-   fromJSONKey = JSON.FromJSONKeyTextParser parsePathTemplateText
+  fromJSONKey = JSON.FromJSONKeyTextParser parsePathTemplateText
 
 instance JSON.ToJSON PathTemplate where
-  toJSON (PathTemplate segments)
-    = JSON.toJSON . ("/" <>) . Text.intercalate "/" $ toText <$> segments
+  toJSON = JSON.toJSON . convert @Text
 
 parsePathTemplateText :: Text -> JSON.Parser PathTemplate
-parsePathTemplateText input =
-  either
+parsePathTemplateText input
+  = either
     (const . fail $ "invalid template path: " <> show input)
     pure
-    $ Text.parseOnly parser input
+  $ Text.parseOnly (parser <* Text.endOfInput) input
   where
     parser :: Text.Parser PathTemplate
-    parser = do
-      separator
-
-      root <|> do
-        firstPathSegment  <- anyPathSegment
-        otherPathSegments <- Text.many' (separator *> anyPathSegment)
-
-        void Text.endOfInput
-
-        pure . PathTemplate $ firstPathSegment:otherPathSegments
-
-    root :: Text.Parser PathTemplate
-    root = Text.endOfInput $> PathTemplate empty
+    parser = PathTemplate <$> Text.many' anyPathSegment
 
     anyPathSegment :: Text.Parser PathSegment
     anyPathSegment = dynamicPathSegment <|> (PathSegmentStatic <$> staticPart)
 
-    dynamicPathSegment = skip '{' *> (PathSegmentDynamic . TaggedText <$> segmentName) <* skip '}'
+    dynamicPathSegment = expect '{' *> (PathSegmentDynamic . TaggedText <$> segmentName) <* expect '}'
 
     segmentChar char = any ($ char) ([Char.isDigit, Char.isLower, Char.isUpper, (== '_'), (== '-')] :: [Char -> Bool])
 
     staticPart = Text.takeWhile1 notControl
 
     notControl = \case
-      '/'   -> False
-      '{'   -> False
-      '}'   -> False
-      _     -> True
+      '{' -> False
+      '}' -> False
+      _   -> True
 
     segmentName = Text.takeWhile1 segmentChar
-    separator   = skip '/'
-    skip        = void . Text.char
+    expect      = void . Text.char
