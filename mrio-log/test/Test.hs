@@ -1,3 +1,5 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 import Data.IORef
 import MPrelude
 import MRIO.Core
@@ -14,12 +16,9 @@ data Env = Env
   }
 
 main :: IO ()
-main = do
-  devtools <- Devtools.testTree
-    Devtools.defaultConfig
-    { Devtools.targets = [Devtools.Target "mrio-log"] }
-
-  defaultMain $ testGroup "mrio-log" [devtools, testEnv]
+main
+  = defaultMain
+  $ testGroup "mrio-log" [Devtools.testTree $$(Devtools.readDependencies [Devtools.Target "mrio-log"]) , testEnv]
 
 testEnv :: TestTree
 testEnv = testCase "test app" $ do

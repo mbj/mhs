@@ -1,3 +1,5 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 import MPrelude
 
 import qualified CBT
@@ -12,17 +14,13 @@ import qualified Test.Tasty.MGolden       as Tasty
 
 main :: IO ()
 main = do
-  devtools <- Devtools.testTree devtoolsConfig
   CBT.runDefaultEnvironment $ do
     containerName <- CBT.nextContainerName (CBT.Prefix "dbt-test")
     DBT.withDatabaseContainer containerName $ \clientConfig ->
-      liftIO . Tasty.defaultMain $ Tasty.testGroup "dbt" [devtools, testDB clientConfig]
-
-devtoolsConfig :: Devtools.Config
-devtoolsConfig = Devtools.defaultConfig
-  { Devtools.hlintArguments = ["-XTemplateHaskell", "-XTypeApplications"]
-  , Devtools.targets        = [Devtools.Target "dbt-postgresql-container"]
-  }
+      liftIO . Tasty.defaultMain $ Tasty.testGroup "dbt"
+        [ Devtools.testTree $$(Devtools.readDependencies [Devtools.Target "dbt-postgresql-container"])
+        , testDB clientConfig
+        ]
 
 testDB :: Postgresql.ClientConfig -> Tasty.TestTree
 testDB clientConfig

@@ -62,4 +62,4 @@ tests:
   test:
     <<: *test
     dependencies:
-    - devtools ^>= 0.1.0
+    - devtools

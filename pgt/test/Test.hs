@@ -1,3 +1,5 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 import MPrelude
 
 import qualified CBT
@@ -22,11 +24,9 @@ main = do
       let adminConfig = pgConfig { Postgresql.databaseName = Postgresql.DatabaseName "template1" }
       liftIO $ setupSchema adminConfig
       config   <- PGT.configure adminConfig empty
-      devtools <- liftIO $ Devtools.testTree Devtools.defaultConfig
-         { Devtools.targets = [Devtools.Target "pgt"] }
       liftIO . Tasty.defaultMain $
         Tasty.testGroup ""
-          [ devtools
+          [ Devtools.testTree $$(Devtools.readDependencies [Devtools.Target "pgt"])
           , PGT.testTree config success
           ]
 

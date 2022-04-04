@@ -1,12 +1,10 @@
-import MPrelude
+{-# LANGUAGE TemplateHaskell #-}
+
+module Main (main) where
+
+import System.IO (IO)
 
 import qualified Devtools
 
 main :: IO ()
-main = Devtools.main devtoolsConfig
-
-devtoolsConfig :: Devtools.Config
-devtoolsConfig = Devtools.defaultConfig
-  { Devtools.hlintArguments = ["-XTemplateHaskell", "-XTypeApplications"]
-  , Devtools.targets        = [Devtools.Target "dbt-postgresql-connection"]
-  }
+main = Devtools.main $$(Devtools.readDependencies [Devtools.Target "dbt-postgresql-connection"])
