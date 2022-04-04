@@ -1,3 +1,5 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 import Data.Aeson.KeyMap (KeyMap)
 import Data.Maybe (catMaybes)
 import OpenApi.Paths
@@ -18,13 +20,12 @@ import qualified Devtools
 import qualified Network.HTTP.Types.Status as HTTP
 
 main :: IO ()
-main = do
-  devtools <- Devtools.testTree Devtools.defaultConfig
-    { Devtools.hlintArguments = ["-XTypeApplications"]
-    , Devtools.targets        = [Devtools.Target "openapi"]
-    }
-
-  defaultMain $ testGroup "openapi" [suite, devtools]
+main
+  = defaultMain
+  $ testGroup "openapi"
+  [ suite
+  , Devtools.testTree $$(Devtools.readDependencies [Devtools.Target "openapi"])
+  ]
 
 suite :: TestTree
 suite = testGroup "Test Suite"

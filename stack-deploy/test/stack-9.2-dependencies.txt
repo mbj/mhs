@@ -61,7 +61,7 @@ data-default-instances-dlist 0.0.1
 data-default-instances-old-locale 0.0.1
 data-fix 0.3.2
 deepseq 1.4.6.1
-devtools 0.1.0
+devtools 0.2.0
 directory 1.3.6.2
 distributive 0.6.2.1
 dlist 1.0
@@ -153,6 +153,7 @@ text 1.2.5.0
 text-short 0.1.5
 th-abstraction 0.4.3.0
 th-compat 0.1.3
+th-lift 0.8.2
 these 1.1.1.1
 time 1.11.1.1
 time-compat 1.9.6.1

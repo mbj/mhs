@@ -11,11 +11,12 @@ import qualified Test.Tasty.HUnit      as Tasty
 
 main :: IO ()
 main = do
-  devtools <- Devtools.testTree Devtools.defaultConfig { Devtools.targets = [Devtools.Target "lht"] }
-
   Tasty.defaultMain $ Tasty.testGroup "lht"
     [ testBuild
-    , Tasty.after Tasty.AllFinish "test-build" devtools
+    , Tasty.after
+        Tasty.AllFinish
+        "test-build"
+        (Devtools.testTree $$(Devtools.readDependencies [Devtools.Target "lht"]))
     ]
 
 testBuild :: Tasty.TestTree

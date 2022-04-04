@@ -1,11 +1,10 @@
-import MPrelude
+{-# LANGUAGE TemplateHaskell #-}
+
+module Main (main) where
+
+import System.IO (IO)
 
 import qualified Devtools
 
 main :: IO ()
-main
-  = Devtools.main
-  $ Devtools.defaultConfig
-  { Devtools.hlintArguments = ["-XNumericUnderscores"]
-  , Devtools.targets        = [Devtools.Target "stack-deploy"]
-  }
+main = Devtools.main $$(Devtools.readDependencies [Devtools.Target "stack-deploy"])

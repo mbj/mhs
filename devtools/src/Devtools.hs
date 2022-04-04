@@ -1,41 +1,36 @@
 module Devtools
-  ( Config(..)
-  , Target(..)
-  , defaultConfig
-  , defaultMain
+  ( Devtools.Target(..)
   , main
+  , readDependencies
   , testTree
   )
 where
 
-import Devtools.Config
 import Devtools.Prelude
 import System.IO (putStrLn)
 
-import qualified Devtools.Dependencies as Dependencies
-import qualified Devtools.HLint        as HLint
-import qualified Test.Tasty            as Tasty
+import qualified Devtools.Dependencies      as Devtools
+import qualified Devtools.HLint             as HLint
+import qualified Language.Haskell.TH        as TH
+import qualified Language.Haskell.TH.Lift   as TH
+import qualified Language.Haskell.TH.Syntax as TH
+import qualified Test.Tasty                 as Tasty
 
-defaultConfig :: Config
-defaultConfig = Config
-  { hlintArguments = []
-  , targets        = []
-  }
-
-defaultMain :: IO ()
-defaultMain = main defaultConfig
-
-main :: Config -> IO ()
-main config = do
+main :: Devtools.Dependencies -> IO ()
+main dependencies = do
   putStrLn empty
-  Tasty.defaultMain =<< testTree config
+  Tasty.defaultMain $ testTree dependencies
 
-testTree :: Config -> IO Tasty.TestTree
-testTree Config{..} = do
-  filename <- Dependencies.getFilename
-
-  pure $ Tasty.testGroup
+testTree :: Devtools.Dependencies -> Tasty.TestTree
+testTree dependencies =
+  Tasty.testGroup
     "devtools"
-    [ Dependencies.testTree filename targets
-    , HLint.testTree hlintArguments
+    [ Devtools.dependencyTestTree dependencies
+    , HLint.testTree
     ]
+
+readDependencies :: [Devtools.Target] -> TH.Code TH.Q Devtools.Dependencies
+readDependencies
+  = TH.liftCode
+  . fmap TH.TExp
+  . (TH.lift <=< TH.runIO . Devtools.getDependencies)

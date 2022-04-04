@@ -132,7 +132,7 @@ test-suite test
     , bounded
     , bytestring
     , conversions
-    , devtools >=0.1.0 && <0.2
+    , devtools
     , exceptions
     , http-client
     , http-mclient

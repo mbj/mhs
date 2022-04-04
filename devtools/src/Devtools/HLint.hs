@@ -3,8 +3,6 @@ module Devtools.HLint (testTree) where
 import Control.Applicative (empty, pure)
 import Data.Function (($), (.), const)
 import Data.Functor (void)
-import Data.Semigroup ((<>))
-import Data.String (String)
 import Data.Typeable (Typeable)
 import System.IO
 
@@ -15,19 +13,21 @@ import qualified Test.Tasty                         as Tasty
 import qualified Test.Tasty.Providers               as Tasty
 import qualified Test.Tasty.Providers.ConsoleFormat as Tasty
 
-newtype HLintTest = HLintTest [String]
+data HLintTest = HLintTest
   deriving stock Typeable
 
 instance Tasty.IsTest HLintTest where
-  run _options (HLintTest arguments) _callback = runHLintTest arguments
+  run _options HLintTest _callback = runHLintTest
   testOptions = pure empty
 
-testTree :: [String] -> Tasty.TestTree
-testTree = Tasty.singleTest "hlint" . HLintTest
+testTree :: Tasty.TestTree
+testTree = Tasty.singleTest "hlint" HLintTest
 
-runHLintTest :: [String] -> IO Tasty.Result
-runHLintTest arguments = do
-  ideas <- HLint.hlint $ ["--quiet"] <> arguments <> ["."]
+runHLintTest :: IO Tasty.Result
+runHLintTest = do
+  -- Super wasteful to run it twice, but have yet to find
+  -- an way to buffer and only output "if" there are ideas.
+  ideas <- HLint.hlint ["--quiet", "."]
 
   pure $ if Foldable.null ideas
     then Tasty.testPassed empty
@@ -35,13 +35,13 @@ runHLintTest arguments = do
       . Tasty.ResultDetailsPrinter
       . const
       . const
-      $ runHLintVerbose arguments
+      $ runHLintVerbose
 
 -- Run HLint (again) but with output enabled.
 -- There is no good public API in HLint to render the output.
-runHLintVerbose :: [String] -> IO ()
-runHLintVerbose arguments = do
+runHLintVerbose :: IO ()
+runHLintVerbose = do
   -- CmdArgs the CLI parsing lib for hlint leaks global state.
   -- We have to reset it here.
   CmdArgs.setVerbosity CmdArgs.Normal
-  void . HLint.hlint $ arguments <> ["--", "."]
+  void $ HLint.hlint ["--", "."]

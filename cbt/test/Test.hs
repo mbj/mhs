@@ -1,3 +1,5 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 import GHC.Records (getField)
 import MPrelude
 import MRIO.Core
@@ -11,20 +13,14 @@ import qualified Test.Tasty  as Tasty
 main :: IO ()
 main = do
   cbt <- CBT.newDefaultEnvironment
-  devtools <- Devtools.testTree devtoolsConfig
+
   Tasty.defaultMain
     $ Tasty.testGroup "cbt"
     [ container cbt
-    , devtools
+    , Devtools.testTree $$(Devtools.readDependencies [Devtools.Target "cbt"])
     , imageDirectory cbt
     , imageStatic cbt
     ]
-
-devtoolsConfig :: Devtools.Config
-devtoolsConfig = Devtools.defaultConfig
-  { Devtools.hlintArguments = ["-XTypeApplications"]
-  , Devtools.targets        = [Devtools.Target "cbt"]
-  }
 
 imageDirectory :: CBT.Environment -> Tasty.TestTree
 imageDirectory cbt

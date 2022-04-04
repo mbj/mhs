@@ -196,7 +196,7 @@ test-suite test
     , conversions
     , dbt-postgresql-connection
     , dbt-postgresql-container
-    , devtools >=0.1.0 && <0.2
+    , devtools
     , hasql >=1.4
     , mprelude
     , mrio-core

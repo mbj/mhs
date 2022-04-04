@@ -52,6 +52,6 @@ tests:
     dependencies:
     - dbt-postgresql-connection
     - dbt-postgresql-container
-    - devtools ^>= 0.1.0
+    - devtools
     - tasty
     - tasty-mgolden

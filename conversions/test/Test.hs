@@ -1,3 +1,5 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module Main
   ( main
   )
@@ -8,6 +10,4 @@ import System.IO (IO)
 import qualified Devtools
 
 main :: IO ()
-main
-  = Devtools.main Devtools.defaultConfig
-  { Devtools.targets = [Devtools.Target "conversions"] }
+main = Devtools.main $$(Devtools.readDependencies [Devtools.Target "conversions"])

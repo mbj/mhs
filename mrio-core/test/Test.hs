@@ -1,7 +1,6 @@
-module Main
-  ( main
-  )
-where
+{-# LANGUAGE TemplateHaskell #-}
+
+module Main (main) where
 
 import           Control.Monad.Reader
 import           MRIO.Core
@@ -19,8 +18,7 @@ main = do
     name <- asks appName
     liftIO . putStrLn $ "App Name is " <> name
 
-  Devtools.main Devtools.defaultConfig
-    { Devtools.targets = [Devtools.Target "mrio-core"] }
- where
-  env :: Env
-  env = Env { appName = "Test App" }
+  Devtools.main $$(Devtools.readDependencies [Devtools.Target "mrio-core"])
+  where
+    env :: Env
+    env = Env { appName = "Test App" }
