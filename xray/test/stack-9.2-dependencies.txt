@@ -15,7 +15,7 @@ base-compat-batteries 0.12.1
 base-orphans 0.8.6
 bifunctors 5.5.11
 binary 0.8.9.0
-bounded 0.0.2
+bounded 0.0.3
 bytestring 0.11.3.0
 call-stack 0.4.0
 case-insensitive 1.2.1.0
