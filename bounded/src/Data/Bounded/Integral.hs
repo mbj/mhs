@@ -46,6 +46,14 @@ instance
       minBound' :: Natural
       minBound' = convert @Natural $ minBound @bound
 
+instance
+  ( HasValidTypeRange '(min2, min1) (min2 <=? min1)
+  , HasValidTypeRange '(max1, max2) (max1 <=? max2)
+  , integral1 ~ integral2
+  )
+  => Conversion (BoundNumber' integral2 label2 '(min2, max2)) (BoundNumber' integral1 label1 '(min1, max1)) where
+    convert (BoundNumber value) = BoundNumber value
+
 instance (KnownNat min, KnownNat max, Conversion integral Natural )
   => Bounded (BoundNumber' integral label '(min, max)) where
   minBound = BoundNumber . convert @integral $ fromType @min @Natural

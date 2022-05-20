@@ -18,7 +18,7 @@ base64-bytestring 1.2.1.0
 bifunctors 5.5.11
 binary 0.8.8.0
 blaze-builder 0.4.2.2
-bounded 0.0.2
+bounded 0.0.3
 byteorder 1.0.4
 bytestring 0.10.12.1
 call-stack 0.4.0

@@ -93,6 +93,13 @@ instance
         min :: Natural
         min = fromType @min
 
+instance
+  ( HasValidTypeRange '(min2, min1) (min2 <=? min1)
+  , HasValidTypeRange '(max1, max2) (max1 <=? max2)
+  )
+  => Conversion (BoundText' label2 '(min2, max2)) (BoundText' label1 '(min1, max1)) where
+    convert (BoundText text) = BoundText text
+
 convertTruncate
   :: forall min max label . (KnownNat min, KnownNat max)
   => Text
