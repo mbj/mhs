@@ -2,13 +2,15 @@ module OpenApi.ResponseHeader where
 
 import OpenApi.JSON
 import OpenApi.Prelude
+import OpenApi.ReferenceOr
+import OpenApi.Schema
 import OpenApi.TaggedText
 
 import qualified Data.Aeson as JSON
 
 data ResponseHeader = ResponseHeader
   { description :: Maybe (TaggedText "ResponseHeaderDescription")
-  , name        :: TaggedText "ResponseHeaderName"
+  , schema      :: Maybe (ReferenceOr Schema)
   }
   deriving anyclass JSON.ToJSON
   deriving stock    (Eq, Generic, Show)

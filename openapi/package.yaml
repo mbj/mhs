@@ -1,7 +1,7 @@
 _common/package: !include "../common/package.yaml"
 
 name:        openapi
-version:     0.0.4
+version:     0.0.5
 synopsis:    Openapi3 Types
 author:      Markus Schirp
 maintainer:  mbj@schirp-dso.com
