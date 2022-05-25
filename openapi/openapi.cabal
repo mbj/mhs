@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           openapi
-version:        0.0.4
+version:        0.0.5
 synopsis:       Openapi3 Types
 homepage:       https://github.com/mbj/mhs#readme
 bug-reports:    https://github.com/mbj/mhs/issues
