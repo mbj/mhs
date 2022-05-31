@@ -7,7 +7,6 @@ import Data.Bounded.Prelude
 import Data.Bounded.TypeLevel
 import GHC.TypeLits (type (<=?))
 
-
 import qualified Data.Aeson as JSON
 
 newtype BoundNumber' (integral :: Type) (label :: Symbol) (range :: (Nat, Nat))
