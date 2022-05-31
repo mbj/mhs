@@ -1,6 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
 
-module Data.Bounded.Integral where
+module Data.Bounded.Integral
+  ( BoundNumber
+  , BoundNumber'
+  )
+where
 
 import Data.Bounded.JSON
 import Data.Bounded.Prelude

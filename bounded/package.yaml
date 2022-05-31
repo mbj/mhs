@@ -3,7 +3,7 @@ _common/package: !include "../common/package.yaml"
 maintainer: Markus Schirp mbj@schirp-dso.com, Allan Lukwago <epicallan.al@gmail.com>
 name:       bounded
 synopsis:   User definable Integral and Text bounded types
-version:    0.0.3
+version:    0.0.4
 
 <<: *defaults
 
