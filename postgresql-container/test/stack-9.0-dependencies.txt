@@ -53,7 +53,7 @@ data-fix 0.3.2
 data-serializer 0.3.5
 data-textual 0.3.0.3
 dbt-postgresql-connection 0.1.0
-dbt-postgresql-container 0.1.1
+dbt-postgresql-container 0.1.2
 deepseq 1.4.5.0
 deferred-folds 0.9.18.1
 devtools 0.2.0
