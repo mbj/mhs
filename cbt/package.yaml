@@ -1,7 +1,7 @@
 _common/package: !include "../common/package.yaml"
 
 name:        cbt
-version:     0.1.0
+version:     0.1.1
 synopsis:    A container backend toolkit
 
 <<: *defaults
