@@ -217,7 +217,10 @@ build BuildDefinition{..}
 
     buildProc arguments
       = Process.proc (binaryName @b)
-      $ ["build", "--tag", convertText imageName] <> arguments
+      $ [ "build"
+        , "--platform", "linux/amd64"
+        , "--tag",      convertText imageName
+        ] <> arguments
 
 buildRun
   :: forall b env . (Backend b, WithEnv env)
@@ -352,7 +355,8 @@ runProc ContainerDefinition{..} = detachSilence $ backendProc @b containerArgume
     containerArguments = mconcat
       [
         [ "run"
-        , "--name", convertText containerName
+        , "--name",     convertText containerName
+        , "--platform", "linux/amd64"
         ]
       , detachFlag
       , envOptions
