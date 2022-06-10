@@ -1,6 +1,7 @@
 module DBT.Postgresql.Container
-  ( buildDefinition
+  ( defaultBuildDefinition
   , populateDatabaseImage
+  , populateDatabaseImageDefault
   , withDatabaseContainer
   , withDatabaseContainerImage
   , withDatabaseContainerProcess
@@ -45,11 +46,12 @@ withDatabaseContainerProcessRun_ prefix proc =
 
 populateDatabaseImage
   :: forall env . (CBT.WithEnv env)
-  => CBT.ContainerName
+  => CBT.BuildDefinition
+  -> CBT.ContainerName
   -> CBT.ImageName
   -> (Postgresql.ClientConfig -> RIO env ())
   -> RIO env (Either CBT.ImageBuildError ())
-populateDatabaseImage containerName targetImageName action =
+populateDatabaseImage buildDefinition containerName targetImageName action =
    fmap toError . Exception.tryAnyDeep $ do
      Exception.bracket_
        (CBT.buildRun buildDefinition containerDefinition')
@@ -69,13 +71,21 @@ populateDatabaseImage containerName targetImageName action =
       CBT.stop containerName
       CBT.commit containerName targetImageName
 
+populateDatabaseImageDefault
+  :: forall env . (CBT.WithEnv env)
+  => CBT.ContainerName
+  -> CBT.ImageName
+  -> (Postgresql.ClientConfig -> RIO env ())
+  -> RIO env (Either CBT.ImageBuildError ())
+populateDatabaseImageDefault = populateDatabaseImage defaultBuildDefinition
+
 withDatabaseContainer
   :: forall env a . (CBT.WithEnv env)
   => CBT.ContainerName
   -> (Postgresql.ClientConfig -> RIO env a)
   -> RIO env a
 withDatabaseContainer containerName
-  = CBT.withContainerBuildRun buildDefinition (containerDefinition containerName)
+  = CBT.withContainerBuildRun defaultBuildDefinition (containerDefinition containerName)
   . runAction containerName
 
 withDatabaseContainerImage
@@ -190,8 +200,8 @@ waitForPort containerName clientConfig
   , ..
   }
 
-buildDefinition :: CBT.BuildDefinition
-buildDefinition
+defaultBuildDefinition :: CBT.BuildDefinition
+defaultBuildDefinition
   =  CBT.fromDockerfileContent (CBT.Prefix "dbt")
   $$(CBT.TH.readDockerfileContent $ Path.file "Dockerfile")
 
@@ -200,7 +210,7 @@ postgresqlDefinition
   -> [Text]
   -> CBT.ContainerDefinition
 postgresqlDefinition containerName arguments =
-  (CBT.minimalContainerDefinition (getField @"imageName" buildDefinition) containerName)
+  (CBT.minimalContainerDefinition (getField @"imageName" defaultBuildDefinition) containerName)
     { CBT.command      = pure command
     , CBT.mounts       = []
     , CBT.publishPorts = []
