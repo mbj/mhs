@@ -12,11 +12,7 @@ import Data.Char
 import Data.Eq
 import Data.Function
 import Data.Semigroup
-#if MIN_VERSION_GLASGOW_HASKELL(9,0,0,0)
 import GHC.Unit.Module.Name
-#else
-import Module
-#endif
 import qualified Data.List as List
 
 newtype LocalModule = LocalModule ModuleName
