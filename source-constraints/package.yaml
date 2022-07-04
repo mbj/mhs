@@ -54,7 +54,6 @@ when:
     ghc-options: -Wwarn
 
 default-extensions:
-- CPP
 - DerivingStrategies
 - GeneralizedNewtypeDeriving
 - LambdaCase

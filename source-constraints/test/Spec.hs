@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP         #-}
 {-# LANGUAGE QuasiQuotes #-}
 
 module Main (main) where

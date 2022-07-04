@@ -46,7 +46,6 @@ library
   hs-source-dirs:
       src
   default-extensions:
-      CPP
       DerivingStrategies
       GeneralizedNewtypeDeriving
       LambdaCase
@@ -76,7 +75,6 @@ test-suite hspec
   hs-source-dirs:
       test
   default-extensions:
-      CPP
       DerivingStrategies
       GeneralizedNewtypeDeriving
       LambdaCase
