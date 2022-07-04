@@ -1,4 +1,4 @@
-resolver: lts-19.0
+resolver: lts-19.14
 extra-deps:
 - mprelude
 - git: https://github.com/brendanhay/amazonka
