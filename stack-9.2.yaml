@@ -1,4 +1,4 @@
-resolver: nightly-2022-03-19
+resolver: nightly-2022-07-04
 extra-deps:
 - mprelude
 - symbols-0.3.0.0@sha256:5d051bccbd4bcb33fa8ce076bd3cd2bacc90973682f7340976758947eaa128a9,964
