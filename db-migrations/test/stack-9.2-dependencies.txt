@@ -80,7 +80,7 @@ hasql 1.5.0.5
 hasql-th 0.4.0.16
 hasql-transaction 1.0.1.1
 headed-megaparsec 0.2.1
-hlint 3.3.5
+hlint 3.4
 hpc 0.6.1.0
 hscolour 1.24.4
 indexed-traversable 0.1.2

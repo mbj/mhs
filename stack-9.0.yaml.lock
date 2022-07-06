@@ -83,16 +83,12 @@ packages:
     git: https://github.com/brendanhay/amazonka
     commit: f73a957d05f64863e867cf39d0db260718f0fadd
 - completed:
-    name: stratosphere
-    version: 0.59.1
-    git: https://github.com/mbj/stratosphere
+    hackage: stratosphere-0.60.0@sha256:ce16367b41c9b64c698d416801504441c3207b6b25eb03aba3594117951f8260,145343
     pantry-tree:
-      size: 245616
-      sha256: e12283597b5e6be8626ddf16487f35e217df9e3707101013cfceb1669f1b65dd
-    commit: cfe9c16022c7b0dc161345f05e51e8ddf2223dfd
+      size: 243747
+      sha256: 4dda716435f9742e3929dc5bfe8259d43a8539941cbd345c2d09b2b8ba828d5e
   original:
-    git: https://github.com/mbj/stratosphere
-    commit: cfe9c16022c7b0dc161345f05e51e8ddf2223dfd
+    hackage: stratosphere-0.60.0@sha256:ce16367b41c9b64c698d416801504441c3207b6b25eb03aba3594117951f8260,145343
 - completed:
     hackage: symbols-0.3.0.0@sha256:5d051bccbd4bcb33fa8ce076bd3cd2bacc90973682f7340976758947eaa128a9,964
     pantry-tree:

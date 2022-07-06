@@ -10,8 +10,7 @@ extra-deps:
   - lib/services/amazonka-s3
   - lib/services/amazonka-sso
   - lib/services/amazonka-sts
-- git: https://github.com/mbj/stratosphere
-  commit: cfe9c16022c7b0dc161345f05e51e8ddf2223dfd
+- stratosphere-0.60.0@sha256:ce16367b41c9b64c698d416801504441c3207b6b25eb03aba3594117951f8260,145343
 - symbols-0.3.0.0@sha256:5d051bccbd4bcb33fa8ce076bd3cd2bacc90973682f7340976758947eaa128a9,964
 flags:
   bounded:
