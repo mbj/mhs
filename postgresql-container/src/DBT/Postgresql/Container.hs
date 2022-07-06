@@ -3,6 +3,7 @@ module DBT.Postgresql.Container
   , populateDatabaseImage
   , populateDatabaseImageDefault
   , withDatabaseContainer
+  , withDatabaseContainerDefault
   , withDatabaseContainerImage
   , withDatabaseContainerProcess
   , withDatabaseContainerProcessRun_
@@ -32,7 +33,7 @@ withDatabaseContainerProcess
   -> RIO env a
 withDatabaseContainerProcess prefix proc withProcess action = do
   containerName <- CBT.nextContainerName prefix
-  withDatabaseContainer containerName $ \clientConfig -> do
+  withDatabaseContainer defaultBuildDefinition containerName $ \clientConfig -> do
     env <- Postgresql.getEnv clientConfig
     withProcess (Process.setEnv env proc) action
 
@@ -58,7 +59,7 @@ populateDatabaseImage buildDefinition containerName targetImageName action =
        (CBT.removeContainer containerName)
        run
   where
-    containerDefinition' = (containerDefinition containerName)
+    containerDefinition' = (containerDefinition (getField @"imageName" buildDefinition) containerName)
       { CBT.remove = CBT.NoRemove
       }
 
@@ -81,12 +82,22 @@ populateDatabaseImageDefault = populateDatabaseImage defaultBuildDefinition
 
 withDatabaseContainer
   :: forall env a . (CBT.WithEnv env)
+  => CBT.BuildDefinition
+  -> CBT.ContainerName
+  -> (Postgresql.ClientConfig -> RIO env a)
+  -> RIO env a
+withDatabaseContainer buildDefinition containerName
+  = CBT.withContainerBuildRun
+      buildDefinition
+      (containerDefinition (getField @"imageName" buildDefinition) containerName)
+  . runAction containerName
+
+withDatabaseContainerDefault
+  :: forall env a . (CBT.WithEnv env)
   => CBT.ContainerName
   -> (Postgresql.ClientConfig -> RIO env a)
   -> RIO env a
-withDatabaseContainer containerName
-  = CBT.withContainerBuildRun defaultBuildDefinition (containerDefinition containerName)
-  . runAction containerName
+withDatabaseContainerDefault = withDatabaseContainer defaultBuildDefinition
 
 withDatabaseContainerImage
   :: forall env a . (CBT.WithEnv env)
@@ -99,7 +110,8 @@ withDatabaseContainerImage containerName targetImageName
   . runAction containerName
   where
     containerDefinition' :: CBT.ContainerDefinition
-    containerDefinition' = setImageName (containerDefinition containerName) targetImageName
+    containerDefinition' = setImageName
+      (containerDefinition (getField @"imageName" defaultBuildDefinition) containerName) targetImageName
 
 setImageName :: CBT.ContainerDefinition -> CBT.ImageName -> CBT.ContainerDefinition
 setImageName CBT.ContainerDefinition{..} imageName'
@@ -206,11 +218,12 @@ defaultBuildDefinition
   $$(CBT.TH.readDockerfileContent $ Path.file "Dockerfile")
 
 postgresqlDefinition
-  :: CBT.ContainerName
+  :: CBT.ImageName
+  -> CBT.ContainerName
   -> [Text]
   -> CBT.ContainerDefinition
-postgresqlDefinition containerName arguments =
-  (CBT.minimalContainerDefinition (getField @"imageName" defaultBuildDefinition) containerName)
+postgresqlDefinition imageName containerName arguments =
+  (CBT.minimalContainerDefinition imageName containerName)
     { CBT.command      = pure command
     , CBT.mounts       = []
     , CBT.publishPorts = []
@@ -222,10 +235,11 @@ postgresqlDefinition containerName arguments =
       , CBT.arguments = convert masterUserName : arguments
       }
 
-containerDefinition :: CBT.ContainerName -> CBT.ContainerDefinition
-containerDefinition containerName
+containerDefinition :: CBT.ImageName -> CBT.ContainerName -> CBT.ContainerDefinition
+containerDefinition imageName containerName
   = deamonize
   $ postgresqlDefinition
+    imageName
     containerName
     [ "postgres"
     , "-D", convert $ Path.toString pgData

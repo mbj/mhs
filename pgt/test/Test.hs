@@ -20,7 +20,7 @@ main = do
 
   CBT.runDefaultEnvironment $ do
     containerName <- CBT.nextContainerName $ CBT.Prefix "pgt"
-    DBT.withDatabaseContainer containerName $ \pgConfig -> do
+    DBT.withDatabaseContainerDefault containerName $ \pgConfig -> do
       let adminConfig = pgConfig { Postgresql.databaseName = Postgresql.DatabaseName "template1" }
       liftIO $ setupSchema adminConfig
       config   <- PGT.configure adminConfig empty
