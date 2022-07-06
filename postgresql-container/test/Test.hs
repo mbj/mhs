@@ -16,7 +16,7 @@ main :: IO ()
 main = do
   CBT.runDefaultEnvironment $ do
     containerName <- CBT.nextContainerName (CBT.Prefix "dbt-test")
-    DBT.withDatabaseContainer containerName $ \clientConfig ->
+    DBT.withDatabaseContainerDefault containerName $ \clientConfig ->
       liftIO . Tasty.defaultMain $ Tasty.testGroup "dbt"
         [ Devtools.testTree $$(Devtools.readDependencies [Devtools.Target "dbt-postgresql-container"])
         , testDB clientConfig
