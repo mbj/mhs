@@ -81,7 +81,7 @@ ghc-lib-parser-ex 9.2.0.4
 ghc-prim 0.8.0
 ghci 9.2.3
 hashable 1.4.0.2
-hlint 3.3.5
+hlint 3.4
 hourglass 0.2.12
 hpc 0.6.1.0
 hscolour 1.24.4
@@ -138,7 +138,7 @@ split 0.2.3.4
 splitmix 0.1.0.4
 stack-deploy 0.0.5
 stm 2.5.0.2
-stratosphere 0.59.1
+stratosphere 0.60.0
 streaming-commons 0.2.2.4
 strict 0.4.0.1
 syb 0.7.2.1

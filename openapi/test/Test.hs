@@ -1,7 +1,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 import Data.Aeson.KeyMap (KeyMap)
-import Data.Maybe (catMaybes)
+import Data.Maybe (mapMaybe)
 import OpenApi.Paths
 import OpenApi.Prelude
 import OpenApi.ReferenceOr
@@ -156,7 +156,7 @@ mkAccepted (input, expected) = do
 
     normalizeAttributes :: KeyMap JSON.Value -> KeyMap JSON.Value
     normalizeAttributes map
-      = KeyMap.fromList . catMaybes $ normalizePair <$> KeyMap.toList map
+      = KeyMap.fromList (mapMaybe normalizePair $ KeyMap.toList map)
 
     normalizePair :: (JSON.Key, JSON.Value) -> Maybe (JSON.Key, JSON.Value)
     normalizePair (key, value) =

@@ -77,7 +77,7 @@ ghc-lib-parser-ex 9.2.0.4
 ghc-prim 0.8.0
 ghci 9.2.3
 hashable 1.4.0.2
-hlint 3.3.5
+hlint 3.4
 hourglass 0.2.12
 hpc 0.6.1.0
 hscolour 1.24.4
