@@ -27,7 +27,7 @@ runHLintTest :: IO Tasty.Result
 runHLintTest = do
   -- Super wasteful to run it twice, but have yet to find
   -- an way to buffer and only output "if" there are ideas.
-  ideas <- HLint.hlint ["--quiet", "."]
+  ideas <- HLint.hlint ["--threads", "--quiet", "."]
 
   pure $ if Foldable.null ideas
     then Tasty.testPassed empty
