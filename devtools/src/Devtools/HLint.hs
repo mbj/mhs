@@ -44,4 +44,4 @@ runHLintVerbose = do
   -- CmdArgs the CLI parsing lib for hlint leaks global state.
   -- We have to reset it here.
   CmdArgs.setVerbosity CmdArgs.Normal
-  void $ HLint.hlint ["--", "."]
+  void $ HLint.hlint ["--threads", "--", "."]
