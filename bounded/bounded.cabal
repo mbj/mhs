@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           bounded
-version:        0.0.4
+version:        0.0.5
 synopsis:       User definable Integral and Text bounded types
 homepage:       https://github.com/mbj/mhs#readme
 bug-reports:    https://github.com/mbj/mhs/issues
@@ -69,6 +69,7 @@ library
     , mtl
     , scientific
     , symbols
+    , template-haskell
     , text
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
@@ -117,6 +118,7 @@ test-suite readme
     , mtl
     , scientific
     , symbols
+    , template-haskell
     , text
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
@@ -176,6 +178,7 @@ test-suite test
     , symbols
     , tasty
     , tasty-hunit
+    , template-haskell
     , text
     , type-spec
   if flag(development)

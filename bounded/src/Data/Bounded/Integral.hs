@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveLift #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 module Data.Bounded.Integral
@@ -11,12 +12,13 @@ import Data.Bounded.Prelude
 import Data.Bounded.TypeLevel
 import GHC.TypeLits (type (<=?))
 
-import qualified Data.Aeson as JSON
+import qualified Data.Aeson                 as JSON
+import qualified Language.Haskell.TH.Syntax as TH
 
 newtype BoundNumber' (integral :: Type) (label :: Symbol) (range :: (Nat, Nat))
   = BoundNumber { unBoundNumber :: integral }
   deriving newtype (JSON.ToJSON)
-  deriving stock (Eq, Ord, Show, Typeable)
+  deriving stock (Eq, Ord, Show, TH.Lift, Typeable)
 
 type BoundNumber = BoundNumber' Natural
 
