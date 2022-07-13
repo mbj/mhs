@@ -10,6 +10,7 @@ module CBT
   , commit
   , getHostPort
   , getImplementation
+  , isImagePresent
   , login
   , nextContainerName
   , printInspect
@@ -39,6 +40,16 @@ import qualified Data.UUID.V4       as UUID
 import qualified System.Environment as Environment
 import qualified System.Path        as Path
 import qualified UnliftIO.Exception as Exception
+
+isImagePresent
+  :: WithEnv env
+  => ImageName
+  -> RIO env Bool
+isImagePresent imageName = do
+  implementation <- getImplementation
+  case implementation of
+    Docker -> CBT.Backend.isImagePresent @'Docker imageName
+    Podman -> CBT.Backend.isImagePresent @'Podman imageName
 
 withContainerBuildRun
   :: WithEnv env

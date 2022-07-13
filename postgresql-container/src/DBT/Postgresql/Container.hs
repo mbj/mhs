@@ -2,6 +2,7 @@ module DBT.Postgresql.Container
   ( defaultBuildDefinition
   , populateDatabaseImage
   , populateDatabaseImageDefault
+  , populateDatabaseImageIfAbsent
   , withDatabaseContainer
   , withDatabaseContainerDefault
   , withDatabaseContainerImage
@@ -44,6 +45,19 @@ withDatabaseContainerProcessRun_
   -> RIO env ()
 withDatabaseContainerProcessRun_ prefix proc =
   withDatabaseContainerProcess prefix proc Process.withProcessWait_ Process.checkExitCode
+
+populateDatabaseImageIfAbsent
+  :: forall env . (CBT.WithEnv env)
+  => CBT.BuildDefinition
+  -> CBT.ContainerName
+  -> CBT.ImageName
+  -> (Postgresql.ClientConfig -> RIO env ())
+  -> RIO env (Either CBT.ImageBuildError ())
+populateDatabaseImageIfAbsent buildDefinition containerName targetImageName action = do
+  present <- CBT.isImagePresent targetImageName
+  if present
+    then pure $ pure ()
+    else populateDatabaseImage buildDefinition containerName targetImageName action
 
 populateDatabaseImage
   :: forall env . (CBT.WithEnv env)
