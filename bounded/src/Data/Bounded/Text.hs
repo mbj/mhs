@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Data.Bounded.Text
   ( BoundText
   , BoundText'
