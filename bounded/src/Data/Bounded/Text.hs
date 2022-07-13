@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveLift #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 module Data.Bounded.Text
@@ -13,16 +14,17 @@ import Data.Bounded.Prelude
 import Data.Bounded.TypeLevel
 import GHC.TypeLits (type (<=?))
 
-import qualified Data.Aeson as JSON
-import qualified Data.Text  as Text
-import qualified Text.Show  as Show
+import qualified Data.Aeson                 as JSON
+import qualified Data.Text                  as Text
+import qualified Language.Haskell.TH.Syntax as TH
+import qualified Text.Show                  as Show
 
 type BoundText (label :: Symbol) = BoundText' label '(1, 128)
 
 newtype BoundText' (a :: k) (range :: (Nat, Nat)) = BoundText Text
   deriving (Conversion Text) via Text
   deriving newtype (JSON.FromJSONKey, JSON.ToJSON, JSON.ToJSONKey)
-  deriving stock (Eq, Ord, Show, Typeable)
+  deriving stock (Eq, Ord, Show, TH.Lift, Typeable)
 
 data BoundTextError = BoundTextError
   { actual :: Natural
