@@ -69,6 +69,7 @@ library
     , mtl
     , scientific
     , symbols
+    , template-haskell
     , text
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
@@ -117,6 +118,7 @@ test-suite readme
     , mtl
     , scientific
     , symbols
+    , template-haskell
     , text
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
@@ -176,6 +178,7 @@ test-suite test
     , symbols
     , tasty
     , tasty-hunit
+    , template-haskell
     , text
     , type-spec
   if flag(development)

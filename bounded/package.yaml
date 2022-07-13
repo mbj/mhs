@@ -39,6 +39,7 @@ dependencies:
 - mtl
 - scientific
 - symbols
+- template-haskell
 - text
 
 library:
