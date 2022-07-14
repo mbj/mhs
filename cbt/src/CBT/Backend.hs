@@ -26,6 +26,7 @@ import Control.Exception (Exception)
 import Control.Monad (unless)
 import Data.Maybe (isJust)
 import Data.Monoid (mconcat)
+import GHC.Records (getField)
 import Text.Read (readMaybe)
 
 import qualified CBT.Backend.Tar       as Tar
@@ -53,10 +54,9 @@ instance Show ContainerRunFailure where
     <> convertText (containerName containerDefinition)
 
 class Backend (b :: Implementation) where
-  binaryName        :: String
-  getHostPort       :: WithEnv env => ContainerName -> Port -> RIO env Port
-  testImageExists   :: WithEnv env => BuildDefinition -> RIO env Bool
-
+  binaryName     :: String
+  getHostPort    :: WithEnv env => ContainerName -> Port -> RIO env Port
+  isImagePresent :: WithEnv env => ImageName -> RIO env Bool
 
 instance Backend 'Podman where
   binaryName = "podman"
@@ -79,7 +79,7 @@ instance Backend 'Podman where
                 mkField "PortBindings" $
                   mkField "HostConfig" ""
 
-  testImageExists BuildDefinition{..} = exitBool <$> runProcess process
+  isImagePresent imageName = exitBool <$> runProcess process
     where
       process =
         Process.proc
@@ -111,7 +111,7 @@ instance Backend 'Docker where
                 mkField "Ports" $
                   mkField "NetworkSettings" ""
 
-  testImageExists BuildDefinition{..} = exitBool <$> runProcess process
+  isImagePresent imageName = exitBool <$> runProcess process
     where
       process
         = silenceStdout
@@ -130,7 +130,7 @@ buildIfAbsent
   => BuildDefinition
   -> RIO env ()
 buildIfAbsent buildDefinition = do
-  exists <- testImageExists @b buildDefinition
+  exists <- isImagePresent @b (getField @"imageName" buildDefinition)
 
   unless exists (build @b buildDefinition)
 

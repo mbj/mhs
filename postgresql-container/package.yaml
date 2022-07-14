@@ -1,7 +1,7 @@
 _common/package: !include "../common/package.yaml"
 
 name:     dbt-postgresql-container
-version:  0.1.4
+version:  0.1.5
 synopsis: DBT Postgresql container tool
 
 <<: *defaults
