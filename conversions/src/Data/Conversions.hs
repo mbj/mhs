@@ -114,6 +114,9 @@ instance Conversion Integer Int64 where
 instance Conversion Integer Natural where
   convert = fromIntegral
 
+instance Conversion Integer Word where
+  convert = fromIntegral
+
 instance Conversion Integer Word8 where
   convert = fromIntegral
 
