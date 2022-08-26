@@ -279,6 +279,9 @@ convertFail = either (fail . show) pure . convertEither @b @a @e
 convertMaybe :: forall b a e . (Conversion (Either e b) a) => a -> Maybe b
 convertMaybe = either (const empty) pure . convertEither @b @a @e
 
+convertVia :: forall c b a . (Conversion b c, Conversion c a) => a -> b
+convertVia = convert @b @c . convert @c @a
+
 boundError :: forall a b . (Show a, Show b) => a -> b -> b -> String
 boundError value min max =
   "Value should be between "
