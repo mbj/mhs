@@ -6,7 +6,7 @@ import AWS.Lambda.Runtime.Prelude
 import qualified Network.HTTP.Types as HTTP
 import qualified System.IO          as IO
 
-handler :: Request Text -> IO Response
+handler :: Request -> IO Response
 handler event = do
   liftIO $ IO.hPutStr IO.stderr "Lambda Event started"
 
