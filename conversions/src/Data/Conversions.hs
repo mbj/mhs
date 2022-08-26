@@ -2,34 +2,18 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Data.Conversions where
 
-import           Control.Applicative
-import           Control.Exception              ( Exception )
-import           Control.Monad                  ( MonadPlus(..) )
-import           Control.Monad.Catch            ( MonadThrow
-                                                , throwM
-                                                )
-import           Control.Monad.Except           ( MonadError
-                                                , throwError
-                                                )
-import           Data.Coerce                    ( Coercible
-                                                , coerce
-                                                )
-import           Data.Int                       ( Int16
-                                                , Int32
-                                                , Int64
-                                                , Int8
-                                                )
-import           Data.Text                      ( Text )
-import           Data.Typeable                  ( Typeable )
-import           Data.Word                      ( Word16
-                                                , Word32
-                                                , Word64
-                                                , Word8
-                                                )
-import           Numeric.Natural                ( Natural )
-import           Prelude                 hiding ( max
-                                                , min
-                                                )
+import Control.Applicative
+import Control.Exception (Exception)
+import Control.Monad (MonadPlus(..))
+import Control.Monad.Catch (MonadThrow, throwM)
+import Control.Monad.Except (MonadError, throwError)
+import Data.Coerce (Coercible, coerce)
+import Data.Int (Int16, Int32, Int64, Int8)
+import Data.Text (Text)
+import Data.Typeable (Typeable)
+import Data.Word (Word16, Word32, Word64, Word8)
+import Numeric.Natural (Natural)
+import Prelude hiding (max, min)
 
 import qualified Data.ByteString               as BS
 import qualified Data.ByteString.Lazy          as LBS
