@@ -77,6 +77,21 @@ instance (MonadError (UserBoundError Natural Int32) m) => Conversion (m Int32) N
 instance (MonadError (UserBoundError Natural Int64) m) => Conversion (m Int64) Natural where
   convert = convertErrorFromNatural
 
+instance (MonadError (UserBoundError Natural Word) m) => Conversion (m Word) Natural where
+  convert = convertErrorFromNatural
+
+instance (MonadError (UserBoundError Natural Word8) m) => Conversion (m Word8) Natural where
+  convert = convertErrorFromNatural
+
+instance (MonadError (UserBoundError Natural Word16) m) => Conversion (m Word16) Natural where
+  convert = convertErrorFromNatural
+
+instance (MonadError (UserBoundError Natural Word32) m) => Conversion (m Word32) Natural where
+  convert = convertErrorFromNatural
+
+instance (MonadError (UserBoundError Natural Word64) m) => Conversion (m Word64) Natural where
+  convert = convertErrorFromNatural
+
 instance Conversion a a where
   convert = id
 
