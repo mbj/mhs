@@ -96,6 +96,18 @@ instance Conversion a a where
 instance Conversion Integer Int where
   convert = fromIntegral
 
+instance Conversion Integer Int8 where
+  convert = fromIntegral
+
+instance Conversion Integer Int16 where
+  convert = fromIntegral
+
+instance Conversion Integer Int32 where
+  convert = fromIntegral
+
+instance Conversion Integer Int64 where
+  convert = fromIntegral
+
 instance Conversion Integer Natural where
   convert = fromIntegral
 
