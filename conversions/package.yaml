@@ -12,6 +12,7 @@ dependencies:
 - bytestring
 - exceptions
 - mtl
+- scientific
 - template-haskell
 - text
 
