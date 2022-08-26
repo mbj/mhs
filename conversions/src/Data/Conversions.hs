@@ -65,6 +65,9 @@ instance (MonadError (UserBoundError Integer Text) m) => Conversion (m Natural) 
 instance (MonadError (UserBoundError Natural Int) m) => Conversion (m Int) Natural where
   convert = convertErrorFromNatural
 
+instance (MonadError (UserBoundError Natural Int8) m) => Conversion (m Int8) Natural where
+  convert = convertErrorFromNatural
+
 instance (MonadError (UserBoundError Natural Int16) m) => Conversion (m Int16) Natural where
   convert = convertErrorFromNatural
 
