@@ -12,7 +12,7 @@ handler event = do
 
   pure $ Response
     { statusCode = HTTP.status200
-    , headers    = Headers [("content-type", "application/json")]
+    , headers    = [("content-type", "application/json")]
     , body       = mkTextResponseBody $ "hello world at " <> path event
     }
 
