@@ -2,34 +2,19 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Data.Conversions where
 
-import           Control.Applicative
-import           Control.Exception              ( Exception )
-import           Control.Monad                  ( MonadPlus(..) )
-import           Control.Monad.Catch            ( MonadThrow
-                                                , throwM
-                                                )
-import           Control.Monad.Except           ( MonadError
-                                                , throwError
-                                                )
-import           Data.Coerce                    ( Coercible
-                                                , coerce
-                                                )
-import           Data.Int                       ( Int16
-                                                , Int32
-                                                , Int64
-                                                , Int8
-                                                )
-import           Data.Text                      ( Text )
-import           Data.Typeable                  ( Typeable )
-import           Data.Word                      ( Word16
-                                                , Word32
-                                                , Word64
-                                                , Word8
-                                                )
-import           Numeric.Natural                ( Natural )
-import           Prelude                 hiding ( max
-                                                , min
-                                                )
+import Control.Applicative (empty)
+import Control.Exception (Exception)
+import Control.Monad (MonadPlus(..))
+import Control.Monad.Catch (MonadThrow, throwM)
+import Control.Monad.Except (MonadError, throwError)
+import Data.Coerce (Coercible, coerce)
+import Data.Int (Int16, Int32, Int64, Int8)
+import Data.Scientific (Scientific)
+import Data.Text (Text)
+import Data.Typeable (Typeable)
+import Data.Word (Word16, Word32, Word64, Word8)
+import Numeric.Natural (Natural)
+import Prelude hiding (max, min)
 
 import qualified Data.ByteString               as BS
 import qualified Data.ByteString.Lazy          as LBS
@@ -81,6 +66,9 @@ instance (MonadError (UserBoundError Integer Text) m) => Conversion (m Natural) 
 instance (MonadError (UserBoundError Natural Int) m) => Conversion (m Int) Natural where
   convert = convertErrorFromNatural
 
+instance (MonadError (UserBoundError Natural Int8) m) => Conversion (m Int8) Natural where
+  convert = convertErrorFromNatural
+
 instance (MonadError (UserBoundError Natural Int16) m) => Conversion (m Int16) Natural where
   convert = convertErrorFromNatural
 
@@ -88,6 +76,21 @@ instance (MonadError (UserBoundError Natural Int32) m) => Conversion (m Int32) N
   convert = convertErrorFromNatural
 
 instance (MonadError (UserBoundError Natural Int64) m) => Conversion (m Int64) Natural where
+  convert = convertErrorFromNatural
+
+instance (MonadError (UserBoundError Natural Word) m) => Conversion (m Word) Natural where
+  convert = convertErrorFromNatural
+
+instance (MonadError (UserBoundError Natural Word8) m) => Conversion (m Word8) Natural where
+  convert = convertErrorFromNatural
+
+instance (MonadError (UserBoundError Natural Word16) m) => Conversion (m Word16) Natural where
+  convert = convertErrorFromNatural
+
+instance (MonadError (UserBoundError Natural Word32) m) => Conversion (m Word32) Natural where
+  convert = convertErrorFromNatural
+
+instance (MonadError (UserBoundError Natural Word64) m) => Conversion (m Word64) Natural where
   convert = convertErrorFromNatural
 
 instance Conversion a a where
@@ -143,6 +146,9 @@ instance Conversion Natural Word32 where
 
 instance Conversion Natural Word64 where
   convert = fromIntegral
+
+instance Conversion Integer a => Conversion Scientific a where
+  convert = fromInteger . convert
 
 instance (MonadError (BoundError Integer Int) m) => Conversion (m Int) Integer where
   convert = convertBoundedFromIntegral
