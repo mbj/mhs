@@ -2,7 +2,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Data.Conversions where
 
-import Control.Applicative
+import Control.Applicative (empty)
 import Control.Exception (Exception)
 import Control.Monad (MonadPlus(..))
 import Control.Monad.Catch (MonadThrow, throwM)
