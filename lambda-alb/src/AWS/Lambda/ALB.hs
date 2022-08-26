@@ -30,18 +30,18 @@ newtype RequestDecodeFailure = RequestDecodeFailure Text
   deriving anyclass (Exception)
   deriving stock (Eq, Show)
 
-data Request a = Request
+data Request = Request
   { path                  :: Text
   , httpMethod            :: HTTP.StdMethod
   , headers               :: Headers
   , queryStringParameters :: Map Text Text
   , isBase64Encoded       :: Bool
   , requestContext        :: JSON.Value
-  , body                  :: a
+  , body                  :: Text
   }
   deriving stock (Generic, Show, Eq)
 
-instance JSON.FromJSON a => JSON.FromJSON (Request a) where
+instance JSON.FromJSON Request where
   parseJSON = JSON.withObject "ALB Request" $ \object -> do
     path                  <- object .: "path"
     httpMethod            <- parseMethod =<< object .: "httpMethod"
@@ -103,17 +103,17 @@ mkTextResponseBody :: Text -> ResponseBody
 mkTextResponseBody value = TextResponseBody value (Text.encodeUtf8 value)
 
 run
-  :: forall body m . (MonadCatch m, MonadIO m, JSON.FromJSON body)
-  => (Request body -> m Response)
+  :: forall m . (MonadCatch m, MonadIO m)
+  => (Request -> m Response)
   -> m ()
 run lambdaFn = Lambda.Runtime.run $ \Lambda.Runtime.Event{..} -> do
   request <- liftIO $ parseRequest body
   JSON.toJSON <$> lambdaFn request
 
 parseRequest
-  :: forall m body. (MonadCatch m, JSON.FromJSON body)
+  :: forall m . MonadCatch m
   => JSON.Value
-  -> m (Request body)
+  -> m Request
 parseRequest
   = either (throwM . RequestDecodeFailure . convert @Text) pure
   . JSON.parseEither JSON.parseJSON
