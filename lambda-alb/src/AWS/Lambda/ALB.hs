@@ -13,7 +13,7 @@ module AWS.Lambda.ALB
   )
 where
 
-import AWS.Lambda.Header
+import AWS.Lambda.ALB.Header
 import AWS.Lambda.Runtime.Prelude
 import Data.Aeson ((.:))
 import Data.Map.Strict (Map)

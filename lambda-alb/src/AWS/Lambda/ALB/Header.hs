@@ -1,4 +1,4 @@
-module AWS.Lambda.Header where
+module AWS.Lambda.ALB.Header where
 
 import AWS.Lambda.Runtime.Prelude
 import Data.Aeson.KeyMap (KeyMap)
