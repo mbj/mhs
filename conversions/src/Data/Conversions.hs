@@ -9,6 +9,7 @@ import Control.Monad.Catch (MonadThrow, throwM)
 import Control.Monad.Except (MonadError, throwError)
 import Data.Coerce (Coercible, coerce)
 import Data.Int (Int16, Int32, Int64, Int8)
+import Data.Scientific (Scientific)
 import Data.Text (Text)
 import Data.Typeable (Typeable)
 import Data.Word (Word16, Word32, Word64, Word8)
@@ -145,6 +146,9 @@ instance Conversion Natural Word32 where
 
 instance Conversion Natural Word64 where
   convert = fromIntegral
+
+instance Conversion Integer a => Conversion Scientific a where
+  convert = fromInteger . convert
 
 instance (MonadError (BoundError Integer Int) m) => Conversion (m Int) Integer where
   convert = convertBoundedFromIntegral
