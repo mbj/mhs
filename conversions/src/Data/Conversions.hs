@@ -114,6 +114,9 @@ instance Conversion Integer Int64 where
 instance Conversion Integer Natural where
   convert = fromIntegral
 
+instance Conversion Integer Word where
+  convert = fromIntegral
+
 instance Conversion Integer Word8 where
   convert = fromIntegral
 
@@ -147,7 +150,7 @@ instance Conversion Natural Word32 where
 instance Conversion Natural Word64 where
   convert = fromIntegral
 
-instance Conversion Integer a => Conversion Scientific a where
+instance Conversion Scientific Integer where
   convert = fromInteger . convert
 
 instance (MonadError (BoundError Integer Int) m) => Conversion (m Int) Integer where
@@ -275,6 +278,9 @@ convertFail = either (fail . show) pure . convertEither @b @a @e
 
 convertMaybe :: forall b a e . (Conversion (Either e b) a) => a -> Maybe b
 convertMaybe = either (const empty) pure . convertEither @b @a @e
+
+convertVia :: forall c b a . (Conversion b c, Conversion c a) => a -> b
+convertVia = convert @b @c . convert @c @a
 
 boundError :: forall a b . (Show a, Show b) => a -> b -> b -> String
 boundError value min max =
