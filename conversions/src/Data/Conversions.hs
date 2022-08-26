@@ -62,16 +62,16 @@ class Conversion b a where
 instance (MonadError (UserBoundError Int Natural) m) => Conversion (m Natural) Int where
   convert = convertErrorFromIntegral
 
-instance (MonadError (UserBoundError Int64 Natural) m) => Conversion (m Natural) Int64 where
-  convert = convertErrorFromIntegral
-
-instance (MonadError (UserBoundError Int32 Natural) m) => Conversion (m Natural) Int32 where
+instance (MonadError (UserBoundError Int8 Natural) m) => Conversion (m Natural) Int8 where
   convert = convertErrorFromIntegral
 
 instance (MonadError (UserBoundError Int16 Natural) m) => Conversion (m Natural) Int16 where
   convert = convertErrorFromIntegral
 
-instance (MonadError (UserBoundError Int8 Natural) m) => Conversion (m Natural) Int8 where
+instance (MonadError (UserBoundError Int32 Natural) m) => Conversion (m Natural) Int32 where
+  convert = convertErrorFromIntegral
+
+instance (MonadError (UserBoundError Int64 Natural) m) => Conversion (m Natural) Int64 where
   convert = convertErrorFromIntegral
 
 instance (MonadError (UserBoundError Word Natural) m) => Conversion (m Natural) Word where
@@ -108,34 +108,34 @@ instance Conversion a a where
 instance Conversion Integer Int where
   convert = fromIntegral
 
-instance Conversion Integer Word64 where
-  convert = fromIntegral
-
-instance Conversion Integer Word32 where
-  convert = fromIntegral
-
-instance Conversion Integer Word16 where
+instance Conversion Integer Natural where
   convert = fromIntegral
 
 instance Conversion Integer Word8 where
   convert = fromIntegral
 
-instance Conversion Int Word16 where
+instance Conversion Integer Word16 where
+  convert = fromIntegral
+
+instance Conversion Integer Word32 where
+  convert = fromIntegral
+
+instance Conversion Integer Word64 where
   convert = fromIntegral
 
 instance Conversion Int Word8 where
   convert = fromIntegral
 
-instance Conversion Natural Word32 where
-  convert = fromIntegral
-
-instance Conversion Natural Word16 where
+instance Conversion Int Word16 where
   convert = fromIntegral
 
 instance Conversion Natural Word8 where
   convert = fromIntegral
 
-instance Conversion Integer Natural where
+instance Conversion Natural Word16 where
+  convert = fromIntegral
+
+instance Conversion Natural Word32 where
   convert = fromIntegral
 
 instance (MonadError (BoundError Integer Int) m) => Conversion (m Int) Integer where
