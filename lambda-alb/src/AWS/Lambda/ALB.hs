@@ -1,7 +1,6 @@
 module AWS.Lambda.ALB
   ( Header
   , HeaderName
-  , Headers(..)
   , Request(..)
   , Response(..)
   , ResponseBody
@@ -13,16 +12,19 @@ module AWS.Lambda.ALB
   )
 where
 
-import AWS.Lambda.Header
+import AWS.Lambda.ALB.Header
 import AWS.Lambda.Runtime.Prelude
 import Data.Aeson ((.:))
 import Data.Map.Strict (Map)
 
 import qualified AWS.Lambda.Runtime     as Lambda.Runtime
 import qualified Data.Aeson             as JSON
+import qualified Data.Aeson.Key         as JSON.Key
+import qualified Data.Aeson.KeyMap      as KeyMap
 import qualified Data.Aeson.Types       as JSON
 import qualified Data.ByteString        as BS
 import qualified Data.ByteString.Base64 as Base64
+import qualified Data.CaseInsensitive   as CI
 import qualified Data.Text.Encoding     as Text
 import qualified Network.HTTP.Types     as HTTP
 
@@ -45,7 +47,7 @@ instance JSON.FromJSON Request where
   parseJSON = JSON.withObject "ALB Request" $ \object -> do
     path                  <- object .: "path"
     httpMethod            <- parseMethod =<< object .: "httpMethod"
-    headers               <- object .: "headers"
+    headers               <- parseHeaders =<< object .: "headers"
     queryStringParameters <- object .: "queryStringParameters"
     isBase64Encoded       <- object .: "isBase64Encoded"
     requestContext        <- object .: "requestContext"
@@ -57,6 +59,14 @@ instance JSON.FromJSON Request where
         . HTTP.parseMethod
         . Text.encodeUtf8
 
+      parseHeaders = JSON.withObject "Headers" $ traverse toHeader . KeyMap.toList
+
+      toHeader :: (JSON.Key, JSON.Value) -> JSON.Parser Header
+      toHeader (headerName, value) =
+        case value of
+          JSON.String text -> pure (CI.mk $ JSON.Key.toText headerName, text)
+          _                -> fail $ "Failure parsing header " <> JSON.Key.toString headerName <> " : " <> show value
+
 data Response = Response
   { statusCode :: HTTP.Status
   , headers    :: Headers
@@ -67,10 +77,14 @@ instance JSON.ToJSON Response where
   toJSON Response{..}
     = JSON.Object
     [ ("body",            JSON.toJSON $ textBody body)
-    , ("headers",         JSON.toJSON headers)
+    , ("headers",         headersJSON)
     , ("isBase64Encoded", JSON.toJSON $ isByteString body)
     , ("statusCode",      JSON.toJSON $ HTTP.statusCode statusCode)
     ]
+    where
+      headersJSON
+        = JSON.Object . KeyMap.fromList
+        $ bimap (JSON.Key.fromText . CI.original) JSON.String <$> headers
 
 data ResponseBody
   = ByteStringResponseBody BS.ByteString

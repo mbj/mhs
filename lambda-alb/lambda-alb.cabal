@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           lambda-alb
-version:        0.0.6
+version:        0.0.7
 synopsis:       AWS lambda ALB integration
 description:    AWS lambda ALB integration
 category:       Web,AWS
@@ -32,7 +32,7 @@ flag development
 library
   exposed-modules:
       AWS.Lambda.ALB
-      AWS.Lambda.Header
+      AWS.Lambda.ALB.Header
   other-modules:
       Paths_lambda_alb
   hs-source-dirs:
