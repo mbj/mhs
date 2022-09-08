@@ -101,7 +101,7 @@ ordered-containers 0.2.2
 parsec 3.1.14.0
 parsers 0.12.11
 pathtype 0.8.1.1
-pgt 0.0.1
+pgt 0.0.2
 polyparse 1.13
 postgresql-binary 0.12.4.4
 postgresql-libpq 0.9.4.3
