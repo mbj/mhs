@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           pgt
-version:        0.0.2
+version:        0.0.3
 homepage:       https://github.com/mbj/mhs#readme
 bug-reports:    https://github.com/mbj/mhs/issues
 author:         Markus Schirp
@@ -212,6 +212,7 @@ test-suite test
     , pgt
     , source-constraints
     , tasty >=1.3.1
+    , tasty-hunit
     , tasty-mgolden >=0.0.1
     , text
     , typed-process >=0.2

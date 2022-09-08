@@ -1,7 +1,7 @@
 _common/package: !include "../common/package.yaml"
 
 name:    pgt
-version: 0.0.2
+version: 0.0.3
 
 <<: *defaults
 
@@ -49,3 +49,4 @@ tests:
     - dbt-postgresql-container
     - devtools
     - pgt
+    - tasty-hunit

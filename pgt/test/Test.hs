@@ -1,6 +1,8 @@
 {-# LANGUAGE TemplateHaskell #-}
 
+import Data.Vector (Vector)
 import MPrelude
+import Prelude (error)
 
 import qualified CBT
 import qualified DBT.Postgresql           as Postgresql
@@ -12,6 +14,7 @@ import qualified PGT.Selector             as PGT
 import qualified System.Path              as Path
 import qualified System.Process.Typed     as Process
 import qualified Test.Tasty               as Tasty
+import qualified Test.Tasty.HUnit         as Tasty
 
 main :: IO ()
 main = do
@@ -28,6 +31,7 @@ main = do
         Tasty.testGroup ""
           [ Devtools.testTree $$(Devtools.readDependencies [Devtools.Target "pgt"])
           , PGT.testTree config success
+          , testSharding
           ]
 
 setupSchema :: Postgresql.ClientConfig -> IO ()
@@ -48,6 +52,39 @@ setupSchema pgConfig = do
       , "--quiet"
       , "--set", "ON_ERROR_STOP=1"
       ]
+
+testSharding :: Tasty.TestTree
+testSharding = Tasty.testGroup "PGT.selectShard"
+  [ test "one shard, empty"                    shardConfigOne     []         []
+  , test "one shard, one element"              shardConfigOne     ["A"]      ["A"]
+  , test "one shard, two elements"             shardConfigOne     ["A", "B"] ["A", "B"]
+  , test "two shards, index 0, empty input"    (shardConfigTwo 0) []         []
+  , test "two shards, index 1, empty input"    (shardConfigTwo 1) []         []
+  , test "two shards, index 0, one element"    (shardConfigTwo 0) []         ["A"]
+  , test "two shards, index 1, one element"    (shardConfigTwo 1) ["A"]      ["A"]
+  , test "two shards, index 0, two elements"   (shardConfigTwo 0) ["A"]      ["A", "B"]
+  , test "two shards, index 1, two elements"   (shardConfigTwo 1) ["B"]      ["A", "B"]
+  , test "two shards, index 0, three elements" (shardConfigTwo 0) ["A"]      ["A", "B", "C"]
+  , test "two shards, index 1, three elements" (shardConfigTwo 1) ["B", "C"] ["A", "B", "C"]
+  ]
+  where
+    test :: String -> PGT.ShardConfig -> Vector Text -> Vector Text -> Tasty.TestTree
+    test name shardConfig expected input
+      = Tasty.testCase name
+      . Tasty.assertEqual "" expected
+      $ PGT.selectShard shardConfig input
+
+    shardConfigOne
+      = either error identity
+      $ PGT.parseShardConfig
+        (either error identity $ PGT.parseShardCount 1)
+        (PGT.ShardIndex 0)
+
+    shardConfigTwo index
+      = either error identity
+      $ PGT.parseShardConfig
+        (either error identity $ PGT.parseShardCount 2)
+        (PGT.ShardIndex index)
 
 selectors :: [PGT.Selector]
 selectors =
