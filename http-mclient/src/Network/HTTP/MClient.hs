@@ -14,6 +14,7 @@ module Network.HTTP.MClient
   , decodeStatus
   , decodeStatuses
   , send
+  , sendRequest
   , setJSONBody
   )
 where
@@ -121,16 +122,16 @@ send
   -> HTTP.Request
   -> RIO env (Result a)
 send decoder request = do
-  sendRequest <- asks (getField @"httpSendRequest")
-  liftIO $ send' sendRequest decoder request
+  sendRequest' <- asks (getField @"httpSendRequest")
+  sendRequest sendRequest' decoder request
 
-send'
+sendRequest
   :: SendRequest
   -> ResponseDecoder a
   -> HTTP.Request
-  -> IO (Result a)
-send' sendRequest decoder request = do
-  either (Left . HTTPError) decoder <$> Exception.tryJust selectException (sendRequest request)
+  -> RIO env (Result a)
+sendRequest sendRequest' decoder request = do
+  either (Left . HTTPError) decoder <$> Exception.tryJust selectException (liftIO $ sendRequest' request)
   where
     selectException :: HTTP.HttpException -> Maybe HTTP.HttpExceptionContent
     selectException = \case
