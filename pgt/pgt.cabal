@@ -89,6 +89,7 @@ library
     , typed-process >=0.2
     , unix
     , unliftio >=0.2
+    , vector
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
@@ -150,6 +151,7 @@ executable pgt
     , typed-process >=0.2
     , unix
     , unliftio >=0.2
+    , vector
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
@@ -215,6 +217,7 @@ test-suite test
     , typed-process >=0.2
     , unix
     , unliftio >=0.2
+    , vector
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:

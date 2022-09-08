@@ -28,6 +28,7 @@ dependencies:
 - typed-process             >= 0.2
 - unix
 - unliftio                  >= 0.2
+- vector
 
 executables:
   pgt:

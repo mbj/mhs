@@ -1,17 +1,28 @@
 module PGT
   ( Config(..)
+  , ShardConfig
+  , ShardCount
+  , ShardIndex(..)
   , Test(..)
+  , Tests
   , configure
+  , defaultShardCount
+  , defaultShardIndex
   , fromEnv
+  , parseShardConfig
+  , parseShardCount
   , runExamples
   , runList
   , runTests
   , runUpdates
+  , selectShard
   , testTree
   )
 where
 
+import Data.Vector (Vector)
 import PGT.Prelude
+import Prelude ((-), div, min)
 import System.Posix.Types (ProcessID)
 import UnliftIO.Exception (bracket)
 
@@ -21,6 +32,7 @@ import qualified Data.Foldable              as Foldable
 import qualified Data.Text                  as Text
 import qualified Data.Text.Encoding         as Text
 import qualified Data.Text.IO               as Text
+import qualified Data.Vector                as Vector
 import qualified System.Environment         as System
 import qualified System.Exit                as System
 import qualified System.Path                as Path
@@ -31,21 +43,68 @@ import qualified Test.Tasty.MGolden         as Tasty.MGolden
 import qualified Test.Tasty.Options         as Tasty
 import qualified Test.Tasty.Runners         as Tasty.Runners
 
+newtype ShardCount = ShardCount Natural
+  deriving stock (Eq, Show)
+
+newtype ShardIndex = ShardIndex Natural
+  deriving stock (Eq, Show)
+
+defaultShardCount :: ShardCount
+defaultShardCount = ShardCount 1
+
+defaultShardIndex :: ShardIndex
+defaultShardIndex = ShardIndex 0
+
+parseShardCount :: Natural -> Either String ShardCount
+parseShardCount = \case
+  0 -> Left "Shard count cannot be 0"
+  n -> pure $ ShardCount n
+
+parseShardConfig :: ShardCount -> ShardIndex -> Either String ShardConfig
+parseShardConfig count@(ShardCount countValue) index@(ShardIndex indexValue) =
+  if indexValue >= countValue
+    then Left "Shard index ouside of shard count"
+    else pure ShardConfig{..}
+
+selectShard :: ShardConfig -> Vector Test -> Vector Test
+selectShard ShardConfig{count=(ShardCount count), index=(ShardIndex index)} tests =
+    Vector.slice (convertImpure startIndex) (convertImpure effectiveChunkSize) tests
+  where
+    nominalChunkSize :: Natural
+    nominalChunkSize = convertImpure (Vector.length tests) `div` count
+
+    startIndex :: Natural
+    startIndex = index * nominalChunkSize
+
+    effectiveChunkSize :: Natural
+    effectiveChunkSize = min (length - startIndex) nominalChunkSize
+
+    length :: Natural
+    length = convertImpure $ Vector.length tests
+
+data ShardConfig = ShardConfig
+  { count :: ShardCount
+  , index :: ShardIndex
+  }
+  deriving stock (Eq, Show)
+
 data Test = Test
   { id   :: Natural
   , path :: Path.RelFile
   }
   deriving stock (Eq, Ord)
 
+type Tests = Vector Test
+
 data Config = Config
-  { pid        :: ProcessID
-  , psqlAdmin  :: Postgresql.ClientConfig
-  , psqlUser   :: Postgresql.ClientConfig
+  { pid       :: ProcessID
+  , psqlAdmin :: Postgresql.ClientConfig
+  , psqlUser  :: Postgresql.ClientConfig
   }
   deriving stock Show
 
-runList :: forall f m . (Foldable f, MonadIO m) => Config -> f Test -> m ()
-runList _config = Foldable.mapM_ printTest
+runList :: forall m . (MonadIO m) => Config -> Tests -> m ()
+runList _config = traverse_ printTest
   where
     printTest :: Test -> m ()
     printTest Test{..} = liftIO . Text.putStrLn . convertText $ Path.toString path
@@ -70,11 +129,13 @@ runTasty tastyOptions config tests = liftIO $ do
         then System.exitSuccess
         else System.exitFailure
 
-runTests :: MonadIO m => Config -> [Test] -> m ()
-runTests = runTasty mempty
+runTests :: MonadIO m => Config -> Tests -> m ()
+runTests config = runTasty mempty config . Vector.toList
 
-runUpdates :: MonadIO m => Config -> [Test] -> m ()
-runUpdates = runTasty (Tasty.singleOption Tasty.MGolden.UpdateExpected)
+runUpdates :: MonadIO m => Config -> Tests -> m ()
+runUpdates config
+  = runTasty (Tasty.singleOption Tasty.MGolden.UpdateExpected) config
+  . Vector.toList
 
 testTree :: Config -> [Test] -> Tasty.TestTree
 testTree config tests = Tasty.testGroup "pgt" $ mkGolden config <$> tests
