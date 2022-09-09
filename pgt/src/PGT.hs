@@ -22,7 +22,7 @@ where
 
 import Data.Vector (Vector)
 import PGT.Prelude
-import Prelude ((-), div, min)
+import Prelude ((-), div, succ)
 import System.Posix.Types (ProcessID)
 import UnliftIO.Exception (bracket)
 
@@ -66,21 +66,24 @@ parseShardConfig count@(ShardCount countValue) index@(ShardIndex indexValue) =
     then Left "Shard index ouside of shard count"
     else pure ShardConfig{..}
 
-selectShard :: ShardConfig -> Vector Test -> Vector Test
-selectShard ShardConfig{count=(ShardCount count), index=(ShardIndex index)} tests =
-    Vector.slice (convertImpure startIndex) (convertImpure effectiveChunkSize) tests
+selectShard :: ShardConfig -> Vector a -> Vector a
+selectShard ShardConfig{count=(ShardCount count), index=(ShardIndex index)} items =
+    Vector.slice (convertImpure startIndex) (convertImpure effectiveChunkSize) items
   where
     nominalChunkSize :: Natural
-    nominalChunkSize = convertImpure (Vector.length tests) `div` count
+    nominalChunkSize = length `div` count
 
     startIndex :: Natural
     startIndex = index * nominalChunkSize
 
     effectiveChunkSize :: Natural
-    effectiveChunkSize = min (length - startIndex) nominalChunkSize
+    effectiveChunkSize =
+      if succ index == count
+        then length - startIndex
+        else nominalChunkSize
 
     length :: Natural
-    length = convertImpure $ Vector.length tests
+    length = convertImpure $ Vector.length items
 
 data ShardConfig = ShardConfig
   { count :: ShardCount
