@@ -35,6 +35,7 @@ data Flag = Flag PackageName Text
 data Config = Config
   { cbtBuildDefinition :: CBT.BuildDefinition
   , executablePath :: Path.RelFile
+  , extraArguments :: [Text]
   , flags          :: [Flag]
   , packageName    :: PackageName
   , targetName     :: TargetName
@@ -105,9 +106,10 @@ withBuildContainer Config{..} action = do
         , "--ghc-build", "lht"
         , "--interleaved-output"
         , "--work-dir", ".stack-work-lht"
-        ] <> flagArguments <>
-        [ convertText packageName <> ":" <> convertText targetName
         ]
+        <> flagArguments
+        <> [convertText packageName <> ":" <> convertText targetName]
+        <> extraArguments
       }
 
     mounts :: [CBT.Mount]

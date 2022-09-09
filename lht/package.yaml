@@ -1,7 +1,7 @@
 _common/package: !include "../common/package.yaml"
 
 name:        lht
-version:     0.0.1
+version:     0.0.2
 synopsis:    AWS Lambda haskell tool
 
 <<: *defaults
