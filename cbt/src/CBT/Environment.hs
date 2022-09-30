@@ -12,6 +12,7 @@ where
 import CBT.IncrementalState
 import CBT.Prelude
 import CBT.Types
+import Control.Monad (when)
 import Data.Maybe (isJust)
 
 import qualified CBT.IncrementalState as IncrementalState
@@ -44,9 +45,7 @@ newDefaultEnvironment = do
 onDebug :: HasEnvironment env => RIO env () -> RIO env ()
 onDebug action = do
   Environment{..} <- getEnvironment <$> ask
-  if debug
-    then action
-    else pure ()
+  when debug action
 
 runDefaultEnvironment
   :: MonadUnliftIO m

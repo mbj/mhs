@@ -2,6 +2,7 @@ module StackDeploy.Events (Poll(..), defaultPoll, pollEvents) where
 
 import Control.Concurrent (threadDelay)
 import Control.Lens ((?~))
+import Control.Monad (unless)
 import Data.Conduit (ConduitT, (.|), await, runConduit, yield)
 import Data.Conduit.Combinators (find, iterM, takeWhile, yieldMany)
 import Data.Conduit.List (consume)
@@ -112,6 +113,4 @@ takeUntilInclusive predicate = go
 
     applyPredicate item = do
       yield item
-      if predicate item
-        then pure ()
-        else go
+      unless (predicate item) go
