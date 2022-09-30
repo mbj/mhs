@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.4.
+-- This file has been generated from package.yaml by hpack version 0.35.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -90,13 +90,13 @@ library
     , time
     , unliftio
     , unordered-containers
+  default-language: Haskell2010
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
         source-constraints
   else
     ghc-options: -Wwarn
-  default-language: Haskell2010
 
 test-suite test
   type: exitcode-stdio-1.0
@@ -161,10 +161,10 @@ test-suite test
     , unliftio
     , unordered-containers
     , xray
+  default-language: Haskell2010
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
         source-constraints
   else
     ghc-options: -Wwarn
-  default-language: Haskell2010

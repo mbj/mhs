@@ -14,10 +14,8 @@ jobs:
         os:  [ubuntu-latest]
     steps:
     - uses: actions/checkout@v3
-    - uses: haskell/actions/setup@v1
-      with:
-        enable-stack: true
-        stack-version: 2.7.5
+    - name: Download Stack
+      run: ./ci/download-stack.sh
     - name: Cache Dependencies
       uses: actions/cache@v2
       with:
@@ -27,7 +25,7 @@ jobs:
           ${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles(env.STACK_YAML, format('{0}.lock', env.STACK_YAML)) }}
           ${{ matrix.os }}-${{ matrix.ghc }}
     - name: Install dependencies
-      run: stack build --test --only-dependencies
+      run: ./stack build --test --only-dependencies
   tests:
     runs-on: ${{ matrix.os }}
     needs: dependencies
@@ -61,10 +59,8 @@ jobs:
         - xray
     steps:
     - uses: actions/checkout@v3
-    - uses: haskell/actions/setup@v1
-      with:
-        enable-stack: true
-        stack-version: 2.7.5
+    - name: Download Stack
+      run: ./ci/download-stack.sh
     - name: Cache Dependencies
       uses: actions/cache@v2
       with:
@@ -74,8 +70,8 @@ jobs:
           ${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles(env.STACK_YAML, format('{0}.lock', env.STACK_YAML)) }}
           ${{ matrix.os }}-${{ matrix.ghc }}
     - name: Install dependencies
-      run: stack build --test --only-dependencies
+      run: ./stack build --test --only-dependencies
     - name: Build
-      run: stack build --fast --test --no-run-tests ${{ matrix.project }}
+      run: ./stack build --fast --test --no-run-tests ${{ matrix.project }}
     - name: Run tests
-      run: stack build --fast --test ${{ matrix.project }}
+      run: ./stack build --fast --test ${{ matrix.project }}
