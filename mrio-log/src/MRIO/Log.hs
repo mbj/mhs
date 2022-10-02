@@ -14,6 +14,7 @@ module MRIO.Log
   , exception
   , formatCLIAction
   , info
+  , noopAction
   , warn
   )
 where
@@ -73,3 +74,6 @@ formatCLIAction formatter
 
 defaultCLIAction :: Action
 defaultCLIAction = formatCLIAction defaultCLIFormatter
+
+noopAction :: Action
+noopAction = Action . const $ pure ()

@@ -89,7 +89,7 @@ memory 0.17.0
 mono-traversable 1.0.15.3
 mprelude 0.2.1
 mrio-core 0.0.1
-mrio-log 0.0.2
+mrio-log 0.0.3
 mtl 2.2.2
 network 3.1.2.7
 network-info 0.2.1
