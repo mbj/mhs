@@ -58,7 +58,7 @@ buildDefinitionStatic :: CBT.BuildDefinition
 buildDefinitionStatic =
   CBT.fromDockerfileContent
     prefix
-    (CBT.DockerfileContent "FROM alpine")
+    (CBT.DockerfileContent "FROM registry.hub.docker.com/library/alpine")
 
 prefix :: CBT.Prefix
 prefix = CBT.Prefix "cbt-test"
