@@ -3,6 +3,7 @@
 import MPrelude
 
 import qualified CBT
+import qualified CBT.Container
 import qualified DBT.Postgresql           as Postgresql
 import qualified DBT.Postgresql.Container as DBT
 import qualified Data.ByteString.Lazy     as LBS
@@ -15,7 +16,7 @@ import qualified Test.Tasty.MGolden       as Tasty
 main :: IO ()
 main = do
   CBT.runDefaultEnvironment $ do
-    containerName <- CBT.nextContainerName (CBT.Prefix "dbt-test")
+    containerName <- CBT.Container.nextName (CBT.Container.Prefix "dbt-test")
     DBT.withDatabaseContainerDefault containerName $ \clientConfig ->
       liftIO . Tasty.defaultMain $ Tasty.testGroup "dbt"
         [ Devtools.testTree $$(Devtools.readDependencies [Devtools.Target "dbt-postgresql-container"])

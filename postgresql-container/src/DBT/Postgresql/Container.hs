@@ -11,132 +11,124 @@ module DBT.Postgresql.Container
   )
 where
 
-import Control.Arrow (left)
 import DBT.Postgresql.Prelude
 import System.Path ((</>))
 
 import qualified CBT
+import qualified CBT.Container
+import qualified CBT.Image
+import qualified CBT.Image.BuildDefinition as CBT.Image
+import qualified CBT.Image.Name            as CBT.Image
 import qualified CBT.TH
-import qualified DBT.Postgresql       as Postgresql
-import qualified DBT.Postgresql.Wait  as Wait
-import qualified Data.Text            as Text
-import qualified Data.Text.Encoding   as Text
-import qualified System.Path          as Path
-import qualified System.Process.Typed as Process
-import qualified UnliftIO.Exception   as Exception
+import qualified DBT.Postgresql            as Postgresql
+import qualified DBT.Postgresql.Wait       as Wait
+import qualified Data.Text                 as Text
+import qualified Data.Text.Encoding        as Text
+import qualified System.Path               as Path
+import qualified System.Process.Typed      as Process
 
 withDatabaseContainerProcess
-  :: CBT.WithEnv env
-  => CBT.Prefix
+  :: CBT.Env env
+  => CBT.Container.Prefix
   -> Process.ProcessConfig stdin stdout stderr
   -> (Process.ProcessConfig stdin stdout stderr -> (Process.Process stdin stdout stderr -> RIO env a) -> RIO env a)
   -> (Process.Process stdin stdout stderr -> RIO env a)
   -> RIO env a
 withDatabaseContainerProcess prefix proc withProcess action = do
-  containerName <- CBT.nextContainerName prefix
+  containerName <- CBT.Container.nextName prefix
   withDatabaseContainer defaultBuildDefinition containerName $ \clientConfig -> do
     env <- Postgresql.getEnv clientConfig
     withProcess (Process.setEnv env proc) action
 
 withDatabaseContainerProcessRun_
-  :: CBT.WithEnv env
-  => CBT.Prefix
+  :: CBT.Env env
+  => CBT.Container.Prefix
   -> Process.ProcessConfig stdin stdout stderr
   -> RIO env ()
 withDatabaseContainerProcessRun_ prefix proc =
   withDatabaseContainerProcess prefix proc Process.withProcessWait_ Process.checkExitCode
 
 populateDatabaseImageIfAbsent
-  :: forall env . (CBT.WithEnv env)
-  => CBT.BuildDefinition
-  -> CBT.ContainerName
-  -> CBT.ImageName
+  :: forall env . CBT.Env env
+  => CBT.Image.BuildDefinition
+  -> CBT.Container.Name
+  -> CBT.Image.TaggedName
   -> (Postgresql.ClientConfig -> RIO env ())
-  -> RIO env (Either CBT.ImageBuildError ())
+  -> RIO env ()
 populateDatabaseImageIfAbsent buildDefinition containerName targetImageName action = do
-  present <- CBT.isImagePresent targetImageName
+  present <- CBT.Image.isPresent targetImageName
   if present
-    then pure $ pure ()
+    then pure ()
     else populateDatabaseImage buildDefinition containerName targetImageName action
 
 populateDatabaseImage
-  :: forall env . (CBT.WithEnv env)
-  => CBT.BuildDefinition
-  -> CBT.ContainerName
-  -> CBT.ImageName
+  :: forall env . CBT.Env env
+  => CBT.Image.BuildDefinition
+  -> CBT.Container.Name
+  -> CBT.Image.TaggedName
   -> (Postgresql.ClientConfig -> RIO env ())
-  -> RIO env (Either CBT.ImageBuildError ())
+  -> RIO env ()
 populateDatabaseImage buildDefinition containerName targetImageName action =
-   fmap toError . Exception.tryAnyDeep $ do
-     Exception.bracket_
-       (CBT.buildRun buildDefinition containerDefinition')
-       (CBT.removeContainer containerName)
-       run
+  CBT.Container.withBuildRun buildDefinition containerDefinition' $ do
+    runAction containerName action
+    CBT.Container.stop containerName
+    CBT.Container.commit containerName targetImageName
   where
     containerDefinition' = (containerDefinition (getField @"imageName" buildDefinition) containerName)
-      { CBT.remove = CBT.NoRemove
+      { CBT.Container.stopRemove = CBT.Container.StopNoRemove
       }
 
-    toError :: Either Exception.SomeException a -> Either CBT.ImageBuildError a
-    toError = left (CBT.ImageBuildError . convert . show)
-
-    run :: RIO env ()
-    run = do
-      runAction containerName action
-      CBT.stop containerName
-      CBT.commit containerName targetImageName
-
 populateDatabaseImageDefault
-  :: forall env . (CBT.WithEnv env)
-  => CBT.ContainerName
-  -> CBT.ImageName
+  :: forall env . CBT.Env env
+  => CBT.Container.Name
+  -> CBT.Image.TaggedName
   -> (Postgresql.ClientConfig -> RIO env ())
-  -> RIO env (Either CBT.ImageBuildError ())
+  -> RIO env ()
 populateDatabaseImageDefault = populateDatabaseImage defaultBuildDefinition
 
 withDatabaseContainer
-  :: forall env a . (CBT.WithEnv env)
-  => CBT.BuildDefinition
-  -> CBT.ContainerName
+  :: forall env a . CBT.Env env
+  => CBT.Image.BuildDefinition
+  -> CBT.Container.Name
   -> (Postgresql.ClientConfig -> RIO env a)
   -> RIO env a
 withDatabaseContainer buildDefinition containerName
-  = CBT.withContainerBuildRun
+  = CBT.Container.withBuildRun
       buildDefinition
       (containerDefinition (getField @"imageName" buildDefinition) containerName)
   . runAction containerName
 
 withDatabaseContainerDefault
-  :: forall env a . (CBT.WithEnv env)
-  => CBT.ContainerName
+  :: forall env a . CBT.Env env
+  => CBT.Container.Name
   -> (Postgresql.ClientConfig -> RIO env a)
   -> RIO env a
 withDatabaseContainerDefault = withDatabaseContainer defaultBuildDefinition
 
 withDatabaseContainerImage
-  :: forall env a . (CBT.WithEnv env)
-  => CBT.ContainerName
-  -> CBT.ImageName
+  :: forall env a . CBT.Env env
+  => CBT.Container.Name
+  -> CBT.Image.TaggedName
   -> (Postgresql.ClientConfig -> RIO env a)
   -> RIO env a
 withDatabaseContainerImage containerName targetImageName
-  = CBT.withContainerRun containerDefinition'
+  = CBT.Container.withRun containerDefinition'
   . runAction containerName
   where
-    containerDefinition' :: CBT.ContainerDefinition
+    containerDefinition' :: CBT.Container.Definition
     containerDefinition' = setImageName
       (containerDefinition (getField @"imageName" defaultBuildDefinition) containerName) targetImageName
 
-setImageName :: CBT.ContainerDefinition -> CBT.ImageName -> CBT.ContainerDefinition
-setImageName CBT.ContainerDefinition{..} imageName'
-  = CBT.ContainerDefinition
-  { CBT.imageName = imageName'
+setImageName :: CBT.Container.Definition -> CBT.Image.TaggedName -> CBT.Container.Definition
+setImageName CBT.Container.Definition{..} imageName'
+  = CBT.Container.Definition
+  { CBT.Container.imageName = imageName'
   , ..
   }
 
 runAction
-  :: forall env a . (CBT.WithEnv env)
-  => CBT.ContainerName
+  :: forall env a . CBT.Env env
+  => CBT.Container.Name
   -> (Postgresql.ClientConfig -> RIO env a)
   -> RIO env a
 runAction containerName action = do
@@ -150,35 +142,35 @@ runAction containerName action = do
   action config
 
 getHostPort
-  :: forall env . (CBT.WithEnv env)
-  => CBT.ContainerName
+  :: forall env . CBT.Env env
+  => CBT.Container.Name
   -> RIO env Postgresql.HostPort
 getHostPort containerName
   =   Postgresql.HostPort
-  .   CBT.unPort
-  <$> CBT.getHostPort containerName containerPort
+  .   convert
+  <$> CBT.Container.getHostPort containerName containerPort
 
 getMasterPassword
-  :: forall env . (CBT.WithEnv env)
-  => CBT.ContainerName
+  :: forall env . CBT.Env env
+  => CBT.Container.Name
   -> RIO env Postgresql.Password
 getMasterPassword containerName =
   Postgresql.Password . rstrip . Text.decodeUtf8 <$>
-    CBT.readContainerFile containerName pgMasterPasswordAbs
+    CBT.Container.readFile containerName pgMasterPasswordAbs
   where
     rstrip = Text.dropWhileEnd (== '\n')
 
 getClientConfig
-  :: CBT.WithEnv env
-  => CBT.ContainerName
+  :: CBT.Env env
+  => CBT.Container.Name
   -> RIO env Postgresql.ClientConfig
 getClientConfig containerName =
   mkClientConfig
     <$> getHostPort containerName
     <*> getMasterPassword containerName
 
-containerPort :: CBT.Port
-containerPort = CBT.Port 5432
+containerPort :: CBT.Container.Port
+containerPort = CBT.Container.Port 5432
 
 localhost :: Postgresql.HostName
 localhost = Postgresql.HostName "127.0.0.1"
@@ -212,8 +204,8 @@ mkClientConfig hostPort password =
     }
 
 waitForPort
-  :: forall env . (CBT.WithEnv env)
-  => CBT.ContainerName
+  :: forall env . CBT.Env env
+  => CBT.Container.Name
   -> Postgresql.ClientConfig
   -> RIO env ()
 waitForPort containerName clientConfig
@@ -222,34 +214,37 @@ waitForPort containerName clientConfig
   { prefix      = "[DBT]"
   , maxAttempts = 100
   , waitTime    = 100000  -- 100ms
-  , onFail      = CBT.printInspect containerName >> CBT.printLogs containerName
+  , onFail      = CBT.Container.printInspect containerName >> CBT.Container.printLogs containerName
   , ..
   }
 
-defaultBuildDefinition :: CBT.BuildDefinition
+defaultBuildDefinition :: CBT.Image.BuildDefinition
 defaultBuildDefinition
-  =  CBT.fromDockerfileContent (CBT.Prefix "dbt")
+  =  CBT.Image.fromDockerfileContent (CBT.Image.mkLocalName "dbt")
   $$(CBT.TH.readDockerfileContent $ Path.file "Dockerfile")
 
 postgresqlDefinition
-  :: CBT.ImageName
-  -> CBT.ContainerName
+  :: CBT.Image.TaggedName
+  -> CBT.Container.Name
   -> [Text]
-  -> CBT.ContainerDefinition
+  -> CBT.Container.Definition
 postgresqlDefinition imageName containerName arguments =
-  (CBT.minimalContainerDefinition imageName containerName)
-    { CBT.command      = pure command
-    , CBT.mounts       = []
-    , CBT.publishPorts = []
-    , CBT.workDir      = pure pgHome
+  (CBT.Container.minimalDefinition imageName containerName)
+    { CBT.Container.command      = pure command
+    , CBT.Container.mounts       = []
+    , CBT.Container.publishPorts = []
+    , CBT.Container.workDir      = pure pgHome
     }
   where
-    command = CBT.Command
-      { CBT.name      = "setuidgid"
-      , CBT.arguments = convert masterUserName : arguments
+    command = CBT.Container.Entrypoint
+      { CBT.Container.name      = "setuidgid"
+      , CBT.Container.arguments = convert masterUserName : arguments
       }
 
-containerDefinition :: CBT.ImageName -> CBT.ContainerName -> CBT.ContainerDefinition
+containerDefinition
+  :: CBT.Image.TaggedName
+  -> CBT.Container.Name
+  -> CBT.Container.Definition
 containerDefinition imageName containerName
   = deamonize
   $ postgresqlDefinition
@@ -262,10 +257,10 @@ containerDefinition imageName containerName
     ]
   where
     deamonize value = value
-      { CBT.detach          = CBT.Detach
-      , CBT.publishPorts    = [CBT.PublishPort{container = port, host = empty}]
-      , CBT.remove          = CBT.Remove
-      , CBT.removeOnRunFail = CBT.Remove
+      { CBT.Container.detach              = CBT.Container.Detach
+      , CBT.Container.publishPorts        = [CBT.Container.PublishPort{container = port, host = empty}]
+      , CBT.Container.stopRemove          = CBT.Container.StopRemove
+      , CBT.Container.stopRemoveOnRunFail = CBT.Container.StopRemove
       }
 
-    port = CBT.Port 5432
+    port = CBT.Container.Port 5432

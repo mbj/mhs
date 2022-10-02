@@ -1,7 +1,7 @@
 _common/package: !include "../common/package.yaml"
 
 name:        cbt
-version:     0.1.1
+version:     0.2.0
 synopsis:    A container backend toolkit
 
 <<: *defaults
@@ -62,13 +62,6 @@ default-extensions:
 
 library:
   source-dirs: src
-  exposed-modules:
-  - CBT
-  - CBT.Backend
-  - CBT.Environment
-  - CBT.IncrementalState
-  - CBT.TH
-  - CBT.Types
 
 tests:
   test:

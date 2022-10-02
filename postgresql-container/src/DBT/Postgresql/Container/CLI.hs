@@ -6,6 +6,7 @@ import DBT.Postgresql.Prelude
 import Options.Applicative
 
 import qualified CBT
+import qualified CBT.Container
 import qualified System.Environment   as Environment
 import qualified System.IO            as IO
 import qualified System.Process.Typed as Process
@@ -16,7 +17,7 @@ main = do
   CBT.runDefaultEnvironment $ run arguments
 
 run
-  :: forall env . (CBT.WithEnv env)
+  :: forall env . CBT.Env env
   => [String]
   -> RIO env ()
 run arguments = do
@@ -39,8 +40,8 @@ run arguments = do
         "run program with ephemeral database"
         (withDatabaseContainerProcessRun_ prefix <$> processProc)
 
-    prefix :: CBT.Prefix
-    prefix = CBT.Prefix "dbt"
+    prefix :: CBT.Container.Prefix
+    prefix = CBT.Container.Prefix "dbt"
 
     processProc :: Parser (Process.ProcessConfig () () ())
     processProc = Process.proc <$> programName <*> programArguments
