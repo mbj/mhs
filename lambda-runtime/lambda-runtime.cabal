@@ -29,11 +29,6 @@ flag development
   manual: True
   default: False
 
-flag example
-  description: Build CLI example
-  manual: True
-  default: False
-
 library
   exposed-modules:
       AWS.Lambda.Runtime
@@ -141,6 +136,7 @@ executable cli-example
     , mtl
     , optparse-applicative
     , text
+    , unliftio
     , unordered-containers
     , xray
   default-language: Haskell2010
@@ -150,7 +146,7 @@ executable cli-example
         source-constraints
   else
     ghc-options: -Wwarn
-  if flag(example)
+  if flag(development)
     buildable: True
   else
     buildable: False

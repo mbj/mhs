@@ -28,6 +28,11 @@ source-repository head
   type: git
   location: https://github.com/mbj/mhs
 
+flag build-executable
+  description: Build PGT executable
+  manual: True
+  default: False
+
 flag development
   description: Run GHC with development flags
   manual: True
@@ -159,6 +164,10 @@ executable pgt
         source-constraints
   else
     ghc-options: -Wwarn
+  if flag(build-executable)
+    buildable: True
+  else
+    buildable: False
 
 test-suite test
   type: exitcode-stdio-1.0

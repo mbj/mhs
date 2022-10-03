@@ -25,16 +25,6 @@ dependencies:
 - mprelude
 - text
 
-executables:
-  bootstrap:
-    source-dirs: example
-    main: Main.hs
-    dependencies:
-      - base
-      - aeson
-      - lambda-alb
-      - lambda-runtime
-
 tests:
   test:
     <<: *test
