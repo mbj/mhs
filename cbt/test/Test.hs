@@ -1,64 +1,69 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-import GHC.Records (getField)
-import MPrelude
-import MRIO.Core
+module Main (main) where
+
+import CBT.Prelude
 import Test.Tasty.HUnit
 
 import qualified CBT
+import qualified CBT.Container
+import qualified CBT.Image
+import qualified CBT.Image.BuildDefinition as CBT.Image
+import qualified CBT.Image.Name            as CBT.Image
 import qualified Devtools
-import qualified System.Path as Path
-import qualified Test.Tasty  as Tasty
+import qualified MRIO.Log                  as Log
+import qualified System.Path               as Path
+import qualified Test.Tasty                as Tasty
 
 main :: IO ()
-main = do
-  cbt <- CBT.newDefaultEnvironment
-
+main =
   Tasty.defaultMain
     $ Tasty.testGroup "cbt"
-    [ container cbt
-    , Devtools.testTree $$(Devtools.readDependencies [Devtools.Target "cbt"])
-    , imageDirectory cbt
-    , imageStatic cbt
+    [ Devtools.testTree $$(Devtools.readDependencies [Devtools.Target "cbt"])
+    , container
+    , imageDirectory
+    , imageStatic
     ]
 
-imageDirectory :: CBT.Environment -> Tasty.TestTree
-imageDirectory cbt
+imageDirectory :: Tasty.TestTree
+imageDirectory
   = testCase "image from directory definition"
   . void
-  . runRIO cbt
-  $ CBT.buildIfAbsent =<< CBT.fromDirectory prefix (Path.dir "test/app")
+  . CBT.runDefaultEnvironment
+  $ CBT.Image.buildIfAbsent =<< CBT.Image.fromDirectory imageName (Path.dir "test/app")
 
-imageStatic :: CBT.Environment -> Tasty.TestTree
-imageStatic cbt
+imageStatic :: Tasty.TestTree
+imageStatic
   = testCase "image from static definition"
   . void
-  . runRIO cbt
-  $ CBT.buildIfAbsent buildDefinitionStatic
+  . CBT.runDefaultEnvironment
+  $ CBT.Image.buildIfAbsent buildDefinitionStatic
 
-container :: CBT.Environment -> Tasty.TestTree
-container cbt
-  = testCase "container" . void $
-    runRIO cbt $ testRun buildDefinitionStatic
+container :: Tasty.TestTree
+container
+  = testCase "container"
+  . void
+  . CBT.runDefaultEnvironment
+  $ do
+    containerName <- CBT.Container.nextName (CBT.Container.Prefix "cbt-text")
 
-testRun :: CBT.WithEnv env => CBT.BuildDefinition -> RIO env ()
-testRun buildDefinition = do
-  containerName <- CBT.nextContainerName prefix
+    CBT.Container.withBuildRun
+      buildDefinitionStatic
+      (CBT.Container.minimalDefinition (getField @"imageName" buildDefinitionStatic) containerName)
+        { CBT.Container.command    = pure $ CBT.Container.mkEntrypoint "true"
+        , CBT.Container.stopRemove = CBT.Container.StopNoRemove
+        , CBT.Container.detach     = CBT.Container.Detach
+        }
+      (pure ())
 
-  CBT.withContainerBuildRun
-    buildDefinition
-    (CBT.minimalContainerDefinition (getField @"imageName" buildDefinition) containerName)
-      { CBT.command = pure $ CBT.mkCommand "true"
-      , CBT.remove  = CBT.NoRemove
-      , CBT.detach  = CBT.Detach
-      }
-    (pure ())
-
-buildDefinitionStatic :: CBT.BuildDefinition
+buildDefinitionStatic :: CBT.Image.BuildDefinition
 buildDefinitionStatic =
-  CBT.fromDockerfileContent
-    prefix
-    (CBT.DockerfileContent "FROM alpine")
+  CBT.Image.fromDockerfileContent
+    imageName
+    (CBT.Image.DockerfileContent "FROM registry.hub.docker.com/library/alpine")
 
-prefix :: CBT.Prefix
-prefix = CBT.Prefix "cbt-test"
+noopLogAction :: Log.Action
+noopLogAction = Log.Action . const $ pure ()
+
+imageName :: CBT.Image.Name
+imageName = CBT.Image.mkLocalName "cbt-test"

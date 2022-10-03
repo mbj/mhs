@@ -19,7 +19,7 @@ bifunctors 5.5.13
 binary 0.8.9.0
 bytestring 0.11.3.1
 call-stack 0.4.0
-cbt 0.1.1
+cbt 0.2.0
 clock 0.8.3
 cmdargs 0.10.21
 colour 2.3.6
@@ -71,7 +71,7 @@ memory 0.17.0
 mono-traversable 1.0.15.3
 mprelude 0.2.1
 mrio-core 0.0.1
-mrio-log 0.0.2
+mrio-log 0.0.3
 mtl 2.2.2
 network-info 0.2.1
 old-locale 1.0.0.7

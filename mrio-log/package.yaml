@@ -4,7 +4,7 @@ name:       mrio-log
 synopsis:   Minimal mrio based logger
 homepage:   https://github.com/mbj/mhs#readme
 github:     mbj/mhs
-version:    0.0.2
+version:    0.0.3
 
 <<: *defaults
 

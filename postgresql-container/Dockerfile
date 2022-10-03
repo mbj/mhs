@@ -1,4 +1,4 @@
-FROM alpine:3.16
+FROM registry.hub.docker.com/library/alpine:3.16
 
 # Setup apk public key
 RUN echo $'-----BEGIN PUBLIC KEY-----\n\

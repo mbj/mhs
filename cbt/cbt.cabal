@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           cbt
-version:        0.1.1
+version:        0.2.0
 synopsis:       A container backend toolkit
 homepage:       https://github.com/mbj/mhs#readme
 bug-reports:    https://github.com/mbj/mhs/issues
@@ -29,14 +29,17 @@ library
   exposed-modules:
       CBT
       CBT.Backend
-      CBT.Environment
-      CBT.IncrementalState
-      CBT.TH
-      CBT.Types
-  other-modules:
       CBT.Backend.Tar
-      CBT.BuildDefinition
+      CBT.Config
+      CBT.Container
+      CBT.Image
+      CBT.Image.BuildDefinition
+      CBT.Image.Name
       CBT.Prelude
+      CBT.Proc
+      CBT.Registry
+      CBT.TH
+  other-modules:
       Paths_cbt
   hs-source-dirs:
       src

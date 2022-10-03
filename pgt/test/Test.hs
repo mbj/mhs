@@ -5,6 +5,7 @@ import MPrelude
 import Prelude (error)
 
 import qualified CBT
+import qualified CBT.Container
 import qualified DBT.Postgresql           as Postgresql
 import qualified DBT.Postgresql.Container as DBT
 import qualified Data.Text.IO             as Text
@@ -22,7 +23,7 @@ main = do
   success <- PGT.expand selectors
 
   CBT.runDefaultEnvironment $ do
-    containerName <- CBT.nextContainerName $ CBT.Prefix "pgt"
+    containerName <- CBT.Container.nextName $ CBT.Container.Prefix "pgt"
     DBT.withDatabaseContainerDefault containerName $ \pgConfig -> do
       let adminConfig = pgConfig { Postgresql.databaseName = Postgresql.DatabaseName "template1" }
       liftIO $ setupSchema adminConfig

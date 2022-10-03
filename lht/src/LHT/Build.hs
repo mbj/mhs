@@ -13,16 +13,19 @@ import LHT.Prelude
 import System.Path ((</>))
 
 import qualified CBT
+import qualified CBT.Container
+import qualified CBT.Image.BuildDefinition as CBT.Image
+import qualified CBT.Image.Name            as CBT.Image
 import qualified CBT.TH
-import qualified Data.ByteString       as BS
-import qualified Data.Elf              as ELF
-import qualified Data.Foldable         as Foldable
-import qualified LHT.Zip               as Zip
-import qualified System.Environment    as Environment
-import qualified System.Path           as Path
-import qualified System.Path.Directory as Path
-import qualified System.Posix.Files    as Files
-import qualified UnliftIO.Exception    as Exception
+import qualified Data.ByteString           as BS
+import qualified Data.Elf                  as ELF
+import qualified Data.Foldable             as Foldable
+import qualified LHT.Zip                   as Zip
+import qualified System.Environment        as Environment
+import qualified System.Path               as Path
+import qualified System.Path.Directory     as Path
+import qualified System.Posix.Files        as Files
+import qualified UnliftIO.Exception        as Exception
 
 newtype PackageName = PackageName Text
   deriving (Conversion Text) via Text
@@ -33,35 +36,32 @@ newtype TargetName = TargetName Text
 data Flag = Flag PackageName Text
 
 data Config = Config
-  { cbtBuildDefinition :: CBT.BuildDefinition
-  , executablePath :: Path.RelFile
-  , extraArguments :: [Text]
-  , flags          :: [Flag]
-  , packageName    :: PackageName
-  , targetName     :: TargetName
+  { cbtBuildDefinition :: CBT.Image.BuildDefinition
+  , executablePath     :: Path.RelFile
+  , extraArguments     :: [Text]
+  , flags              :: [Flag]
+  , packageName        :: PackageName
+  , targetName         :: TargetName
   }
 
-prefix :: CBT.Prefix
-prefix = CBT.Prefix "lht"
-
-defaultCBTBuildDefinition :: CBT.BuildDefinition
+defaultCBTBuildDefinition :: CBT.Image.BuildDefinition
 defaultCBTBuildDefinition
-  =  CBT.fromDockerfileContent prefix
+  =  CBT.Image.fromDockerfileContent (CBT.Image.mkLocalName "lht")
   $$(CBT.TH.readDockerfileContent $ Path.file "Dockerfile")
 
 buildZip
-  :: CBT.WithEnv env
+  :: CBT.Env env
   => Config
   -> RIO env BS.ByteString
 buildZip config = fmap (convert . Zip.mkZip) (build config)
 
 build
-  :: CBT.WithEnv env
+  :: CBT.Env env
   => Config
   -> RIO env BS.ByteString
 build config@Config{..} =
   withBuildContainer config $ \containerName ->
-    assertStatic =<< CBT.readContainerFile containerName (containerHomePath </> executablePath)
+    assertStatic =<< CBT.Container.readFile containerName (containerHomePath </> executablePath)
 
 assertStatic
   :: BS.ByteString
@@ -72,14 +72,14 @@ assertStatic executable =
     else Exception.throwString "LHT.Build did not produce a static executable"
 
 withBuildContainer
-  :: CBT.WithEnv env
+  :: CBT.Env env
   => Config
-  -> (CBT.ContainerName -> RIO env a)
+  -> (CBT.Container.Name -> RIO env a)
   -> RIO env a
 withBuildContainer Config{..} action = do
-  containerName     <- CBT.nextContainerName prefix
-  hostProjectPath   <- liftIO Path.getCurrentDirectory
-  hostHomePath      <- liftIO Path.getHomeDirectory
+  containerName   <- CBT.Container.nextName (CBT.Container.Prefix "lht")
+  hostProjectPath <- liftIO Path.getCurrentDirectory
+  hostHomePath    <- liftIO Path.getHomeDirectory
 
   envStackYaml :: Maybe Path.AbsRelFile <- fmap Path.file <$> liftIO (Environment.lookupEnv "STACK_YAML")
 
@@ -96,8 +96,8 @@ withBuildContainer Config{..} action = do
     hostStackWorkPath :: Path.AbsDir
     hostStackWorkPath = hostProjectPath </> Path.relDir ".stack-work-lht"
 
-    command :: CBT.Command
-    command = CBT.Command
+    command :: CBT.Container.Entrypoint
+    command = CBT.Container.Entrypoint
       { name = "stack"
       , arguments =
         [ "build"
@@ -112,34 +112,33 @@ withBuildContainer Config{..} action = do
         <> extraArguments
       }
 
-    mounts :: [CBT.Mount]
+    mounts :: [CBT.Container.Mount]
     mounts =
-      [ CBT.Mount { hostPath = hostProjectPath, containerPath = containerProjectPath }
-      , CBT.Mount { hostPath = hostStackPath,   containerPath = containerStackPath   }
+      [ CBT.Container.Mount { hostPath = hostProjectPath, containerPath = containerProjectPath }
+      , CBT.Container.Mount { hostPath = hostStackPath,   containerPath = containerStackPath   }
       ]
 
     containerDefinition =
-      (CBT.minimalContainerDefinition (getField @"imageName" cbtBuildDefinition) containerName)
-      { CBT.command = pure command
-      , CBT.detach  = CBT.Foreground
-      , CBT.env     = Foldable.toList
-        $ CBT.EnvSet "STACK_YAML"
+      (CBT.Container.minimalDefinition (getField @"imageName" cbtBuildDefinition) containerName)
+      { CBT.Container.command = pure command
+      , CBT.Container.detach  = CBT.Container.Foreground
+      , CBT.Container.env     = Foldable.toList
+        $ CBT.Container.EnvSet "STACK_YAML"
         . convert
         . Path.toString
         . Path.takeFileName <$> envStackYaml
-      , CBT.remove  = CBT.NoRemove
-      , CBT.workDir = pure containerProjectPath
-      , CBT.mounts  = mounts
+      , CBT.Container.stopRemove = CBT.Container.StopNoRemove
+      , CBT.Container.workDir    = pure containerProjectPath
+      , CBT.Container.mounts     = mounts
       }
 
   setupSharedDirectory hostStackPath
   setupSharedDirectory hostStackWorkPath
 
-  Exception.bracket_
-    (CBT.buildRun cbtBuildDefinition containerDefinition)
-    (CBT.removeContainer containerName)
+  CBT.Container.withBuildRun
+    cbtBuildDefinition
+    containerDefinition
     (action containerName)
-
   where
     flagArguments :: [Text]
     flagArguments = Foldable.foldMap mkFlag flags
