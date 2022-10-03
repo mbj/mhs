@@ -71,3 +71,9 @@ executables:
     - tasty-expected-failure
     - tasty-hunit
     - tasty-mgolden
+    when:
+    - condition: flag(development)
+      then:
+        buildable: true
+      else:
+        buildable: false

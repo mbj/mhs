@@ -30,6 +30,14 @@ dependencies:
 - unliftio                  >= 0.2
 - vector
 
+flags:
+  development:
+    <<: *development_flag
+  build-executable:
+    description: Build PGT executable
+    default: false
+    manual: true
+
 executables:
   pgt:
     main:        Main.hs
@@ -40,6 +48,12 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - pgt
+    when:
+    - condition: flag(build-executable)
+      then:
+        buildable: true
+      else:
+        buildable: false
 
 tests:
   test:

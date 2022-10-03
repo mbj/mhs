@@ -45,6 +45,12 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - dbt-postgresql-container
+    when:
+    - condition: flag(development)
+      then:
+        buildable: true
+      else:
+        buildable: false
 
 tests:
   test:

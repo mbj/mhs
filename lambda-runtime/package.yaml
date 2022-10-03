@@ -26,35 +26,8 @@ dependencies:
 - text
 - xray
 
-flags:
-  development:
-    <<: *development_flag
-  example:
-    description: Build CLI example
-    default: false
-    manual: true
-
 library:
   source-dirs: src
-
-executables:
-  cli-example:
-    source-dirs: example
-    main: Main.hs
-    dependencies:
-    - aeson
-    - aeson-pretty
-    - base
-    - bytestring
-    - lambda-runtime
-    - optparse-applicative
-    - unordered-containers
-    when:
-    - condition: flag(example)
-      then:
-        buildable: true
-      else:
-        buildable: false
 
 tests:
   test:

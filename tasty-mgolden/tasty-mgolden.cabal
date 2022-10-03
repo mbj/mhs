@@ -90,6 +90,10 @@ executable tasty-mgolden-example
         source-constraints
   else
     ghc-options: -Wwarn
+  if flag(development)
+    buildable: True
+  else
+    buildable: False
 
 test-suite golden
   type: exitcode-stdio-1.0
