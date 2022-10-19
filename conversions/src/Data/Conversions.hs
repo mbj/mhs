@@ -13,6 +13,7 @@ import Data.Scientific (Scientific)
 import Data.Text (Text)
 import Data.Typeable (Typeable)
 import Data.Word (Word16, Word32, Word64, Word8)
+import GHC.Stack (HasCallStack)
 import Numeric.Natural (Natural)
 import Prelude hiding (max, min)
 
@@ -259,7 +260,7 @@ checkedFromIntegral value = guard' (fromIntegral converted == value) converted
 convertEither :: forall b a e . (Conversion (Either e b) a) => a -> Either e b
 convertEither = convert
 
-convertImpure :: forall b a e . (Conversion (Either e b) a, Show e) => a -> b
+convertImpure :: forall b a e . (HasCallStack, Conversion (Either e b) a, Show e) => a -> b
 convertImpure = either (error . show) id . convertEither @b @a @e
 
 convertThrow
