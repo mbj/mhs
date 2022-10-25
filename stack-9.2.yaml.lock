@@ -98,7 +98,7 @@ packages:
     hackage: stratosphere-0.60.0@sha256:ce16367b41c9b64c698d416801504441c3207b6b25eb03aba3594117951f8260,145343
 snapshots:
 - completed:
-    sha256: e0665b6096ae42229053ff678d12ede7078a6e72ac479c4ac7eda025c83a5caa
-    size: 643193
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2022/9/30.yaml
-  original: nightly-2022-09-30
+    sha256: 82f12d331b7d1c6eb8cd57f8dc43c24f19fadf9fb913db800b56310e5e6d2d61
+    size: 644486
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2022/10/24.yaml
+  original: nightly-2022-10-24

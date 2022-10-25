@@ -1,4 +1,4 @@
-resolver: nightly-2022-09-30
+resolver: nightly-2022-10-24
 extra-deps:
 - mprelude
 - url: https://github.com/brendanhay/amazonka/archive/f73a957d05f64863e867cf39d0db260718f0fadd.tar.gz

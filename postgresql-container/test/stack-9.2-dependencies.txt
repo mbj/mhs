@@ -29,7 +29,7 @@ clock 0.8.3
 cmdargs 0.10.21
 colour 2.3.6
 comonad 5.0.8
-conduit 1.3.4.2
+conduit 1.3.4.3
 containers 0.6.5.1
 contravariant 1.5.5
 conversions 0.0.9
@@ -74,8 +74,8 @@ ghc-lib-parser-ex 9.2.0.4
 ghc-prim 0.8.0
 ghci 9.2.4
 hashable 1.4.1.0
-hashtables 1.3
-hasql 1.6.1.4
+hashtables 1.3.1
+hasql 1.6.2
 hlint 3.4.1
 hpc 0.6.1.0
 hscolour 1.24.4
