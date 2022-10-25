@@ -1,8 +1,7 @@
 resolver: nightly-2022-09-30
 extra-deps:
 - mprelude
-- git: https://github.com/brendanhay/amazonka
-  commit: f73a957d05f64863e867cf39d0db260718f0fadd
+- url: https://github.com/brendanhay/amazonka/archive/f73a957d05f64863e867cf39d0db260718f0fadd.tar.gz
   subdirs:
   - lib/amazonka
   - lib/amazonka-core
