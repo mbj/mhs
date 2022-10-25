@@ -5,83 +5,83 @@
 
 packages:
 - completed:
-    commit: f73a957d05f64863e867cf39d0db260718f0fadd
-    git: https://github.com/brendanhay/amazonka
     name: amazonka
     pantry-tree:
       sha256: 0257a27c3332e400abc0f4a38f7a875c4a2a04b03ac342d7481e19d9d5665040
       size: 1257
+    sha256: 14aeaa9f748f7ac03683e8a8126760ed16aa82152404a96c0333b582444cd381
+    size: 27775608
     subdir: lib/amazonka
+    url: https://github.com/brendanhay/amazonka/archive/f73a957d05f64863e867cf39d0db260718f0fadd.tar.gz
     version: '2.0'
   original:
-    commit: f73a957d05f64863e867cf39d0db260718f0fadd
-    git: https://github.com/brendanhay/amazonka
     subdir: lib/amazonka
+    url: https://github.com/brendanhay/amazonka/archive/f73a957d05f64863e867cf39d0db260718f0fadd.tar.gz
 - completed:
-    commit: f73a957d05f64863e867cf39d0db260718f0fadd
-    git: https://github.com/brendanhay/amazonka
     name: amazonka-core
     pantry-tree:
       sha256: 2eadbad33f65f20781409c4de9faee04e7e4baa92906db696b78689f53de0a83
       size: 3117
+    sha256: 14aeaa9f748f7ac03683e8a8126760ed16aa82152404a96c0333b582444cd381
+    size: 27775608
     subdir: lib/amazonka-core
+    url: https://github.com/brendanhay/amazonka/archive/f73a957d05f64863e867cf39d0db260718f0fadd.tar.gz
     version: '2.0'
   original:
-    commit: f73a957d05f64863e867cf39d0db260718f0fadd
-    git: https://github.com/brendanhay/amazonka
     subdir: lib/amazonka-core
+    url: https://github.com/brendanhay/amazonka/archive/f73a957d05f64863e867cf39d0db260718f0fadd.tar.gz
 - completed:
-    commit: f73a957d05f64863e867cf39d0db260718f0fadd
-    git: https://github.com/brendanhay/amazonka
     name: amazonka-cloudformation
     pantry-tree:
       sha256: a9f557fdf3f3d5f960a28921465609e338ce702e1ecdf6e559e01efdccb364a6
       size: 25784
+    sha256: 14aeaa9f748f7ac03683e8a8126760ed16aa82152404a96c0333b582444cd381
+    size: 27775608
     subdir: lib/services/amazonka-cloudformation
+    url: https://github.com/brendanhay/amazonka/archive/f73a957d05f64863e867cf39d0db260718f0fadd.tar.gz
     version: '2.0'
   original:
-    commit: f73a957d05f64863e867cf39d0db260718f0fadd
-    git: https://github.com/brendanhay/amazonka
     subdir: lib/services/amazonka-cloudformation
+    url: https://github.com/brendanhay/amazonka/archive/f73a957d05f64863e867cf39d0db260718f0fadd.tar.gz
 - completed:
-    commit: f73a957d05f64863e867cf39d0db260718f0fadd
-    git: https://github.com/brendanhay/amazonka
     name: amazonka-s3
     pantry-tree:
       sha256: 57bc3c2aa426230e1f339fee5710eb43ace36d05c91113bd035b4de5aac26329
       size: 37929
+    sha256: 14aeaa9f748f7ac03683e8a8126760ed16aa82152404a96c0333b582444cd381
+    size: 27775608
     subdir: lib/services/amazonka-s3
+    url: https://github.com/brendanhay/amazonka/archive/f73a957d05f64863e867cf39d0db260718f0fadd.tar.gz
     version: '2.0'
   original:
-    commit: f73a957d05f64863e867cf39d0db260718f0fadd
-    git: https://github.com/brendanhay/amazonka
     subdir: lib/services/amazonka-s3
+    url: https://github.com/brendanhay/amazonka/archive/f73a957d05f64863e867cf39d0db260718f0fadd.tar.gz
 - completed:
-    commit: f73a957d05f64863e867cf39d0db260718f0fadd
-    git: https://github.com/brendanhay/amazonka
     name: amazonka-sso
     pantry-tree:
       sha256: f11babeeaf0481ae68134ced86e9d1d9396d1beb7bd70e0a1e6b77bc4148a192
       size: 1869
+    sha256: 14aeaa9f748f7ac03683e8a8126760ed16aa82152404a96c0333b582444cd381
+    size: 27775608
     subdir: lib/services/amazonka-sso
+    url: https://github.com/brendanhay/amazonka/archive/f73a957d05f64863e867cf39d0db260718f0fadd.tar.gz
     version: '2.0'
   original:
-    commit: f73a957d05f64863e867cf39d0db260718f0fadd
-    git: https://github.com/brendanhay/amazonka
     subdir: lib/services/amazonka-sso
+    url: https://github.com/brendanhay/amazonka/archive/f73a957d05f64863e867cf39d0db260718f0fadd.tar.gz
 - completed:
-    commit: f73a957d05f64863e867cf39d0db260718f0fadd
-    git: https://github.com/brendanhay/amazonka
     name: amazonka-sts
     pantry-tree:
       sha256: 64ed22eaaea868b32cf56f162d1bd7332b048d8f2ea073c4e9827ed08e71cc70
       size: 2932
+    sha256: 14aeaa9f748f7ac03683e8a8126760ed16aa82152404a96c0333b582444cd381
+    size: 27775608
     subdir: lib/services/amazonka-sts
+    url: https://github.com/brendanhay/amazonka/archive/f73a957d05f64863e867cf39d0db260718f0fadd.tar.gz
     version: '2.0'
   original:
-    commit: f73a957d05f64863e867cf39d0db260718f0fadd
-    git: https://github.com/brendanhay/amazonka
     subdir: lib/services/amazonka-sts
+    url: https://github.com/brendanhay/amazonka/archive/f73a957d05f64863e867cf39d0db260718f0fadd.tar.gz
 - completed:
     hackage: symbols-0.3.0.0@sha256:5d051bccbd4bcb33fa8ce076bd3cd2bacc90973682f7340976758947eaa128a9,964
     pantry-tree:
