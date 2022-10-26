@@ -1,7 +1,7 @@
-resolver: lts-19.25
+resolver: lts-19.30
 extra-deps:
 - mprelude
-- url: https://github.com/brendanhay/amazonka/archive/f73a957d05f64863e867cf39d0db260718f0fadd.tar.gz
+- url: https://github.com/brendanhay/amazonka/archive/17e377b1e0aa734e10897347ea94a0ed93896e92.tar.gz
   subdirs:
   - lib/amazonka
   - lib/amazonka-core
