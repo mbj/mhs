@@ -1,0 +1,87 @@
+resolver: nightly-2023-04-19
+extra-deps:
+- mprelude
+- symbols-0.3.0.0@sha256:5d051bccbd4bcb33fa8ce076bd3cd2bacc90973682f7340976758947eaa128a9,964
+- github: brendanhay/amazonka
+  commit: 17e377b1e0aa734e10897347ea94a0ed93896e92
+  subdirs:
+  - lib/amazonka
+  - lib/amazonka-core
+  - lib/services/amazonka-cloudformation
+  - lib/services/amazonka-s3
+  - lib/services/amazonka-sso
+  - lib/services/amazonka-sts
+- github: mbj/stratosphere
+  commit: 7c462f2de4369a76df22d4b34b2f3a9e7754c731
+  subdirs:
+  - .
+  - services/ecs
+  - services/lambda
+  - services/s3
+flags:
+  bounded:
+    development: true
+  cbt:
+    development: true
+  conversions:
+    development: true
+  dbt-postgresql-connection:
+    development: true
+  dbt-postgresql-container:
+    development: true
+  db-migrations:
+    development: true
+  devtools:
+    development: true
+  http-mclient:
+    development: true
+  lambda-alb:
+    development: true
+  lambda-runtime:
+    development: true
+  lht:
+    development: true
+  mio-amazonka:
+    development: true
+  mio-core:
+    development: true
+  mio-log:
+    development: true
+  mprelude:
+    development: true
+  oauth:
+    development: true
+  openapi:
+    development: true
+  pgt:
+    development: true
+  source-constraints:
+    development: true
+  stack-deploy:
+    development: true
+  tasty-mgolden:
+    development: true
+  xray:
+    development: true
+packages:
+- bounded
+- cbt
+- conversions
+- db-migrations
+- dbt-postgresql-connection
+- dbt-postgresql-container
+- devtools
+- http-mclient
+- lambda-alb
+- lambda-runtime
+- lht
+- mio-amazonka
+- mio-core
+- mio-log
+- oauth
+- openapi
+- pgt
+- source-constraints
+- stack-deploy
+- tasty-mgolden
+- xray
