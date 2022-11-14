@@ -28,13 +28,17 @@ newtype Destination = Destination Text
 
 buildIfAbsent
   :: Env env
-  => BuildDefinition
+  => BuildDefinition name
   -> RIO env ()
-buildIfAbsent buildDefinition = do
-  exists <- isPresent (getField @"imageName" buildDefinition)
+buildIfAbsent buildDefinition@BuildDefinition{..} = do
+  exists <- isPresent imageName
   unless exists $ build buildDefinition
 
-isPresent :: Env env => CBT.Image.TaggedName -> RIO env Bool
+isPresent
+  :: forall name env
+  . (CBT.Image.IsName name, Env env)
+  => name
+  -> RIO env Bool
 isPresent imageName =
   arguments
     >>= fmap silenceStdout . backendProc
@@ -54,7 +58,7 @@ isPresent imageName =
         , imageNameString
         ]
 
-    imageNameString = convertVia @Text imageName
+    imageNameString = CBT.Image.nameString imageName
 
 push :: Env env => CBT.Image.QualifiedName -> RIO env ()
 push imageName = runProcess_ =<< backendProc ["push", convertVia @Text imageName]
@@ -65,12 +69,18 @@ pull imageName = runProcess_ =<< backendProc ["pull", convertVia @Text imageName
 tryPull :: Env env => CBT.Image.QualifiedName -> RIO env Bool
 tryPull imageName = fmap exitBool . runProcess =<< backendProc ["pull", convertVia @Text imageName]
 
-tag :: Env env => CBT.Image.Name -> CBT.Image.Name -> RIO env ()
-tag source target = runProcess_ =<< backendProc ["tag", convertVia @Text source, convertVia @Text target]
+tag :: (Env env, CBT.Image.IsName a, CBT.Image.IsName b) => a -> b -> RIO env ()
+tag source target = runProcess_ =<< proc
+  where
+    proc = backendProc
+      [ "tag"
+      , convertVia @Text (CBT.Image.toName source)
+      , convertVia @Text (CBT.Image.toName target)
+      ]
 
 build
   :: Env env
-  => BuildDefinition
+  => BuildDefinition name
   -> RIO env ()
 build BuildDefinition{..}
   = runProcess_ . setVerbosity verbosity =<< proc
@@ -92,7 +102,7 @@ build BuildDefinition{..}
       = backendProc
       $ [ "build"
         , "--platform", "linux/amd64"
-        , "--tag", convertVia @Text imageName
+        , "--tag", CBT.Image.nameString imageName
         ]
       <> arguments
 

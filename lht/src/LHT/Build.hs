@@ -36,7 +36,7 @@ newtype TargetName = TargetName Text
 data Flag = Flag PackageName Text
 
 data Config = Config
-  { cbtBuildDefinition :: CBT.Image.BuildDefinition
+  { cbtBuildDefinition :: CBT.Image.BuildDefinition CBT.Image.TaggedName
   , executablePath     :: Path.RelFile
   , extraArguments     :: [Text]
   , flags              :: [Flag]
@@ -44,7 +44,7 @@ data Config = Config
   , targetName         :: TargetName
   }
 
-defaultCBTBuildDefinition :: CBT.Image.BuildDefinition
+defaultCBTBuildDefinition :: CBT.Image.BuildDefinition CBT.Image.TaggedName
 defaultCBTBuildDefinition
   =  CBT.Image.fromDockerfileContent (CBT.Image.mkLocalName "lht")
   $$(CBT.TH.readDockerfileContent $ Path.file "Dockerfile")

@@ -1,3 +1,5 @@
+{-# LANGUAGE GADTs #-}
+
 module CBT.Container
   ( Definition(..)
   , Detach(..)
@@ -85,35 +87,37 @@ data Entrypoint = Entrypoint
 
 data EnvVariable = EnvInherit Text | EnvSet Text Text
 
-data Definition = Definition
-  { command             :: Maybe Entrypoint
-  , detach              :: Detach
-  , env                 :: [EnvVariable]
-  , imageName           :: CBT.Image.TaggedName
-  , mounts              :: [Mount]
-  , name                :: Name
-  , publishPorts        :: [PublishPort]
-  , stopRemove          :: StopRemove
-  , stopRemoveOnRunFail :: StopRemove
-  , workDir             :: Maybe Path.AbsDir
-  }
+data Definition imageName where
+  Definition
+    :: CBT.Image.IsName imageName
+    => { command             :: Maybe Entrypoint
+       , detach              :: Detach
+       , env                 :: [EnvVariable]
+       , imageName           :: imageName
+       , mounts              :: [Mount]
+       , name                :: Name
+       , publishPorts        :: [PublishPort]
+       , stopRemove          :: StopRemove
+       , stopRemoveOnRunFail :: StopRemove
+       , workDir             :: Maybe Path.AbsDir
+       }
+    -> Definition name
 
-newtype ContainerRunFailure = ContainerRunFailure
-  { containerDefinition :: Definition }
+newtype ContainerRunFailure = ContainerRunFailure Name
 
 instance Exception ContainerRunFailure
 
 instance Show ContainerRunFailure where
-  show ContainerRunFailure{..}
+  show (ContainerRunFailure name)
     = "Failed to run container with name: "
-    <> convertText (getField @"name" containerDefinition)
+    <> show name
 
 mkEntrypoint :: Text -> Entrypoint
 mkEntrypoint name = Entrypoint { arguments = [], .. }
 
-minimalDefinition :: CBT.Image.TaggedName -> Name -> Definition
-minimalDefinition imageName name =
-  Definition
+minimalDefinition :: CBT.Image.IsName imageName => imageName -> Name -> Definition name
+minimalDefinition imageName name
+  = Definition
   { command             = empty
   , detach              = Foreground
   , env                 = []
@@ -128,36 +132,36 @@ minimalDefinition imageName name =
 printLogs :: Env env => Name -> RIO env ()
 printLogs name = runProcess_ =<< backendProc ["container" , "logs" , convertText name]
 
-commit :: Env env => Name -> CBT.Image.TaggedName -> RIO env ()
+commit :: (Env env, CBT.Image.IsName imageName) => Name -> imageName -> RIO env ()
 commit name imageName
   = runProcess_
   =<< backendProc
   [ "container"
   , "commit"
   , convertText name
-  , convertText imageName
+  , CBT.Image.nameString imageName
   ]
 
 printInspect :: Env env => Name -> RIO env ()
 printInspect name = runProcess_ =<< backendProc ["container" , "inspect" , convertText name]
 
 handleFailure
-  :: Env env
-  => Definition
+  :: forall env imageName a . Env env
+  => Definition imageName
   -> a
   -> System.ExitCode
   -> RIO env a
-handleFailure containerDefinition@Definition{..} value = \case
+handleFailure Definition{..} value = \case
   System.ExitSuccess -> pure value
   _ -> do
     case (stopRemove, stopRemoveOnRunFail) of
       (StopNoRemove, StopRemove) -> remove name
       _                          -> pure ()
-    Exception.throwIO $ ContainerRunFailure containerDefinition
+    Exception.throwIO $ ContainerRunFailure name
 
 runProc
   :: Env env
-  => Definition
+  => Definition imageName
   -> RIO env Proc
 runProc Definition{..} = detachSilence <$> backendProc containerArguments
   where
@@ -175,7 +179,7 @@ runProc Definition{..} = detachSilence <$> backendProc containerArguments
       , workDirOptions
       , removeFlag
       , [ "--"
-        , convertText imageName
+        , CBT.Image.nameString imageName
         ]
       ] <> commandArguments
       where
@@ -241,8 +245,8 @@ stop
 stop name = runProcess_ . silenceStdout =<< backendProc ["stop", convertText name]
 
 withRun
-  :: forall env a . Env env
-  => Definition
+  :: Env env
+  => Definition imageName
   -> RIO env a
   -> RIO env a
 withRun containerDefinition@Definition{..} =
@@ -263,14 +267,14 @@ remove name
 
 run
   :: Env env
-  => Definition
+  => Definition imageName
   -> RIO env ()
 run containerDefinition =
   handleFailure containerDefinition () =<< runProcess =<< runProc containerDefinition
 
 runReadStdout
   :: Env env
-  => Definition
+  => Definition imageName
   -> RIO env BS.ByteString
 runReadStdout containerDefinition = do
   (exitCode, output) <- readProcessStdout =<< runProc containerDefinition'
@@ -355,8 +359,8 @@ newtype Prefix = Prefix Text
 
 withBuildRun
   :: Env env
-  => CBT.Image.BuildDefinition
-  -> CBT.Container.Definition
+  => CBT.Image.BuildDefinition imageName
+  -> Definition imageName
   -> RIO env a
   -> RIO env a
 withBuildRun buildDefinition definition =
@@ -366,8 +370,8 @@ withBuildRun buildDefinition definition =
 
 buildRun
   :: Env env
-  => CBT.Image.BuildDefinition
-  -> CBT.Container.Definition
+  => CBT.Image.BuildDefinition imageName
+  -> Definition imageName
   -> RIO env ()
 buildRun buildDefinition containerDefinition =
   CBT.Image.buildIfAbsent buildDefinition >> CBT.Container.run containerDefinition

@@ -56,7 +56,7 @@ container
         }
       (pure ())
 
-buildDefinitionStatic :: CBT.Image.BuildDefinition
+buildDefinitionStatic :: CBT.Image.BuildDefinition CBT.Image.TaggedName
 buildDefinitionStatic =
   CBT.Image.fromDockerfileContent
     imageName
@@ -65,5 +65,5 @@ buildDefinitionStatic =
 noopLogAction :: Log.Action
 noopLogAction = Log.Action . const $ pure ()
 
-imageName :: CBT.Image.Name
+imageName :: CBT.Image.TaglessName
 imageName = CBT.Image.mkLocalName "cbt-test"
