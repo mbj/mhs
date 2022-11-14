@@ -8,22 +8,26 @@ module CBT.Image.BuildDefinition
   , Verbosity(..)
   , fromDirectory
   , fromDockerfileContent
+  , hashContentTag
   , readDockerfileContent
   )
 where
 
 import CBT.Prelude
-import Control.Monad.Trans.Resource (MonadResource, runResourceT)
+import Control.Monad.Trans.Resource (ResourceT, runResourceT)
 import Data.Conduit (ConduitT, (.|), runConduit)
 import Language.Haskell.TH.Syntax (Lift)
+import System.FilePath (FilePath)
 
 import qualified CBT.Image.Name           as CBT.Image
 import qualified Crypto.Hash              as Hash
 import qualified Data.ByteString          as BS
 import qualified Data.Conduit             as Conduit
 import qualified Data.Conduit.Combinators as Conduit
+import qualified Data.Conduit.List        as Conduit
 import qualified Data.Text.Encoding       as Text
 import qualified Data.Text.IO             as Text
+import qualified System.Directory         as System
 import qualified System.Path              as Path
 
 newtype Prefix = Prefix Text
@@ -75,40 +79,46 @@ fromDockerfileContent imageName content =
       . Text.encodeUtf8
       $ toText content
 
+hashContentTag :: MonadUnliftIO m => [FilePath] -> m CBT.Image.Tag
+hashContentTag = fmap (CBT.Image.Tag . convertText . show) . runResourceT . hashContents
+
+hashContents :: forall m . MonadUnliftIO m => [FilePath] -> m (Hash.Digest Hash.SHA3_256)
+hashContents contents = runResourceT $ Hash.hashFinalize <$> runConduit conduit
+  where
+    conduit
+      =  Conduit.sourceList contents
+      .| expand
+      .| readFile
+      .| Conduit.foldl Hash.hashUpdate Hash.hashInit
+
+    expand :: ConduitT FilePath FilePath (ResourceT m) ()
+    expand = Conduit.awaitForever $ \path -> do
+      isDirectory <- liftIO $ System.doesDirectoryExist path
+      if isDirectory
+        then Conduit.sourceDirectoryDeep False path
+        else Conduit.yield path
+
+    readFile
+      = Conduit.awaitForever
+      $ \path -> addFileName path .| Conduit.sourceFile path
+
+    addFileName :: String -> ConduitT i BS.ByteString (ResourceT m) ()
+    addFileName
+      = Conduit.yield
+      . (\input -> "\0" <> input <> "\0")
+      . Text.encodeUtf8
+      . convert
+
 fromDirectory
   :: MonadUnliftIO m
   => CBT.Image.TaglessName
   -> Path.AbsRelDir
   -> m (BuildDefinition CBT.Image.TaggedName)
 fromDirectory imageName dir = do
-  tag <- CBT.Image.Tag . convertText . show <$> runResourceT (hashDirectory dir)
+  tag <- hashContentTag [Path.toString dir]
 
   pure $ BuildDefinition
     { imageName = CBT.Image.setTag imageName tag
     , source    = Directory dir
     , verbosity = Verbose
     }
-
-hashDirectory
-  :: forall m . MonadResource m
-  => Path.AbsRelDir
-  -> m (Hash.Digest Hash.SHA3_256)
-hashDirectory directory = do
-  Hash.hashFinalize <$> runConduit conduit
-  where
-    conduit
-      =  Conduit.sourceDirectoryDeep False (Path.toString directory)
-      .| processFile
-      .| Conduit.foldl Hash.hashUpdate Hash.hashInit
-
-    processFile :: ConduitT String BS.ByteString m ()
-    processFile =
-      Conduit.awaitForever $ \path ->
-        addFileName path .| Conduit.sourceFile path
-
-    addFileName :: String -> ConduitT i BS.ByteString m ()
-    addFileName
-      = Conduit.yield
-      . (\input -> "\0" <> input <> "\0")
-      . Text.encodeUtf8
-      . convert
