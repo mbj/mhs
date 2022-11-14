@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveLift #-}
+{-# LANGUAGE GADTs #-}
 
 module CBT.Image.BuildDefinition
   ( BuildDefinition(..)
@@ -34,11 +35,14 @@ data BuildSource
   = Directory Path.AbsRelDir
   | Instructions DockerfileContent
 
-data BuildDefinition = BuildDefinition
-  { source    :: BuildSource
-  , imageName :: CBT.Image.TaggedName
-  , verbosity :: Verbosity
-  }
+data BuildDefinition name where
+  BuildDefinition
+    :: CBT.Image.IsName name
+    => { source    :: BuildSource
+       , imageName :: name
+       , verbosity :: Verbosity
+       }
+    -> BuildDefinition name
 
 newtype DockerfileContent = DockerfileContent Text
   deriving (Conversion Text) via Text
@@ -52,9 +56,9 @@ readDockerfileContent path =
   DockerfileContent <$> liftIO (Text.readFile $ Path.toString path)
 
 fromDockerfileContent
-  :: CBT.Image.Name
+  :: CBT.Image.TaglessName
   -> DockerfileContent
-  -> BuildDefinition
+  -> BuildDefinition CBT.Image.TaggedName
 fromDockerfileContent imageName content =
   BuildDefinition
     { imageName = CBT.Image.setTag imageName tag
@@ -73,9 +77,9 @@ fromDockerfileContent imageName content =
 
 fromDirectory
   :: MonadUnliftIO m
-  => CBT.Image.Name
+  => CBT.Image.TaglessName
   -> Path.AbsRelDir
-  -> m BuildDefinition
+  -> m (BuildDefinition CBT.Image.TaggedName)
 fromDirectory imageName dir = do
   tag <- CBT.Image.Tag . convertText . show <$> runResourceT (hashDirectory dir)
 
