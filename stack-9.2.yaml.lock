@@ -5,6 +5,20 @@
 
 packages:
 - completed:
+    hackage: symbols-0.3.0.0@sha256:5d051bccbd4bcb33fa8ce076bd3cd2bacc90973682f7340976758947eaa128a9,964
+    pantry-tree:
+      sha256: 06746077732f4d49d3277821303292314d51df9a63efecd47217fc0946233026
+      size: 529
+  original:
+    hackage: symbols-0.3.0.0@sha256:5d051bccbd4bcb33fa8ce076bd3cd2bacc90973682f7340976758947eaa128a9,964
+- completed:
+    hackage: stratosphere-0.60.0@sha256:ce16367b41c9b64c698d416801504441c3207b6b25eb03aba3594117951f8260,145343
+    pantry-tree:
+      sha256: 4dda716435f9742e3929dc5bfe8259d43a8539941cbd345c2d09b2b8ba828d5e
+      size: 243747
+  original:
+    hackage: stratosphere-0.60.0@sha256:ce16367b41c9b64c698d416801504441c3207b6b25eb03aba3594117951f8260,145343
+- completed:
     name: amazonka
     pantry-tree:
       sha256: 2702cdbccc58aaedfd12b0ef7d1cae769f4f132e225b90d300e34a422a29015d
@@ -82,20 +96,6 @@ packages:
   original:
     subdir: lib/services/amazonka-sts
     url: https://github.com/brendanhay/amazonka/archive/17e377b1e0aa734e10897347ea94a0ed93896e92.tar.gz
-- completed:
-    hackage: symbols-0.3.0.0@sha256:5d051bccbd4bcb33fa8ce076bd3cd2bacc90973682f7340976758947eaa128a9,964
-    pantry-tree:
-      sha256: 06746077732f4d49d3277821303292314d51df9a63efecd47217fc0946233026
-      size: 529
-  original:
-    hackage: symbols-0.3.0.0@sha256:5d051bccbd4bcb33fa8ce076bd3cd2bacc90973682f7340976758947eaa128a9,964
-- completed:
-    hackage: stratosphere-0.60.0@sha256:ce16367b41c9b64c698d416801504441c3207b6b25eb03aba3594117951f8260,145343
-    pantry-tree:
-      sha256: 4dda716435f9742e3929dc5bfe8259d43a8539941cbd345c2d09b2b8ba828d5e
-      size: 243747
-  original:
-    hackage: stratosphere-0.60.0@sha256:ce16367b41c9b64c698d416801504441c3207b6b25eb03aba3594117951f8260,145343
 snapshots:
 - completed:
     sha256: 82f12d331b7d1c6eb8cd57f8dc43c24f19fadf9fb913db800b56310e5e6d2d61
