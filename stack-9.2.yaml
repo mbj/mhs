@@ -62,6 +62,8 @@ packages:
 - cbt
 - conversions
 - db-migrations
+- dbt-postgresql-connection
+- dbt-postgresql-container
 - devtools
 - http-mclient
 - lambda-alb
@@ -73,8 +75,6 @@ packages:
 - oauth
 - openapi
 - pgt
-- postgresql-connection
-- postgresql-container
 - source-constraints
 - stack-deploy
 - tasty-mgolden
