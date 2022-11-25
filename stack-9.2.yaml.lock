@@ -98,7 +98,7 @@ packages:
     url: https://github.com/brendanhay/amazonka/archive/17e377b1e0aa734e10897347ea94a0ed93896e92.tar.gz
 snapshots:
 - completed:
-    sha256: 82f12d331b7d1c6eb8cd57f8dc43c24f19fadf9fb913db800b56310e5e6d2d61
-    size: 644486
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2022/10/24.yaml
-  original: nightly-2022-10-24
+    sha256: b73b2b116143aea728c70e65c3239188998bac5bc3be56465813dacd74215dc5
+    size: 648424
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/20/1.yaml
+  original: lts-20.1

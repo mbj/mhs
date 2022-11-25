@@ -1,4 +1,4 @@
-resolver: lts-19.30
+resolver: lts-19.32
 extra-deps:
 - mprelude
 - stratosphere-0.60.0@sha256:ce16367b41c9b64c698d416801504441c3207b6b25eb03aba3594117951f8260,145343
