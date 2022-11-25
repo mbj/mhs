@@ -1,8 +1,9 @@
 module DBT.Postgresql.Container
   ( defaultBuildDefinition
-  , populateDatabaseImage
-  , populateDatabaseImageDefault
-  , populateDatabaseImageIfAbsent
+  , populateDatabase
+  , populateDatabaseBuildDefinition
+  , populateDatabaseBuildDefinitionDefault
+  , populateDatabaseBuildDefinitionIfAbsent
   , withDatabaseContainer
   , withDatabaseContainerDefault
   , withDatabaseContainerImage
@@ -48,43 +49,70 @@ withDatabaseContainerProcessRun_
 withDatabaseContainerProcessRun_ prefix proc =
   withDatabaseContainerProcess prefix proc Process.withProcessWait_ Process.checkExitCode
 
-populateDatabaseImageIfAbsent
+populateDatabaseBuildDefinitionIfAbsent
   :: (CBT.Env env, CBT.Image.IsName buildImageName, CBT.Image.IsName imageName)
   => CBT.Image.BuildDefinition buildImageName
   -> CBT.Container.Name
   -> imageName
   -> (Postgresql.ClientConfig -> RIO env ())
   -> RIO env ()
-populateDatabaseImageIfAbsent buildDefinition containerName targetImageName action = do
+populateDatabaseBuildDefinitionIfAbsent buildDefinition containerName targetImageName action = do
   present <- CBT.Image.isPresent targetImageName
   if present
     then pure ()
-    else populateDatabaseImage buildDefinition containerName targetImageName action
+    else populateDatabaseBuildDefinition buildDefinition containerName targetImageName action
 
-populateDatabaseImage
+populateDatabaseBuildDefinition
   :: (CBT.Env env, CBT.Image.IsName buildImageName, CBT.Image.IsName targetImageName)
   => CBT.Image.BuildDefinition buildImageName
   -> CBT.Container.Name
   -> targetImageName
   -> (Postgresql.ClientConfig -> RIO env ())
   -> RIO env ()
-populateDatabaseImage buildDefinition containerName targetImageName action =
-  CBT.Container.withBuildRun buildDefinition containerDefinition' $ do
-    runAction containerName action
-    CBT.Container.stop containerName
-    CBT.Container.commit containerName targetImageName
+populateDatabaseBuildDefinition buildDefinition containerName targetImageName
+  = CBT.Container.withBuildRun buildDefinition containerDefinition'
+  . populate containerName targetImageName
   where
     containerDefinition' = (containerDefinition (getField @"imageName" buildDefinition) containerName)
       { CBT.Container.stopRemove = CBT.Container.StopNoRemove
       }
 
-populateDatabaseImageDefault
+populateDatabase
+  :: ( CBT.Env env
+     , CBT.Image.IsName baseImageName
+     , CBT.Image.IsName targetImageName
+     )
+  => baseImageName
+  -> CBT.Container.Name
+  -> targetImageName
+  -> (Postgresql.ClientConfig -> RIO env ())
+  -> RIO env ()
+populateDatabase baseImageName containerName targetImageName
+  = CBT.Container.withRun containerDefinition'
+  . populate containerName targetImageName
+  where
+    containerDefinition' = (containerDefinition baseImageName containerName)
+      { CBT.Container.stopRemove = CBT.Container.StopNoRemove
+      }
+
+populate
+  :: (CBT.Env env, CBT.Image.IsName targetImageName)
+  => CBT.Container.Name
+  -> targetImageName
+  -> (Postgresql.ClientConfig -> RIO env ())
+  -> RIO env ()
+populate containerName targetImageName action = do
+  runAction containerName action
+  CBT.Container.stop containerName
+  CBT.Container.commit containerName targetImageName
+
+populateDatabaseBuildDefinitionDefault
   :: (CBT.Env env, CBT.Image.IsName imageName)
   => CBT.Container.Name
   -> imageName
   -> (Postgresql.ClientConfig -> RIO env ())
   -> RIO env ()
-populateDatabaseImageDefault = populateDatabaseImage defaultBuildDefinition
+populateDatabaseBuildDefinitionDefault = populateDatabaseBuildDefinition defaultBuildDefinition
 
 withDatabaseContainer
   :: (CBT.Env env, CBT.Image.IsName imageName)
