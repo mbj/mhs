@@ -128,6 +128,7 @@ regex-posix 0.96.0.1
 resourcet 1.2.6
 retry 0.9.3.0
 rts 1.0.2
+safe-exceptions 0.1.7.3
 scientific 0.3.7.0
 semialign 1.2.0.1
 semigroupoids 5.3.7
@@ -139,7 +140,7 @@ splitmix 0.1.0.4
 stack-deploy 0.0.5
 stm 2.5.0.0
 stratosphere 0.60.0
-streaming-commons 0.2.2.4
+streaming-commons 0.2.2.5
 strict 0.4.0.1
 syb 0.7.2.2
 tagged 0.8.6.1
@@ -165,7 +166,7 @@ typed-process 0.2.10.1
 unbounded-delays 0.1.1.1
 uniplate 1.6.13
 unix 2.7.2.2
-unliftio 0.2.22.0
+unliftio 0.2.23.0
 unliftio-core 0.2.0.1
 unordered-containers 0.2.17.0
 utf8-string 1.0.2
