@@ -30,7 +30,6 @@
   - -Wmonomorphism-restriction
   - -Wredundant-constraints
   - -fhide-source-paths
-  - -fplugin-opt=SourceConstraints:local:Blastschield
   - -funbox-strict-fields
   - -optP-Wno-nonportable-include-path
 

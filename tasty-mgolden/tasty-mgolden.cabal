@@ -46,7 +46,7 @@ library
       OverloadedStrings
       RecordWildCards
       StrictData
-  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
       Diff >=0.3.4
     , ansi-terminal >=0.9
@@ -72,7 +72,7 @@ executable tasty-mgolden-example
       RecordWildCards
       StrictData
       ImplicitPrelude
-  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N -Wno-implicit-prelude
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N -Wno-implicit-prelude
   build-depends:
       Diff >=0.3.4
     , ansi-terminal >=0.9
@@ -105,7 +105,7 @@ test-suite golden
       OverloadedStrings
       RecordWildCards
       StrictData
-  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       Diff >=0.3.4
     , ansi-terminal >=0.9
@@ -139,7 +139,7 @@ test-suite hlint
       OverloadedStrings
       RecordWildCards
       StrictData
-  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -fplugin-opt=SourceConstraints:local:Blastschield -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       Diff >=0.3.4
     , ansi-terminal >=0.9
