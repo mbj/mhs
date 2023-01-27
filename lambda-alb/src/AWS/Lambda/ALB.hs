@@ -72,6 +72,7 @@ data Response = Response
   , headers    :: Headers
   , body       :: ResponseBody
   }
+  deriving stock (Eq, Show)
 
 instance JSON.ToJSON Response where
   toJSON Response{..}
@@ -89,6 +90,7 @@ instance JSON.ToJSON Response where
 data ResponseBody
   = ByteStringResponseBody BS.ByteString
   | TextResponseBody Text BS.ByteString
+  deriving stock (Eq, Show)
 
 isByteString :: ResponseBody -> Bool
 isByteString = \case
