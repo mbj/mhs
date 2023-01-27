@@ -67,7 +67,7 @@ indexed-traversable 0.1.2
 indexed-traversable-instances 0.1.1.1
 integer-logarithms 1.0.3.1
 iproute 1.7.12
-lambda-alb 0.0.7
+lambda-alb 0.0.8
 lambda-runtime 0.0.2
 libyaml 0.1.2
 mime-types 0.1.1.0
