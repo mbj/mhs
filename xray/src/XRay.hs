@@ -43,7 +43,7 @@ newSegment
   -> Maybe SegmentId
   -> RIO env Segment
 newSegment name traceId parentId = do
-  Environment{config = Config{..}, ..} <- asks (getField @"xrayEnvironment")
+  Environment{config = Config{..}, ..} <- asks (.xrayEnvironment)
 
   liftIO $ do
     id        <- newSegmentId
@@ -81,14 +81,14 @@ withSegment
   specializeInProgress
   specializeFinal
   action
-  = recordSegment =<< asks (getField @"xrayEnvironment")
+  = recordSegment =<< asks (.xrayEnvironment)
   where
     recordSegment Environment{..} = do
       segment <- specializeInProgress <$> newSegment segmentName traceId parentId
 
       liftIO $ sendSegment segment
 
-      Exception.tryAny (action $ getField @"id" segment)
+      Exception.tryAny (action segment.id)
         >>= either (finalizeException segment) (finalizeResult segment)
       where
         finalizeException :: Segment -> Exception.SomeException -> RIO env a

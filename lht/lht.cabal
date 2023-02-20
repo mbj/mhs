@@ -38,6 +38,7 @@ library
   hs-source-dirs:
       src
   default-extensions:
+      ConstraintKinds
       DataKinds
       DeriveAnyClass
       DeriveGeneric
@@ -48,18 +49,22 @@ library
       FlexibleInstances
       GeneralizedNewtypeDeriving
       LambdaCase
-      MonoLocalBinds
       MultiParamTypeClasses
+      NoFieldSelectors
       NoImplicitPrelude
       NumericUnderscores
       OverloadedLists
+      OverloadedRecordDot
       OverloadedStrings
       RankNTypes
       RecordWildCards
       ScopedTypeVariables
       Strict
       TemplateHaskell
+      TupleSections
       TypeApplications
+      TypeFamilies
+      ViewPatterns
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
       base
@@ -101,6 +106,7 @@ test-suite test
   hs-source-dirs:
       test
   default-extensions:
+      ConstraintKinds
       DataKinds
       DeriveAnyClass
       DeriveGeneric
@@ -111,18 +117,22 @@ test-suite test
       FlexibleInstances
       GeneralizedNewtypeDeriving
       LambdaCase
-      MonoLocalBinds
       MultiParamTypeClasses
+      NoFieldSelectors
       NoImplicitPrelude
       NumericUnderscores
       OverloadedLists
+      OverloadedRecordDot
       OverloadedStrings
       RankNTypes
       RecordWildCards
       ScopedTypeVariables
       Strict
       TemplateHaskell
+      TupleSections
       TypeApplications
+      TypeFamilies
+      ViewPatterns
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       base

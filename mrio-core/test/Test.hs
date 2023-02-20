@@ -15,7 +15,7 @@ newtype Env = Env
 main :: IO ()
 main = do
   runRIO env $ do
-    name <- asks appName
+    name <- asks (.appName)
     liftIO . putStrLn $ "App Name is " <> name
 
   Devtools.main $$(Devtools.readDependencies [Devtools.Target "mrio-core"])

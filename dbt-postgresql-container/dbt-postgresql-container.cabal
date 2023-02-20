@@ -48,9 +48,11 @@ library
       GeneralizedNewtypeDeriving
       LambdaCase
       MultiParamTypeClasses
+      NoFieldSelectors
       NoImplicitPrelude
       NumericUnderscores
       OverloadedLists
+      OverloadedRecordDot
       OverloadedStrings
       RankNTypes
       RecordWildCards
@@ -111,9 +113,11 @@ executable dbt
       GeneralizedNewtypeDeriving
       LambdaCase
       MultiParamTypeClasses
+      NoFieldSelectors
       NoImplicitPrelude
       NumericUnderscores
       OverloadedLists
+      OverloadedRecordDot
       OverloadedStrings
       RankNTypes
       RecordWildCards
@@ -180,9 +184,11 @@ test-suite test
       GeneralizedNewtypeDeriving
       LambdaCase
       MultiParamTypeClasses
+      NoFieldSelectors
       NoImplicitPrelude
       NumericUnderscores
       OverloadedLists
+      OverloadedRecordDot
       OverloadedStrings
       RankNTypes
       RecordWildCards

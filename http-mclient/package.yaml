@@ -26,30 +26,6 @@ dependencies:
 - text
 - unliftio
 
-default-extensions:
-- AllowAmbiguousTypes
-- OverloadedStrings
-- OverloadedLists
-- DeriveFunctor
-- DeriveAnyClass
-- DeriveGeneric
-- DerivingStrategies
-- DerivingVia
-- DataKinds
-- KindSignatures
-- DuplicateRecordFields
-- ConstraintKinds
-- FlexibleContexts
-- GeneralizedNewtypeDeriving
-- LambdaCase
-- NoImplicitPrelude
-- MonoLocalBinds
-- MultiWayIf
-- MultiParamTypeClasses
-- RecordWildCards
-- ScopedTypeVariables
-- TypeApplications
-
 tests:
   test:
     <<: *test

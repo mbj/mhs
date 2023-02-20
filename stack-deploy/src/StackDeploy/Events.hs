@@ -84,7 +84,7 @@ allEvents Poll{..} =
         else maybe (pure ()) go (listToMaybe events)
 
     isExpectedEvent :: CF.StackEvent -> CF.StackEvent -> Bool
-    isExpectedEvent = (==) `on` getField @"eventId"
+    isExpectedEvent = (==) `on` (.eventId)
 
     poll
       :: ConduitT () CF.StackEvent (RIO env) ()
@@ -98,7 +98,7 @@ stackEvents
   :: AWS.Env env
   => Id
   -> ConduitT () CF.StackEvent (RIO env) ()
-stackEvents stackId = listResource request (fromMaybe [] . getField @"stackEvents")
+stackEvents stackId = listResource request (fromMaybe [] . (.stackEvents))
   where
     request = CF.newDescribeStackEvents & CF.describeStackEvents_stackName ?~ toText stackId
 

@@ -18,27 +18,6 @@ dependencies:
 - text
 - time
 
-default-extensions:
-- DataKinds
-- DerivingStrategies
-- FlexibleContexts
-- FlexibleInstances
-- GeneralizedNewtypeDeriving
-- KindSignatures
-- LambdaCase
-- MultiParamTypeClasses
-- NoImplicitPrelude
-- OverloadedLists
-- OverloadedStrings
-- PolyKinds
-- RecordWildCards
-- ScopedTypeVariables
-- StrictData
-- TupleSections
-- TypeApplications
-- TypeFamilies
-- UndecidableInstances
-
 tests:
   test:
     <<: *test

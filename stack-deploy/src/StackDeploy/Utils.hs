@@ -76,12 +76,12 @@ fetchOutput
 fetchOutput stack soutput =
   maybe
     (failOutputKey "missing")
-    (maybe (failOutputKey "has no value") pure . getField @"outputValue")
+    (maybe (failOutputKey "has no value") pure . (.outputValue))
     $ Foldable.find
-      ((==) (pure key) . getField @"outputKey")
-      (fromMaybe [] (getField @"outputs" stack))
+      ((==) (pure key) . (.outputKey))
+      (fromMaybe [] stack.outputs)
   where
-    key = getField @"_outputName" soutput
+    key = soutput._outputName
 
     failOutputKey :: Text -> m a
     failOutputKey message
@@ -92,7 +92,7 @@ fetchOutput stack soutput =
     failStack message
       = fail
       . convertText
-      $ "Stack: " <> getField @"stackName" stack <> " " <> message
+      $ "Stack: " <> stack.stackName <> " " <> message
 
 resolveSecretsmanagerSecret :: Val Text -> Val Text
 resolveSecretsmanagerSecret arn = wrap $ Join ":" ["resolve", "secretsmanager", arn]

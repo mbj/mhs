@@ -119,7 +119,7 @@ withBuildContainer Config{..} action = do
       ]
 
     containerDefinition =
-      (CBT.Container.minimalDefinition (getField @"imageName" cbtBuildDefinition) containerName)
+      (CBT.Container.minimalDefinition cbtBuildDefinition.imageName containerName)
       { CBT.Container.command = pure command
       , CBT.Container.detach  = CBT.Container.Foreground
       , CBT.Container.env     = Foldable.toList

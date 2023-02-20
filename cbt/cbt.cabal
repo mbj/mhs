@@ -46,32 +46,32 @@ library
   hs-source-dirs:
       src
   default-extensions:
-      AllowAmbiguousTypes
       ConstraintKinds
       DataKinds
+      DeriveAnyClass
+      DeriveGeneric
       DerivingStrategies
       DerivingVia
       DuplicateRecordFields
       FlexibleContexts
       FlexibleInstances
       GeneralizedNewtypeDeriving
-      InstanceSigs
-      KindSignatures
       LambdaCase
       MultiParamTypeClasses
+      NoFieldSelectors
       NoImplicitPrelude
       NumericUnderscores
       OverloadedLists
+      OverloadedRecordDot
       OverloadedStrings
       RankNTypes
       RecordWildCards
       ScopedTypeVariables
-      StrictData
+      Strict
       TemplateHaskell
       TupleSections
       TypeApplications
       TypeFamilies
-      TypeSynonymInstances
       ViewPatterns
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
@@ -116,32 +116,32 @@ test-suite test
   hs-source-dirs:
       test
   default-extensions:
-      AllowAmbiguousTypes
       ConstraintKinds
       DataKinds
+      DeriveAnyClass
+      DeriveGeneric
       DerivingStrategies
       DerivingVia
       DuplicateRecordFields
       FlexibleContexts
       FlexibleInstances
       GeneralizedNewtypeDeriving
-      InstanceSigs
-      KindSignatures
       LambdaCase
       MultiParamTypeClasses
+      NoFieldSelectors
       NoImplicitPrelude
       NumericUnderscores
       OverloadedLists
+      OverloadedRecordDot
       OverloadedStrings
       RankNTypes
       RecordWildCards
       ScopedTypeVariables
-      StrictData
+      Strict
       TemplateHaskell
       TupleSections
       TypeApplications
       TypeFamilies
-      TypeSynonymInstances
       ViewPatterns
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:

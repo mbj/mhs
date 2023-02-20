@@ -31,7 +31,7 @@ syncTarget TargetObject{..} =
   putIfAbsent bucketName objectKey object (uploadCallback $ objectKeyText objectKey)
 
 targetObjectKeyText :: TargetObject -> Text
-targetObjectKeyText = objectKeyText . objectKey
+targetObjectKeyText = objectKeyText . (.objectKey)
 
 testObjectExists
   :: forall env . AWS.Env env

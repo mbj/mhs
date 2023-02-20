@@ -62,7 +62,7 @@ mapRIO f m = do
   runRIO (f outer) m
 
 instance MonadUnliftIO (RIO env) where
-  withRunInIO inner = RIO $ withRunInIO $ \run -> inner (run . unRIO)
+  withRunInIO inner = RIO $ withRunInIO $ \run -> inner (run . (.unRIO))
   {-# INLINE withRunInIO #-}
 
 instance PrimMonad (RIO env) where

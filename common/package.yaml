@@ -49,9 +49,11 @@
   - GeneralizedNewtypeDeriving
   - LambdaCase
   - MultiParamTypeClasses
+  - NoFieldSelectors
   - NoImplicitPrelude
   - NumericUnderscores
   - OverloadedLists
+  - OverloadedRecordDot
   - OverloadedStrings
   - RankNTypes
   - RecordWildCards
