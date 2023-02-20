@@ -230,7 +230,7 @@ runProc Definition{..} = detachSilence <$> backendProc containerArguments
 
         commandArguments :: [String]
         commandArguments =
-          maybe [] (\arg -> convert <$> getField @"name" arg:getField @"arguments" arg) command
+          maybe [] (\arg -> convert <$> arg.name:arg.arguments) command
 
     detachSilence :: Proc -> Proc
     detachSilence =
@@ -366,7 +366,7 @@ withBuildRun
 withBuildRun buildDefinition definition =
   Exception.bracket_
     (buildRun buildDefinition definition)
-    (CBT.Container.stop $ getField @"name" definition)
+    (CBT.Container.stop definition.name)
 
 buildRun
   :: Env env

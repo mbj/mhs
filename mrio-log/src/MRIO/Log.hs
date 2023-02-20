@@ -1,8 +1,3 @@
-{-# LANGUAGE AllowAmbiguousTypes #-}
-{-# LANGUAGE ConstraintKinds     #-}
-{-# LANGUAGE GADTs               #-}
-{-# LANGUAGE RankNTypes          #-}
-
 module MRIO.Log
   ( Action(..)
   , Env
@@ -24,7 +19,7 @@ import Control.Monad.Reader (asks)
 import Data.Conversions
 import Data.Function
 import GHC.Exception (Exception, displayException)
-import GHC.Records (HasField, getField)
+import GHC.Records (HasField)
 import MPrelude
 import MRIO.Core
 import MRIO.Log.Formatter
@@ -61,9 +56,7 @@ exception :: forall e env . (Env env, Exception e) => e -> RIO env ()
 exception = error . convert . displayException
 
 logMessage :: forall env . Env env => Message -> RIO env ()
-logMessage message =
-  asks (getField @"logAction")
-    >>= (\(Action action) -> liftIO $ action message)
+logMessage message = asks (.logAction) >>= (\(Action action) -> liftIO $ action message)
 
 formatCLIAction :: Formatter -> Action
 formatCLIAction formatter

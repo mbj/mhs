@@ -31,8 +31,8 @@ loadDefaultConfig = do
 
 onDebug :: Env env => RIO env () -> RIO env ()
 onDebug action = do
-  Config{..} <- asks (getField @"cbtConfig")
+  Config{..} <- asks (.cbtConfig)
   when debug action
 
 askBackend :: Env env => RIO env Backend
-askBackend = asks (getField @"backend" . getField @"cbtConfig")
+askBackend = asks (.cbtConfig.backend)

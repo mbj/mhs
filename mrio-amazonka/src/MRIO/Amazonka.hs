@@ -21,7 +21,7 @@ import Data.Conduit (ConduitT)
 import Data.Either (Either)
 import Data.Function (($), (.))
 import Data.IORef (IORef)
-import GHC.Records (HasField, getField)
+import GHC.Records (HasField)
 import MRIO.Core
 
 import qualified Amazonka
@@ -45,7 +45,7 @@ paginate
   => a
   -> ConduitT () (Amazonka.AWSResponse a) (RIO env) ()
 paginate pager = do
-  env <- asks $ getField @"awsEnv"
+  env <- asks (.awsEnv)
   Amazonka.paginate env pager
 
 paginateEither
@@ -53,7 +53,7 @@ paginateEither
   => a
   -> ConduitT () (Amazonka.AWSResponse a) (RIO env) (Either Amazonka.Error ())
 paginateEither pager = do
-  env <- asks $ getField @"awsEnv"
+  env <- asks (.awsEnv)
   Amazonka.paginateEither env pager
 
 send
@@ -61,7 +61,7 @@ send
   => a
   -> RIO env (Amazonka.AWSResponse a)
 send request = do
-  env <- asks $ getField @"awsEnv"
+  env <- asks (.awsEnv)
   Amazonka.send env request
 
 sendEither
@@ -69,7 +69,7 @@ sendEither
   => a
   -> RIO env (Either Amazonka.Error (Amazonka.AWSResponse a))
 sendEither request = do
-  env <- asks $ getField @"awsEnv"
+  env <- asks (.awsEnv)
   Amazonka.sendEither env request
 
 withResourceMap :: MonadUnliftIO m => (ResourceMap -> m a) -> m a

@@ -49,7 +49,7 @@ container
 
     CBT.Container.withBuildRun
       buildDefinitionStatic
-      (CBT.Container.minimalDefinition (getField @"imageName" buildDefinitionStatic) containerName)
+      (CBT.Container.minimalDefinition buildDefinitionStatic.imageName containerName)
         { CBT.Container.command    = pure $ CBT.Container.mkEntrypoint "true"
         , CBT.Container.stopRemove = CBT.Container.StopNoRemove
         , CBT.Container.detach     = CBT.Container.Detach

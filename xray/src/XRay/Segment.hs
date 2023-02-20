@@ -359,7 +359,7 @@ addException :: Segment -> Exception -> Segment
 addException segment exception = setCause segment $ causeAddException present
   where
     present :: Cause
-    present = fromMaybe emptyCause (getField @"cause" segment)
+    present = fromMaybe emptyCause segment.cause
 
     emptyCause :: Cause
     emptyCause = Cause
@@ -370,7 +370,7 @@ addException segment exception = setCause segment $ causeAddException present
 
     causeAddException :: Cause ->  Cause
     causeAddException cause =
-      cause { exceptions = exception : getField @"exceptions" cause }
+      cause { exceptions = exception : cause.exceptions }
 
 setCause :: Segment -> Cause -> Segment
 setCause Segment{..} cause' = Segment { cause = pure cause', .. }

@@ -1,6 +1,6 @@
 cabal-version: 1.18
 
--- This file has been generated from package.yaml by hpack version 0.35.0.
+-- This file has been generated from package.yaml by hpack version 0.35.1.
 --
 -- see: https://github.com/sol/hpack
 
@@ -16,11 +16,13 @@ category:       prelude
 homepage:       https://github.com/mbj/mhs#readme
 bug-reports:    https://github.com/mbj/mhs/issues
 author:         Markus Schirp
-maintainer:     markus@schirp-dso.com
-copyright:      2021 Markus Schirp
+maintainer:     mbj@schirp-dso.com
+copyright:      2023 Markus Schirp
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
+tested-with:
+    GHC == 9.2
 extra-doc-files:
     README.md
 
@@ -41,7 +43,6 @@ library
   hs-source-dirs:
       src
   default-extensions:
-      CPP
       DataKinds
       DeriveAnyClass
       DeriveGeneric
@@ -81,7 +82,6 @@ test-suite test
   hs-source-dirs:
       test
   default-extensions:
-      CPP
       DataKinds
       DeriveAnyClass
       DeriveGeneric

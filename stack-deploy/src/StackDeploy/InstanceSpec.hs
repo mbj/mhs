@@ -39,7 +39,7 @@ data InstanceSpec env = InstanceSpec
   }
 
 instance Provider.HasName (InstanceSpec env) where
-  name = name
+  name = (.name)
 
 get
   :: Provider env
@@ -48,7 +48,7 @@ get
   -> RIO env (InstanceSpec env)
 get provider targetName userParameters = do
   instanceSpec <- Provider.get "instance-spec" provider targetName
-  env          <- envParameters instanceSpec
+  env          <- instanceSpec.envParameters
   roleARN      <- tryEnvRole instanceSpec
 
   pure $ instanceSpec
@@ -84,4 +84,4 @@ mkName :: Text -> Name env
 mkName = Provider.mkName
 
 templateProvider :: Provider env -> Template.Provider
-templateProvider provider = fromList $ template <$> toList provider
+templateProvider provider = fromList $ (.template) <$> toList provider

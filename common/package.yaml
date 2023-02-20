@@ -1,10 +1,13 @@
 - &defaults
   author:     Markus Schirp
-  copyright:  2021 Markus Schirp
+  copyright:  2023 Markus Schirp
   github:     mbj/mhs
   homepage:   https://github.com/mbj/mhs#readme
   license:    BSD3
-  maintainer: markus@schirp-dso.com
+  maintainer: mbj@schirp-dso.com
+
+  tested-with:
+  - GHC == 9.2
 
   when:
   - condition: flag(development)
@@ -46,9 +49,11 @@
   - GeneralizedNewtypeDeriving
   - LambdaCase
   - MultiParamTypeClasses
+  - NoFieldSelectors
   - NoImplicitPrelude
   - NumericUnderscores
   - OverloadedLists
+  - OverloadedRecordDot
   - OverloadedStrings
   - RankNTypes
   - RecordWildCards

@@ -1,5 +1,3 @@
-{-# LANGUAGE CPP #-}
-
 -- | Conversions from type-level values
 --
 module Data.Conversions.FromType where
@@ -12,10 +10,6 @@ import           Data.String                    ( String )
 import           Data.Text                      ( Text )
 import           GHC.TypeLits            hiding ( natVal )
 import           GHC.TypeNats                   ( natVal )
-
-#if !MIN_VERSION_GLASGOW_HASKELL(9,2,0,0)
-import           Numeric.Natural                ( Natural )
-#endif
 
 class FromType a (b :: Type) where
   fromType :: b

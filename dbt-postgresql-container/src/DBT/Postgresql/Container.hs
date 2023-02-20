@@ -73,7 +73,7 @@ populateDatabaseBuildDefinition buildDefinition containerName targetImageName
   = CBT.Container.withBuildRun buildDefinition containerDefinition'
   . populate containerName targetImageName
   where
-    containerDefinition' = (containerDefinition (getField @"imageName" buildDefinition) containerName)
+    containerDefinition' = (containerDefinition buildDefinition.imageName containerName)
       { CBT.Container.stopRemove = CBT.Container.StopNoRemove
       }
 
@@ -123,7 +123,7 @@ withDatabaseContainer
 withDatabaseContainer buildDefinition containerName
   = CBT.Container.withBuildRun
       buildDefinition
-      (containerDefinition (getField @"imageName" buildDefinition) containerName)
+      (containerDefinition buildDefinition.imageName containerName)
   . runAction containerName
 
 withDatabaseContainerDefault
@@ -145,7 +145,7 @@ withDatabaseContainerImage containerName targetImageName
   where
     containerDefinition' :: CBT.Container.Definition imageName
     containerDefinition' = setImageName
-      (containerDefinition (getField @"imageName" defaultBuildDefinition) containerName) targetImageName
+      (containerDefinition defaultBuildDefinition.imageName containerName) targetImageName
 
 setImageName
   :: CBT.Image.IsName imageName

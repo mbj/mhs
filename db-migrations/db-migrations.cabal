@@ -1,6 +1,6 @@
 cabal-version: 1.18
 
--- This file has been generated from package.yaml by hpack version 0.35.0.
+-- This file has been generated from package.yaml by hpack version 0.35.1.
 --
 -- see: https://github.com/sol/hpack
 
@@ -10,11 +10,13 @@ description:    Please see the README on GitHub at <https://github.com/mbj/db-mi
 homepage:       https://github.com/mbj/mhs#readme
 bug-reports:    https://github.com/mbj/mhs/issues
 author:         Markus Schirp
-maintainer:     markus@schirp-dso.com
-copyright:      2021 Markus Schirp
+maintainer:     mbj@schirp-dso.com
+copyright:      2023 Markus Schirp
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
+tested-with:
+    GHC == 9.2
 extra-doc-files:
     README.md
     ChangeLog.md
@@ -38,18 +40,33 @@ library
   hs-source-dirs:
       src
   default-extensions:
-      AllowAmbiguousTypes
       ConstraintKinds
       DataKinds
+      DeriveAnyClass
+      DeriveGeneric
       DerivingStrategies
+      DerivingVia
       DuplicateRecordFields
       FlexibleContexts
+      FlexibleInstances
+      GeneralizedNewtypeDeriving
+      LambdaCase
+      MultiParamTypeClasses
+      NoFieldSelectors
       NoImplicitPrelude
+      NumericUnderscores
+      OverloadedLists
+      OverloadedRecordDot
       OverloadedStrings
       RankNTypes
       RecordWildCards
       ScopedTypeVariables
+      Strict
+      TemplateHaskell
+      TupleSections
       TypeApplications
+      TypeFamilies
+      ViewPatterns
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
       base
@@ -91,18 +108,33 @@ test-suite test
   hs-source-dirs:
       test
   default-extensions:
-      AllowAmbiguousTypes
       ConstraintKinds
       DataKinds
+      DeriveAnyClass
+      DeriveGeneric
       DerivingStrategies
+      DerivingVia
       DuplicateRecordFields
       FlexibleContexts
+      FlexibleInstances
+      GeneralizedNewtypeDeriving
+      LambdaCase
+      MultiParamTypeClasses
+      NoFieldSelectors
       NoImplicitPrelude
+      NumericUnderscores
+      OverloadedLists
+      OverloadedRecordDot
       OverloadedStrings
       RankNTypes
       RecordWildCards
       ScopedTypeVariables
+      Strict
+      TemplateHaskell
+      TupleSections
       TypeApplications
+      TypeFamilies
+      ViewPatterns
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       base

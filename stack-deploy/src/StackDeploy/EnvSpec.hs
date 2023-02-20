@@ -33,7 +33,7 @@ data Entry = Entry
   }
 
 ecsTaskDefinitionEnvironment :: [Entry] -> [ECSTaskDefinitionKeyValuePair]
-ecsTaskDefinitionEnvironment entries = render <$> List.sortOn envName entries
+ecsTaskDefinitionEnvironment entries = render <$> List.sortOn (.envName) entries
   where
     render (Entry key value) = mkPair key $ renderValue value
 
@@ -47,12 +47,12 @@ lambdaEnvironment :: [Entry] -> LambdaFunctionEnvironment
 lambdaEnvironment entries = lambdaFunctionEnvironment & lfeVariables ?~ environmentObject
   where
     environmentObject :: JSON.Object
-    environmentObject = fromList $ render <$> List.sortOn envName entries
+    environmentObject = fromList $ render <$> List.sortOn (.envName) entries
 
     render (Entry key value) = (JSON.Key.fromText key, JSON.toJSON $ renderValue value)
 
 posixEnv :: CF.Stack -> [Entry] -> RIO env [(String, String)]
-posixEnv stack = traverse render . List.sortOn envName
+posixEnv stack = traverse render . List.sortOn (.envName)
   where
     render :: Entry -> RIO env (String, String)
     render entry@Entry{..} = do
@@ -84,10 +84,10 @@ fetchParam
 fetchParam stack param =
   maybe
     (failOutputKey "missing")
-    (maybe (failOutputKey "has no value") pure . getField @"parameterValue")
+    (maybe (failOutputKey "has no value") pure . (.parameterValue))
     $ Foldable.find
-      ((==) (pure key) . getField @"parameterKey")
-      (fromMaybe [] $ getField @"parameters" stack)
+      ((==) (pure key) . (.parameterKey))
+      (fromMaybe [] stack.parameters)
   where
     key = param ^. Stratosphere.parameterName
 

@@ -21,7 +21,6 @@ dependencies:
 - unliftio-core      >= 0.2
 
 default-extensions:
-- CPP
 - DataKinds
 - DeriveAnyClass
 - DeriveGeneric

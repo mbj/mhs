@@ -36,20 +36,6 @@ dependencies:
 - typed-process             >= 0.2
 - unliftio                  >= 0.2
 
-default-extensions:
-- AllowAmbiguousTypes
-- ConstraintKinds
-- DataKinds
-- DerivingStrategies
-- DuplicateRecordFields
-- FlexibleContexts
-- NoImplicitPrelude
-- OverloadedStrings
-- RankNTypes
-- RecordWildCards
-- ScopedTypeVariables
-- TypeApplications
-
 tests:
   test:
     <<: *test

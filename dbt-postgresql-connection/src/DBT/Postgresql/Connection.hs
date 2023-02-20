@@ -33,7 +33,7 @@ runSession :: Env env => Hasql.Session a -> RIO env a
 runSession = either Exception.throwIO pure <=< runSessionEither
 
 runSessionEither :: Env env => Hasql.Session a -> RIO env (Either Hasql.QueryError a)
-runSessionEither session = liftIO . Hasql.run session =<< asks (getField @"hasqlConnection")
+runSessionEither session = liftIO . Hasql.run session =<< asks (.hasqlConnection)
 
 withConnectionEither
   :: forall a env . Postgresql.ClientConfig

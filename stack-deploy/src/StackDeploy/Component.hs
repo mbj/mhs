@@ -20,11 +20,11 @@ data Component = Component
 
 instance Semigroup Component where
   left <> right = Component
-    { conditions = getField @"conditions" left <> getField @"conditions" right
-    , outputs    = getField @"outputs"    left <> getField @"outputs"    right
-    , parameters = getField @"parameters" left <> getField @"parameters" right
-    , resources  = getField @"resources"  left <> getField @"resources"  right
-    , mappings   = getField @"mappings"   left <> getField @"mappings"   right
+    { conditions = left.conditions <> right.conditions
+    , outputs    = left.outputs    <> right.outputs
+    , parameters = left.parameters <> right.parameters
+    , resources  = left.resources  <> right.resources
+    , mappings   = left.mappings   <> right.mappings
     }
 
 instance Monoid Component where

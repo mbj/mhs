@@ -122,7 +122,7 @@ send
   -> HTTP.Request
   -> RIO env (Result a)
 send decoder request = do
-  sendRequest' <- asks (getField @"httpSendRequest")
+  sendRequest' <- asks (.httpSendRequest)
   sendRequest sendRequest' decoder request
 
 sendRequest

@@ -208,7 +208,7 @@ createTestDatabase Config{..} Test{..} = do
   Process.runProcess_ $ Process.setEnv env command
   pure testDatabase
   where
-    masterDatabase = Postgresql.databaseName psqlAdmin
+    masterDatabase = psqlAdmin.databaseName
 
     command = Process.proc
       "createdb"

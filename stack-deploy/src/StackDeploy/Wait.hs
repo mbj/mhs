@@ -25,11 +25,11 @@ waitForAccept RemoteOperation{..} action =
       (throwString "No last event")
       assertPresentResourceStatus
 
-    assertPresentResourceStatus =
-      maybe
+    assertPresentResourceStatus
+      = maybe
         (throwString "Last event has no resource status")
         remoteOperationResult
-        . getField @"resourceStatus"
+      . (.resourceStatus)
 
     pollConfig = (defaultPoll stackId)
       { eventFilter    = isToken token
@@ -56,13 +56,10 @@ waitForAccept RemoteOperation{..} action =
 isStackEvent :: Set CF.ResourceStatus -> CF.StackEvent -> Bool
 isStackEvent allowedStatus event = isStackEventType && isExpectedResourceStatus
   where
-    resourceStatus = getField @"resourceStatus" event
-
     isExpectedResourceStatus =
-      resourceStatus `Foldable.elem` (pure <$> Foldable.toList allowedStatus)
+      event.resourceStatus `Foldable.elem` (pure <$> Foldable.toList allowedStatus)
 
-    isStackEventType =
-      getField @"resourceType" event == pure "AWS::CloudFormation::Stack"
+    isStackEventType = event.resourceType == pure "AWS::CloudFormation::Stack"
 
 finalResourceStatus :: Set CF.ResourceStatus
 finalResourceStatus =
@@ -84,4 +81,4 @@ initialResourceStatus =
   ]
 
 isToken :: Token -> CF.StackEvent -> Bool
-isToken token event = pure (toText token) == getField @"clientRequestToken" event
+isToken token event = pure (toText token) == event.clientRequestToken

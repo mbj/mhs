@@ -102,7 +102,7 @@ parserInfo instanceSpecProvider = wrapHelper commands "stack commands"
 
     outputs :: InstanceSpec.Name env -> RIO env ExitCode
     outputs name = do
-      traverse_ printOutput . fromMaybe [] . getField @"outputs" =<< getExistingStack name
+      traverse_ printOutput . fromMaybe [] . (.outputs) =<< getExistingStack name
       success
       where
         printOutput :: CF.Output -> RIO env ()
@@ -119,20 +119,20 @@ parserInfo instanceSpecProvider = wrapHelper commands "stack commands"
     listTemplates :: RIO env ExitCode
     listTemplates = do
       traverse_
-        (liftIO . Text.putStrLn . toText . Template.name)
+        (liftIO . Text.putStrLn . toText . (.name))
         (toList templateProvider)
       success
 
     listSpecs :: RIO env ExitCode
     listSpecs = do
       traverse_
-        (liftIO . Text.putStrLn . toText . InstanceSpec.name)
+        (liftIO . Text.putStrLn . toText . (.name))
         (toList instanceSpecProvider)
       success
 
     events :: InstanceSpec.Name env -> RIO env ExitCode
     events name = do
-      runConduit $ AWS.listResource req (fromMaybe [] . getField @"stackEvents") .| Conduit.mapM_ printEvent
+      runConduit $ AWS.listResource req (fromMaybe [] . (.stackEvents)) .| Conduit.mapM_ printEvent
       success
       where
         req = CF.newDescribeStackEvents & CF.describeStackEvents_stackName .~ pure (toText name)

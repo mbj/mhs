@@ -19,7 +19,6 @@ import StackDeploy.Prelude hiding (empty)
 import StackDeploy.Template
 
 import qualified Amazonka.CloudFormation.Types as CF
-import qualified Control.Applicative           as Alternative
 import qualified Data.Foldable                 as Foldable
 import qualified Data.HashMap.Strict           as HashMap
 import qualified Data.List                     as List
@@ -53,11 +52,9 @@ fromStratosphereParameter
   :: Stratosphere.Parameter
   -> ParameterValue
   -> Parameter
-fromStratosphereParameter stratosphereParameter = Parameter name
-  where
-    name
-      = ParameterName
-      $ getField @"_parameterName" stratosphereParameter
+fromStratosphereParameter stratosphereParameter
+  = Parameter
+  $ ParameterName stratosphereParameter._parameterName
 
 instance IsList Parameters where
   type Item Parameters = Parameter
@@ -116,11 +113,7 @@ expandTemplate parameters@(Parameters hash) template
     templateParameterNames :: Set ParameterName
     templateParameterNames
       = Set.fromList
-      $ ParameterName . getField @"_parameterName" <$> templateParameters
+      $ ParameterName . (._parameterName) <$> templateParameters
 
     templateParameters :: [Stratosphere.Parameter]
-    templateParameters
-      = maybe
-          Alternative.empty
-          Stratosphere.unParameters
-      $ getField @"_templateParameters" (stratosphere template)
+    templateParameters = maybe [] Stratosphere.unParameters template.stratosphere._templateParameters

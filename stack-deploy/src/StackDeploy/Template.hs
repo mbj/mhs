@@ -30,13 +30,13 @@ data Template = Template
   }
 
 instance Provider.HasName Template where
-  name = name
+  name = (.name)
 
 type Provider = Provider.Provider Template
 
 -- | Pretty print a template using aeson-pretty.
 encode :: Template -> LBS.ByteString
-encode = Pretty.encodePretty' config . stratosphere
+encode = Pretty.encodePretty' config . (.stratosphere)
   where
     config = Pretty.defConfig
       { Pretty.confIndent  = Pretty.Spaces 2

@@ -141,7 +141,7 @@ new = do
   files         <- max . fmap fileIndex    <$> readMigrationFiles
   migrationDir  <- getMigrationDir
 
-  let index = succ $ max [applied, files]
+  let index = succ $ max ([applied, files] :: [Natural])
       file  = Path.toString $ migrationDir </> Path.relFile (show index) <.> ".sql"
 
   printStatus $ "Creating new migration file: " <> file
@@ -238,19 +238,19 @@ readMigrationFiles = do
 
 
 getMigrationDir :: Env env => RIO env Path.RelDir
-getMigrationDir = asks (getField @"migrationDir")
+getMigrationDir = asks (.migrationDir)
 
 getNewMigrations :: (Env env, Connection.Env env) => RIO env [MigrationFile]
 getNewMigrations = newMigrations <$> readAppliedMigrations <*> readMigrationFiles
 
 appliedIndex :: AppliedMigration -> Natural
-appliedIndex = getField @"index"
+appliedIndex = (.index)
 
 fileIndex :: MigrationFile -> Natural
-fileIndex = getField @"index"
+fileIndex = (.index)
 
 getSchemaFileString :: Env env => RIO env String
-getSchemaFileString = asks (Path.toString . getField @"schemaFile")
+getSchemaFileString = asks (Path.toString . (.schemaFile))
 
 newMigrations :: [AppliedMigration] -> [MigrationFile] -> [MigrationFile]
 newMigrations applied = List.sortOn fileIndex . Foldable.foldMap test
@@ -270,8 +270,8 @@ withConnectionEnv
   -> RIO ConnectionEnv a
   -> RIO env a
 withConnectionEnv clientConfig action' = do
-  migrationDir <- asks (getField @"migrationDir")
-  schemaFile   <- asks (getField @"schemaFile")
+  migrationDir <- asks (.migrationDir)
+  schemaFile   <- asks (.schemaFile)
 
   Connection.withConnection clientConfig $ \hasqlConnection ->
     runRIO ConnectionEnv{..} action'
