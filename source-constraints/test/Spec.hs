@@ -1,4 +1,3 @@
-{-# LANGUAGE CPP         #-}
 {-# LANGUAGE QuasiQuotes #-}
 
 module Main (main) where
@@ -26,14 +25,9 @@ import GHC.Data.Bag
 import GHC.Driver.Main
 import GHC.Driver.Session
 import GHC.Paths
+import GHC.Unit.Module.ModSummary
 import GHC.Utils.Error
 import GHC.Utils.Outputable
-
-#if MIN_VERSION_GLASGOW_HASKELL(9,2,0,0)
-import GHC.Unit.Module.ModSummary
-#else
-import GHC.Driver.Types
-#endif
 
 main :: IO ()
 main = System.withArgs [] . hspec $ do
@@ -136,12 +130,6 @@ getWarnings file = runGhc (pure libdir) $ do
           (errMsgSeverity warning)
           (errMsgSpan warning)
 
-#if MIN_VERSION_GLASGOW_HASKELL(9,2,0,0)
       pure $ renderWithContext
         sDocContext
         (formatBulleted sDocContext (errMsgDiagnostic warning) $+$ caretDiagnostic)
-#else
-      pure $ renderWithStyle
-        sDocContext
-        (formatErrDoc sDocContext (errMsgDoc warning) $+$ caretDiagnostic)
-#endif

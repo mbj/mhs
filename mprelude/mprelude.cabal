@@ -1,6 +1,6 @@
 cabal-version: 1.18
 
--- This file has been generated from package.yaml by hpack version 0.35.0.
+-- This file has been generated from package.yaml by hpack version 0.35.1.
 --
 -- see: https://github.com/sol/hpack
 
@@ -41,7 +41,6 @@ library
   hs-source-dirs:
       src
   default-extensions:
-      CPP
       DataKinds
       DeriveAnyClass
       DeriveGeneric
@@ -81,7 +80,6 @@ test-suite test
   hs-source-dirs:
       test
   default-extensions:
-      CPP
       DataKinds
       DeriveAnyClass
       DeriveGeneric
