@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.0.
+-- This file has been generated from package.yaml by hpack version 0.35.1.
 --
 -- see: https://github.com/sol/hpack
 
@@ -11,10 +11,12 @@ homepage:       https://github.com/mbj/mhs#readme
 bug-reports:    https://github.com/mbj/mhs/issues
 author:         Markus Schirp
 maintainer:     mbj@schirp-dso.com
-copyright:      2021 Markus Schirp
+copyright:      2023 Markus Schirp
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
+tested-with:
+    GHC == 9.2
 
 source-repository head
   type: git
