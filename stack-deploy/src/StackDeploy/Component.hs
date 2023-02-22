@@ -1,21 +1,21 @@
 module StackDeploy.Component (Component(..), Mappings, mkTemplate) where
 
 import Data.Foldable (fold)
-import Data.HashMap.Strict (HashMap)
+import Data.Map.Strict (Map)
 import StackDeploy.Prelude
-import Stratosphere
 
 import qualified Data.Aeson           as JSON
 import qualified StackDeploy.Template as Template
+import qualified Stratosphere
 
-type Mappings = HashMap Text (HashMap Text JSON.Object)
+type Mappings = Map Text (Map Text JSON.Object)
 
 data Component = Component
   { conditions :: JSON.Object
-  , outputs    :: Outputs
-  , parameters :: Parameters
-  , resources  :: Resources
-  , mappings   :: HashMap Text (HashMap Text JSON.Object)
+  , outputs    :: Stratosphere.Outputs
+  , parameters :: Stratosphere.Parameters
+  , resources  :: Stratosphere.Resources
+  , mappings   :: Map Text (Map Text JSON.Object)
   }
 
 instance Semigroup Component where
@@ -39,10 +39,10 @@ instance Monoid Component where
 mkTemplate :: Template.Name -> [Component] -> Template.Template
 mkTemplate name components
   = Template.mk name
-  $ Stratosphere.template resources
-  & templateConditions ?~ conditions
-  & templateMappings   ?~ mappings
-  & templateOutputs    ?~ outputs
-  & templateParameters ?~ parameters
+  $ (Stratosphere.mkTemplate merged.resources)
+  & Stratosphere.set @"Conditions" merged.conditions
+  & Stratosphere.set @"Mappings"   merged.mappings
+  & Stratosphere.set @"Outputs"    merged.outputs
+  & Stratosphere.set @"Parameters" merged.parameters
   where
-    Component{..} = fold components
+    merged = fold components

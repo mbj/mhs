@@ -1,5 +1,3 @@
-{-# OPTIONS -Wno-ambiguous-fields #-}
-
 module Test.TraceHeader (testTree) where
 
 import Control.Monad

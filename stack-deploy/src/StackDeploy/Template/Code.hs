@@ -3,25 +3,25 @@ module StackDeploy.Template.Code (template) where
 import StackDeploy.Prelude
 import StackDeploy.Template
 import StackDeploy.Utils
-import Stratosphere hiding (Template, template)
+import Stratosphere hiding (Template)
 
-import qualified StackDeploy.Template as Template
-import qualified Stratosphere
+import qualified StackDeploy.Template   as Template
+import qualified Stratosphere.S3.Bucket as S3
 
 template :: Template
 template
   = mk (Template.mkName "code")
-  $ Stratosphere.template [codeBucket]
-  & templateOutputs ?~ outputs
+  $ Stratosphere.mkTemplate [codeBucket]
+  & set @"Outputs" outputs
   where
-    outputs = Outputs
-      [ output "CodeBucketName"
-         (toRef codeBucket)
-         & outputExport ?~ OutputExport "CodeBucketName"
+    outputs
+      = Outputs
+      [ mkOutput "CodeBucketName" (toRef codeBucket)
+      & set @"Export" (OutputExport "CodeBucketName")
       ]
 
 codeBucket :: Resource
 codeBucket
   = resource "CodeBucket"
-  $ s3Bucket
-  & sbPublicAccessBlockConfiguration ?~ s3BucketBlockPublicAccess
+  $ S3.mkBucket
+  & set @"PublicAccessBlockConfiguration" s3BucketBlockPublicAccess

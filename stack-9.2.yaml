@@ -2,7 +2,6 @@ resolver: lts-20.11
 extra-deps:
 - mprelude
 - symbols-0.3.0.0@sha256:5d051bccbd4bcb33fa8ce076bd3cd2bacc90973682f7340976758947eaa128a9,964
-- stratosphere-0.60.0@sha256:ce16367b41c9b64c698d416801504441c3207b6b25eb03aba3594117951f8260,145343
 - github: brendanhay/amazonka
   commit: 17e377b1e0aa734e10897347ea94a0ed93896e92
   subdirs:
@@ -12,6 +11,13 @@ extra-deps:
   - lib/services/amazonka-s3
   - lib/services/amazonka-sso
   - lib/services/amazonka-sts
+- github: mbj/stratosphere
+  commit: 1eccc9f91314018c1233fa581e12d49c1e74eee8
+  subdirs:
+  - .
+  - services/ecs
+  - services/lambda
+  - services/s3
 flags:
   bounded:
     development: true
