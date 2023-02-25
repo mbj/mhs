@@ -1,7 +1,0 @@
-resolver:  lts-19.13
-setup-info:
-  ghc:
-    linux64-lht:
-      9.0.2:
-        url: https://downloads.haskell.org/~ghc/9.0.2/ghc-9.0.2-x86_64-alpine3.12-linux-gmp.tar.xz
-        sha256: 5bb1e7192c2b9fcff68930dbdc65509d345138e9a43c5d447056a68decc05ec8

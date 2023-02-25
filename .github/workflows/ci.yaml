@@ -17,7 +17,7 @@ jobs:
     - name: Download Stack
       run: ./ci/download-stack.sh
     - name: Cache Dependencies
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/.stack
         key: ${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles(env.STACK_YAML, format('{0}.lock', env.STACK_YAML)) }}
@@ -62,7 +62,7 @@ jobs:
     - name: Download Stack
       run: ./ci/download-stack.sh
     - name: Cache Dependencies
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/.stack
         key: ${{ matrix.os }}-${{ matrix.ghc }}-${{ hashFiles(env.STACK_YAML, format('{0}.lock', env.STACK_YAML)) }}
