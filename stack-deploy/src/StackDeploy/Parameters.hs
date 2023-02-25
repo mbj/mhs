@@ -12,22 +12,21 @@ module StackDeploy.Parameters
 where
 
 import Control.Lens ((?~))
-import Data.HashMap.Strict (HashMap)
-import Data.Hashable (Hashable)
+import Data.Map.Strict (Map)
 import Data.Set (Set)
 import StackDeploy.Prelude hiding (empty)
 import StackDeploy.Template
 
 import qualified Amazonka.CloudFormation.Types as CF
+import qualified Control.Applicative           as Alternative
 import qualified Data.Foldable                 as Foldable
-import qualified Data.HashMap.Strict           as HashMap
 import qualified Data.List                     as List
+import qualified Data.Map.Strict               as Map
 import qualified Data.Set                      as Set
 import qualified Stratosphere
 
 newtype ParameterName = ParameterName Text
   deriving (Conversion Text) via Text
-  deriving newtype (Hashable)
   deriving stock (Eq, Ord)
 
 newtype ParameterValue = ParameterValue Text
@@ -38,7 +37,7 @@ data Parameter
   = Parameter ParameterName ParameterValue
   | ParameterUsePrevious ParameterName
 
-newtype Parameters = Parameters (HashMap ParameterName Parameter)
+newtype Parameters = Parameters (Map ParameterName Parameter)
 
 parameterName :: Parameter -> ParameterName
 parameterName = \case
@@ -46,21 +45,23 @@ parameterName = \case
   (ParameterUsePrevious name) -> name
 
 empty :: Parameters
-empty = Parameters HashMap.empty
+empty = Parameters []
 
 fromStratosphereParameter
   :: Stratosphere.Parameter
   -> ParameterValue
   -> Parameter
-fromStratosphereParameter stratosphereParameter
-  = Parameter
-  $ ParameterName stratosphereParameter._parameterName
+fromStratosphereParameter stratosphereParameter = Parameter name
+  where
+    name
+      = ParameterName
+      $ getField @"name" stratosphereParameter
 
 instance IsList Parameters where
   type Item Parameters = Parameter
 
   fromList parameters =
-    Parameters . HashMap.fromList $ pairs
+    Parameters . Map.fromList $ pairs
     where
       pairs :: [(ParameterName, Parameter)]
       pairs = mkPair <$> parameters
@@ -68,7 +69,7 @@ instance IsList Parameters where
       mkPair :: Parameter -> (ParameterName, Parameter)
       mkPair parameter = (parameterName parameter, parameter)
 
-  toList (Parameters map) = List.sortOn parameterName $ HashMap.elems map
+  toList (Parameters map) = List.sortOn parameterName $ Map.elems map
 
 cfParameters :: Parameters -> [CF.Parameter]
 cfParameters parameters = mkCFParameter <$> toList parameters
@@ -86,7 +87,7 @@ mkCFParameter = \case
 
 union :: Parameters -> Parameters -> Parameters
 union (Parameters left) (Parameters right) =
-  Parameters $ HashMap.union right left
+  Parameters $ Map.union right left
 
 expandTemplate :: Parameters -> Template -> Parameters
 expandTemplate parameters@(Parameters hash) template
@@ -95,7 +96,7 @@ expandTemplate parameters@(Parameters hash) template
     usePreviousParameters :: Parameters
     usePreviousParameters
       =   Parameters
-      .   HashMap.fromList
+      .   Map.fromList
       $   mkPair
       <$> Foldable.toList missingParameterNames
 
@@ -108,12 +109,16 @@ expandTemplate parameters@(Parameters hash) template
         givenParameterNames
 
     givenParameterNames :: Set ParameterName
-    givenParameterNames = Set.fromList $ HashMap.keys hash
+    givenParameterNames = Set.fromList $ Map.keys hash
 
     templateParameterNames :: Set ParameterName
     templateParameterNames
       = Set.fromList
-      $ ParameterName . (._parameterName) <$> templateParameters
+      $ ParameterName . getField @"name" <$> templateParameters
 
     templateParameters :: [Stratosphere.Parameter]
-    templateParameters = maybe [] Stratosphere.unParameters template.stratosphere._templateParameters
+    templateParameters
+      = maybe
+          Alternative.empty
+          (getField @"parameterList")
+      $ template.stratosphere.parameters

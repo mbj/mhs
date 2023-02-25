@@ -1,19 +1,17 @@
 module StackDeploy.Provider (Get, HasName(..), Name, Provider, get, mkName) where
 
 import Control.Exception.Base (Exception)
-import Data.HashMap.Strict (HashMap)
-import Data.Hashable (Hashable)
+import Data.Map.Strict (Map)
 import StackDeploy.Prelude
 
-import qualified Data.HashMap.Strict as HashMap
-import qualified Data.List           as List
+import qualified Data.List       as List
+import qualified Data.Map.Strict as Map
 
 newtype Name a = Name Text
   deriving (Conversion Text) via Text
-  deriving newtype (Hashable)
-  deriving stock   (Eq, Ord, Show)
+  deriving stock (Eq, Ord, Show)
 
-newtype Provider a = Provider (HashMap (Name a) a)
+newtype Provider a = Provider (Map (Name a) a)
 
 class HasName a where
   name :: a -> Name a
@@ -21,12 +19,12 @@ class HasName a where
 instance HasName a => IsList (Provider a) where
   type Item (Provider a) = a
 
-  fromList items = Provider $ HashMap.fromList (mkPair <$> items)
+  fromList items = Provider $ Map.fromList (mkPair <$> items)
     where
       mkPair :: a -> (Name a, a)
       mkPair item = (name item, item)
 
-  toList (Provider map) = List.sortOn name $ HashMap.elems map
+  toList (Provider map) = List.sortOn name $ Map.elems map
 
 type Get a b = forall m . MonadThrow m => Provider a -> b -> m a
 
@@ -42,7 +40,7 @@ get
   -> Name a
   -> m a
 get subject (Provider map) targetName
-  = maybe failMissing pure $ HashMap.lookup targetName map
+  = maybe failMissing pure $ Map.lookup targetName map
   where
     failMissing :: m a
     failMissing

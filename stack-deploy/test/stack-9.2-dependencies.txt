@@ -139,9 +139,12 @@ socks 0.6.1
 source-constraints 0.0.2
 split 0.2.3.5
 splitmix 0.1.0.4
-stack-deploy 0.0.5
+stack-deploy 0.0.6
 stm 2.5.0.2
-stratosphere 0.60.0
+stratosphere 1.0.0
+stratosphere-ecs 1.0.0
+stratosphere-lambda 1.0.0
+stratosphere-s3 1.0.0
 streaming-commons 0.2.2.5
 strict 0.4.0.1
 syb 0.7.2.2

@@ -12,13 +12,6 @@ packages:
   original:
     hackage: symbols-0.3.0.0@sha256:5d051bccbd4bcb33fa8ce076bd3cd2bacc90973682f7340976758947eaa128a9,964
 - completed:
-    hackage: stratosphere-0.60.0@sha256:ce16367b41c9b64c698d416801504441c3207b6b25eb03aba3594117951f8260,145343
-    pantry-tree:
-      sha256: 4dda716435f9742e3929dc5bfe8259d43a8539941cbd345c2d09b2b8ba828d5e
-      size: 243747
-  original:
-    hackage: stratosphere-0.60.0@sha256:ce16367b41c9b64c698d416801504441c3207b6b25eb03aba3594117951f8260,145343
-- completed:
     name: amazonka
     pantry-tree:
       sha256: 2702cdbccc58aaedfd12b0ef7d1cae769f4f132e225b90d300e34a422a29015d
@@ -96,6 +89,58 @@ packages:
   original:
     subdir: lib/services/amazonka-sts
     url: https://github.com/brendanhay/amazonka/archive/17e377b1e0aa734e10897347ea94a0ed93896e92.tar.gz
+- completed:
+    name: stratosphere
+    pantry-tree:
+      sha256: 0d0eefbd1d88b50744feccdc819dfa2f60d83eea4f3626e10a9d372b56446e2a
+      size: 1112077
+    sha256: 6e316556b0c67070fd7d708fcfa71fffbc7623b9d168102a0897ac1a0c7e58c1
+    size: 2238175
+    subdir: .
+    url: https://github.com/mbj/stratosphere/archive/1eccc9f91314018c1233fa581e12d49c1e74eee8.tar.gz
+    version: 1.0.0
+  original:
+    subdir: .
+    url: https://github.com/mbj/stratosphere/archive/1eccc9f91314018c1233fa581e12d49c1e74eee8.tar.gz
+- completed:
+    name: stratosphere-ecs
+    pantry-tree:
+      sha256: e9df4378b9c5c14d48db41e2da25baa6de51a0e3452d076582c813abbc698231
+      size: 13226
+    sha256: 6e316556b0c67070fd7d708fcfa71fffbc7623b9d168102a0897ac1a0c7e58c1
+    size: 2238175
+    subdir: services/ecs
+    url: https://github.com/mbj/stratosphere/archive/1eccc9f91314018c1233fa581e12d49c1e74eee8.tar.gz
+    version: 1.0.0
+  original:
+    subdir: services/ecs
+    url: https://github.com/mbj/stratosphere/archive/1eccc9f91314018c1233fa581e12d49c1e74eee8.tar.gz
+- completed:
+    name: stratosphere-lambda
+    pantry-tree:
+      sha256: 0c08b5e432a3d95118c8bb14c7c579c7361a18411474c7bde19a758c4fee303b
+      size: 7795
+    sha256: 6e316556b0c67070fd7d708fcfa71fffbc7623b9d168102a0897ac1a0c7e58c1
+    size: 2238175
+    subdir: services/lambda
+    url: https://github.com/mbj/stratosphere/archive/1eccc9f91314018c1233fa581e12d49c1e74eee8.tar.gz
+    version: 1.0.0
+  original:
+    subdir: services/lambda
+    url: https://github.com/mbj/stratosphere/archive/1eccc9f91314018c1233fa581e12d49c1e74eee8.tar.gz
+- completed:
+    name: stratosphere-s3
+    pantry-tree:
+      sha256: b299ecba8775eb0de7d3e03b6fff877a03bf423058bbcc344da6c21725eb68b9
+      size: 16612
+    sha256: 6e316556b0c67070fd7d708fcfa71fffbc7623b9d168102a0897ac1a0c7e58c1
+    size: 2238175
+    subdir: services/s3
+    url: https://github.com/mbj/stratosphere/archive/1eccc9f91314018c1233fa581e12d49c1e74eee8.tar.gz
+    version: 1.0.0
+  original:
+    subdir: services/s3
+    url: https://github.com/mbj/stratosphere/archive/1eccc9f91314018c1233fa581e12d49c1e74eee8.tar.gz
 snapshots:
 - completed:
     sha256: adbc602422dde10cc330175da7de8609e70afc41449a7e2d6e8b1827aa0e5008
