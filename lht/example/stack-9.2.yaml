@@ -1,7 +1,7 @@
-resolver: nightly-2022-07-04
+resolver: lts-20.12
 setup-info:
   ghc:
     linux64-lht:
-      9.2.3:
-        url: https://downloads.haskell.org/~ghc/9.2.3/ghc-9.2.3-x86_64-alpine3.12-linux-native.tar.xz
-        sha256: 6f523d8562259b16f7986f98d0e43541184ffc6ae5dc4c43ff59957c28ee79e4
+      9.2.6:
+        url: https://downloads.haskell.org/~ghc/9.2.6/ghc-9.2.6-x86_64-alpine3.12-linux-native.tar.xz
+        sha256: 80373e237328bcb48f491a93d562f127c7bb4be8aed6bc7caf834207b201745c
