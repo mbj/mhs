@@ -22,7 +22,6 @@ tested-with:
     GHC == 9.2
 extra-source-files:
     test/LocalModuleExplicitImport.hs
-    test/MissingDerivingStrategy.hs
     test/UnsortedIE.hs
     test/UnsortedIEThingWith.hs
     test/UnsortedImportStatement.hs

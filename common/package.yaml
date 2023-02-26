@@ -28,6 +28,7 @@
   - -Wimplicit-prelude
   - -Wincomplete-record-updates
   - -Wincomplete-uni-patterns
+  - -Wmissing-deriving-strategies
   - -Wmissing-local-signatures
   - -Wmissing-signatures
   - -Wmonomorphism-restriction
