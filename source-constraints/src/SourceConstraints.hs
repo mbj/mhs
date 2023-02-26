@@ -46,7 +46,6 @@ data Context = Context
   , sDocContext  :: SDocContext
   }
 
-type HsModule' = HsModule
 type ErrorMessage = MsgEnvelope DecoratedSDoc
 
 plugin :: Plugin
@@ -118,7 +117,7 @@ locatedWarnings context@Context{..} node =
       , mkQ Nothing sortedMultipleDeriving  node
       ]
 
-    absentImportDeclList :: HsModule' -> WarningMessages
+    absentImportDeclList :: HsModule -> WarningMessages
     absentImportDeclList HsModule{..} =
       listToBag $ catMaybes (absentList <$> candidates)
       where
@@ -138,7 +137,6 @@ locatedWarnings context@Context{..} node =
         isCandidate (L _ ImportDecl{ideclName = L _ moduleName})
           = any (`isLocalModule` moduleName) localModules
 
-    sortedImportStatement :: HsModule' -> Maybe ErrorMessage
     sortedImportStatement HsModule{..} =
       sortedLocated
         "import statement"
