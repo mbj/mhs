@@ -112,8 +112,7 @@ locatedWarnings context@Context{..} node =
   singleWarnings `unionBags` mkQ emptyBag absentImportDeclList node
   where
     singleWarnings = listToBag $ catMaybes
-      [ mkQ Nothing requireDerivingStrategy node
-      , mkQ Nothing sortedImportStatement   node
+      [ mkQ Nothing sortedImportStatement   node
       , mkQ Nothing sortedIEThingWith       node
       , mkQ Nothing sortedIEs               node
       , mkQ Nothing sortedMultipleDeriving  node
@@ -138,12 +137,6 @@ locatedWarnings context@Context{..} node =
         isCandidate :: LImportDecl GhcPs -> Bool
         isCandidate (L _ ImportDecl{ideclName = L _ moduleName})
           = any (`isLocalModule` moduleName) localModules
-
-    requireDerivingStrategy :: LHsDerivingClause GhcPs -> Maybe ErrorMessage
-    requireDerivingStrategy = \case
-      (L src HsDerivingClause{deriv_clause_strategy = Nothing}) ->
-        pure $ mkWarnMsg src neverQualify (text "Missing deriving strategy")
-      _ -> Nothing
 
     sortedImportStatement :: HsModule' -> Maybe ErrorMessage
     sortedImportStatement HsModule{..} =

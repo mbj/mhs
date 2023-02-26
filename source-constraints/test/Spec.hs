@@ -32,13 +32,6 @@ import GHC.Utils.Outputable
 main :: IO ()
 main = System.withArgs [] . hspec $ do
   expectWarnings
-    "test/MissingDerivingStrategy.hs"
-    [[str|Missing deriving strategy
-         |  |
-         |7 | data Foo = Foo deriving Eq
-         |  |                ^^^^^^^^^^^|]]
-
-  expectWarnings
     "test/UnsortedIE.hs"
     [[str|Unsorted import/export declaration, expected: Integer
          |  |
