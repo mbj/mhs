@@ -46,8 +46,7 @@ data Context = Context
   , sDocContext  :: SDocContext
   }
 
-type HsModule' = HsModule
-type ErrorMessage = MsgEnvelope DecoratedSDoc
+type Message = MsgEnvelope DecoratedSDoc
 
 plugin :: Plugin
 plugin =
@@ -118,11 +117,11 @@ locatedWarnings context@Context{..} node =
       , mkQ Nothing sortedMultipleDeriving  node
       ]
 
-    absentImportDeclList :: HsModule' -> WarningMessages
+    absentImportDeclList :: HsModule -> WarningMessages
     absentImportDeclList HsModule{..} =
       listToBag $ catMaybes (absentList <$> candidates)
       where
-        absentList :: LImportDecl GhcPs -> Maybe ErrorMessage
+        absentList :: LImportDecl GhcPs -> Maybe Message
         absentList = \case
           (L _loc ImportDecl { ideclHiding = Just (False, reLoc -> (L src (_:_))) }) ->
             pure $ mkWarnMsg
@@ -138,7 +137,6 @@ locatedWarnings context@Context{..} node =
         isCandidate (L _ ImportDecl{ideclName = L _ moduleName})
           = any (`isLocalModule` moduleName) localModules
 
-    sortedImportStatement :: HsModule' -> Maybe ErrorMessage
     sortedImportStatement HsModule{..} =
       sortedLocated
         "import statement"
@@ -146,13 +144,13 @@ locatedWarnings context@Context{..} node =
         (render context)
         (reLoc <$> hsmodImports)
 
-    sortedMultipleDeriving :: HsDecl GhcPs -> Maybe ErrorMessage
+    sortedMultipleDeriving :: HsDecl GhcPs -> Maybe Message
     sortedMultipleDeriving = \case
       (TyClD _xIE DataDecl{tcdDataDefn = HsDataDefn {..}}) ->
         sortedLocated "deriving clauses" context (render context) dd_derivs
       _ -> Nothing
 
-    sortedIEs :: [LIE GhcPs] -> Maybe ErrorMessage
+    sortedIEs :: [LIE GhcPs] -> Maybe Message
     sortedIEs lie =
       sortedLocated
         "import/export declaration"
@@ -160,7 +158,7 @@ locatedWarnings context@Context{..} node =
         ieClass
         (reLoc <$> lie)
 
-    sortedIEThingWith :: IE GhcPs -> Maybe ErrorMessage
+    sortedIEThingWith :: IE GhcPs -> Maybe Message
     sortedIEThingWith =
       \case
         (IEThingWith _xIE _name _ieWildcard ieWith) ->
