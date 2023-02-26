@@ -15,7 +15,7 @@ dependencies:
 - base
 - bytestring >= 0.10
 - filepath   >= 1.4
-- ghc        ^>= 9.0 || ^>= 9.2
+- ghc        ^>= 9.2
 - syb        >= 0.7
 - text
 
