@@ -12,7 +12,7 @@ extra-deps:
   - lib/services/amazonka-sso
   - lib/services/amazonka-sts
 - github: mbj/stratosphere
-  commit: 1eccc9f91314018c1233fa581e12d49c1e74eee8
+  commit: f9e340a939324f3c6d0b5eeb649b601ee524801a
   subdirs:
   - .
   - services/ecs
