@@ -3,6 +3,7 @@ module StackDeploy.InstanceSpec
   , Name
   , Provider
   , RoleARN(..)
+  , addTags
   , get
   , mk
   , mkName
@@ -10,14 +11,19 @@ module StackDeploy.InstanceSpec
   )
 where
 
+import Data.MonoTraversable (omap)
+import Prelude (error)
 import StackDeploy.Parameters (Parameters)
 import StackDeploy.Prelude
 import StackDeploy.Template (Template)
 
 import qualified Amazonka.CloudFormation.Types as CF
+import qualified Data.Aeson                    as JSON
+import qualified Data.Aeson.KeyMap             as KeyMap
 import qualified StackDeploy.Parameters        as Parameters
 import qualified StackDeploy.Provider          as Provider
 import qualified StackDeploy.Template          as Template
+import qualified Stratosphere
 
 newtype RoleARN = RoleARN Text
   deriving (Conversion Text) via Text
@@ -85,3 +91,50 @@ mkName = Provider.mkName
 
 templateProvider :: Provider env -> Template.Provider
 templateProvider provider = fromList $ (.template) <$> toList provider
+
+addTags :: [Stratosphere.Tag] -> InstanceSpec env -> InstanceSpec env
+addTags tags InstanceSpec{..}
+  = InstanceSpec
+  { template = addTemplateTags tags template
+  , ..
+  }
+
+addTemplateTags :: [Stratosphere.Tag] -> Template.Template -> Template.Template
+addTemplateTags tags Template.Template{..}
+  = Template.Template
+  { stratosphere = addStratosphereTags tags stratosphere
+  , ..
+  }
+
+addStratosphereTags :: [Stratosphere.Tag] -> Stratosphere.Template -> Stratosphere.Template
+addStratosphereTags tags Stratosphere.Template{..}
+  = Stratosphere.Template
+  { resources = omap (addResourceTags tags) resources
+  , ..
+  }
+
+addResourceTags :: [Stratosphere.Tag] -> Stratosphere.Resource -> Stratosphere.Resource
+addResourceTags tags Stratosphere.Resource{..}
+  = Stratosphere.Resource
+  { properties = addResourcePropertiesTags tags properties
+  , ..
+  }
+
+addResourcePropertiesTags
+  :: [Stratosphere.Tag]
+  -> Stratosphere.ResourceProperties
+  -> Stratosphere.ResourceProperties
+addResourcePropertiesTags tags Stratosphere.ResourceProperties{..}
+  = Stratosphere.ResourceProperties
+  { properties = newProperties
+  , ..
+  }
+  where
+    newProperties =
+      if supportsTags
+        then KeyMap.unionWith merge [("Tags", JSON.toJSON tags)] properties
+        else properties
+
+    merge leftValue rightValue = case (leftValue, rightValue) of
+      (JSON.Array leftItems, JSON.Array rightItems) -> JSON.Array $ leftItems <> rightItems
+      other                                         -> error $ "non tag array merge:" <> show other
