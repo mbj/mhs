@@ -2,6 +2,7 @@ module StackDeploy.Provider (Get, HasName(..), Name, Provider, get, mkName) wher
 
 import Control.Exception.Base (Exception)
 import Data.Map.Strict (Map)
+import Data.MonoTraversable (Element, MonoFunctor)
 import StackDeploy.Prelude
 
 import qualified Data.List       as List
@@ -11,7 +12,10 @@ newtype Name a = Name Text
   deriving (Conversion Text) via Text
   deriving stock (Eq, Ord, Show)
 
+type instance Element (Provider a) = a
+
 newtype Provider a = Provider (Map (Name a) a)
+  deriving newtype (Eq, Show, MonoFunctor)
 
 class HasName a where
   name :: a -> Name a
