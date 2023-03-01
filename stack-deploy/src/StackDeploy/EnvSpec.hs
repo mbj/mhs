@@ -11,7 +11,7 @@ where
 
 import Data.Map.Strict (Map)
 import StackDeploy.Prelude
-import StackDeploy.Utils hiding (StackName)
+import StackDeploy.Utils
 
 import qualified Amazonka.CloudFormation.Types   as CF
 import qualified Data.Foldable                   as Foldable
@@ -22,7 +22,8 @@ import qualified Stratosphere.Lambda.Function    as Lambda.Function
 import qualified UnliftIO.Environment            as Environment
 
 data Value
-  = StackName
+  = StackId
+  | StackName
   | StackOutput CFT.Output
   | StackParameter CFT.Parameter
   | StackPrefix Text
@@ -68,15 +69,20 @@ loadStack stack Entry{..} = case envValue of
   StackOutput output'  -> liftIO $ fetchOutput stack output'
   StackParameter param -> fetchParam stack param
   StackPrefix text     -> pure $ stack.stackName <> "-" <> text
+  StackId              -> maybe failAbsentStackId pure stack.stackId
   StackName            -> pure $ stack.stackName
   Static text          -> pure text
+  where
+    failAbsentStackId :: RIO env a
+    failAbsentStackId = throwString $ "Missing stack id: " <> show stack
 
 loadEnv :: Entry -> RIO env Text
 loadEnv Entry{..} = convert <$> Environment.getEnv (convert envName)
 
 renderValue :: Value -> CFT.Value Text
 renderValue = \case
-  StackName            -> awsStackName
+  StackId              -> CFT.awsStackId
+  StackName            -> CFT.awsStackName
   StackOutput output'  -> (output'.value)
   StackParameter param -> CFT.toRef param
   StackPrefix value    -> mkName (CFT.Literal value)
