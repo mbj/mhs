@@ -92,55 +92,55 @@ packages:
 - completed:
     name: stratosphere
     pantry-tree:
-      sha256: 45a94cf7f67024fd199f9d528ffcecbdf5576e86639b55dc9f4b4510b916c1e9
+      sha256: 5b56506ebd04c8bdf61e803e0a6049547ca0cb49fed4f6c877e01bb2725caca5
       size: 1112169
-    sha256: c438541d5efe6d0283c09689529544606acd59edc9febca5d27c86d2ae173658
-    size: 2243842
+    sha256: 477c7f8e9216966387d4f2c6e778ff4f27eec93c25c276b0d14214c83c98e200
+    size: 2244070
     subdir: .
-    url: https://github.com/mbj/stratosphere/archive/c70f301715425247efcda29af4f3fcf7ec04aa2f.tar.gz
+    url: https://github.com/mbj/stratosphere/archive/ec42dcf14485ade38eb486c589fd25c5585e2ce3.tar.gz
     version: 1.0.0
   original:
     subdir: .
-    url: https://github.com/mbj/stratosphere/archive/c70f301715425247efcda29af4f3fcf7ec04aa2f.tar.gz
+    url: https://github.com/mbj/stratosphere/archive/ec42dcf14485ade38eb486c589fd25c5585e2ce3.tar.gz
 - completed:
     name: stratosphere-ecs
     pantry-tree:
       sha256: 6ee6b94c54497bf2603f9cb30cec6bfd4bdf3cee918274eb4e588918da063226
       size: 13226
-    sha256: c438541d5efe6d0283c09689529544606acd59edc9febca5d27c86d2ae173658
-    size: 2243842
+    sha256: 477c7f8e9216966387d4f2c6e778ff4f27eec93c25c276b0d14214c83c98e200
+    size: 2244070
     subdir: services/ecs
-    url: https://github.com/mbj/stratosphere/archive/c70f301715425247efcda29af4f3fcf7ec04aa2f.tar.gz
+    url: https://github.com/mbj/stratosphere/archive/ec42dcf14485ade38eb486c589fd25c5585e2ce3.tar.gz
     version: 1.0.0
   original:
     subdir: services/ecs
-    url: https://github.com/mbj/stratosphere/archive/c70f301715425247efcda29af4f3fcf7ec04aa2f.tar.gz
+    url: https://github.com/mbj/stratosphere/archive/ec42dcf14485ade38eb486c589fd25c5585e2ce3.tar.gz
 - completed:
     name: stratosphere-lambda
     pantry-tree:
       sha256: f2f2a0451aec3656bc2b4571a08fd8fab156cc483bc65e44a4040e156cbc772e
       size: 7795
-    sha256: c438541d5efe6d0283c09689529544606acd59edc9febca5d27c86d2ae173658
-    size: 2243842
+    sha256: 477c7f8e9216966387d4f2c6e778ff4f27eec93c25c276b0d14214c83c98e200
+    size: 2244070
     subdir: services/lambda
-    url: https://github.com/mbj/stratosphere/archive/c70f301715425247efcda29af4f3fcf7ec04aa2f.tar.gz
+    url: https://github.com/mbj/stratosphere/archive/ec42dcf14485ade38eb486c589fd25c5585e2ce3.tar.gz
     version: 1.0.0
   original:
     subdir: services/lambda
-    url: https://github.com/mbj/stratosphere/archive/c70f301715425247efcda29af4f3fcf7ec04aa2f.tar.gz
+    url: https://github.com/mbj/stratosphere/archive/ec42dcf14485ade38eb486c589fd25c5585e2ce3.tar.gz
 - completed:
     name: stratosphere-s3
     pantry-tree:
       sha256: 4d1a621d3adef87f2b808a59ea318ae041927e42cbd073489b7871ca3722b200
       size: 16613
-    sha256: c438541d5efe6d0283c09689529544606acd59edc9febca5d27c86d2ae173658
-    size: 2243842
+    sha256: 477c7f8e9216966387d4f2c6e778ff4f27eec93c25c276b0d14214c83c98e200
+    size: 2244070
     subdir: services/s3
-    url: https://github.com/mbj/stratosphere/archive/c70f301715425247efcda29af4f3fcf7ec04aa2f.tar.gz
+    url: https://github.com/mbj/stratosphere/archive/ec42dcf14485ade38eb486c589fd25c5585e2ce3.tar.gz
     version: 1.0.0
   original:
     subdir: services/s3
-    url: https://github.com/mbj/stratosphere/archive/c70f301715425247efcda29af4f3fcf7ec04aa2f.tar.gz
+    url: https://github.com/mbj/stratosphere/archive/ec42dcf14485ade38eb486c589fd25c5585e2ce3.tar.gz
 snapshots:
 - completed:
     sha256: af5d667f6096e535b9c725a72cffe0f6c060e0568d9f9eeda04caee70d0d9d2d

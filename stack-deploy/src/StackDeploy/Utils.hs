@@ -10,16 +10,7 @@ import qualified Stratosphere                  as CFT
 import qualified Stratosphere.S3.Bucket        as S3.Bucket
 
 mkName :: CFT.Value Text -> CFT.Value Text
-mkName name = CFT.Join "-" [awsStackName, name]
-
-awsAccountId :: CFT.Value Text
-awsAccountId = CFT.toRef AccountId
-
-awsRegion :: CFT.Value Text
-awsRegion = CFT.toRef Region
-
-awsStackName :: CFT.Value Text
-awsStackName = CFT.toRef StackName
+mkName name = CFT.Join "-" [CFT.awsStackName, name]
 
 getAtt :: Text -> CFT.Resource -> CFT.Value Text
 getAtt name item = CFT.GetAtt (CFT.itemName item) name
@@ -101,18 +92,3 @@ resolveSecretsmanagerSecret arn = wrap $ CFT.Join ":" ["resolve", "secretsmanage
   where
     wrap :: CFT.Value Text -> CFT.Value Text
     wrap value = CFT.Join "" ["{{", value, "}}"]
-
--- See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/pseudo-parameter-reference.html
-data PseudoParameter a
-  = AccountId
-  | NoValue
-  | NotificationARNs
-  | Partition
-  | Region
-  | StackId
-  | StackName
-  | URLSuffix
-  deriving stock Show
-
-instance CFT.ToRef (PseudoParameter a) Text where
-  toRef = CFT.Ref . convert . (<>) "AWS::" . show
