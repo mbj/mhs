@@ -36,12 +36,13 @@ newtype TargetName = TargetName Text
 data Flag = Flag PackageName Text
 
 data Config = Config
-  { cbtBuildDefinition :: CBT.Image.BuildDefinition CBT.Image.TaggedName
-  , executablePath     :: Path.RelFile
-  , extraArguments     :: [Text]
-  , flags              :: [Flag]
-  , packageName        :: PackageName
-  , targetName         :: TargetName
+  { cbtBuildDefinition             :: CBT.Image.BuildDefinition CBT.Image.TaggedName
+  , executablePath                 :: Path.RelFile
+  , extraContainerBackendArguments :: [Text]
+  , extraStackArguments            :: [Text]
+  , flags                          :: [Flag]
+  , packageName                    :: PackageName
+  , targetName                     :: TargetName
   }
 
 defaultCBTBuildDefinition :: CBT.Image.BuildDefinition CBT.Image.TaggedName
@@ -109,7 +110,7 @@ withBuildContainer Config{..} action = do
         ]
         <> flagArguments
         <> [convertText packageName <> ":" <> convertText targetName]
-        <> extraArguments
+        <> extraStackArguments
       }
 
     mounts :: [CBT.Container.Mount]
@@ -120,16 +121,17 @@ withBuildContainer Config{..} action = do
 
     containerDefinition =
       (CBT.Container.minimalDefinition cbtBuildDefinition.imageName containerName)
-      { CBT.Container.command = pure command
-      , CBT.Container.detach  = CBT.Container.Foreground
-      , CBT.Container.env     = Foldable.toList
+      { CBT.Container.command               = pure command
+      , CBT.Container.detach                = CBT.Container.Foreground
+      , CBT.Container.env                   = Foldable.toList
         $ CBT.Container.EnvSet "STACK_YAML"
         . convert
         . Path.toString
         . Path.takeFileName <$> envStackYaml
-      , CBT.Container.stopRemove = CBT.Container.StopNoRemove
-      , CBT.Container.workDir    = pure containerProjectPath
-      , CBT.Container.mounts     = mounts
+      , CBT.Container.extraBackendArguments = extraContainerBackendArguments
+      , CBT.Container.stopRemove            = CBT.Container.StopNoRemove
+      , CBT.Container.workDir               = pure containerProjectPath
+      , CBT.Container.mounts                = mounts
       }
 
   setupSharedDirectory hostStackPath

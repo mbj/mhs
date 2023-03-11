@@ -90,16 +90,17 @@ data EnvVariable = EnvInherit Text | EnvSet Text Text
 data Definition imageName where
   Definition
     :: CBT.Image.IsName imageName
-    => { command             :: Maybe Entrypoint
-       , detach              :: Detach
-       , env                 :: [EnvVariable]
-       , imageName           :: imageName
-       , mounts              :: [Mount]
-       , name                :: Name
-       , publishPorts        :: [PublishPort]
-       , stopRemove          :: StopRemove
-       , stopRemoveOnRunFail :: StopRemove
-       , workDir             :: Maybe Path.AbsDir
+    => { command               :: Maybe Entrypoint
+       , detach                :: Detach
+       , env                   :: [EnvVariable]
+       , extraBackendArguments :: [Text]
+       , imageName             :: imageName
+       , mounts                :: [Mount]
+       , name                  :: Name
+       , publishPorts          :: [PublishPort]
+       , stopRemove            :: StopRemove
+       , stopRemoveOnRunFail   :: StopRemove
+       , workDir               :: Maybe Path.AbsDir
        }
     -> Definition name
 
@@ -118,14 +119,15 @@ mkEntrypoint name = Entrypoint { arguments = [], .. }
 minimalDefinition :: CBT.Image.IsName imageName => imageName -> Name -> Definition name
 minimalDefinition imageName name
   = Definition
-  { command             = empty
-  , detach              = Foreground
-  , env                 = []
-  , mounts              = []
-  , publishPorts        = []
-  , stopRemove          = StopRemove
-  , stopRemoveOnRunFail = StopRemove
-  , workDir             = empty
+  { command               = empty
+  , detach                = Foreground
+  , env                   = []
+  , extraBackendArguments = []
+  , mounts                = []
+  , publishPorts          = []
+  , stopRemove            = StopRemove
+  , stopRemoveOnRunFail   = StopRemove
+  , workDir               = empty
   , ..
   }
 
@@ -163,10 +165,10 @@ runProc
   :: Env env
   => Definition imageName
   -> RIO env Proc
-runProc Definition{..} = detachSilence <$> backendProc containerArguments
+runProc Definition{..} = detachSilence <$> backendProc backendArguments
   where
-    containerArguments :: [String]
-    containerArguments = mconcat
+    backendArguments :: [String]
+    backendArguments = mconcat
       [
         [ "run"
         , "--name",     convertText name
@@ -178,6 +180,7 @@ runProc Definition{..} = detachSilence <$> backendProc containerArguments
       , publishOptions
       , workDirOptions
       , removeFlag
+      , convert <$> extraBackendArguments
       , [ "--"
         , CBT.Image.nameString imageName
         ]
