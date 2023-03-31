@@ -27,12 +27,13 @@ testBuild =
 
 config :: LHT.Build.Config
 config = LHT.Build.Config
-  { cbtBuildDefinition = LHT.Build.defaultCBTBuildDefinition
-  , executablePath     = Path.relFile ".local/bin/hello-world"
-  , extraArguments     = []
-  , flags              = [LHT.Build.Flag packageName "lht"]
-  , packageName        = packageName
-  , targetName         = LHT.Build.TargetName "hello-world"
+  { cbtBuildDefinition             = LHT.Build.defaultCBTBuildDefinition
+  , executablePath                 = Path.relFile ".local/bin/hello-world"
+  , extraContainerBackendArguments = []
+  , extraStackArguments            = []
+  , flags                          = [LHT.Build.Flag packageName "lht"]
+  , packageName                    = packageName
+  , targetName                     = LHT.Build.TargetName "hello-world"
   }
   where
     packageName = LHT.Build.PackageName "example"
