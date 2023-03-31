@@ -1,7 +1,7 @@
 module Network.HTTP.MClient
   ( Env
   , ResponseDecoder
-  , ResponseError
+  , ResponseError(..)
   , SendRequest
   , addContentType
   , addHeader

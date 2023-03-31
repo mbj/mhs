@@ -64,7 +64,7 @@ hlint 3.4.1
 hpc 0.6.1.0
 hscolour 1.24.4
 http-client 0.7.13.1
-http-mclient 0.0.5
+http-mclient 0.0.6
 http-types 0.12.3
 indexed-traversable 0.1.2
 indexed-traversable-instances 0.1.1.1
