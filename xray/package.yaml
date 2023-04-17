@@ -17,7 +17,7 @@ dependencies:
 - conversions
 - http-types
 - mprelude
-- mrio-core
+- mio-core
 - mtl
 - network ^>= 3.1 && >= 3.1.2
 - pathtype

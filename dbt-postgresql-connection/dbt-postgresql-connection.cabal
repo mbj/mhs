@@ -70,8 +70,8 @@ library
     , containers
     , conversions
     , hasql >=1.4
+    , mio-core
     , mprelude
-    , mrio-core
     , mtl >=2.2
     , source-constraints
     , text
@@ -128,8 +128,8 @@ test-suite test
     , dbt-postgresql-connection
     , devtools
     , hasql >=1.4
+    , mio-core
     , mprelude
-    , mrio-core
     , mtl >=2.2
     , source-constraints
     , text

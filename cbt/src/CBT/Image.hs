@@ -29,7 +29,7 @@ newtype Destination = Destination Text
 buildIfAbsent
   :: Env env
   => BuildDefinition name
-  -> RIO env ()
+  -> MIO env ()
 buildIfAbsent buildDefinition@BuildDefinition{..} = do
   exists <- isPresent imageName
   unless exists $ build buildDefinition
@@ -38,7 +38,7 @@ isPresent
   :: forall name env
   . (CBT.Image.IsName name, Env env)
   => name
-  -> RIO env Bool
+  -> MIO env Bool
 isPresent imageName =
   arguments
     >>= fmap silenceStdout . backendProc
@@ -60,16 +60,16 @@ isPresent imageName =
 
     imageNameString = CBT.Image.nameString imageName
 
-push :: Env env => CBT.Image.QualifiedName -> RIO env ()
+push :: Env env => CBT.Image.QualifiedName -> MIO env ()
 push imageName = runProcess_ =<< backendProc ["push", convertVia @Text imageName]
 
-pull :: Env env => CBT.Image.QualifiedName -> RIO env ()
+pull :: Env env => CBT.Image.QualifiedName -> MIO env ()
 pull imageName = runProcess_ =<< backendProc ["pull", convertVia @Text imageName]
 
-tryPull :: Env env => CBT.Image.QualifiedName -> RIO env Bool
+tryPull :: Env env => CBT.Image.QualifiedName -> MIO env Bool
 tryPull imageName = fmap exitBool . runProcess =<< backendProc ["pull", convertVia @Text imageName]
 
-tag :: (Env env, CBT.Image.IsName a, CBT.Image.IsName b) => a -> b -> RIO env ()
+tag :: (Env env, CBT.Image.IsName a, CBT.Image.IsName b) => a -> b -> MIO env ()
 tag source target = runProcess_ =<< proc
   where
     proc = backendProc
@@ -81,7 +81,7 @@ tag source target = runProcess_ =<< proc
 build
   :: Env env
   => BuildDefinition name
-  -> RIO env ()
+  -> MIO env ()
 build BuildDefinition{..}
   = runProcess_ . setVerbosity verbosity =<< proc
   where

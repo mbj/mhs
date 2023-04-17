@@ -24,7 +24,7 @@ login
   => CBT.Image.Registry
   -> Username
   -> Password
-  -> RIO env ()
+  -> MIO env ()
 login registry username password
   = runProcess_
   . Process.setStdin

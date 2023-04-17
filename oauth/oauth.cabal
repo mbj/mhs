@@ -79,8 +79,8 @@ library
     , http-client
     , http-mclient
     , http-types
+    , mio-core
     , mprelude
-    , mrio-core
     , mtl
     , random
     , text
@@ -139,8 +139,8 @@ test-suite test
     , http-client
     , http-mclient
     , http-types
+    , mio-core
     , mprelude
-    , mrio-core
     , mtl
     , random
     , text

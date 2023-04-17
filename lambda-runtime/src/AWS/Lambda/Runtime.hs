@@ -10,7 +10,7 @@ where
 import AWS.Lambda.Runtime.Prelude
 import AWS.Lambda.Runtime.Types
 import Control.Monad.Except (runExceptT)
-import MRIO.Core
+import MIO.Core
 
 import qualified AWS.Lambda.Runtime.Client as Client
 import qualified Data.Aeson                as JSON
@@ -32,8 +32,8 @@ runWithSegment
   => XRay.SegmentName
   -> (Event a -> XRay.Segment -> XRay.Segment)
   -> (b -> XRay.Segment -> XRay.Segment)
-  -> (XRay.SegmentId -> Event a -> RIO env b)
-  -> RIO env ()
+  -> (XRay.SegmentId -> Event a -> MIO env b)
+  -> MIO env ()
 runWithSegment segmentName initSegment finishSegment action = do
   connection <- eitherThrow =<< liftIO (runExceptT Client.getConnection)
 

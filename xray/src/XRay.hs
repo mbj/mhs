@@ -4,7 +4,7 @@ module XRay where
 
 import Control.Monad.Reader (asks)
 import GHC.Records (HasField)
-import MRIO.Core
+import MIO.Core
 import System.Random (randomIO)
 import XRay.Config
 import XRay.Connection
@@ -41,7 +41,7 @@ newSegment
   => SegmentName
   -> TraceId
   -> Maybe SegmentId
-  -> RIO env Segment
+  -> MIO env Segment
 newSegment name traceId parentId = do
   Environment{config = Config{..}, ..} <- asks (.xrayEnvironment)
 
@@ -72,8 +72,8 @@ withSegment
   -> Maybe SegmentId
   -> (Segment -> Segment)
   -> (a -> Segment -> Segment)
-  -> (SegmentId -> RIO env a)
-  -> RIO env a
+  -> (SegmentId -> MIO env a)
+  -> MIO env a
 withSegment
   segmentName
   traceId
@@ -91,17 +91,17 @@ withSegment
       Exception.tryAny (action segment.id)
         >>= either (finalizeException segment) (finalizeResult segment)
       where
-        finalizeException :: Segment -> Exception.SomeException -> RIO env a
+        finalizeException :: Segment -> Exception.SomeException -> MIO env a
         finalizeException segment exception = do
           exceptionId <- liftIO newExceptionId
           finalize $ (addException segment (toException exceptionId exception)) { fault = True }
           Exception.throwIO exception
 
-        finalizeResult :: Segment -> a -> RIO env a
+        finalizeResult :: Segment -> a -> MIO env a
         finalizeResult segment result =
           finalize (specializeFinal result segment) $> result
 
-        finalize :: Segment -> RIO env ()
+        finalize :: Segment -> MIO env ()
         finalize segment = do
           liftIO $ do
             endTime <- getTimestamp

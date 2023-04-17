@@ -26,8 +26,8 @@ dependencies:
 - lens
 - mono-traversable
 - mprelude
-- mrio-amazonka
-- mrio-core
+- mio-amazonka
+- mio-core
 - mtl
 - optparse-applicative    >= 0.14
 - random                  >= 1.1

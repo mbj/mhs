@@ -53,9 +53,9 @@ import qualified System.Process.Typed       as Process
 
 type Digest = Hash.Digest Hash.SHA3_256
 
-type WithClientConfig env = forall a . (Postgresql.ClientConfig -> RIO env a) -> RIO env a
+type WithClientConfig env = forall a . (Postgresql.ClientConfig -> MIO env a) -> MIO env a
 
-type RunPGDump env = [Text] -> RIO env LBS.ByteString
+type RunPGDump env = [Text] -> MIO env LBS.ByteString
 
 type Env env
   = ( HasField "migrationDir" env Path.RelDir
@@ -87,7 +87,7 @@ data ConnectionEnv = ConnectionEnv
   , schemaFile      :: Path.RelFile
   }
 
-dryApply :: (Env env, Connection.Env env) => RIO env ()
+dryApply :: (Env env, Connection.Env env) => MIO env ()
 dryApply = do
   files <- getNewMigrations
 
@@ -95,7 +95,7 @@ dryApply = do
     then printStatus ("No new migrations to apply" :: Text)
     else Foldable.traverse_ printMigrationFile files
 
-status :: (Env env, Connection.Env env) => RIO env ()
+status :: (Env env, Connection.Env env) => MIO env ()
 status = do
   applied <- readAppliedMigrations
 
@@ -106,14 +106,14 @@ status = do
   Foldable.traverse_ printMigrationFile . newMigrations applied =<< readMigrationFiles
 
 
-localPGDump :: [Text] -> Postgresql.ClientConfig -> RIO env LBS.ByteString
+localPGDump :: [Text] -> Postgresql.ClientConfig -> MIO env LBS.ByteString
 localPGDump arguments clientConfig =  do
   env <- Postgresql.getEnv clientConfig
   Process.readProcessStdout_
     . Process.setEnv env
     $ Process.proc "pg_dump" (convert <$> arguments)
 
-dumpSchema :: Env env => DynamicConfig env -> RIO env ()
+dumpSchema :: Env env => DynamicConfig env -> MIO env ()
 dumpSchema DynamicConfig{..} = do
   schemaFileString <- getSchemaFileString
   printStatus $ "Writing schema to " <> schemaFileString
@@ -121,7 +121,7 @@ dumpSchema DynamicConfig{..} = do
   migrations <- runPGDump ["--data-only", "--inserts", "--table=schema_migrations"]
   liftIO $ LBS.writeFile schemaFileString $ schema <> migrations
 
-loadSchema :: (Env env, Connection.Env env) => RIO env ()
+loadSchema :: (Env env, Connection.Env env) => MIO env ()
 loadSchema = do
   schemaFileString <- getSchemaFileString
   printStatus $ "Loading schema from " <> schemaFileString
@@ -129,13 +129,13 @@ loadSchema = do
     Transaction.Serializable
     Transaction.Write . Transaction.sql =<< liftIO (BS.readFile schemaFileString)
 
-apply :: (Env env, Connection.Env env) => RIO env ()
+apply :: (Env env, Connection.Env env) => MIO env ()
 apply = do
   migrations <- getNewMigrations
   printStatus $ "Applying " <> show (Foldable.length migrations) <> " pending migrations"
   Foldable.traverse_ applyMigration migrations
 
-new :: (Env env, Connection.Env env) => RIO env ()
+new :: (Env env, Connection.Env env) => MIO env ()
 new = do
   applied       <- max . fmap appliedIndex <$> readAppliedMigrations
   files         <- max . fmap fileIndex    <$> readMigrationFiles
@@ -154,7 +154,7 @@ new = do
     max :: (Foldable t, Num a, Ord a) => t a -> a
     max xs = if Foldable.null xs then 0 else Foldable.maximum xs
 
-setup :: Connection.Env env => RIO env ()
+setup :: Connection.Env env => MIO env ()
 setup = Connection.runSession $ Hasql.sql
   [uncheckedSql|
     CREATE TABLE IF NOT EXISTS
@@ -165,10 +165,10 @@ setup = Connection.runSession $ Hasql.sql
       )
   |]
 
-printMigrationFile :: MigrationFile -> RIO env ()
+printMigrationFile :: MigrationFile -> MIO env ()
 printMigrationFile MigrationFile{..} = printStatus $ Path.toString path
 
-applyMigration :: Connection.Env env => MigrationFile -> RIO env ()
+applyMigration :: Connection.Env env => MigrationFile -> MIO env ()
 applyMigration MigrationFile{..} = do
   printStatus $ "Applying migration: " <> Path.toString path
   Connection.runSession . Transaction.transaction Transaction.Serializable Transaction.Write $ do
@@ -185,7 +185,7 @@ applyMigration MigrationFile{..} = do
 
   printStatus ("Success" :: Text)
 
-readAppliedMigrations :: Connection.Env env => RIO env [AppliedMigration]
+readAppliedMigrations :: Connection.Env env => MIO env [AppliedMigration]
 readAppliedMigrations = Connection.runSession $ do
   rows <- Foldable.toList <$> Hasql.statement ()
     [vectorStatement|
@@ -206,13 +206,13 @@ readAppliedMigrations = Connection.runSession $ do
 
 readMigrationFiles
   :: forall env . Env env
-  => RIO env [MigrationFile]
+  => MIO env [MigrationFile]
 readMigrationFiles = do
   migrationDir <- getMigrationDir
   whenM (liftIO (Path.doesDirectoryExist migrationDir))
     $ Foldable.foldMap load =<< liftIO (Path.filesInDir migrationDir)
   where
-    load :: Path.RelFile ->  RIO env [MigrationFile]
+    load :: Path.RelFile ->  MIO env [MigrationFile]
     load file =
       whenM (pure $ isMigrationFile file)
         fmap pure . readMigration file =<< parseIndex file
@@ -220,14 +220,14 @@ readMigrationFiles = do
     isMigrationFile :: Path.RelFile -> Bool
     isMigrationFile = (== ".sql") . Path.takeExtension
 
-    parseIndex :: Path.RelFile -> RIO env Natural
+    parseIndex :: Path.RelFile -> MIO env Natural
     parseIndex file =
       maybe
         (throwString $ "Invalid migration file name: " <> Path.toString file)
         pure
         (readMaybe . Path.toString $ Path.dropExtension file)
 
-    readMigration :: Path.RelFile -> Natural -> RIO env MigrationFile
+    readMigration :: Path.RelFile -> Natural -> MIO env MigrationFile
     readMigration path index = do
       migrationDir <- getMigrationDir
       sql <- liftIO $ BS.readFile . Path.toString $ migrationDir </> path
@@ -237,10 +237,10 @@ readMigrationFiles = do
         }
 
 
-getMigrationDir :: Env env => RIO env Path.RelDir
+getMigrationDir :: Env env => MIO env Path.RelDir
 getMigrationDir = asks (.migrationDir)
 
-getNewMigrations :: (Env env, Connection.Env env) => RIO env [MigrationFile]
+getNewMigrations :: (Env env, Connection.Env env) => MIO env [MigrationFile]
 getNewMigrations = newMigrations <$> readAppliedMigrations <*> readMigrationFiles
 
 appliedIndex :: AppliedMigration -> Natural
@@ -249,7 +249,7 @@ appliedIndex = (.index)
 fileIndex :: MigrationFile -> Natural
 fileIndex = (.index)
 
-getSchemaFileString :: Env env => RIO env String
+getSchemaFileString :: Env env => MIO env String
 getSchemaFileString = asks (Path.toString . (.schemaFile))
 
 newMigrations :: [AppliedMigration] -> [MigrationFile] -> [MigrationFile]
@@ -261,26 +261,26 @@ newMigrations applied = List.sortOn fileIndex . Foldable.foldMap test
     isApplied :: Natural -> Bool
     isApplied fileIndex' = Foldable.any ((==) fileIndex' . appliedIndex) applied
 
-printStatus :: ToText a => a -> RIO env ()
+printStatus :: ToText a => a -> MIO env ()
 printStatus = liftIO . Text.putStrLn . convert
 
 withConnectionEnv
   :: Env env
   => Postgresql.ClientConfig
-  -> RIO ConnectionEnv a
-  -> RIO env a
+  -> MIO ConnectionEnv a
+  -> MIO env a
 withConnectionEnv clientConfig action' = do
   migrationDir <- asks (.migrationDir)
   schemaFile   <- asks (.schemaFile)
 
   Connection.withConnection clientConfig $ \hasqlConnection ->
-    runRIO ConnectionEnv{..} action'
+    runMIO ConnectionEnv{..} action'
 
 withDynamicConnectionEnv
   :: Env env
   => DynamicConfig env
-  -> RIO ConnectionEnv a
-  -> RIO env a
+  -> MIO ConnectionEnv a
+  -> MIO env a
 withDynamicConnectionEnv DynamicConfig{..} action = do
   withClientConfig $ \clientConfig ->
     withConnectionEnv clientConfig action
@@ -295,7 +295,7 @@ defaultDynamicConfig withClientConfig
 applyDump
   :: Env env
   => DynamicConfig env
-  -> RIO env ()
+  -> MIO env ()
 applyDump dynamicConfig = do
   withDynamicConnectionEnv dynamicConfig apply
   dumpSchema dynamicConfig

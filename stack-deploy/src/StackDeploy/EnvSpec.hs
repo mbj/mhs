@@ -57,14 +57,14 @@ lambdaEnvironment entries
 
     render (Entry key value) = (key, renderValue value)
 
-posixEnv :: CF.Stack -> [Entry] -> RIO env [(String, String)]
+posixEnv :: CF.Stack -> [Entry] -> MIO env [(String, String)]
 posixEnv stack = traverse render . List.sortOn (.envName)
   where
-    render :: Entry -> RIO env (String, String)
+    render :: Entry -> MIO env (String, String)
     render entry@Entry{..} = do
       (convert envName,) . convert <$> loadStack stack entry
 
-loadStack :: CF.Stack -> Entry -> RIO env Text
+loadStack :: CF.Stack -> Entry -> MIO env Text
 loadStack stack Entry{..} = case envValue of
   StackOutput output'  -> liftIO $ fetchOutput stack output'
   StackParameter param -> fetchParam stack param
@@ -73,10 +73,10 @@ loadStack stack Entry{..} = case envValue of
   StackName            -> pure $ stack.stackName
   Static text          -> pure text
   where
-    failAbsentStackId :: RIO env a
+    failAbsentStackId :: MIO env a
     failAbsentStackId = throwString $ "Missing stack id: " <> show stack
 
-loadEnv :: Entry -> RIO env Text
+loadEnv :: Entry -> MIO env Text
 loadEnv Entry{..} = convert <$> Environment.getEnv (convert envName)
 
 renderValue :: Value -> CFT.Value Text
@@ -91,7 +91,7 @@ renderValue = \case
 fetchParam
   :: CF.Stack
   -> CFT.Parameter
-  -> RIO env Text
+  -> MIO env Text
 fetchParam stack stratosphereParameter =
   maybe
     (failOutputKey "missing")
@@ -102,12 +102,12 @@ fetchParam stack stratosphereParameter =
   where
     key = stratosphereParameter.name
 
-    failOutputKey :: Text -> RIO env a
+    failOutputKey :: Text -> MIO env a
     failOutputKey message
       = failStack
       $ "Parameter " <> convertText key <> " " <> message
 
-    failStack :: Text -> RIO env a
+    failStack :: Text -> MIO env a
     failStack message
       = throwString
       . convertText

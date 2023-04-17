@@ -15,7 +15,7 @@ import qualified Amazonka.CloudFormation.DescribeStackEvents as CF
 import qualified Amazonka.CloudFormation.Types               as CF
 import qualified Data.Foldable                               as Foldable
 import qualified Data.List                                   as List
-import qualified MRIO.Amazonka                               as AWS
+import qualified MIO.Amazonka                                as AWS
 
 data Poll = Poll
   { delay          :: forall m . MonadIO m => m ()
@@ -40,32 +40,32 @@ defaultPoll stackId = Poll
 pollEvents
   :: forall env . AWS.Env env
   => Poll
-  -> (CF.StackEvent -> RIO env ())
-  -> RIO env (Maybe CF.StackEvent)
+  -> (CF.StackEvent -> MIO env ())
+  -> MIO env (Maybe CF.StackEvent)
 pollEvents poll@Poll{..} eventAction = runConduit events
   where
-    events :: ConduitT () b (RIO env) (Maybe CF.StackEvent)
+    events :: ConduitT () b (MIO env) (Maybe CF.StackEvent)
     events = allEvents poll .| iterM eventAction .| find stopCondition
 
 -- | Conduit polling for new stack events
 allEvents
   :: forall env . AWS.Env env
   => Poll
-  -> ConduitT () CF.StackEvent (RIO env) ()
+  -> ConduitT () CF.StackEvent (MIO env) ()
 allEvents Poll{..} =
   go =<< getNext =<< getInitial
   where
-    getNext :: [CF.StackEvent] -> ConduitT () CF.StackEvent (RIO env) CF.StackEvent
+    getNext :: [CF.StackEvent] -> ConduitT () CF.StackEvent (MIO env) CF.StackEvent
     getNext
       = maybe (throwString "No start event") pure . listToMaybe
 
-    initialEvents :: ConduitT () CF.StackEvent (RIO env) ()
+    initialEvents :: ConduitT () CF.StackEvent (MIO env) ()
     initialEvents
       =  stackEvents stackId
       .| takeWhile eventFilter
       .| takeUntilInclusive startCondition
 
-    nextEvents :: CF.StackEvent -> ConduitT () CF.StackEvent (RIO env) ()
+    nextEvents :: CF.StackEvent -> ConduitT () CF.StackEvent (MIO env) ()
     nextEvents lastEvent
       = stackEvents stackId .| takeWhile (not . isExpectedEvent lastEvent)
 
@@ -75,7 +75,7 @@ allEvents Poll{..} =
         then delay >> getInitial
         else pure events
 
-    go :: CF.StackEvent -> ConduitT () CF.StackEvent (RIO env) ()
+    go :: CF.StackEvent -> ConduitT () CF.StackEvent (MIO env) ()
     go lastEvent = do
       delay
       events <- poll $ nextEvents lastEvent
@@ -87,8 +87,8 @@ allEvents Poll{..} =
     isExpectedEvent = (==) `on` (.eventId)
 
     poll
-      :: ConduitT () CF.StackEvent (RIO env) ()
-      -> ConduitT () CF.StackEvent (RIO env) [CF.StackEvent]
+      :: ConduitT () CF.StackEvent (MIO env) ()
+      -> ConduitT () CF.StackEvent (MIO env) [CF.StackEvent]
     poll action = do
       events <- action .| consume
       yieldMany $ List.reverse events
@@ -97,7 +97,7 @@ allEvents Poll{..} =
 stackEvents
   :: AWS.Env env
   => Id
-  -> ConduitT () CF.StackEvent (RIO env) ()
+  -> ConduitT () CF.StackEvent (MIO env) ()
 stackEvents stackId = listResource request (fromMaybe [] . (.stackEvents))
   where
     request = CF.newDescribeStackEvents & CF.describeStackEvents_stackName ?~ toText stackId

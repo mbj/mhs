@@ -22,7 +22,7 @@ import qualified Data.Char                                   as Char
 import qualified Data.Conduit.Combinators                    as Conduit
 import qualified Data.Text.Encoding                          as Text
 import qualified Data.Text.IO                                as Text
-import qualified MRIO.Amazonka                               as AWS
+import qualified MIO.Amazonka                                as AWS
 import qualified StackDeploy.AWS                             as AWS
 import qualified StackDeploy.Env                             as StackDeploy
 import qualified StackDeploy.InstanceSpec                    as InstanceSpec
@@ -31,17 +31,17 @@ import qualified StackDeploy.Template                        as Template
 parserInfo
   :: forall env . (AWS.Env env, StackDeploy.Env env)
   => InstanceSpec.Provider env
-  -> ParserInfo (RIO env ExitCode)
+  -> ParserInfo (MIO env ExitCode)
 parserInfo instanceSpecProvider = wrapHelper commands "stack commands"
   where
-    commands :: Parser (RIO env ExitCode)
+    commands :: Parser (MIO env ExitCode)
     commands = hsubparser
       $  mkCommand "instance" instanceCommands     "instance commands"
       <> mkCommand "spec"     specCommands         "instance spec commands"
       <> mkCommand "token"    (pure printNewToken) "print a new stack token"
       <> mkCommand "template" templateCommands     "template commands"
 
-    instanceCommands :: Parser (RIO env ExitCode)
+    instanceCommands :: Parser (MIO env ExitCode)
     instanceCommands = hsubparser
       $  mkCommand "cancel"   (cancel <$> instanceSpecNameArgument)                "cancel stack update"
       <> mkCommand "create"   (create <$> instanceSpecNameArgument <*> parameters) "create stack"
@@ -54,12 +54,12 @@ parserInfo instanceSpecProvider = wrapHelper commands "stack commands"
       <> mkCommand "wait"     (wait <$> instanceSpecNameArgument <*> tokenParser)  "wait for stack operation"
       <> mkCommand "watch"    (watch <$> instanceSpecNameArgument)                 "watch stack events"
 
-    templateCommands :: Parser (RIO env ExitCode)
+    templateCommands :: Parser (MIO env ExitCode)
     templateCommands = hsubparser
       $  mkCommand "list"    (pure listTemplates)              "list templates"
       <> mkCommand "render"  (render <$> templateNameArgument) "render template"
 
-    specCommands :: Parser (RIO env ExitCode)
+    specCommands :: Parser (MIO env ExitCode)
     specCommands = hsubparser
       $  mkCommand "list"   (pure listSpecs) "list stack specifications"
 
@@ -72,24 +72,24 @@ parserInfo instanceSpecProvider = wrapHelper commands "stack commands"
     wrapHelper :: Parser b -> String -> ParserInfo b
     wrapHelper parser desc = info parser (progDesc desc)
 
-    cancel :: InstanceSpec.Name env -> RIO env ExitCode
+    cancel :: InstanceSpec.Name env -> MIO env ExitCode
     cancel name = do
       void . AWS.send . CF.newCancelUpdateStack $ toText name
       success
 
-    create :: InstanceSpec.Name env -> Parameters -> RIO env ExitCode
+    create :: InstanceSpec.Name env -> Parameters -> MIO env ExitCode
     create name params = do
       spec <- InstanceSpec.get instanceSpecProvider name params
       exitCode =<< perform (OpCreate spec)
 
-    update :: InstanceSpec.Name env -> Parameters -> RIO env ExitCode
+    update :: InstanceSpec.Name env -> Parameters -> MIO env ExitCode
     update name params = do
       spec     <- InstanceSpec.get instanceSpecProvider name params
       stackId  <- getExistingStackId name
 
       exitCode =<< perform (OpUpdate stackId spec)
 
-    sync :: InstanceSpec.Name env -> Parameters -> RIO env ExitCode
+    sync :: InstanceSpec.Name env -> Parameters -> MIO env ExitCode
     sync name params = do
       spec <- InstanceSpec.get instanceSpecProvider name params
 
@@ -97,68 +97,68 @@ parserInfo instanceSpecProvider = wrapHelper commands "stack commands"
         =<< perform . maybe (OpCreate spec) (`OpUpdate` spec)
         =<< getStackId name
 
-    wait :: InstanceSpec.Name env -> Token -> RIO env ExitCode
+    wait :: InstanceSpec.Name env -> Token -> MIO env ExitCode
     wait name token = maybe success (waitForOperation token) =<< getStackId name
 
-    outputs :: InstanceSpec.Name env -> RIO env ExitCode
+    outputs :: InstanceSpec.Name env -> MIO env ExitCode
     outputs name = do
       traverse_ printOutput . fromMaybe [] . (.outputs) =<< getExistingStack name
       success
       where
-        printOutput :: CF.Output -> RIO env ()
+        printOutput :: CF.Output -> MIO env ()
         printOutput = liftIO . Text.putStrLn . convertText . show
 
-    delete :: InstanceSpec.Name env -> RIO env ExitCode
+    delete :: InstanceSpec.Name env -> MIO env ExitCode
     delete = maybe success (exitCode <=< perform . OpDelete) <=< getStackId
 
-    list :: RIO env ExitCode
+    list :: MIO env ExitCode
     list = do
       runConduit $ stackNames .| Conduit.mapM_ say
       success
 
-    listTemplates :: RIO env ExitCode
+    listTemplates :: MIO env ExitCode
     listTemplates = do
       traverse_
         (liftIO . Text.putStrLn . toText . (.name))
         (toList templateProvider)
       success
 
-    listSpecs :: RIO env ExitCode
+    listSpecs :: MIO env ExitCode
     listSpecs = do
       traverse_
         (liftIO . Text.putStrLn . toText . (.name))
         (toList instanceSpecProvider)
       success
 
-    events :: InstanceSpec.Name env -> RIO env ExitCode
+    events :: InstanceSpec.Name env -> MIO env ExitCode
     events name = do
       runConduit $ AWS.listResource req (fromMaybe [] . (.stackEvents)) .| Conduit.mapM_ printEvent
       success
       where
         req = CF.newDescribeStackEvents & CF.describeStackEvents_stackName .~ pure (toText name)
 
-    watch :: InstanceSpec.Name env -> RIO env ExitCode
+    watch :: InstanceSpec.Name env -> MIO env ExitCode
     watch name = do
       stackId <- getExistingStackId name
       void $ pollEvents (defaultPoll stackId) printEvent
       success
 
-    waitForOperation :: Token -> Id -> RIO env ExitCode
+    waitForOperation :: Token -> Id -> MIO env ExitCode
     waitForOperation token stackId =
       exitCode =<< waitForAccept RemoteOperation{..} printEvent
 
-    printNewToken :: RIO env ExitCode
+    printNewToken :: MIO env ExitCode
     printNewToken = do
       say =<< newToken
       success
 
-    render :: Template.Name -> RIO env ExitCode
+    render :: Template.Name -> MIO env ExitCode
     render name = do
       template <- Template.get templateProvider name
       say . Text.decodeUtf8 . LBS.toStrict $ Template.encode template
       success
 
-    success :: RIO env ExitCode
+    success :: MIO env ExitCode
     success = pure ExitSuccess
 
     exitCode = \case

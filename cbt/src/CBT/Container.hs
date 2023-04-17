@@ -131,10 +131,10 @@ minimalDefinition imageName name
   , ..
   }
 
-printLogs :: Env env => Name -> RIO env ()
+printLogs :: Env env => Name -> MIO env ()
 printLogs name = runProcess_ =<< backendProc ["container" , "logs" , convertText name]
 
-commit :: (Env env, CBT.Image.IsName imageName) => Name -> imageName -> RIO env ()
+commit :: (Env env, CBT.Image.IsName imageName) => Name -> imageName -> MIO env ()
 commit name imageName
   = runProcess_
   =<< backendProc
@@ -144,7 +144,7 @@ commit name imageName
   , CBT.Image.nameString imageName
   ]
 
-printInspect :: Env env => Name -> RIO env ()
+printInspect :: Env env => Name -> MIO env ()
 printInspect name = runProcess_ =<< backendProc ["container" , "inspect" , convertText name]
 
 handleFailure
@@ -152,7 +152,7 @@ handleFailure
   => Definition imageName
   -> a
   -> System.ExitCode
-  -> RIO env a
+  -> MIO env a
 handleFailure Definition{..} value = \case
   System.ExitSuccess -> pure value
   _ -> do
@@ -164,7 +164,7 @@ handleFailure Definition{..} value = \case
 runProc
   :: Env env
   => Definition imageName
-  -> RIO env Proc
+  -> MIO env Proc
 runProc Definition{..} = detachSilence <$> backendProc backendArguments
   where
     backendArguments :: [String]
@@ -244,21 +244,21 @@ runProc Definition{..} = detachSilence <$> backendProc backendArguments
 stop
   :: Env env
   => Name
-  -> RIO env ()
+  -> MIO env ()
 stop name = runProcess_ . silenceStdout =<< backendProc ["stop", convertText name]
 
 withRun
   :: Env env
   => Definition imageName
-  -> RIO env a
-  -> RIO env a
+  -> MIO env a
+  -> MIO env a
 withRun containerDefinition@Definition{..} =
   Exception.bracket_ (run containerDefinition) (stop name)
 
 remove
   :: Env env
   => Name
-  -> RIO env ()
+  -> MIO env ()
 remove name
   = runProcess_
   . silenceStdout
@@ -271,14 +271,14 @@ remove name
 run
   :: Env env
   => Definition imageName
-  -> RIO env ()
+  -> MIO env ()
 run containerDefinition =
   handleFailure containerDefinition () =<< runProcess =<< runProc containerDefinition
 
 runReadStdout
   :: Env env
   => Definition imageName
-  -> RIO env BS.ByteString
+  -> MIO env BS.ByteString
 runReadStdout containerDefinition = do
   (exitCode, output) <- readProcessStdout =<< runProc containerDefinition'
   handleFailure containerDefinition (convert output) exitCode
@@ -289,12 +289,12 @@ readFile
   :: Env env
   => Name
   -> Path.AbsFile
-  -> RIO env BS.ByteString
+  -> MIO env BS.ByteString
 readFile name path = do
   tar <- readProcessStdout_ =<< proc
   maybe notFound (pure . LBS.toStrict) . Tar.findEntry tar $ Path.takeFileName path
   where
-    notFound :: RIO env BS.ByteString
+    notFound :: MIO env BS.ByteString
     notFound = liftIO $ fail "Tar from docker did not contain expected entry"
 
     proc
@@ -308,7 +308,7 @@ readFile name path = do
 status
   :: Env env
   => Name
-  -> RIO env Status
+  -> MIO env Status
 status name
   = mapStatus <$> (runProcess =<< proc)
   where
@@ -318,7 +318,7 @@ status name
 
     proc = silenceStdout <$> backendProc ["container", "inspect", convertText name]
 
-getHostPort :: Env env => Name -> Port -> RIO env Port
+getHostPort :: Env env => Name -> Port -> MIO env Port
 getHostPort name containerPort' =
   proc
     >>= captureText
@@ -350,10 +350,10 @@ getHostPort name containerPort' =
     mkIndex :: String -> String -> String
     mkIndex index exp = mconcat ["(", "index", " ", exp, " ", index, ")"]
 
-    parsePort :: (ToText a, Show a) => a -> RIO env Port
+    parsePort :: (ToText a, Show a) => a -> MIO env Port
     parsePort input = maybe failParse (pure . Port) . readMaybe $ convertText input
       where
-        failParse :: RIO env Port
+        failParse :: MIO env Port
         failParse = Exception.throwString $ "Cannot parse port from input: " <> show input
 
 newtype Prefix = Prefix Text
@@ -364,8 +364,8 @@ withBuildRun
   :: Env env
   => CBT.Image.BuildDefinition imageName
   -> Definition imageName
-  -> RIO env a
-  -> RIO env a
+  -> MIO env a
+  -> MIO env a
 withBuildRun buildDefinition definition =
   Exception.bracket_
     (buildRun buildDefinition definition)
@@ -375,11 +375,11 @@ buildRun
   :: Env env
   => CBT.Image.BuildDefinition imageName
   -> Definition imageName
-  -> RIO env ()
+  -> MIO env ()
 buildRun buildDefinition containerDefinition =
   CBT.Image.buildIfAbsent buildDefinition >> CBT.Container.run containerDefinition
 
-nextName :: Prefix -> RIO env Name
+nextName :: Prefix -> MIO env Name
 nextName prefix = do
   uuid <- liftIO UUID.nextRandom
   pure . Name $ toText prefix <> "-" <> convertText (show uuid)

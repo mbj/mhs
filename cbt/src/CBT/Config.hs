@@ -13,7 +13,7 @@ import CBT.Prelude
 import Control.Monad (when)
 import Data.Maybe (isJust)
 
-import qualified MRIO.Log             as Log
+import qualified MIO.Log              as Log
 import qualified UnliftIO.Environment as Environment
 
 type Env env = (HasField "cbtConfig" env Config, Log.Env env)
@@ -29,10 +29,10 @@ loadDefaultConfig = do
   debug   <- isJust <$> Environment.lookupEnv "CBT_DEBUG"
   pure $ Config{..}
 
-onDebug :: Env env => RIO env () -> RIO env ()
+onDebug :: Env env => MIO env () -> MIO env ()
 onDebug action = do
   Config{..} <- asks (.cbtConfig)
   when debug action
 
-askBackend :: Env env => RIO env Backend
+askBackend :: Env env => MIO env Backend
 askBackend = asks (.cbtConfig.backend)

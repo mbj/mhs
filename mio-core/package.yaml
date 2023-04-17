@@ -1,0 +1,23 @@
+_common/package: !include "../common/package.yaml"
+
+name:       mio-core
+synopsis:   Minimal version of rio with the MIO core type.
+homepage:   https://github.com/mbj/mhs#readme
+maintainer: Markus Schirp mbj@schirp-dso.com, Allan Lukwago <epicallan.al@gmail.com>
+version:    0.0.1
+
+<<: *defaults
+
+dependencies:
+- base
+- exceptions
+- mtl
+- primitive
+- unliftio-core
+
+tests:
+  test:
+    <<: *test
+    dependencies:
+    - devtools
+    - mio-core

@@ -35,10 +35,10 @@ type Provider env = Provider.Provider (InstanceSpec env)
 
 data InstanceSpec env = InstanceSpec
   { capabilities  :: [CF.Capability]
-  , envParameters :: RIO env Parameters
-  , envRoleARN    :: Maybe (RIO env RoleARN)
+  , envParameters :: MIO env Parameters
+  , envRoleARN    :: Maybe (MIO env RoleARN)
   , name          :: Name env
-  , onSuccess     :: RIO env ()
+  , onSuccess     :: MIO env ()
   , parameters    :: Parameters
   , roleARN       :: Maybe RoleARN
   , template      :: Template
@@ -51,7 +51,7 @@ get
   :: Provider env
   -> Name env
   -> Parameters
-  -> RIO env (InstanceSpec env)
+  -> MIO env (InstanceSpec env)
 get provider targetName userParameters = do
   instanceSpec <- Provider.get "instance-spec" provider targetName
   env          <- instanceSpec.envParameters
@@ -70,7 +70,7 @@ get provider targetName userParameters = do
     expandedParameters InstanceSpec{..} =
       Parameters.expandTemplate parameters template
 
-    tryEnvRole :: InstanceSpec env -> RIO env (Maybe RoleARN)
+    tryEnvRole :: InstanceSpec env -> MIO env (Maybe RoleARN)
     tryEnvRole InstanceSpec{..} = maybe (pure roleARN) (pure <$>) envRoleARN
 
     union = Parameters.union

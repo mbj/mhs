@@ -53,20 +53,20 @@ defaultCBTBuildDefinition
 buildZip
   :: CBT.Env env
   => Config
-  -> RIO env BS.ByteString
+  -> MIO env BS.ByteString
 buildZip config = fmap (convert . Zip.mkZip) (build config)
 
 build
   :: CBT.Env env
   => Config
-  -> RIO env BS.ByteString
+  -> MIO env BS.ByteString
 build config@Config{..} =
   withBuildContainer config $ \containerName ->
     assertStatic =<< CBT.Container.readFile containerName (containerHomePath </> executablePath)
 
 assertStatic
   :: BS.ByteString
-  -> RIO env BS.ByteString
+  -> MIO env BS.ByteString
 assertStatic executable =
   if Foldable.null . ELF.parseSymbolTables $ ELF.parseElf executable
     then pure executable
@@ -75,8 +75,8 @@ assertStatic executable =
 withBuildContainer
   :: CBT.Env env
   => Config
-  -> (CBT.Container.Name -> RIO env a)
-  -> RIO env a
+  -> (CBT.Container.Name -> MIO env a)
+  -> MIO env a
 withBuildContainer Config{..} action = do
   containerName   <- CBT.Container.nextName (CBT.Container.Prefix "lht")
   hostProjectPath <- liftIO Path.getCurrentDirectory

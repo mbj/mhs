@@ -41,11 +41,11 @@ flags:
     development: true
   lht:
     development: true
-  mrio-amazonka:
+  mio-amazonka:
     development: true
-  mrio-core:
+  mio-core:
     development: true
-  mrio-log:
+  mio-log:
     development: true
   mprelude:
     development: true
@@ -75,9 +75,9 @@ packages:
 - lambda-alb
 - lambda-runtime
 - lht
-- mrio-amazonka
-- mrio-core
-- mrio-log
+- mio-amazonka
+- mio-core
+- mio-log
 - oauth
 - openapi
 - pgt

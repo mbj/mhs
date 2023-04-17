@@ -81,9 +81,9 @@ indexed-traversable-instances 0.1.1.2
 integer-logarithms 1.0.3.1
 isomorphism-class 0.1.0.9
 libyaml 0.1.2
+mio-core 0.0.1
 mono-traversable 1.0.15.3
 mprelude 0.2.1
-mrio-core 0.0.1
 mtl 2.2.2
 network-info 0.2.1
 network-ip 0.3.0.3
