@@ -16,7 +16,7 @@ import qualified Amazonka.S3.Types      as S3
 import qualified Amazonka.Types         as AWS
 import qualified Data.ByteString        as BS
 import qualified Data.Text.Encoding     as Text
-import qualified MRIO.Amazonka          as AWS
+import qualified MIO.Amazonka           as AWS
 import qualified Network.HTTP.Types     as HTTP
 
 data TargetObject = TargetObject
@@ -26,7 +26,7 @@ data TargetObject = TargetObject
   , objectKey      :: S3.ObjectKey
   }
 
-syncTarget :: AWS.Env env => TargetObject -> RIO env ()
+syncTarget :: AWS.Env env => TargetObject -> MIO env ()
 syncTarget TargetObject{..} =
   putIfAbsent bucketName objectKey object (uploadCallback $ objectKeyText objectKey)
 
@@ -37,11 +37,11 @@ testObjectExists
   :: forall env . AWS.Env env
   => S3.BucketName
   -> S3.ObjectKey
-  -> RIO env Bool
+  -> MIO env Bool
 testObjectExists bucketName objectKey =
   either withError (const $ pure True) =<< AWS.sendEither (S3.newHeadObject bucketName objectKey)
   where
-    withError :: AWS.Error -> RIO env Bool
+    withError :: AWS.Error -> MIO env Bool
     withError = \case
       (AWS.ServiceError AWS.ServiceError' { _serviceErrorStatus = HTTP.Status { HTTP.statusCode = 404 } }) ->
          pure False
@@ -52,8 +52,8 @@ putIfAbsent
   => S3.BucketName
   -> S3.ObjectKey
   -> AWS.HashedBody
-  -> RIO env ()
-  -> RIO env ()
+  -> MIO env ()
+  -> MIO env ()
 putIfAbsent bucketName objectKey object callback = do
   exists <- testObjectExists bucketName objectKey
 

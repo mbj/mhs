@@ -47,9 +47,9 @@ jobs:
         - lambda-alb
         - lambda-runtime
         - lht
-        - mrio-amazonka
-        - mrio-core
-        - mrio-log
+        - mio-amazonka
+        - mio-core
+        - mio-log
         - oauth
         - openapi
         - pgt

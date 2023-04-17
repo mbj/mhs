@@ -10,7 +10,7 @@ where
 import CBT.Prelude
 
 import qualified CBT.Config as CBT
-import qualified MRIO.Log   as Log
+import qualified MIO.Log    as Log
 
 data Environment = Environment
   { cbtConfig :: CBT.Config
@@ -19,9 +19,9 @@ data Environment = Environment
 
 runDefaultEnvironment
   :: MonadUnliftIO m
-  => RIO Environment a
+  => MIO Environment a
   -> m a
 runDefaultEnvironment action = do
   cbtConfig <- CBT.loadDefaultConfig
-  runRIO Environment{logAction = Log.defaultCLIAction, ..} action
+  runMIO Environment{logAction = Log.defaultCLIAction, ..} action
 

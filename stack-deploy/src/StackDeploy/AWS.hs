@@ -6,11 +6,11 @@ import Data.Conduit.Combinators (concatMap)
 import StackDeploy.Prelude
 
 import qualified Amazonka
-import qualified MRIO.Amazonka as AWS
+import qualified MIO.Amazonka as AWS
 
 listResource
   :: (AWS.Env env, Amazonka.AWSPager a)
   => a
   -> (Amazonka.AWSResponse a -> [b])
-  -> ConduitT () b (RIO env) ()
+  -> ConduitT () b (MIO env) ()
 listResource action map = AWS.paginate action .| concatMap map

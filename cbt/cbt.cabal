@@ -84,9 +84,9 @@ library
     , exceptions >=0.10
     , filepath
     , hashable >=1.3
+    , mio-core
+    , mio-log
     , mprelude >=0.2
-    , mrio-core
-    , mrio-log
     , mtl
     , pathtype
     , resourcet >=1.2.4
@@ -156,9 +156,9 @@ test-suite test
     , exceptions >=0.10
     , filepath
     , hashable >=1.3
+    , mio-core
+    , mio-log
     , mprelude >=0.2
-    , mrio-core
-    , mrio-log
     , mtl
     , pathtype
     , resourcet >=1.2.4

@@ -76,10 +76,10 @@ integer-logarithms 1.0.3.1
 lht 0.0.2
 libyaml 0.1.2
 memory 0.17.0
+mio-core 0.0.1
+mio-log 0.0.3
 mono-traversable 1.0.15.3
 mprelude 0.2.1
-mrio-core 0.0.1
-mrio-log 0.0.3
 mtl 2.2.2
 network-info 0.2.1
 old-locale 1.0.0.7

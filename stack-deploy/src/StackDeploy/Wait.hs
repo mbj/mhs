@@ -7,7 +7,7 @@ import StackDeploy.Types
 
 import qualified Amazonka.CloudFormation.Types as CF
 import qualified Data.Foldable                 as Foldable
-import qualified MRIO.Amazonka                 as AWS
+import qualified MIO.Amazonka                  as AWS
 
 -- | Wait for remote operation to end in a final status
 --
@@ -15,12 +15,12 @@ import qualified MRIO.Amazonka                 as AWS
 waitForAccept
   :: forall env . AWS.Env env
   => RemoteOperation
-  -> (CF.StackEvent -> RIO env ())
-  -> RIO env RemoteOperationResult
+  -> (CF.StackEvent -> MIO env ())
+  -> MIO env RemoteOperationResult
 waitForAccept RemoteOperation{..} action =
   classify =<< pollEvents pollConfig action
   where
-    classify :: Maybe CF.StackEvent -> RIO env RemoteOperationResult
+    classify :: Maybe CF.StackEvent -> MIO env RemoteOperationResult
     classify = maybe
       (throwString "No last event")
       assertPresentResourceStatus
@@ -37,7 +37,7 @@ waitForAccept RemoteOperation{..} action =
       , stopCondition  = isStackEvent finalResourceStatus
       }
 
-    remoteOperationResult :: CF.ResourceStatus -> RIO env RemoteOperationResult
+    remoteOperationResult :: CF.ResourceStatus -> MIO env RemoteOperationResult
     remoteOperationResult = \case
       CF.ResourceStatus_CREATE_COMPLETE          -> pure RemoteOperationSuccess
       CF.ResourceStatus_CREATE_FAILED            -> pure RemoteOperationFailure

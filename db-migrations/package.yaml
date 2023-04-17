@@ -24,7 +24,7 @@ dependencies:
 - hasql-transaction         >= 1.0
 - memory                    >= 0.15
 - mprelude                  >= 0.2
-- mrio-core                 >= 0.0.1
+- mio-core                  >= 0.0.1
 - mtl
 - network
 - optparse-applicative      >= 0.15

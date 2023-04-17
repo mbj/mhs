@@ -78,8 +78,8 @@ library
     , exceptions
     , http-client
     , http-types
+    , mio-core
     , mprelude
-    , mrio-core
     , mtl
     , optparse-applicative >=0.15
     , text
@@ -137,8 +137,8 @@ test-suite test
     , exceptions
     , http-client
     , http-types
+    , mio-core
     , mprelude
-    , mrio-core
     , mtl
     , optparse-applicative >=0.15
     , text

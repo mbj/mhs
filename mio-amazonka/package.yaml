@@ -1,0 +1,26 @@
+_common/package: !include "../common/package.yaml"
+
+name:       mio-amazonka
+synopsis:   Amazonka integration for mio
+maintainer: Markus Schirp <mbj@schirp-dso.com>, Allan Lukwago <epicallan.al@gmail.com>
+version:    0.0.2
+
+<<: *defaults
+
+dependencies:
+- amazonka           >= 2.0
+- base
+- conduit            >= 1.3
+- mio-core
+- mtl
+- resourcet          >= 1.2.4
+- source-constraints
+- unliftio-core      >= 0.2
+
+tests:
+  test:
+    <<: *test
+    dependencies:
+    - devtools
+    - mio-core
+    - mio-amazonka

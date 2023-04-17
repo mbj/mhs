@@ -12,37 +12,37 @@ import UnliftIO.Exception (throwString)
 
 import qualified DBT.Postgresql   as Postgresql
 import qualified Hasql.Connection as Hasql
-import qualified MRIO.Log         as Log
+import qualified MIO.Log          as Log
 
 data Config env = Config
   { clientConfig :: Postgresql.ClientConfig
   , maxAttempts  :: Natural
-  , onFail       :: RIO env ()
+  , onFail       :: MIO env ()
   , prefix       :: String
   , waitTime     :: Natural
   }
 
-wait :: forall env . Log.Env env => Config env -> RIO env ()
+wait :: forall env . Log.Env env => Config env -> MIO env ()
 wait Config{clientConfig = clientConfig, ..} =
   start =<< effectiveWaitTime
   where
-    failPrefix :: String -> RIO env a
+    failPrefix :: String -> MIO env a
     failPrefix message = throwString $ prefix <> (' ':message)
 
-    effectiveWaitTime :: RIO env Int
+    effectiveWaitTime :: MIO env Int
     effectiveWaitTime =
       if waitTime <= fromIntegral (maxBound @Int)
         then pure $ fromIntegral waitTime
         else failPrefix $ "Cannot convert waitTime: " <> show waitTime <> " to Int"
 
-    start :: Int -> RIO env ()
+    start :: Int -> MIO env ()
     start waitTime' = attempt 1
       where
-        attempt :: Natural -> RIO env ()
+        attempt :: Natural -> MIO env ()
         attempt count =
           either (onError count) pure =<< (withConnectionEither clientConfig . const $ pure ())
 
-        onError :: Natural -> Hasql.ConnectionError -> RIO env ()
+        onError :: Natural -> Hasql.ConnectionError -> MIO env ()
         onError attempts error =
           if attempts == maxAttempts
             then do

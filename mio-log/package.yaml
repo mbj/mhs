@@ -1,0 +1,29 @@
+_common/package: !include "../common/package.yaml"
+
+name:       mio-log
+synopsis:   Minimal mio based logger
+homepage:   https://github.com/mbj/mhs#readme
+github:     mbj/mhs
+version:    0.0.3
+
+<<: *defaults
+
+dependencies:
+- base
+- bytestring
+- conversions
+- mprelude
+- mio-core
+- mtl
+- text
+- time
+
+tests:
+  test:
+    <<: *test
+    dependencies:
+    - devtools
+    - mio-core
+    - mio-log
+    - tasty
+    - tasty-hunit

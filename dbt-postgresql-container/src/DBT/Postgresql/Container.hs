@@ -32,9 +32,9 @@ withDatabaseContainerProcess
   :: CBT.Env env
   => CBT.Container.Prefix
   -> Process.ProcessConfig stdin stdout stderr
-  -> (Process.ProcessConfig stdin stdout stderr -> (Process.Process stdin stdout stderr -> RIO env a) -> RIO env a)
-  -> (Process.Process stdin stdout stderr -> RIO env a)
-  -> RIO env a
+  -> (Process.ProcessConfig stdin stdout stderr -> (Process.Process stdin stdout stderr -> MIO env a) -> MIO env a)
+  -> (Process.Process stdin stdout stderr -> MIO env a)
+  -> MIO env a
 withDatabaseContainerProcess prefix proc withProcess action = do
   containerName <- CBT.Container.nextName prefix
   withDatabaseContainer defaultBuildDefinition containerName $ \clientConfig -> do
@@ -45,7 +45,7 @@ withDatabaseContainerProcessRun_
   :: CBT.Env env
   => CBT.Container.Prefix
   -> Process.ProcessConfig stdin stdout stderr
-  -> RIO env ()
+  -> MIO env ()
 withDatabaseContainerProcessRun_ prefix proc =
   withDatabaseContainerProcess prefix proc Process.withProcessWait_ Process.checkExitCode
 
@@ -54,8 +54,8 @@ populateDatabaseBuildDefinitionIfAbsent
   => CBT.Image.BuildDefinition buildImageName
   -> CBT.Container.Name
   -> imageName
-  -> (Postgresql.ClientConfig -> RIO env ())
-  -> RIO env ()
+  -> (Postgresql.ClientConfig -> MIO env ())
+  -> MIO env ()
 populateDatabaseBuildDefinitionIfAbsent buildDefinition containerName targetImageName action = do
   present <- CBT.Image.isPresent targetImageName
   if present
@@ -67,8 +67,8 @@ populateDatabaseBuildDefinition
   => CBT.Image.BuildDefinition buildImageName
   -> CBT.Container.Name
   -> targetImageName
-  -> (Postgresql.ClientConfig -> RIO env ())
-  -> RIO env ()
+  -> (Postgresql.ClientConfig -> MIO env ())
+  -> MIO env ()
 populateDatabaseBuildDefinition buildDefinition containerName targetImageName
   = CBT.Container.withBuildRun buildDefinition containerDefinition'
   . populate containerName targetImageName
@@ -85,8 +85,8 @@ populateDatabase
   => baseImageName
   -> CBT.Container.Name
   -> targetImageName
-  -> (Postgresql.ClientConfig -> RIO env ())
-  -> RIO env ()
+  -> (Postgresql.ClientConfig -> MIO env ())
+  -> MIO env ()
 populateDatabase baseImageName containerName targetImageName
   = CBT.Container.withRun containerDefinition'
   . populate containerName targetImageName
@@ -99,8 +99,8 @@ populate
   :: (CBT.Env env, CBT.Image.IsName targetImageName)
   => CBT.Container.Name
   -> targetImageName
-  -> (Postgresql.ClientConfig -> RIO env ())
-  -> RIO env ()
+  -> (Postgresql.ClientConfig -> MIO env ())
+  -> MIO env ()
 populate containerName targetImageName action = do
   runAction containerName action
   CBT.Container.stop containerName
@@ -110,16 +110,16 @@ populateDatabaseBuildDefinitionDefault
   :: (CBT.Env env, CBT.Image.IsName imageName)
   => CBT.Container.Name
   -> imageName
-  -> (Postgresql.ClientConfig -> RIO env ())
-  -> RIO env ()
+  -> (Postgresql.ClientConfig -> MIO env ())
+  -> MIO env ()
 populateDatabaseBuildDefinitionDefault = populateDatabaseBuildDefinition defaultBuildDefinition
 
 withDatabaseContainer
   :: (CBT.Env env, CBT.Image.IsName imageName)
   => CBT.Image.BuildDefinition imageName
   -> CBT.Container.Name
-  -> (Postgresql.ClientConfig -> RIO env a)
-  -> RIO env a
+  -> (Postgresql.ClientConfig -> MIO env a)
+  -> MIO env a
 withDatabaseContainer buildDefinition containerName
   = CBT.Container.withBuildRun
       buildDefinition
@@ -129,16 +129,16 @@ withDatabaseContainer buildDefinition containerName
 withDatabaseContainerDefault
   :: forall env a . CBT.Env env
   => CBT.Container.Name
-  -> (Postgresql.ClientConfig -> RIO env a)
-  -> RIO env a
+  -> (Postgresql.ClientConfig -> MIO env a)
+  -> MIO env a
 withDatabaseContainerDefault = withDatabaseContainer defaultBuildDefinition
 
 withDatabaseContainerImage
   :: forall env imageName a . (CBT.Env env, CBT.Image.IsName imageName)
   => CBT.Container.Name
   -> imageName
-  -> (Postgresql.ClientConfig -> RIO env a)
-  -> RIO env a
+  -> (Postgresql.ClientConfig -> MIO env a)
+  -> MIO env a
 withDatabaseContainerImage containerName targetImageName
   = CBT.Container.withRun containerDefinition'
   . runAction containerName
@@ -161,8 +161,8 @@ setImageName CBT.Container.Definition{..} imageName'
 runAction
   :: forall env a . CBT.Env env
   => CBT.Container.Name
-  -> (Postgresql.ClientConfig -> RIO env a)
-  -> RIO env a
+  -> (Postgresql.ClientConfig -> MIO env a)
+  -> MIO env a
 runAction containerName action = do
   hostPort <- getHostPort       containerName
   password <- getMasterPassword containerName
@@ -176,7 +176,7 @@ runAction containerName action = do
 getHostPort
   :: forall env . CBT.Env env
   => CBT.Container.Name
-  -> RIO env Postgresql.HostPort
+  -> MIO env Postgresql.HostPort
 getHostPort containerName
   =   Postgresql.HostPort
   .   convert
@@ -185,7 +185,7 @@ getHostPort containerName
 getMasterPassword
   :: forall env . CBT.Env env
   => CBT.Container.Name
-  -> RIO env Postgresql.Password
+  -> MIO env Postgresql.Password
 getMasterPassword containerName =
   Postgresql.Password . rstrip . Text.decodeUtf8 <$>
     CBT.Container.readFile containerName pgMasterPasswordAbs
@@ -195,7 +195,7 @@ getMasterPassword containerName =
 getClientConfig
   :: CBT.Env env
   => CBT.Container.Name
-  -> RIO env Postgresql.ClientConfig
+  -> MIO env Postgresql.ClientConfig
 getClientConfig containerName =
   mkClientConfig
     <$> getHostPort containerName
@@ -239,7 +239,7 @@ waitForPort
   :: forall env . CBT.Env env
   => CBT.Container.Name
   -> Postgresql.ClientConfig
-  -> RIO env ()
+  -> MIO env ()
 waitForPort containerName clientConfig
   = Wait.wait
   $ Wait.Config

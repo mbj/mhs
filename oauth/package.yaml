@@ -25,7 +25,7 @@ dependencies:
 - http-mclient
 - http-types
 - mprelude
-- mrio-core
+- mio-core
 - mtl
 - random
 - text

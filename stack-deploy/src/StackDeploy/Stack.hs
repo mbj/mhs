@@ -34,7 +34,7 @@ import qualified Data.Foldable                          as Foldable
 import qualified Data.Text                              as Text
 import qualified Data.Text.Encoding                     as Text
 import qualified Data.Text.IO                           as Text
-import qualified MRIO.Amazonka                          as AWS
+import qualified MIO.Amazonka                           as AWS
 import qualified StackDeploy.AWS                        as AWS
 import qualified StackDeploy.Env                        as StackDeploy
 import qualified StackDeploy.InstanceSpec               as InstanceSpec
@@ -54,7 +54,7 @@ data OperationFields a = OperationFields
 perform
   :: forall env . (AWS.Env env, StackDeploy.Env env)
   => Operation env
-  -> RIO env RemoteOperationResult
+  -> MIO env RemoteOperationResult
 perform = \case
   (OpCreate instanceSpec) ->
     successCallback instanceSpec =<< create instanceSpec
@@ -66,19 +66,19 @@ perform = \case
   where
     runStackId
       :: Id
-      -> (RemoteOperation -> RIO env RemoteOperationResult)
-      -> RIO env RemoteOperationResult
+      -> (RemoteOperation -> MIO env RemoteOperationResult)
+      -> MIO env RemoteOperationResult
     runStackId stackId action = do
       token <- newToken
       action RemoteOperation{..}
 
-    create :: InstanceSpec env -> RIO env RemoteOperationResult
+    create :: InstanceSpec env -> MIO env RemoteOperationResult
     create instanceSpec@InstanceSpec{..} = do
       token   <- newToken
       stackId <- accessStackId CF.createStackResponse_stackId =<< doCreate token
       waitFor RemoteOperation{..}
       where
-        doCreate :: Token -> RIO env (Amazonka.AWSResponse CF.CreateStack)
+        doCreate :: Token -> MIO env (Amazonka.AWSResponse CF.CreateStack)
         doCreate token =
           prepareOperation operationFields instanceSpec token (CF.newCreateStack $ toText name)
             >>= AWS.send
@@ -92,11 +92,11 @@ perform = \case
           , tokenField        = CF.createStack_clientRequestToken
           }
 
-    delete :: RemoteOperation -> RIO env RemoteOperationResult
+    delete :: RemoteOperation -> MIO env RemoteOperationResult
     delete remoteOperation@RemoteOperation{..} =
       doDelete >> waitFor remoteOperation
       where
-        doDelete :: RIO env ()
+        doDelete :: MIO env ()
         doDelete
           = void
           . AWS.send
@@ -106,7 +106,7 @@ perform = \case
     update
       :: InstanceSpec env
       -> RemoteOperation
-      -> RIO env RemoteOperationResult
+      -> MIO env RemoteOperationResult
     update
       instanceSpec
       remoteOperation@RemoteOperation{..} =
@@ -114,7 +114,7 @@ perform = \case
           (doUpdate >> waitFor remoteOperation)
           pure
       where
-        doUpdate :: RIO env ()
+        doUpdate :: MIO env ()
         doUpdate =
           prepareOperation operationFields instanceSpec token (CF.newUpdateStack $ toText stackId)
             >>= void . AWS.send
@@ -138,18 +138,18 @@ perform = \case
           , tokenField        = CF.updateStack_clientRequestToken
           }
 
-    waitFor :: RemoteOperation -> RIO env RemoteOperationResult
+    waitFor :: RemoteOperation -> MIO env RemoteOperationResult
     waitFor remoteOperation = waitForAccept remoteOperation printEvent
 
     successCallback
       :: InstanceSpec env
       -> RemoteOperationResult
-      -> RIO env RemoteOperationResult
+      -> MIO env RemoteOperationResult
     successCallback InstanceSpec{..} result = case result of
       RemoteOperationSuccess -> onSuccess >> pure result
       _                      -> pure result
 
-printEvent :: CF.StackEvent -> RIO env ()
+printEvent :: CF.StackEvent -> MIO env ()
 printEvent event = do
   say $ Text.unwords
     [ timestamp
@@ -191,10 +191,10 @@ printEvent event = do
       . formatTime defaultTimeLocale timeFormat
       $ view CF.stackEvent_timestamp event
 
-    sayReason :: Maybe Text -> RIO env ()
+    sayReason :: Maybe Text -> MIO env ()
     sayReason = maybe (pure ()) (say . ("- " <>))
 
-getStack :: AWS.Env env => InstanceSpec.Name env -> RIO env (Maybe CF.Stack)
+getStack :: AWS.Env env => InstanceSpec.Name env -> MIO env (Maybe CF.Stack)
 getStack name =
   catchJust handleNotFoundError (pure <$> getExistingStack name) pure
   where
@@ -215,24 +215,24 @@ getStack name =
     expectedMessage =
       Amazonka.ErrorMessage $ "Stack with id " <> toText name <> " does not exist"
 
-getStackId :: AWS.Env env => InstanceSpec.Name env -> RIO env (Maybe Id)
+getStackId :: AWS.Env env => InstanceSpec.Name env -> MIO env (Maybe Id)
 getStackId = getId <=< getStack
   where
-    getId :: Maybe CF.Stack -> RIO env (Maybe Id)
+    getId :: Maybe CF.Stack -> MIO env (Maybe Id)
     getId = maybe (pure empty) ((pure <$>) . idFromStack)
 
 getExistingStack
   :: forall env . AWS.Env env
   => InstanceSpec.Name env
-  -> RIO env CF.Stack
+  -> MIO env CF.Stack
 getExistingStack name = maybe failMissingRequested pure =<< doRequest
   where
-    doRequest :: RIO env (Maybe CF.Stack)
+    doRequest :: MIO env (Maybe CF.Stack)
     doRequest = runConduit
       $ AWS.listResource describeSpecificStack (fromMaybe [] . getField @"stacks")
       .| find ((toText name ==) . getField @"stackName")
 
-    failMissingRequested :: RIO env a
+    failMissingRequested :: MIO env a
     failMissingRequested
       = throwString
       $ "Successful request to stack " <> convertText name <> " did not return the stack"
@@ -243,10 +243,10 @@ getExistingStack name = maybe failMissingRequested pure =<< doRequest
 getExistingStackId
   :: AWS.Env env
   => InstanceSpec.Name env
-  -> RIO env Id
+  -> MIO env Id
 getExistingStackId = idFromStack <=< getExistingStack
 
-getOutput :: AWS.Env env => InstanceSpec.Name env -> Text -> RIO env Text
+getOutput :: AWS.Env env => InstanceSpec.Name env -> Text -> MIO env Text
 getOutput name key = do
   stack <- getExistingStack name
 
@@ -255,11 +255,11 @@ getOutput name key = do
     (maybe (failStack $ "Output " <> convertText key <> " has no value") pure . getField @"outputValue")
     (Foldable.find ((==) (pure key) . getField @"outputKey") (fromMaybe [] $ getField @"outputs" stack))
   where
-    failStack :: Text -> RIO env a
+    failStack :: Text -> MIO env a
     failStack message
       = throwString . convertText $ "Stack: " <> convertText name <> " " <> message
 
-stackNames :: AWS.Env env => ConduitT () (InstanceSpec.Name env) (RIO env) ()
+stackNames :: AWS.Env env => ConduitT () (InstanceSpec.Name env) (MIO env) ()
 stackNames
   =  AWS.listResource CF.newDescribeStacks (fromMaybe [] . getField @"stacks")
   .| map (InstanceSpec.mkName . getField @"stackName")
@@ -270,7 +270,7 @@ prepareOperation
   -> InstanceSpec env
   -> Token
   -> a
-  -> RIO env a
+  -> MIO env a
 prepareOperation OperationFields{..} InstanceSpec{..} token
   = setTemplateBody
   . set     capabilitiesField (pure capabilities)
@@ -278,18 +278,18 @@ prepareOperation OperationFields{..} InstanceSpec{..} token
   . set     roleARNField      (toText <$> roleARN)
   . setText tokenField        token
   where
-    setTemplateBody :: a -> RIO env a
+    setTemplateBody :: a -> MIO env a
     setTemplateBody request =
       if BS.length templateBodyBS <= maxBytes
         then pure $ setText templateBodyField templateBody request
         else s3Template request
 
-    s3Template :: a -> RIO env a
+    s3Template :: a -> MIO env a
     s3Template request = do
       ask >>=
         (maybe failMissingTemplateBucket (doUpload request =<<) . (.getTemplateBucketName)) . getField @"stackDeployConfig"
 
-    doUpload :: a -> S3.BucketName -> RIO env a
+    doUpload :: a -> S3.BucketName -> MIO env a
     doUpload request bucketName@(S3.BucketName bucketNameText) = do
       S3.syncTarget targetObject
       pure $ setText templateURLField s3URL request
@@ -301,7 +301,7 @@ prepareOperation OperationFields{..} InstanceSpec{..} token
             { S3.uploadCallback = liftIO . Text.putStrLn . ("Uploading template: " <>)
             }
 
-    failMissingTemplateBucket :: RIO env a
+    failMissingTemplateBucket :: MIO env a
     failMissingTemplateBucket
       = liftIO
       $ fail
@@ -323,10 +323,10 @@ finalMessage = \case
   RemoteOperationFailure -> "failure"
   RemoteOperationSuccess -> "succcess"
 
-idFromStack :: CF.Stack -> RIO env Id
+idFromStack :: CF.Stack -> MIO env Id
 idFromStack = accessStackId CF.stack_stackId
 
-accessStackId :: Lens' a (Maybe Text) -> a -> RIO env Id
+accessStackId :: Lens' a (Maybe Text) -> a -> MIO env Id
 accessStackId lens
   = maybe
      (throwString "Remote stack without stack id")

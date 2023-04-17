@@ -23,8 +23,8 @@ import Control.Arrow (left)
 import Control.Monad.Reader (asks)
 import Data.Conversions (toText)
 import GHC.Records (HasField(..))
+import MIO.Core
 import MPrelude
-import MRIO.Core
 
 import qualified Data.Aeson                 as JSON
 import qualified Data.ByteString            as BS
@@ -120,7 +120,7 @@ send
   :: Env env
   => ResponseDecoder a
   -> HTTP.Request
-  -> RIO env (Result a)
+  -> MIO env (Result a)
 send decoder request = do
   sendRequest' <- asks (.httpSendRequest)
   sendRequest sendRequest' decoder request
@@ -129,7 +129,7 @@ sendRequest
   :: SendRequest
   -> ResponseDecoder a
   -> HTTP.Request
-  -> RIO env (Result a)
+  -> MIO env (Result a)
 sendRequest sendRequest' decoder request = do
   either (Left . HTTPError) decoder <$> Exception.tryJust selectException (liftIO $ sendRequest' request)
   where

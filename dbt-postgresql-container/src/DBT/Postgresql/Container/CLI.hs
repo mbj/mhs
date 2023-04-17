@@ -19,7 +19,7 @@ main = do
 run
   :: forall env . CBT.Env env
   => [String]
-  -> RIO env ()
+  -> MIO env ()
 run arguments = do
   liftIO $ IO.hSetBuffering IO.stdout IO.LineBuffering
   join
@@ -29,10 +29,10 @@ run arguments = do
   where
     preferences = prefs showHelpOnEmpty
 
-    parser :: ParserInfo (RIO env ())
+    parser :: ParserInfo (MIO env ())
     parser = wrapHelper "dbt commands" commands
 
-    commands :: Parser (RIO env ())
+    commands :: Parser (MIO env ())
     commands
       = hsubparser
       $ mkCommand

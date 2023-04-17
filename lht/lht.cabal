@@ -75,8 +75,8 @@ library
     , elf >=0.30
     , exceptions
     , http-types >=0.12
+    , mio-core
     , mprelude >=0.2
-    , mrio-core
     , pathtype >=0.8
     , source-constraints
     , tar >=0.5
@@ -145,8 +145,8 @@ test-suite test
     , exceptions
     , http-types >=0.12
     , lht
+    , mio-core
     , mprelude >=0.2
-    , mrio-core
     , pathtype >=0.8
     , source-constraints
     , tar >=0.5

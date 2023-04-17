@@ -21,7 +21,7 @@ dependencies:
 - http-client
 - http-types
 - mprelude
-- mrio-core
+- mio-core
 - mtl
 - text
 - unliftio

@@ -72,9 +72,9 @@ library
     , conversions
     , dbt-postgresql-connection
     , hasql >=1.4
+    , mio-core
+    , mio-log
     , mprelude
-    , mrio-core
-    , mrio-log
     , mtl >=2.2
     , network
     , optparse-applicative >=0.15
@@ -138,9 +138,9 @@ executable dbt
     , dbt-postgresql-connection
     , dbt-postgresql-container
     , hasql >=1.4
+    , mio-core
+    , mio-log
     , mprelude
-    , mrio-core
-    , mrio-log
     , mtl >=2.2
     , network
     , optparse-applicative >=0.15
@@ -210,9 +210,9 @@ test-suite test
     , dbt-postgresql-container
     , devtools
     , hasql >=1.4
+    , mio-core
+    , mio-log
     , mprelude
-    , mrio-core
-    , mrio-log
     , mtl >=2.2
     , network
     , optparse-applicative >=0.15

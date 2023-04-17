@@ -100,7 +100,7 @@ getAuthorizationRequest
   -> RedirectURI
   -> ResponseType
   -> [Scope]
-  -> RIO env AuthorizationRequest
+  -> MIO env AuthorizationRequest
 getAuthorizationRequest Config{..} redirectURI responseType scopes = do
   state <- convertImpure <$> getRandomText
   pure AuthorizationRequest{accessType = empty, ..}
@@ -126,7 +126,7 @@ requestToken
   :: HTTP.Env env
   => Config
   -> TokenRequest
-  -> RIO env TokenResponse
+  -> MIO env TokenResponse
 requestToken Config{..} TokenRequest{..} = do
   baseRequest <- HTTP.parseRequest (convert @String $ convert @Text tokenEndpoint)
 
@@ -149,5 +149,5 @@ oAuth2JsonOptions = JSON.defaultOptions
   { JSON.fieldLabelModifier = JSON.camelTo2 '_'
   }
 
-getRandomText :: RIO env Text
+getRandomText :: MIO env Text
 getRandomText = liftIO $ Text.decodeUtf8 . Base64.encode . BS.pack <$> replicateM 32 (System.randomIO @Word8)

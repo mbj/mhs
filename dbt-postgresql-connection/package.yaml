@@ -14,7 +14,7 @@ dependencies:
 - conversions
 - hasql              >= 1.4
 - mprelude
-- mrio-core
+- mio-core
 - mtl                >= 2.2
 - source-constraints
 - text

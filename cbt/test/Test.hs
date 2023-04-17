@@ -11,7 +11,7 @@ import qualified CBT.Image
 import qualified CBT.Image.BuildDefinition as CBT.Image
 import qualified CBT.Image.Name            as CBT.Image
 import qualified Devtools
-import qualified MRIO.Log                  as Log
+import qualified MIO.Log                   as Log
 import qualified System.Path               as Path
 import qualified Test.Tasty                as Tasty
 

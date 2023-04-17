@@ -15,8 +15,8 @@ dependencies:
 - dbt-postgresql-connection
 - hasql                     >= 1.4
 - mprelude
-- mrio-log
-- mrio-core
+- mio-log
+- mio-core
 - mtl                       >= 2.2
 - network
 - optparse-applicative      >= 0.15

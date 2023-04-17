@@ -6,10 +6,10 @@ import Options.Applicative
 
 parserInfo
   :: forall env . Env env
-  => ParserInfo (DynamicConfig env -> RIO env ())
+  => ParserInfo (DynamicConfig env -> MIO env ())
 parserInfo = wrapHelper commands "migration commands"
   where
-    commands :: Parser (DynamicConfig env -> RIO env ())
+    commands :: Parser (DynamicConfig env -> MIO env ())
     commands = hsubparser
       $  mkCommand
          "apply"
@@ -48,7 +48,7 @@ parserInfo = wrapHelper commands "migration commands"
          (withConnection' loadSchema)
          "Load database schema"
 
-    withConnection' :: RIO ConnectionEnv a -> DynamicConfig env -> RIO env a
+    withConnection' :: MIO ConnectionEnv a -> DynamicConfig env -> MIO env a
     withConnection' = flip withDynamicConnectionEnv
 
 wrapHelper :: Parser b -> String -> ParserInfo b

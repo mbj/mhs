@@ -75,9 +75,9 @@ lambda-alb 0.0.8
 lambda-runtime 0.0.2
 libyaml 0.1.2
 mime-types 0.1.0.9
+mio-core 0.0.1
 mono-traversable 1.0.15.3
 mprelude 0.2.1
-mrio-core 0.0.1
 mtl 2.2.2
 network 3.1.2.8
 network-uri 2.6.4.2
