@@ -1,4 +1,4 @@
-FROM registry.hub.docker.com/library/alpine:3.16
+FROM registry.hub.docker.com/library/alpine:3.17
 
 # Setup for userns mapped single user
 RUN echo $'build:x:0:0:build:/opt/build:/bin/ash\n\
@@ -34,11 +34,11 @@ RUN apk add           \
   --no-cache          \
   --                  \
   curl                \
+  g++                 \
   gcc                 \
   git                 \
   grep                \
   libffi              \
-  gmp-dev             \
   make                \
   musl-dev            \
   ncurses-dev         \

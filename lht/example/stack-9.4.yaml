@@ -1,0 +1,8 @@
+resolver: nightly-2023-04-19
+compiler: ghc-9.4.5
+setup-info:
+  ghc:
+    linux64-lht:
+      9.4.5:
+        url: https://downloads.haskell.org/~ghc/9.4.5/ghc-9.4.5-x86_64-alpine3_12-linux-static-int_native.tar.xz
+        sha256: fd5fd84e75909baf952f26287ce2396d664dbfca251f0696ae7f31a868b59520

@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP         #-}
 {-# LANGUAGE QuasiQuotes #-}
 
 module Main (main) where
@@ -12,6 +13,7 @@ import Data.Function
 import Data.List ((++))
 import Data.Maybe
 import Data.String
+import Data.Traversable
 import Prelude (error)
 import SourceConstraints
 import SourceConstraints.LocalModule
@@ -20,6 +22,17 @@ import System.IO
 import Test.Hspec
 import Text.Heredoc
 
+#if MIN_VERSION_GLASGOW_HASKELL(9,4,0,0)
+import GHC
+import GHC.Driver.Errors.Types
+import GHC.Driver.Main
+import GHC.Driver.Session
+import GHC.Paths
+import GHC.Types.Error
+import GHC.Unit.Module.ModSummary
+import GHC.Utils.Error
+import GHC.Utils.Outputable
+#else
 import GHC
 import GHC.Data.Bag
 import GHC.Driver.Main
@@ -28,6 +41,7 @@ import GHC.Paths
 import GHC.Unit.Module.ModSummary
 import GHC.Utils.Error
 import GHC.Utils.Outputable
+#endif
 
 main :: IO ()
 main = System.withArgs [] . hspec $ do
@@ -70,6 +84,7 @@ main = System.withArgs [] . hspec $ do
         actual <- getWarnings file
         actual `shouldBe` messages
 
+#if MIN_VERSION_GLASGOW_HASKELL(9,4,0,0)
 getWarnings :: String -> IO [String]
 getWarnings file = runGhc (pure libdir) $ do
   setupDynFlags
@@ -95,7 +110,64 @@ getWarnings file = runGhc (pure libdir) $ do
 
       let sDocContext = initSDocContext dynFlags defaultUserStyle
 
-      mapM (render sDocContext) . bagToList . warnings Context{..} $ hpm_module parsedModule
+      toList <$> traverse (render sDocContext) (getMessages . warnings Context{..} $ hpm_module parsedModule)
+
+    setupDynFlags :: GhcMonad m => m ()
+    setupDynFlags = do
+      dynFlags <- getSessionDynFlags
+      void . setSessionDynFlags $ dynFlags { packageFlags = [packageFlag] }
+      where
+        packageFlag =
+          ExposePackage
+            "-package base"
+            (PackageArg "base")
+            (ModRenaming True [])
+
+    setupTargets :: GhcMonad m => m ()
+    setupTargets = do
+      target <- guessTarget file Nothing Nothing
+      setTargets [target]
+      result <- load LoadAllTargets
+
+      unless (succeeded result) $ error "Loading of targets failed"
+
+    render :: GhcMonad m => SDocContext -> WarnMsg -> m String
+    render sDocContext warning = do
+      caretDiagnostic <- liftIO $
+        getCaretDiagnostic
+          (MCDiagnostic (errMsgSeverity warning) WarningWithoutFlag)
+          (errMsgSpan warning)
+
+      pure $ renderWithContext
+        sDocContext
+        (formatBulleted sDocContext (diagnosticMessage $ errMsgDiagnostic warning) $+$ caretDiagnostic)
+#else
+getWarnings :: String -> IO [String]
+getWarnings file = runGhc (pure libdir) $ do
+  setupDynFlags
+  setupTargets
+
+  parseWarnings
+
+  where
+    parseWarnings :: GhcMonad m => m [String]
+    parseWarnings = do
+      moduleGraph <- depanal [] True
+
+      let moduleSummary =
+            fromMaybe
+              (error $ "Cannot find module summary for " ++ file ++ " in dependency graph")
+              (find ((== file) . msHsFilePath) $ mgModSummaries moduleGraph)
+
+      env          <- getSession
+      dynFlags     <- getDynFlags
+      parsedModule <- liftIO $ hscParse env moduleSummary
+
+      let localModules = [LocalModule $ mkModuleName "Data.Word"]
+
+      let sDocContext = initSDocContext dynFlags defaultUserStyle
+
+      traverse (render sDocContext) . bagToList . warnings Context{..} $ hpm_module parsedModule
 
     setupDynFlags :: GhcMonad m => m ()
     setupDynFlags = do
@@ -126,3 +198,4 @@ getWarnings file = runGhc (pure libdir) $ do
       pure $ renderWithContext
         sDocContext
         (formatBulleted sDocContext (errMsgDiagnostic warning) $+$ caretDiagnostic)
+#endif
