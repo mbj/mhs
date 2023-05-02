@@ -1,0 +1,3 @@
+expected valid meta comment such as (ERROR) or (1 row) but received: 
+
+-- (warning)
