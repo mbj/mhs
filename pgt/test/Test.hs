@@ -1,5 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
+import Control.Monad (sequence)
 import Data.Vector (Vector)
 import MPrelude
 import Prelude (error)
@@ -12,6 +13,7 @@ import qualified Data.Text.IO             as Text
 import qualified Devtools
 import qualified PGT
 import qualified PGT.Output.Definition
+import qualified PGT.Output.Test.Comments
 import qualified PGT.Selector             as PGT
 import qualified System.Path              as Path
 import qualified System.Process.Typed     as Process
@@ -28,16 +30,20 @@ main = do
     DBT.withDatabaseContainerDefault containerName $ \pgConfig -> do
       let adminConfig = pgConfig { Postgresql.databaseName = Postgresql.DatabaseName "template1" }
       liftIO $ setupSchema adminConfig
-      config             <- PGT.configure adminConfig empty
-      definitionTestTree <- liftIO PGT.Output.Definition.testTree
+      config         <- PGT.configure adminConfig empty
+      outputTestTree <-
+        liftIO
+          $ sequence
+          [ PGT.Output.Definition.testTree
+          , PGT.Output.Test.Comments.testTree
+          ]
 
       liftIO . Tasty.defaultMain .
         Tasty.testGroup "" $
           [ Devtools.testTree $$(Devtools.readDependencies [Devtools.Target "pgt"])
           , PGT.testTree config success
-          , definitionTestTree
           , testSharding
-          ]
+          ] <> outputTestTree
 
 setupSchema :: Postgresql.ClientConfig -> IO ()
 setupSchema pgConfig = do
