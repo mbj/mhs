@@ -1,0 +1,36 @@
+                     View "public.users"
+        Column         |            Type             | Collation | Nullable | Default
+-----------------------+-----------------------------+-----------+----------+---------
+ user_exam1_id         | uuid                        |           |          |
+ user_exam1_created_at | timestamp without time zone |           |          |
+ account_id            | uuid                        |           |          |
+ user_example_text_123 | present_text_not_null[]     |           |          |
+
+-- First test-suite
+-- (2 rows)
+
+-[ RECORD 1 ]---------+------------------------------------------------
+exampleId1_id         | 00000000-0000-7000-0000-000000000138
+exampleId1_created_at | 1970-01-02 02:01:57
+-[ RECORD 1 ]---------+------------------------------------------------
+exampleId1_id         | 00000000-0000-7000-0000-000000000139
+exampleId1_created_at | 1970-02-02 02:01:57
+
+                     View "public.accounts"
+        Column         |            Type             | Collation | Nullable | Default
+-----------------------+-----------------------------+-----------+----------+---------
+ account_ex_id         | uuid                        |           |          |
+ acc_example_text_123  | present_text_not_null[]     |           |          |
+
+                    Composite type "user_type"
+       Column        |                Type                | Collation | Nullable | Default
+---------------------+------------------------------------+-----------+----------+---------
+ id                  | uuid_not_null                      |           |          |
+ created_at          | timestamptz_not_null               |           |          |
+
+-- Second test-suite
+-- (1 row)
+
+-[ RECORD 1 ]---------+------------------------------------------------
+exampleId1_id         | 00000000-0000-7000-0000-000000000138
+exampleId1_created_at | 1970-01-02 02:01:57
