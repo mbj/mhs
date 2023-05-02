@@ -51,7 +51,7 @@ main = do
       liftIO . Tasty.defaultMain .
         Tasty.testGroup "" $
           [ Devtools.testTree $$(Devtools.readDependencies [Devtools.Target "pgt"])
-          , PGT.testTree config success
+          , PGT.testTree identity config success
           , testSharding
           ] <> outputTestTree
 
