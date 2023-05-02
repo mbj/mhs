@@ -4,6 +4,7 @@ module PGT.Prelude
   )
 where
 
+import Control.Monad       as Exports (when)
 import Data.Char           as Exports (Char)
 import Data.Conversions    as Exports
 import MPrelude            as Exports
