@@ -45,6 +45,7 @@ library
       PGT
       PGT.CLI
       PGT.Output.Render
+      PGT.Output.Text
       PGT.Prelude
       PGT.Selector
   other-modules:
