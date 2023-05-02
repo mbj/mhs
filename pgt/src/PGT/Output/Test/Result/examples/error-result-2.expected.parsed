@@ -1,0 +1,4 @@
+ERROR:  duplicate key value violates unique constraint "example_key"
+DETAIL:  Key (foo, symbol, "time")=(foo, bar, 1970-01-01 00:01:40) already exists.
+CONTEXT:  SQL function "create_example_bars" statement 1
+ERROR:  current transaction is aborted, commands ignored until end of transaction block

@@ -50,6 +50,7 @@ library
       PGT.Output.RowCount
       PGT.Output.Test.Comments
       PGT.Output.Test.QueryPlan
+      PGT.Output.Test.Result
       PGT.Output.Text
       PGT.Prelude
       PGT.Selector

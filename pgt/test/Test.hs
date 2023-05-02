@@ -15,6 +15,7 @@ import qualified PGT
 import qualified PGT.Output.Definition
 import qualified PGT.Output.Test.Comments
 import qualified PGT.Output.Test.QueryPlan
+import qualified PGT.Output.Test.Result
 import qualified PGT.Selector             as PGT
 import qualified System.Path              as Path
 import qualified System.Process.Typed     as Process
@@ -38,6 +39,7 @@ main = do
           [ PGT.Output.Definition.testTree
           , PGT.Output.Test.Comments.testTree
           , PGT.Output.Test.QueryPlan.testTree
+          , PGT.Output.Test.Result.testTree
           ]
 
       liftIO . Tasty.defaultMain .

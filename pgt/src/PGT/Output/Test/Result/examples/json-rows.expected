@@ -1,0 +1,9 @@
+    schema    |                         name                         |                               arguments                                |                           return_type
+--------------+------------------------------------------------------+------------------------------------------------------------------------+-----------------------------------------------------------------
+ pub_metrics  | available_foo                                        | [                                                                     +| pub_metrics.foo
+              |                                                      |     "public.timestamp_not_null"                                       +|
+              |                                                      | ]                                                                      |
+ pri_metrics  | available_bar                                        | {                                                                     +| pri_metrics.bar
+              |                                                      |     "public.timestamp_not_null"                                       +|
+              |                                                      | }                                                                      |
+(2 row)

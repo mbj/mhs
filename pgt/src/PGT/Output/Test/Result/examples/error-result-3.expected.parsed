@@ -1,0 +1,3 @@
+ERROR:  insert or update on table "example_statuses" violates foreign key constraint "fk_status_id"
+DETAIL:  Key (example_id)=(00000000-0000-4000-0000-000000000125) is not present in table "example".
+CONTEXT: SQL function "create_example" statement 1
