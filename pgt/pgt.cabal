@@ -44,6 +44,9 @@ library
   exposed-modules:
       PGT
       PGT.CLI
+      PGT.Output.Golden
+      PGT.Output.Render
+      PGT.Output.Text
       PGT.Prelude
       PGT.Selector
   other-modules:
@@ -80,7 +83,9 @@ library
       ViewPatterns
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wno-ambiguous-fields -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
-      base
+      aeson
+    , attoparsec
+    , base
     , bytestring
     , containers >=0.6
     , conversions >=0.0.3
@@ -88,9 +93,11 @@ library
     , directory >=1.3
     , filepath >=1.4
     , mprelude
+    , mtl
     , optparse-applicative >=0.15
     , ordered-containers >=0.2
     , pathtype >=0.8.1
+    , scientific
     , source-constraints
     , tasty >=1.3.1
     , tasty-mgolden >=0.0.1
@@ -143,7 +150,9 @@ executable pgt
       ViewPatterns
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wno-ambiguous-fields -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      base
+      aeson
+    , attoparsec
+    , base
     , bytestring
     , containers >=0.6
     , conversions >=0.0.3
@@ -151,10 +160,12 @@ executable pgt
     , directory >=1.3
     , filepath >=1.4
     , mprelude
+    , mtl
     , optparse-applicative >=0.15
     , ordered-containers >=0.2
     , pathtype >=0.8.1
     , pgt
+    , scientific
     , source-constraints
     , tasty >=1.3.1
     , tasty-mgolden >=0.0.1
@@ -212,7 +223,9 @@ test-suite test
       ViewPatterns
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wno-ambiguous-fields -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      base
+      aeson
+    , attoparsec
+    , base
     , bytestring
     , cbt
     , containers >=0.6
@@ -223,10 +236,12 @@ test-suite test
     , directory >=1.3
     , filepath >=1.4
     , mprelude
+    , mtl
     , optparse-applicative >=0.15
     , ordered-containers >=0.2
     , pathtype >=0.8.1
     , pgt
+    , scientific
     , source-constraints
     , tasty >=1.3.1
     , tasty-hunit
