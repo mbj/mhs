@@ -48,6 +48,7 @@ library
       PGT.Output.Golden
       PGT.Output.Render
       PGT.Output.RowCount
+      PGT.Output.Test
       PGT.Output.Test.Comments
       PGT.Output.Test.QueryPlan
       PGT.Output.Test.Result

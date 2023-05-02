@@ -13,6 +13,7 @@ import qualified Data.Text.IO             as Text
 import qualified Devtools
 import qualified PGT
 import qualified PGT.Output.Definition
+import qualified PGT.Output.Test
 import qualified PGT.Output.Test.Comments
 import qualified PGT.Output.Test.QueryPlan
 import qualified PGT.Output.Test.Result
@@ -40,6 +41,7 @@ main = do
           , PGT.Output.Test.Comments.testTree
           , PGT.Output.Test.QueryPlan.testTree
           , PGT.Output.Test.Result.testTree
+          , PGT.Output.Test.testTree
           ]
 
       liftIO . Tasty.defaultMain .

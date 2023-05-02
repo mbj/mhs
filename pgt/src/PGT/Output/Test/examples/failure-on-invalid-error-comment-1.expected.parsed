@@ -1,0 +1,5 @@
+expected an error result but found:
+
+-[ RECORD 1 ]---------+------------------------------------------------
+exampleId1_id         | 00000000-0000-7000-0000-000000000138
+exampleId1_created_at | 1970-01-02 02:01:57

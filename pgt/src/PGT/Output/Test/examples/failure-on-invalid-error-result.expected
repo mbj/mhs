@@ -1,0 +1,4 @@
+-- With example comment
+-- (2 rows)
+
+ERROR:  domain create_example_amount1 does not allow null values
