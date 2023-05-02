@@ -3,6 +3,7 @@ module PGT.Output.Text
   , parseEmptyLine
   , parseLineChars
   , parseName
+  , parsePadding
   , unlines
   )
 where
@@ -56,6 +57,9 @@ parseName = do
           , '_'
           , ' '
           ]
+
+parsePadding :: Parser Text
+parsePadding = Text.takeWhile1 (== ' ')
 
 unlines :: (Foldable f, Conversion Text a) => f a -> Text
 unlines = Text.intercalate "\n" . fmap (convert @Text) . Foldable.toList
