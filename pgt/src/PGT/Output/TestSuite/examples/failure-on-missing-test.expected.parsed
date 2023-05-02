@@ -1,0 +1,7 @@
+Failed reading: expected a test or database object definition but found: 
+
+                         View "public.example"
+             Column              |        Type        | Collation | Nullable | Default
+---------------------------------+--------------------+-----------+----------+---------
+ created_at                      | timestamp_not_null |           |          |
+ alias_id                        | uuid_not_null      |           |          |

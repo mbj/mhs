@@ -1,0 +1,18 @@
+-- Example test comment 1
+-- Example test comment 2
+-- (2 rows)
+
+-[ RECORD 1 ]---------+------------------------------------------------
+exampleId1_id         | 00000000-0000-7000-0000-000000000138
+exampleId1_created_at | 1970-01-02 02:01:57
+-[ RECORD 1 ]---------+------------------------------------------------
+exampleId1_id         | 00000000-0000-7000-0000-000000000139
+exampleId1_created_at | 1970-02-02 02:01:57
+
+-- Other example test comment 1
+-- Other example test comment 2
+-- (1 row)
+
+-[ RECORD 1 ]---------+------------------------------------------------
+exampleId1_id         | 00000000-0000-7000-0000-000000000138
+exampleId1_created_at | 1970-01-02 02:01:57

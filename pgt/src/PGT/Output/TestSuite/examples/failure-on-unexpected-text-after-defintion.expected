@@ -1,0 +1,9 @@
+                     View "public.users"
+        Column         |            Type             | Collation | Nullable | Default
+-----------------------+-----------------------------+-----------+----------+---------
+ user_exam1_id         | uuid                        |           |          |
+ user_exam1_created_at | timestamp without time zone |           |          |
+ account_id            | uuid                        |           |          |
+ user_example_text_123 | present_text_not_null[]     |           |          |
+
+foo bar
