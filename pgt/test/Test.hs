@@ -11,6 +11,7 @@ import qualified DBT.Postgresql.Container as DBT
 import qualified Data.Text.IO             as Text
 import qualified Devtools
 import qualified PGT
+import qualified PGT.Output.Definition
 import qualified PGT.Selector             as PGT
 import qualified System.Path              as Path
 import qualified System.Process.Typed     as Process
@@ -27,11 +28,14 @@ main = do
     DBT.withDatabaseContainerDefault containerName $ \pgConfig -> do
       let adminConfig = pgConfig { Postgresql.databaseName = Postgresql.DatabaseName "template1" }
       liftIO $ setupSchema adminConfig
-      config   <- PGT.configure adminConfig empty
-      liftIO . Tasty.defaultMain $
-        Tasty.testGroup ""
+      config             <- PGT.configure adminConfig empty
+      definitionTestTree <- liftIO PGT.Output.Definition.testTree
+
+      liftIO . Tasty.defaultMain .
+        Tasty.testGroup "" $
           [ Devtools.testTree $$(Devtools.readDependencies [Devtools.Target "pgt"])
           , PGT.testTree config success
+          , definitionTestTree
           , testSharding
           ]
 

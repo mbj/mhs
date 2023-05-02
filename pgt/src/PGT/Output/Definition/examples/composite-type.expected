@@ -1,0 +1,5 @@
+                    Composite type "user_type"
+       Column        |                Type                | Collation | Nullable | Default
+---------------------+------------------------------------+-----------+----------+---------
+ id                  | uuid_not_null                      |           |          |
+ created_at          | timestamptz_not_null               |           |          |
