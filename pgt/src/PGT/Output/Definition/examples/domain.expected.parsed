@@ -1,0 +1,5 @@
+                                        List of domains
+ Schema |         Name         |  Type   | Collation | Nullable | Default |       Check
+--------+----------------------+---------+-----------+----------+---------+--------------------
+ public | non_negative_integer | integer |           |          |         | CHECK (VALUE >= 0)
+(1 row)
