@@ -3,6 +3,7 @@ module PGT.Output.Text
   , parseEmptyLine
   , parseLineChars
   , parseName
+  , unlines
   )
 where
 
@@ -55,3 +56,6 @@ parseName = do
           , '_'
           , ' '
           ]
+
+unlines :: (Foldable f, Conversion Text a) => f a -> Text
+unlines = Text.intercalate "\n" . fmap (convert @Text) . Foldable.toList
