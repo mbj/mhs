@@ -1,5 +1,6 @@
 module PGT.Output.Text
-  ( parseName
+  ( parseLineChars
+  , parseName
   )
 where
 
@@ -9,6 +10,9 @@ import PGT.Prelude
 import qualified Data.Attoparsec.Text as Text
 import qualified Data.Char            as Char
 import qualified Data.Text            as Text
+
+parseLineChars :: Parser Text
+parseLineChars = Text.takeWhile1 Char.isPrint <* Text.endOfLine
 
 parseName :: Parser Text
 parseName = do
