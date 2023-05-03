@@ -1,0 +1,74 @@
+-- Example test comment
+-- (1 row)
+
+-[ RECORD 1 ]---------+------------------------------------------------
+exampleId1_id         | 00000000-0000-7000-0000-000000000138
+exampleId1_created_at | 1970-01-02 02:01:57
+account_id            | 00000000-0000-4000-0000-000000000114
+request_body          | {                                              +
+                      | }
+response_body         | {                                              +
+                      | }
+example_user_acct_map | [                                              +
+                      |     [                                          +
+                      |         "00000000-0000-4000-0000-000000000113",+
+                      |         "sa-0000000000000000000000000"         +
+                      |     ]                                          +
+                      | ]
+example_user_01       | [                                              +
+                      |     [                                          +
+                      |         "00000000-0000-4000-0000-000000000113",+
+                      |         "created_at": "1970-01-011:58+00:00",  +
+                      |     ]                                          +
+                      | ]
+example_count_1       | 0
+empty                 |
+items                 | [                                              +
+                      | ]
+
+             QUERY PLAN
+-------------------------------------
+ [                                  +
+   {                                +
+     "Plan": {                      +
+       "Node Type": "Result",       +
+       "Parallel Aware": false,     +
+       "Startup Cost": 0.00,        +
+       "Total Cost": 0.01,          +
+       "Plan Rows": 1,              +
+       "Plan Width": 4,             +
+       "Actual Startup Time": 0.001,+
+       "Actual Total Time": 0.001,  +
+       "Actual Rows": 1,            +
+       "Actual Loops": 1,           +
+       "Output": ["1"],             +
+       "Shared Hit Blocks": 0,      +
+       "Shared Read Blocks": 0,     +
+       "Shared Dirtied Blocks": 0,  +
+       "Shared Written Blocks": 0,  +
+       "Local Hit Blocks": 0,       +
+       "Local Read Blocks": 0,      +
+       "Local Dirtied Blocks": 0,   +
+       "Local Written Blocks": 0,   +
+       "Temp Read Blocks": 0,       +
+       "Temp Written Blocks": 0     +
+     },                             +
+     "Planning": {                  +
+       "Shared Hit Blocks": 0,      +
+       "Shared Read Blocks": 0,     +
+       "Shared Dirtied Blocks": 0,  +
+       "Shared Written Blocks": 0,  +
+       "Local Hit Blocks": 0,       +
+       "Local Read Blocks": 0,      +
+       "Local Dirtied Blocks": 0,   +
+       "Local Written Blocks": 0,   +
+       "Temp Read Blocks": 0,       +
+       "Temp Written Blocks": 0     +
+     },                             +
+     "Planning Time": 0.300,        +
+     "Triggers": [                  +
+     ],                             +
+     "Execution Time": 0.600        +
+   }                                +
+ ]
+(1 row)
