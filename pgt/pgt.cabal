@@ -52,6 +52,7 @@ library
       PGT.Output.Test.Comments
       PGT.Output.Test.QueryPlan
       PGT.Output.Test.Result
+      PGT.Output.TestSuite
       PGT.Output.Text
       PGT.Prelude
       PGT.Selector

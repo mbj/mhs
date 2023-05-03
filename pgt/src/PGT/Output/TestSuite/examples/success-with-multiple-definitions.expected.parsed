@@ -1,0 +1,36 @@
+                     View "public.users"
+        Column         |            Type             | Collation | Nullable | Default
+-----------------------+-----------------------------+-----------+----------+---------
+ user_exam1_id         | uuid                        |           |          |
+ user_exam1_created_at | timestamp without time zone |           |          |
+ account_id            | uuid                        |           |          |
+ user_example_text_123 | present_text_not_null[]     |           |          |
+
+                                               List of functions
+ Schema |          Name          | Result data type |                Argument data types                | Type
+--------+------------------------+------------------+---------------------------------------------------+------
+ public | create_example_amount1 | void             | arg_user_short_name_value1 user_short_name_domain | func
+(1 row)
+
+                                        List of domains
+ Schema |         Name         |  Type   | Collation | Nullable | Default |       Check
+--------+----------------------+---------+-----------+----------+---------+--------------------
+ public | non_negative_integer | integer |           |          |         | CHECK (VALUE >= 0)
+(1 row)
+
+                    Composite type "user_type"
+       Column        |                Type                | Collation | Nullable | Default
+---------------------+------------------------------------+-----------+----------+---------
+ id                  | uuid_not_null                      |           |          |
+ created_at          | timestamptz_not_null               |           |          |
+
+-- Example test comment 1
+-- Example test comment 2
+-- (2 rows)
+
+-[ RECORD 1 ]---------+------------------------------------------------
+exampleId1_id         | 00000000-0000-7000-0000-000000000138
+exampleId1_created_at | 1970-01-02 02:01:57
+-[ RECORD 1 ]---------+------------------------------------------------
+exampleId1_id         | 00000000-0000-7000-0000-000000000139
+exampleId1_created_at | 1970-02-02 02:01:57
