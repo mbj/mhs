@@ -3,6 +3,7 @@ module Network.HTTP.MClient
   , ResponseDecoder
   , ResponseError(..)
   , SendRequest
+  , TransactionDecoder
   , addContentType
   , addHeader
   , decodeContentType
@@ -14,6 +15,7 @@ module Network.HTTP.MClient
   , decodeStatus
   , decodeStatuses
   , send
+  , send'
   , sendRequest
   , setJSONBody
   )
@@ -51,6 +53,8 @@ instance Exception.Exception ResponseError
 type Result a = Either ResponseError a
 
 type ResponseDecoder a = HTTP.Response LBS.ByteString -> Result a
+
+type TransactionDecoder a = HTTP.HttpExceptionContent -> Result a
 
 decodeStatus
   :: HTTP.Status
@@ -121,17 +125,27 @@ send
   => ResponseDecoder a
   -> HTTP.Request
   -> MIO env (Result a)
-send decoder request = do
-  sendRequest' <- asks (.httpSendRequest)
-  sendRequest sendRequest' decoder request
+send = send' (Left . HTTPError)
 
-sendRequest
-  :: SendRequest
+send'
+  :: Env env
+  => TransactionDecoder a
   -> ResponseDecoder a
   -> HTTP.Request
   -> MIO env (Result a)
-sendRequest sendRequest' decoder request = do
-  either (Left . HTTPError) decoder <$> Exception.tryJust selectException (liftIO $ sendRequest' request)
+send' transactionDecoder decoder request = do
+  sendRequest' <- asks (.httpSendRequest)
+  sendRequest sendRequest' transactionDecoder decoder request
+
+sendRequest
+  :: SendRequest
+  -> TransactionDecoder a
+  -> ResponseDecoder a
+  -> HTTP.Request
+  -> MIO env (Result a)
+sendRequest sendRequest' transactionDecoder decoder request =
+  either transactionDecoder decoder
+    <$> Exception.tryJust selectException (liftIO $ sendRequest' request)
   where
     selectException :: HTTP.HttpException -> Maybe HTTP.HttpExceptionContent
     selectException = \case
