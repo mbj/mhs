@@ -1,5 +1,6 @@
 module PGT.Output.Text
   ( impureParseEmptyLine
+  , mkParseEmptyLines
   , parseEmptyLine
   , parseLineChars
   , parseName
@@ -18,18 +19,20 @@ import qualified Data.Text            as Text
 import qualified GHC.Err              as Err
 
 impureParseEmptyLine :: String -> Parser ()
-impureParseEmptyLine = either Err.error pure <=< mkParseEmptyLine
+impureParseEmptyLine = either Err.error pure <=< mkParseEmptyLines 1
 
 parseEmptyLine :: String -> Parser ()
-parseEmptyLine = either fail pure <=< mkParseEmptyLine
+parseEmptyLine = either fail pure <=< mkParseEmptyLines 1
 
-mkParseEmptyLine :: String -> Parser (Either String ())
-mkParseEmptyLine message = do
-  emptyLinesCount <- Foldable.length <$> Text.many' Text.endOfLine
+mkParseEmptyLines :: Natural -> String -> Parser (Either String ())
+mkParseEmptyLines expectedLines message = do
+  receivedLines <- Foldable.length <$> Text.many' Text.endOfLine
 
-  if emptyLinesCount == 1
+  if convertImpure receivedLines == expectedLines
     then pure $ pure ()
-    else pure . Left $ "found " <> show emptyLinesCount <> " empty lines " <> message <> " instead of 1"
+    else pure
+      . Left
+      $ "found " <> show receivedLines <> " empty lines " <> message <> " instead of " <> show expectedLines
 
 parseLineChars :: Parser Text
 parseLineChars = Text.takeWhile1 Char.isPrint <* Text.endOfLine
