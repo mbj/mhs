@@ -19,18 +19,10 @@ import qualified Data.Text            as Text
 import qualified GHC.Err              as Err
 
 impureParseEmptyLine :: String -> Parser ()
-impureParseEmptyLine = either Err.error pure <=< mkParseEmptyLine
+impureParseEmptyLine = either Err.error pure <=< mkParseEmptyLines 1
 
 parseEmptyLine :: String -> Parser ()
-parseEmptyLine = either fail pure <=< mkParseEmptyLine
-
-mkParseEmptyLine :: String -> Parser (Either String ())
-mkParseEmptyLine message = do
-  emptyLinesCount <- Foldable.length <$> Text.many' Text.endOfLine
-
-  if emptyLinesCount == 1
-    then pure $ pure ()
-    else pure . Left $ "found " <> show emptyLinesCount <> " empty lines " <> message <> " instead of 1"
+parseEmptyLine = either fail pure <=< mkParseEmptyLines 1
 
 mkParseEmptyLines :: Natural -> String -> Parser (Either String ())
 mkParseEmptyLines expectedLines message = do
