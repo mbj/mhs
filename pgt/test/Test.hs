@@ -12,6 +12,7 @@ import qualified DBT.Postgresql.Container as DBT
 import qualified Data.Text.IO             as Text
 import qualified Devtools
 import qualified PGT
+import qualified PGT.Output
 import qualified PGT.Output.Definition
 import qualified PGT.Output.Test
 import qualified PGT.Output.Test.Comments
@@ -44,12 +45,13 @@ main = do
           , PGT.Output.Test.Result.testTree
           , PGT.Output.Test.testTree
           , PGT.Output.TestSuite.testTree
+          , PGT.Output.testTree
           ]
 
       liftIO . Tasty.defaultMain .
         Tasty.testGroup "" $
           [ Devtools.testTree $$(Devtools.readDependencies [Devtools.Target "pgt"])
-          , PGT.testTree config success
+          , PGT.testTree identity config success
           , testSharding
           ] <> outputTestTree
 

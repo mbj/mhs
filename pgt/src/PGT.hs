@@ -15,6 +15,7 @@ module PGT
   , runList
   , runTests
   , runUpdates
+  , runUpdatesWithLinter
   , selectShard
   , testTree
   )
@@ -33,6 +34,7 @@ import qualified Data.Text                  as Text
 import qualified Data.Text.Encoding         as Text
 import qualified Data.Text.IO               as Text
 import qualified Data.Vector                as Vector
+import qualified PGT.Output                 as PGT
 import qualified System.Environment         as System
 import qualified System.Exit                as System
 import qualified System.Path                as Path
@@ -115,12 +117,14 @@ runList _config = traverse_ printTest
 runExamples :: forall f m . (Foldable f, MonadUnliftIO m) => Config -> f Test -> m ()
 runExamples config = Foldable.mapM_ $ runTestSession config Process.runProcess_
 
-runTasty :: MonadIO m => Tasty.OptionSet -> Config -> [Test] -> m ()
-runTasty tastyOptions config tests = liftIO $ do
+type PostProcess = Text -> Text
+
+runTasty :: MonadIO m => Tasty.OptionSet -> PostProcess -> Config -> [Test] -> m ()
+runTasty tastyOptions postProcess config tests = liftIO $ do
   Tasty.Runners.installSignalHandlers
   maybe failIngredients run
     . Tasty.Runners.tryIngredients Tasty.defaultIngredients tastyOptions
-    $ testTree config tests
+    $ testTree postProcess config tests
   where
     failIngredients :: IO a
     failIngredients = fail "Internal failure running ingredients"
@@ -133,30 +137,41 @@ runTasty tastyOptions config tests = liftIO $ do
         else System.exitFailure
 
 runTests :: MonadIO m => Config -> Tests -> m ()
-runTests config = runTasty mempty config . Vector.toList
+runTests config = runTasty mempty identity config . Vector.toList
 
 runUpdates :: MonadIO m => Config -> Tests -> m ()
-runUpdates config
-  = runTasty (Tasty.singleOption Tasty.MGolden.UpdateExpected) config
+runUpdates = runUpdates' identity
+
+runUpdatesWithLinter :: MonadIO m => Config -> Tests -> m ()
+runUpdatesWithLinter = runUpdates' PGT.impureParse
+
+runUpdates' :: MonadIO m => PostProcess -> Config -> Tests -> m ()
+runUpdates' postProcess config
+  = runTasty (Tasty.singleOption Tasty.MGolden.UpdateExpected) postProcess config
   . Vector.toList
 
-testTree :: Config -> [Test] -> Tasty.TestTree
-testTree config tests = Tasty.testGroup "pgt" $ mkGolden config <$> tests
+testTree :: PostProcess -> Config -> [Test] -> Tasty.TestTree
+testTree postProcess config tests = Tasty.testGroup "pgt" $ mkGolden postProcess config <$> tests
 
-mkGolden :: Config -> Test -> Tasty.TestTree
-mkGolden config test@Test{..}
+mkGolden :: PostProcess -> Config -> Test -> Tasty.TestTree
+mkGolden postProcess config test@Test{..}
   = Tasty.MGolden.goldenTest
      (Path.toString path)
      (Path.toString $ expectedFileName test)
-  $ captureTest config test
+  $ captureTest postProcess config test
 
 expectedFileName :: Test -> Path.RelFile
 expectedFileName Test{..} = Path.addExtension path ".expected"
 
-captureTest :: forall m . MonadUnliftIO m => Config -> Test -> m Text
-captureTest config
+captureTest
+  :: forall m . MonadUnliftIO m
+  => PostProcess
+  -> Config
+  -> Test
+  -> m Text
+captureTest postProcess config
   = runTestSession config
-  $ (stripTrailing . Text.decodeUtf8 . LBS.toStrict <$>)
+  $ (postProcess . stripTrailing . Text.decodeUtf8 . LBS.toStrict <$>)
   . Process.readProcessInterleaved_
   where
     stripTrailing
