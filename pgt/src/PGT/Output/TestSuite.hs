@@ -18,6 +18,7 @@ import qualified Data.Attoparsec.Text  as Text
 import qualified Data.Foldable         as Foldable
 import qualified Data.List.NonEmpty    as NonEmpty
 import qualified Data.Text             as Text
+import qualified GHC.Err               as Err
 import qualified PGT.Output.Definition as Definition
 import qualified PGT.Output.Golden     as PGT
 import qualified PGT.Output.Test       as Test
@@ -31,10 +32,10 @@ data TestSuite a = TestSuite
   deriving stock (Eq, Show)
 
 instance Render (TestSuite QueryStats) where
-  render TestSuite{..} = Text.intercalate "\n\n" $ definitions <> renderTests
+  render TestSuite{..} = Text.intercalate "\n\n" $ definitions <> [renderTests]
     where
-      renderTests :: [Text]
-      renderTests = Foldable.toList $ render <$> tests
+      renderTests :: Text
+      renderTests = Text.intercalate "\n\n\n" . Foldable.toList $ render <$> tests
 
 parse :: Parser (TestSuite QueryStats)
 parse = do
@@ -44,7 +45,10 @@ parse = do
     =<< Text.eitherP (parseUnexpected (listToMaybe definitions)) parseTests
   where
     parseTests :: Parser [Test QueryStats]
-    parseTests = Text.many1' (Test.parse <* (Text.endOfInput <|> impureParseEmptyLine "after a test"))
+    parseTests = Text.many1' (Test.parse <* (Text.endOfInput <|> emptyLines))
+      where
+        emptyLines :: Parser ()
+        emptyLines = either Err.error pure =<< mkParseEmptyLines 2 "after a test"
 
     parseUnexpected :: Maybe Text -> Parser String
     parseUnexpected definitions = parseUnexpectedEmptyLine <|> parseUnexpectedText
