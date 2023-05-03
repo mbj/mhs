@@ -1,5 +1,6 @@
 module PGT.Output.Text
   ( impureParseEmptyLine
+  , mkParseEmptyLines
   , parseEmptyLine
   , parseLineChars
   , parseName
@@ -30,6 +31,16 @@ mkParseEmptyLine message = do
   if emptyLinesCount == 1
     then pure $ pure ()
     else pure . Left $ "found " <> show emptyLinesCount <> " empty lines " <> message <> " instead of 1"
+
+mkParseEmptyLines :: Natural -> String -> Parser (Either String ())
+mkParseEmptyLines expectedLines message = do
+  receivedLines <- Foldable.length <$> Text.many' Text.endOfLine
+
+  if convertImpure receivedLines == expectedLines
+    then pure $ pure ()
+    else pure
+      . Left
+      $ "found " <> show receivedLines <> " empty lines " <> message <> " instead of " <> show expectedLines
 
 parseLineChars :: Parser Text
 parseLineChars = Text.takeWhile1 Char.isPrint <* Text.endOfLine
