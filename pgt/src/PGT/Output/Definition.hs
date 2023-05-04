@@ -42,16 +42,18 @@ parse = Text.choice
   where
     mkParser :: DefinitionType -> Parser Text
     mkParser definitionType = do
-      padding         <- parsePadding
+      padding         <- optional parsePadding
       title           <- parseTitle
       subTitles       <- parseLineChars
       underLine       <- parseLineChars
       definitionLines <- Text.many1' parseDefinitionLine
       termination     <- parseTermination
 
+      let title' = maybe title (<> title) padding
+
       pure
         .  unlines
-        $  [padding <> title, subTitles, underLine]
+        $  [title', subTitles, underLine]
         <> definitionLines
         <> termination
       where
