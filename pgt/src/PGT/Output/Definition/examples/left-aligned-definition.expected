@@ -1,0 +1,5 @@
+Composite type "public.example"
+ Column  |      Type       | Collation | Nullable | Default
+---------+-----------------+-----------+----------+---------
+ failure | uuid_not_null[] |           |          |
+ success | uuid_not_null[] |           |          |
