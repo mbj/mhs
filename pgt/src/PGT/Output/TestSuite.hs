@@ -57,15 +57,7 @@ parse = do
         parseUnexpectedEmptyLine = Text.endOfLine $> message
           where
             message :: String
-            message =
-              maybe
-                (mkMessage "or test comments ")
-                (const (mkMessage mempty))
-                definitions
-              where
-                mkMessage :: String -> String
-                mkMessage middle =
-                  "expected database object definitions " <> middle <> "but found an empty line"
+            message = "expected database object definition or test but found an empty line"
 
         parseUnexpectedText :: Parser String
         parseUnexpectedText = do
