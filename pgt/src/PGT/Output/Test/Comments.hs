@@ -35,8 +35,8 @@ instance Render MetaComment where
     RowCountMetaComment rowCount -> render rowCount
 
 data Comments = Comments
-  { comments    :: NonEmpty Text
-  , metaComment :: MetaComment
+  { metaComment :: MetaComment
+  , text        :: NonEmpty Text
   }
   deriving stock (Eq, Show)
 
@@ -44,7 +44,7 @@ instance Render Comments where
   render Comments{..} = unlines $ commentsList <> [metaCommentText]
     where
       commentsList :: [Text]
-      commentsList = Foldable.toList $ mkComment <$> comments
+      commentsList = Foldable.toList $ mkComment <$> text
 
       metaCommentText :: Text
       metaCommentText = mkComment $ render metaComment
@@ -54,7 +54,7 @@ instance Render Comments where
 
 parse :: Parser Comments
 parse = do
-  comments <- NonEmpty.fromList <$> Text.many1' parseCommentLine
+  text <- NonEmpty.fromList <$> Text.many1' parseCommentLine
 
   metaComment <-
     either Err.error pure
