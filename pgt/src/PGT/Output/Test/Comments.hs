@@ -1,5 +1,6 @@
 module PGT.Output.Test.Comments
-  ( Comments(..)
+  ( Commentary(..)
+  , Comments
   , MetaComment(..)
   , parse
   , testTree
@@ -34,14 +35,16 @@ instance Render MetaComment where
     ErrorMetaComment             -> "(ERROR)"
     RowCountMetaComment rowCount -> render rowCount
 
-data Comments = Comments
+data Commentary a = Commentary
   { metaComment :: MetaComment
-  , text        :: NonEmpty Text
+  , text        :: a
   }
   deriving stock (Eq, Show)
 
+type Comments = Commentary (NonEmpty Text)
+
 instance Render Comments where
-  render Comments{..} = unlines $ commentsList <> [metaCommentText]
+  render Commentary{..} = unlines $ commentsList <> [metaCommentText]
     where
       commentsList :: [Text]
       commentsList = Foldable.toList $ mkComment <$> text
@@ -60,7 +63,7 @@ parse = do
     either Err.error pure
       =<< Text.eitherP parseUnexpectedEmptyLine parseMetaComment
 
-  pure Comments{..}
+  pure Commentary{..}
   where
     parseCommentLine :: Parser Text
     parseCommentLine = do
