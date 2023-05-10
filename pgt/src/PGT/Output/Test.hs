@@ -11,7 +11,7 @@ import Data.Attoparsec.Text (Parser)
 import Data.Maybe (maybeToList)
 import PGT.Output.Render
 import PGT.Output.RowCount (RowCount(..))
-import PGT.Output.Test.Comments (Comments(..), MetaComment(..))
+import PGT.Output.Test.Comments (Commentary(..), Comments, MetaComment(..))
 import PGT.Output.Test.QueryPlan (QueryStats)
 import PGT.Output.Test.Result (Result(..))
 import PGT.Output.Text
@@ -57,7 +57,7 @@ validate test
   $ validateTest test
   where
     validateTest :: Test a -> Either String ()
-    validateTest Test{comments = Comments{..}, ..} =
+    validateTest Test{comments = Commentary{..}, ..} =
       case metaComment of
         ErrorMetaComment             -> assertErrorResult
         RowCountMetaComment rowCount -> assertRowCount rowCount
