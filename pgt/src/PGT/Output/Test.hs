@@ -1,7 +1,8 @@
 {-# LANGUAGE DeriveFunctor #-}
 
 module PGT.Output.Test
-  ( Test(..)
+  ( Test
+  , Test'(..)
   , parse
   , testTree
   )
@@ -26,12 +27,14 @@ import qualified PGT.Output.Test.Result    as Result
 import qualified System.Path               as Path
 import qualified Test.Tasty                as Tasty
 
-data Test a = Test
-  { commentary :: Comments
-  , queryPlan  :: Maybe a
+data Test' commentary queryPlan = Test
+  { commentary :: commentary
+  , queryPlan  :: Maybe queryPlan
   , result     :: Result
   }
   deriving stock (Eq, Functor, Show)
+
+type Test queryPlan = Test' Comments queryPlan
 
 instance Render a => Render (Test a) where
   render Test{..}
