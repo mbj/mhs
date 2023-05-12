@@ -1,7 +1,7 @@
 _common/package: !include "../common/package.yaml"
 
 name:        source-constraints
-version:     0.0.3
+version:     0.0.4
 synopsis:    Source constraints GHC plugin
 category:    CodeQuality
 description: |
@@ -23,7 +23,6 @@ extra-doc-files:
 - README.md
 
 extra-source-files:
-- test/LocalModuleExplicitImport.hs
 - test/UnsortedIE.hs
 - test/UnsortedIEThingWith.hs
 - test/UnsortedImportStatement.hs
@@ -67,7 +66,6 @@ library:
   - src
   exposed-modules:
   - SourceConstraints
-  - SourceConstraints.LocalModule
 
 tests:
   hspec:

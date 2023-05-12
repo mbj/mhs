@@ -7,11 +7,9 @@ module SourceConstraints (Context(..), plugin, warnings) where
 import Control.Applicative ((<$>), pure)
 import Control.Monad
 import Control.Monad.IO.Class
-import Data.Attoparsec.Text
 import Data.Bool
 import Data.Char
 import Data.Data
-import Data.Either
 import Data.Eq
 import Data.Foldable
 import Data.Function
@@ -21,7 +19,6 @@ import Data.List ((++))
 import Data.Maybe
 import Data.Ord
 import Data.String (String)
-import Data.Text (Text, pack)
 import Data.Tuple
 import GHC.Data.Bag
 import GHC.Driver.Env.Types
@@ -30,14 +27,12 @@ import GHC.Driver.Plugins
 import GHC.Driver.Session
 import GHC.Hs
 import GHC.Types.Error
-import GHC.Types.SourceError
 import GHC.Types.SrcLoc
 import GHC.Unit.Module.Location
 import GHC.Unit.Module.ModSummary
 import GHC.Utils.Logger
 import GHC.Utils.Outputable
 import Prelude(error)
-import SourceConstraints.LocalModule
 import System.FilePath.Posix
 
 import qualified Data.List as List
@@ -59,8 +54,7 @@ plugin =
 type Message = MsgEnvelope GhcMessage
 
 data Context = Context
-  { localModules :: [LocalModule]
-  , sDocContext  :: SDocContext
+  { sDocContext  :: SDocContext
   , diagOpts     :: DiagOpts
   }
 
@@ -69,11 +63,9 @@ run
   -> ModSummary
   -> ParsedResult
   -> Hsc ParsedResult
-run options ModSummary{ms_location = ModLocation{..}} parsedResult@ParsedResult{..} = do
+run _options ModSummary{ms_location = ModLocation{..}} parsedResult@ParsedResult{..} = do
   dynFlags <- getDynFlags
   logger   <- getLogger
-
-  localModules <- mapM parseLocalModule (pack <$> options)
 
   let sDocContext = initSDocContext dynFlags defaultUserStyle
       diagOpts    = initDiagOpts dynFlags
@@ -87,18 +79,6 @@ run options ModSummary{ms_location = ModLocation{..}} parsedResult@ParsedResult{
 
     emitWarnings :: DiagOpts -> Logger -> WarningMessages -> Hsc ()
     emitWarnings diagOpts logger = liftIO . printOrThrowDiagnostics logger diagOpts
-
-    parseLocalModule :: Text -> Hsc LocalModule
-    parseLocalModule
-      = either localParseFailure pure . parseOnly localModuleParser
-
-    localParseFailure :: String -> Hsc a
-    localParseFailure
-      = throwOneError
-      . mkPlainErrorMsgEnvelope noSrcSpan
-      . ghcUnknownMessage
-      . mkPlainError []
-      . text
 
 -- | Find warnings for node
 warnings
@@ -119,37 +99,14 @@ warnings context current@(L _sourceSpan node) =
         (descend `ext2Q` warnings context)
 
 locatedWarnings :: Data a => Context -> a -> WarningMessages
-locatedWarnings context@Context{..} node =
-  singleWarnings `unionMessages` mkQ emptyMessages absentImportDeclList node
+locatedWarnings context node
+  = mkMessages . listToBag $ catMaybes
+  [ mkQ Nothing sortedImportStatement   node
+  , mkQ Nothing sortedIEThingWith       node
+  , mkQ Nothing sortedIEs               node
+  , mkQ Nothing sortedMultipleDeriving  node
+  ]
   where
-    singleWarnings :: WarningMessages
-    singleWarnings = mkMessages . listToBag $ catMaybes
-      [ mkQ Nothing sortedImportStatement   node
-      , mkQ Nothing sortedIEThingWith       node
-      , mkQ Nothing sortedIEs               node
-      , mkQ Nothing sortedMultipleDeriving  node
-      ]
-
-    absentImportDeclList :: HsModule -> WarningMessages
-    absentImportDeclList HsModule{..} =
-      mkMessages . listToBag $ catMaybes (absentList <$> candidates)
-      where
-        absentList :: LImportDecl GhcPs -> Maybe Message
-        absentList = \case
-          (L _loc ImportDecl { ideclHiding = Just (False, reLoc -> (L src (_:_))) }) ->
-            pure $ mkWarnMsg
-              diagOpts
-              src
-              neverQualify
-              (text "Present import list for local module")
-          _  -> Nothing
-
-        candidates :: [LImportDecl GhcPs]
-        candidates = List.filter isCandidate hsmodImports
-
-        isCandidate :: LImportDecl GhcPs -> Bool
-        isCandidate (L _ ImportDecl{ideclName = L _ moduleName})
-          = any (`isLocalModule` moduleName) localModules
 
     sortedImportStatement HsModule{..} =
       sortedLocated
@@ -222,8 +179,7 @@ mkWarnMsg diagOpts srcSpan printUnqualified sdoc
 type Message = MsgEnvelope DecoratedSDoc
 
 data Context = Context
-  { localModules :: [LocalModule]
-  , sDocContext  :: SDocContext
+  { sDocContext  :: SDocContext
   }
 
 run
@@ -231,11 +187,9 @@ run
   -> ModSummary
   -> HsParsedModule
   -> Hsc HsParsedModule
-run options ModSummary{ms_location = ModLocation{..}} parsedModule = do
+run _options ModSummary{ms_location = ModLocation{..}} parsedModule = do
   dynFlags <- getDynFlags
   logger   <- getLogger
-
-  localModules <- mapM parseLocalModule (pack <$> options)
 
   let sDocContext = initSDocContext dynFlags defaultUserStyle
 
@@ -248,13 +202,6 @@ run options ModSummary{ms_location = ModLocation{..}} parsedModule = do
 
     emitWarnings :: Logger -> DynFlags -> Bag WarnMsg -> Hsc ()
     emitWarnings logger dynFlags = liftIO . printOrThrowWarnings logger dynFlags
-
-    parseLocalModule :: Text -> Hsc LocalModule
-    parseLocalModule
-      = either localParseFailure pure . parseOnly localModuleParser
-
-    localParseFailure :: String -> Hsc a
-    localParseFailure = throwOneError . mkPlainMsgEnvelope noSrcSpan . text
 
 -- | Find warnings for node
 warnings
@@ -275,36 +222,14 @@ warnings context current@(L _sourceSpan node) =
         (descend `ext2Q` warnings context)
 
 locatedWarnings :: Data a => Context -> a -> WarningMessages
-locatedWarnings context@Context{..} node =
-  singleWarnings `unionBags` mkQ emptyBag absentImportDeclList node
+locatedWarnings context node
+  = listToBag $ catMaybes
+  [ mkQ Nothing sortedImportStatement   node
+  , mkQ Nothing sortedIEThingWith       node
+  , mkQ Nothing sortedIEs               node
+  , mkQ Nothing sortedMultipleDeriving  node
+  ]
   where
-    singleWarnings = listToBag $ catMaybes
-      [ mkQ Nothing sortedImportStatement   node
-      , mkQ Nothing sortedIEThingWith       node
-      , mkQ Nothing sortedIEs               node
-      , mkQ Nothing sortedMultipleDeriving  node
-      ]
-
-    absentImportDeclList :: HsModule -> WarningMessages
-    absentImportDeclList HsModule{..} =
-      listToBag $ catMaybes (absentList <$> candidates)
-      where
-        absentList :: LImportDecl GhcPs -> Maybe Message
-        absentList = \case
-          (L _loc ImportDecl { ideclHiding = Just (False, reLoc -> (L src (_:_))) }) ->
-            pure $ mkWarnMsg
-              src
-              neverQualify
-              (text "Present import list for local module")
-          _  -> Nothing
-
-        candidates :: [LImportDecl GhcPs]
-        candidates = List.filter isCandidate hsmodImports
-
-        isCandidate :: LImportDecl GhcPs -> Bool
-        isCandidate (L _ ImportDecl{ideclName = L _ moduleName})
-          = any (`isLocalModule` moduleName) localModules
-
     sortedImportStatement HsModule{..} =
       sortedLocated
         "import statement"
