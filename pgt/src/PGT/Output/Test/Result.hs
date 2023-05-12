@@ -68,17 +68,18 @@ instance Render Record where
 data RowResults = RowResults
   { columns  :: Text
   , rowCount :: RowCount
-  , rows     :: NonEmpty Text
+  , rows     :: [Text]
   }
   deriving stock (Eq, Show)
 
 instance Render RowResults where
   render RowResults{..}
-    = unlines @[]
-    [ convert columns
-    , unlines rows
-    , render rowCount
-    ]
+    = unlines $ convert columns : results
+    where
+      results :: [Text]
+      results = case rows of
+        [] -> [render rowCount]
+        _  -> [unlines rows, render rowCount]
 
 parse :: Parser Result
 parse =
@@ -204,8 +205,8 @@ parseRows = do
       columns <- parseLineChars
       pure $ padding <> columns
 
-    parseRowLines :: Parser (NonEmpty Text)
-    parseRowLines = NonEmpty.fromList  <$> Text.many1' parseRowLine
+    parseRowLines :: Parser [Text]
+    parseRowLines = Text.many' parseRowLine
       where
         parseRowLine :: Parser Text
         parseRowLine = do
