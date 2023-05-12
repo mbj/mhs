@@ -43,16 +43,16 @@ parserInfo instanceSpecProvider = wrapHelper commands "stack commands"
 
     instanceCommands :: Parser (MIO env ExitCode)
     instanceCommands = hsubparser
-      $  mkCommand "cancel"   (cancel <$> instanceSpecNameArgument)                "cancel stack update"
-      <> mkCommand "create"   (create <$> instanceSpecNameArgument <*> parameters) "create stack"
-      <> mkCommand "delete"   (delete <$> instanceSpecNameArgument)                "delete stack"
-      <> mkCommand "events"   (events <$> instanceSpecNameArgument)                "list stack events"
-      <> mkCommand "list"     (pure list)                                          "list stack instances"
-      <> mkCommand "outputs"  (outputs <$> instanceSpecNameArgument)               "list stack outputs"
-      <> mkCommand "sync"     (sync <$> instanceSpecNameArgument <*> parameters)   "sync stack with spec"
-      <> mkCommand "update"   (update <$> instanceSpecNameArgument <*> parameters) "update existing stack"
-      <> mkCommand "wait"     (wait <$> instanceSpecNameArgument <*> tokenParser)  "wait for stack operation"
-      <> mkCommand "watch"    (watch <$> instanceSpecNameArgument)                 "watch stack events"
+      $  mkCommand "cancel"   (cancel <$> instanceSpecNameOption)                "cancel stack update"
+      <> mkCommand "create"   (create <$> instanceSpecNameOption <*> parameters) "create stack"
+      <> mkCommand "delete"   (delete <$> instanceSpecNameOption)                "delete stack"
+      <> mkCommand "events"   (events <$> instanceSpecNameOption)                "list stack events"
+      <> mkCommand "list"     (pure list)                                        "list stack instances"
+      <> mkCommand "outputs"  (outputs <$> instanceSpecNameOption)               "list stack outputs"
+      <> mkCommand "sync"     (sync <$> instanceSpecNameOption <*> parameters)   "sync stack with spec"
+      <> mkCommand "update"   (update <$> instanceSpecNameOption <*> parameters) "update existing stack"
+      <> mkCommand "wait"     (wait <$> instanceSpecNameOption <*> tokenParser)  "wait for stack operation"
+      <> mkCommand "watch"    (watch <$> instanceSpecNameOption)                 "watch stack events"
 
     templateCommands :: Parser (MIO env ExitCode)
     templateCommands = hsubparser
