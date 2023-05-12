@@ -55,8 +55,7 @@ library
       Strict
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
-      attoparsec >=0.13
-    , base
+      base
     , bytestring >=0.10
     , filepath >=1.4
     , ghc >=9.2 && <9.3 || >=9.4 && <9.5
@@ -84,8 +83,7 @@ test-suite hspec
       Strict
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      attoparsec >=0.13
-    , base
+      base
     , bytestring >=0.10
     , filepath >=1.4
     , ghc >=9.2 && <9.3 || >=9.4 && <9.5

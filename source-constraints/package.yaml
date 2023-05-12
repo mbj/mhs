@@ -11,7 +11,6 @@ description: |
 <<: *defaults
 
 dependencies:
-- attoparsec >= 0.13
 - base
 - bytestring >= 0.10
 - filepath   >= 1.4
