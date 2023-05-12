@@ -1,6 +1,5 @@
 module StackDeploy.CLI.Utils
-  ( instanceSpecNameArgument
-  , instanceSpecNameOption
+  ( instanceSpecNameOption
   , templateNameArgument
   , templateNameOption
   )
@@ -11,9 +10,6 @@ import StackDeploy.Prelude
 
 import qualified StackDeploy.InstanceSpec as InstanceSpec
 import qualified StackDeploy.Template     as Template
-
-instanceSpecNameArgument :: Parser (InstanceSpec.Name env)
-instanceSpecNameArgument = InstanceSpec.mkName <$> argument str (metavar "STACK")
 
 instanceSpecNameOption :: Parser (InstanceSpec.Name env)
 instanceSpecNameOption = instanceSpecNameParser (InstanceSpec.mkName <$> str)
