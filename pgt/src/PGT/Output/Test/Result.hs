@@ -3,7 +3,6 @@ module PGT.Output.Test.Result
   , RowResults(..)
   , parse
   , recordsCount
-  , rowsCount
   , testTree
   )
 where
@@ -67,17 +66,18 @@ instance Render Record where
     = unlines $ convert title <| items
 
 data RowResults = RowResults
-  { columns :: Text
-  , rows    :: NonEmpty Text
+  { columns  :: Text
+  , rowCount :: RowCount
+  , rows     :: NonEmpty Text
   }
   deriving stock (Eq, Show)
 
 instance Render RowResults where
-  render results@RowResults{..}
+  render RowResults{..}
     = unlines @[]
     [ convert columns
     , unlines rows
-    , render $ rowsCount results
+    , render rowCount
     ]
 
 parse :: Parser Result
@@ -186,10 +186,12 @@ parseRows :: Parser Result
 parseRows = do
   columns         <- parseColumns
   columnUnderLine <- parseUnderLine
+  rows            <- parseRowLines
+  rowCount        <- RowCount.parse "("
 
   let title = unlines @[] [columns, columnUnderLine]
 
-  Rows . RowResults title <$> parseRowLines
+  pure . Rows $ RowResults{ columns = title, .. }
   where
     parseUnderLine :: Parser Text
     parseUnderLine = Text.takeWhile1 isUnderLineChar <* Text.endOfLine
@@ -203,21 +205,15 @@ parseRows = do
       pure $ padding <> columns
 
     parseRowLines :: Parser (NonEmpty Text)
-    parseRowLines =
-      NonEmpty.fromList
-        <$> Text.manyTill' parseLineChars (RowCount.parse "(")
+    parseRowLines = NonEmpty.fromList  <$> Text.many1' parseRowLine
+      where
+        parseRowLine :: Parser Text
+        parseRowLine = do
+          space <- Text.space
+          (Text.singleton space <>) <$> parseLineChars
 
 recordsCount :: NonEmpty Record -> RowCount
 recordsCount = RowCount . convertImpure @Word16 . Foldable.length
-
-rowsCount :: RowResults -> RowCount
-rowsCount RowResults{..}
-  = RowCount
-  . convertImpure
-  . Foldable.length
-  $ NonEmpty.filter (not . isJsonLine) rows
-  where
-    isJsonLine = Text.isInfixOf "+|"
 
 testTree :: IO Tasty.TestTree
 testTree
