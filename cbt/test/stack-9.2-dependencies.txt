@@ -94,7 +94,7 @@ scientific 0.3.7.0
 semialign 1.2.0.1
 semigroupoids 5.3.7
 semigroups 0.20
-source-constraints 0.0.3
+source-constraints 0.0.4
 split 0.2.3.5
 splitmix 0.1.0.4
 stm 2.5.0.2

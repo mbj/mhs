@@ -16,7 +16,6 @@ import Data.String
 import Data.Traversable
 import Prelude (error)
 import SourceConstraints
-import SourceConstraints.LocalModule
 import System.Environment as System
 import System.IO
 import Test.Hspec
@@ -72,13 +71,6 @@ main = System.withArgs [] . hspec $ do
          |  |
          |3 | import Data.Char
          |  | ^^^^^^^^^^^^^^^^|]]
-
-  expectWarnings
-    "test/LocalModuleExplicitImport.hs"
-    [[str|Present import list for local module
-         |  |
-         |3 | import Data.Word (Word32)
-         |  |                  ^^^^^^^^|]]
   where
     expectWarnings file messages =
       it ("returns expected warnings from: " ++ file) $ do
@@ -107,9 +99,8 @@ getWarnings file = runGhc (pure libdir) $ do
       dynFlags     <- getDynFlags
       parsedModule <- liftIO $ hscParse env moduleSummary
 
-      let localModules = [LocalModule $ mkModuleName "Data.Word"]
-          sDocContext  = initSDocContext dynFlags defaultUserStyle
-          diagOpts     = initDiagOpts dynFlags
+      let sDocContext = initSDocContext dynFlags defaultUserStyle
+          diagOpts    = initDiagOpts dynFlags
 
       toList <$> traverse (render sDocContext) (getMessages . warnings Context{..} $ hpm_module parsedModule)
 
@@ -163,8 +154,6 @@ getWarnings file = runGhc (pure libdir) $ do
       env          <- getSession
       dynFlags     <- getDynFlags
       parsedModule <- liftIO $ hscParse env moduleSummary
-
-      let localModules = [LocalModule $ mkModuleName "Data.Word"]
 
       let sDocContext = initSDocContext dynFlags defaultUserStyle
 

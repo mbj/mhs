@@ -5,7 +5,7 @@ cabal-version: 1.18
 -- see: https://github.com/sol/hpack
 
 name:           source-constraints
-version:        0.0.3
+version:        0.0.4
 synopsis:       Source constraints GHC plugin
 description:    Please visit the README at <https://github.com/mbj/mhs/blob/main/source-constraints/README.md>
                 for usage information.
@@ -21,7 +21,6 @@ build-type:     Simple
 tested-with:
     GHC == 9.2
 extra-source-files:
-    test/LocalModuleExplicitImport.hs
     test/UnsortedIE.hs
     test/UnsortedIEThingWith.hs
     test/UnsortedImportStatement.hs
@@ -41,7 +40,6 @@ flag development
 library
   exposed-modules:
       SourceConstraints
-      SourceConstraints.LocalModule
   other-modules:
       Paths_source_constraints
   hs-source-dirs:
