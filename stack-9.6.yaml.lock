@@ -5,12 +5,44 @@
 
 packages:
 - completed:
+    hackage: ghc-lib-parser-9.6.1.20230312@sha256:09a5d18af5208737459eec8535cf3f0b1f28fe573752dd7820b63b3619ce15a4,15694
+    pantry-tree:
+      sha256: bfefa9e6324dba6014e9ee040c74a9d2312be31c5d72a3235254fb8bfaa87972
+      size: 33893
+  original:
+    hackage: ghc-lib-parser-9.6.1.20230312@sha256:09a5d18af5208737459eec8535cf3f0b1f28fe573752dd7820b63b3619ce15a4,15694
+- completed:
+    hackage: ghc-lib-parser-ex-9.6.0.0@sha256:52e6ffb031669183ebfcff373a5cf0d89eb7621151d3822d80b5a2cce9123871,3493
+    pantry-tree:
+      sha256: 46525028b1594a7e3464620bb72158a64d181c556796855907c4e26b6bacf20d
+      size: 1955
+  original:
+    hackage: ghc-lib-parser-ex-9.6.0.0@sha256:52e6ffb031669183ebfcff373a5cf0d89eb7621151d3822d80b5a2cce9123871,3493
+- completed:
+    hackage: happy-1.20.1.1@sha256:a381633c5e8f9e9e5a8e1900930ce13172397b4677fcfcc08cd38eb3f73b61b1,5811
+    pantry-tree:
+      sha256: a5b8a3cd39ffabdf0deb31483eb97cc2c270083738ceeddff75a894a953f6b92
+      size: 8615
+  original:
+    hackage: happy-1.20.1.1
+- completed:
     hackage: symbols-0.3.0.0@sha256:5d051bccbd4bcb33fa8ce076bd3cd2bacc90973682f7340976758947eaa128a9,964
     pantry-tree:
       sha256: 06746077732f4d49d3277821303292314d51df9a63efecd47217fc0946233026
       size: 529
   original:
     hackage: symbols-0.3.0.0@sha256:5d051bccbd4bcb33fa8ce076bd3cd2bacc90973682f7340976758947eaa128a9,964
+- completed:
+    name: hlint
+    pantry-tree:
+      sha256: 5477298f30a00c60042ba23b0526905aa0ce737a13967afff95ea66f5309e361
+      size: 7339
+    sha256: 5689d71fd865cc66ecc805532ba91983d1b649357e87a006df4806c77b0b2466
+    size: 202404
+    url: https://github.com/ndmitchell/hlint/archive/8e863be99a51112ceeb958a493be3b47c86a4189.tar.gz
+    version: '3.5'
+  original:
+    url: https://github.com/ndmitchell/hlint/archive/8e863be99a51112ceeb958a493be3b47c86a4189.tar.gz
 - completed:
     name: amazonka
     pantry-tree:

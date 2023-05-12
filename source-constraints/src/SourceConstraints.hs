@@ -136,7 +136,7 @@ locatedWarnings context@Context{..} node =
       where
         absentList :: LImportDecl GhcPs -> Maybe Message
         absentList = \case
-          (L _loc ImportDecl { ideclHiding = Just (False, reLoc -> (L src (_:_))) }) ->
+          (L _loc ImportDecl { ideclImportList = Just (False, reLoc -> (L src (_:_))) }) ->
             pure $ mkWarnMsg
               diagOpts
               src
@@ -209,7 +209,7 @@ locatedWarnings context@Context{..} node =
           -> IEClass
         mkClass constructor name = constructor $ render context name
 
-mkWarnMsg :: DiagOpts -> SrcSpan -> PrintUnqualified -> SDoc -> Message
+mkWarnMsg :: DiagOpts -> SrcSpan -> NamePprCtx -> SDoc -> Message
 mkWarnMsg diagOpts srcSpan printUnqualified sdoc
   = MsgEnvelope
   { errMsgContext    = printUnqualified

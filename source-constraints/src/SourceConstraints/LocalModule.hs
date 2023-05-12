@@ -12,7 +12,7 @@ import Data.Char
 import Data.Eq
 import Data.Function
 import Data.Semigroup
-import GHC.Unit.Module.Name
+import GHC.Unit.Module
 import qualified Data.List as List
 
 newtype LocalModule = LocalModule ModuleName

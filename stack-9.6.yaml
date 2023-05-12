@@ -1,8 +1,13 @@
 resolver: nightly-2023-05-12
 compiler: ghc-9.6.1
 extra-deps:
+- ghc-lib-parser-9.6.1.20230312@sha256:09a5d18af5208737459eec8535cf3f0b1f28fe573752dd7820b63b3619ce15a4,15694
+- ghc-lib-parser-ex-9.6.0.0@sha256:52e6ffb031669183ebfcff373a5cf0d89eb7621151d3822d80b5a2cce9123871,3493
+- happy-1.20.1.1
 - mprelude
 - symbols-0.3.0.0@sha256:5d051bccbd4bcb33fa8ce076bd3cd2bacc90973682f7340976758947eaa128a9,964
+- github: ndmitchell/hlint
+  commit: 8e863be99a51112ceeb958a493be3b47c86a4189
 - github: brendanhay/amazonka
   commit: 17e377b1e0aa734e10897347ea94a0ed93896e92
   subdirs:
