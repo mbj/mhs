@@ -1,0 +1,3 @@
+ custody_subaccount_id | date | incremental_return | cumulative_return | balance_cents | total_invested_amount_cents
+-----------------------+------+--------------------+-------------------+---------------+-----------------------------
+(0 rows)
