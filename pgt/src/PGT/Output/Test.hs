@@ -10,9 +10,10 @@ where
 
 import Data.Attoparsec.Text (Parser)
 import Data.Maybe (maybeToList)
+import Data.Word (Word8)
 import PGT.Output.Render
 import PGT.Output.RowCount (RowCount(..))
-import PGT.Output.Test.Comments (Commentary(..), Comments, MetaComment(..))
+import PGT.Output.Test.Comments (Comment, Commentary(..), Comments, MetaComment(..))
 import PGT.Output.Test.QueryPlan (QueryStats)
 import PGT.Output.Test.Result (Result(..))
 import PGT.Output.Text
@@ -31,35 +32,47 @@ data Test' commentary queryPlan = Test
   { commentary :: commentary
   , queryPlan  :: Maybe queryPlan
   , result     :: Result
+  , subTests   :: [Test' Comment queryPlan]
   }
   deriving stock (Eq, Functor, Show)
 
 type Test queryPlan = Test' Comments queryPlan
 
-instance Render a => Render (Test a) where
-  render Test{..}
-    = unlinesN 2
-    $ [ render commentary
-      , render result
-      ]
-      <> fmap render (maybeToList queryPlan)
+instance (Render a) => Render (Test a) where
+  render = go 2
+    where
+      go :: forall b c . (Render b, Render c) => Word8 -> Test' b c -> Text
+      go count Test{..}
+        = unlinesN count
+        $ [ render commentary
+          , render result
+          ]
+        <> fmap render (maybeToList queryPlan)
+        <> (go 1 <$> subTests)
 
 parse :: Parser (Test QueryStats)
 parse = do
-  commentary <- Comments.parseComments <* impureParseEmptyLine "after test comments"
-  result    <- Result.parse
-  queryPlan <- optional (parseEmptyLine "before a query plan" *> QueryPlan.parse)
+  test     <- mkParser (Comments.parseComments <* impureParseEmptyLine "after test comments")
+  subTests <- Text.many' (Text.endOfLine *> mkParser Comments.parseComment)
 
-  fmap QueryPlan.mkQueryStats <$> validate Test{..}
+  pure $ test{ subTests = subTests }
+  where
+    mkParser :: Parser (Commentary a) -> Parser (Test' (Commentary a) QueryStats)
+    mkParser commentsParser = do
+      commentary <- commentsParser
+      result     <- Result.parse
+      queryPlan  <- optional (parseEmptyLine "before a query plan" *> QueryPlan.parse)
 
-validate :: Test a -> Parser (Test a)
+      fmap QueryPlan.mkQueryStats <$> validate Test{ subTests = [], .. }
+
+validate :: Test' (Commentary a) b -> Parser (Test' (Commentary a) b)
 validate test
   = either
     Err.error
     (const (pure test))
   $ validateTest test
   where
-    validateTest :: Test a -> Either String ()
+    validateTest :: Test' (Commentary a) b -> Either String ()
     validateTest Test{commentary = Commentary{..}, ..} =
       case metaComment of
         ErrorMetaComment             -> assertErrorResult
