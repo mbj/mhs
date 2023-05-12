@@ -27,25 +27,25 @@ import qualified System.Path               as Path
 import qualified Test.Tasty                as Tasty
 
 data Test a = Test
-  { comments  :: Comments
-  , queryPlan :: Maybe a
-  , result    :: Result
+  { commentary :: Comments
+  , queryPlan  :: Maybe a
+  , result     :: Result
   }
   deriving stock (Eq, Functor, Show)
 
 instance Render a => Render (Test a) where
   render Test{..}
     = unlinesN 2
-    $ [ render comments
+    $ [ render commentary
       , render result
       ]
       <> fmap render (maybeToList queryPlan)
 
 parse :: Parser (Test QueryStats)
 parse = do
-  comments  <- Comments.parseComments <* impureParseEmptyLine "after test comments"
-  result    <- Result.parse
-  queryPlan <- optional (parseEmptyLine "before a query plan" *> QueryPlan.parse)
+  commentary <- Comments.parseComments <* impureParseEmptyLine "after test comments"
+  result     <- Result.parse
+  queryPlan  <- optional (parseEmptyLine "before a query plan" *> QueryPlan.parse)
 
   fmap QueryPlan.mkQueryStats <$> validate Test{..}
 
@@ -57,7 +57,7 @@ validate test
   $ validateTest test
   where
     validateTest :: Test a -> Either String ()
-    validateTest Test{comments = Commentary{..}, ..} =
+    validateTest Test{commentary = Commentary{..}, ..} =
       case metaComment of
         ErrorMetaComment             -> assertErrorResult
         RowCountMetaComment rowCount -> assertRowCount rowCount
