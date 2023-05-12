@@ -48,11 +48,6 @@ import GHC.Driver.Errors.Types
 import GHC.Utils.Error
 #endif
 
-data Context = Context
-  { localModules :: [LocalModule]
-  , sDocContext  :: SDocContext
-  }
-
 plugin :: Plugin
 plugin =
   defaultPlugin
@@ -62,6 +57,12 @@ plugin =
 
 #if MIN_VERSION_GLASGOW_HASKELL(9,4,0,0)
 type Message = MsgEnvelope GhcMessage
+
+data Context = Context
+  { localModules :: [LocalModule]
+  , sDocContext  :: SDocContext
+  , diagOpts     :: DiagOpts
+  }
 
 run
   :: [CommandLineOption]
@@ -75,16 +76,17 @@ run options ModSummary{ms_location = ModLocation{..}} parsedResult@ParsedResult{
   localModules <- mapM parseLocalModule (pack <$> options)
 
   let sDocContext = initSDocContext dynFlags defaultUserStyle
+      diagOpts    = initDiagOpts dynFlags
 
-  when (allowLocation ml_hs_file) . (emitWarnings logger dynFlags) $
+  when (allowLocation ml_hs_file) . (emitWarnings diagOpts logger) $
     warnings Context{..} (hpm_module parsedResultModule)
 
   pure parsedResult
   where
     allowLocation = maybe False (notElem "autogen/" . splitPath)
 
-    emitWarnings :: Logger -> DynFlags -> WarningMessages -> Hsc ()
-    emitWarnings logger dynFlags = liftIO . printOrThrowDiagnostics logger (initDiagOpts dynFlags)
+    emitWarnings :: DiagOpts -> Logger -> WarningMessages -> Hsc ()
+    emitWarnings diagOpts logger = liftIO . printOrThrowDiagnostics logger diagOpts
 
     parseLocalModule :: Text -> Hsc LocalModule
     parseLocalModule
@@ -136,6 +138,7 @@ locatedWarnings context@Context{..} node =
         absentList = \case
           (L _loc ImportDecl { ideclHiding = Just (False, reLoc -> (L src (_:_))) }) ->
             pure $ mkWarnMsg
+              diagOpts
               src
               neverQualify
               (text "Present import list for local module")
@@ -206,17 +209,22 @@ locatedWarnings context@Context{..} node =
           -> IEClass
         mkClass constructor name = constructor $ render context name
 
-mkWarnMsg :: SrcSpan -> PrintUnqualified -> SDoc -> Message
-mkWarnMsg srcSpan printUnqualified sdoc
+mkWarnMsg :: DiagOpts -> SrcSpan -> PrintUnqualified -> SDoc -> Message
+mkWarnMsg diagOpts srcSpan printUnqualified sdoc
   = MsgEnvelope
   { errMsgContext    = printUnqualified
   , errMsgDiagnostic = GhcUnknownMessage $ mkPlainDiagnostic WarningWithoutFlag [] sdoc
-  , errMsgSeverity   = SevWarning
+  , errMsgSeverity   = (diagReasonSeverity diagOpts WarningWithoutFlag)
   , errMsgSpan       = srcSpan
   }
 #else
 
 type Message = MsgEnvelope DecoratedSDoc
+
+data Context = Context
+  { localModules :: [LocalModule]
+  , sDocContext  :: SDocContext
+  }
 
 run
   :: [CommandLineOption]
@@ -370,6 +378,9 @@ sortedLocated name context ordering nodes =
     mkWarning :: ((Located a, b), (Located a, b)) -> Message
     mkWarning ((actualNode, _item), (expectedNode, _expected)) =
       mkWarnMsg
+#if MIN_VERSION_GLASGOW_HASKELL(9,4,0,0)
+        (diagOpts context)
+#endif
         (getLoc actualNode)
         neverQualify
         (text $ "Unsorted " ++ name ++ ", expected: " ++ render context expectedNode)
