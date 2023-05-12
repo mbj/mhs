@@ -24,6 +24,7 @@ import Text.Heredoc
 
 #if MIN_VERSION_GLASGOW_HASKELL(9,4,0,0)
 import GHC
+import GHC.Driver.Config.Diagnostic
 import GHC.Driver.Errors.Types
 import GHC.Driver.Main
 import GHC.Driver.Session
@@ -107,8 +108,8 @@ getWarnings file = runGhc (pure libdir) $ do
       parsedModule <- liftIO $ hscParse env moduleSummary
 
       let localModules = [LocalModule $ mkModuleName "Data.Word"]
-
-      let sDocContext = initSDocContext dynFlags defaultUserStyle
+          sDocContext  = initSDocContext dynFlags defaultUserStyle
+          diagOpts     = initDiagOpts dynFlags
 
       toList <$> traverse (render sDocContext) (getMessages . warnings Context{..} $ hpm_module parsedModule)
 

@@ -1,7 +1,7 @@
 _common/package: !include "../common/package.yaml"
 
 name:        source-constraints
-version:     0.0.2
+version:     0.0.3
 synopsis:    Source constraints GHC plugin
 category:    CodeQuality
 description: |
