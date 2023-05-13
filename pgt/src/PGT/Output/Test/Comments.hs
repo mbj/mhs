@@ -1,12 +1,15 @@
 module PGT.Output.Test.Comments
-  ( Commentary(..)
+  ( Comment
+  , Commentary(..)
   , Comments
   , MetaComment(..)
-  , parse
+  , parseComment
+  , parseComments
   , testTree
   )
 where
 
+import Control.Monad (unless)
 import Data.Attoparsec.Text (Parser)
 import Data.List.NonEmpty (NonEmpty(..))
 import PGT.Output.Render
@@ -42,6 +45,7 @@ data Commentary a = Commentary
   deriving stock (Eq, Show)
 
 type Comments = Commentary (NonEmpty Text)
+type Comment  = Commentary Text
 
 instance Render Comments where
   render Commentary{..} = unlines $ commentsList <> [metaCommentText]
@@ -55,13 +59,32 @@ instance Render Comments where
       mkComment :: Text -> Text
       mkComment = ("-- " <>)
 
-parse :: Parser Comments
-parse = do
+instance Render Comment where
+  render Commentary{..} = "-- " <> text <> render metaComment
+
+parseComment :: Parser Comment
+parseComment = do
+  text <- "-- " *> Text.manyTill' (Text.satisfy Char.isPrint) parseMetaCommentAnchor
+
+  (`Commentary` convert text) <$> parseMetaComment mempty
+  where
+    parseMetaCommentAnchor :: Parser ()
+    parseMetaCommentAnchor = do
+      void $ Text.char '('
+
+      char <- Text.peekChar'
+
+      unless (Char.isDigit char || char == 'E')
+        $ (Err.error . convert . ("expected row count or error text such as (1 row) or (ERROR) but found: (" <>))
+        =<< parseLineChars
+
+parseComments :: Parser Comments
+parseComments = do
   text <- NonEmpty.fromList <$> Text.many1' parseCommentLine
 
   metaComment <-
     either Err.error pure
-      =<< Text.eitherP parseUnexpectedEmptyLine parseMetaComment
+      =<< Text.eitherP parseUnexpectedEmptyLine (parseMetaComment "-- (")
 
   pure Commentary{..}
   where
@@ -108,19 +131,19 @@ parse = do
       (Text.endOfLine <|> Text.endOfInput)
         $> "expected a row-count comment such as (0 rows) or (ERROR) comment but received empty line"
 
-parseMetaComment :: Parser MetaComment
-parseMetaComment = parseErrorComment <|> parseRowCount <|> parseUnexpected
+parseMetaComment :: Text -> Parser MetaComment
+parseMetaComment prefix = parseErrorComment <|> parseRowCount <|> parseUnexpected
   where
     parseErrorComment :: Parser MetaComment
-    parseErrorComment = "-- (ERROR)" *> Text.endOfLine $> ErrorMetaComment
+    parseErrorComment = Text.string prefix *> "ERROR)" *> Text.endOfLine $> ErrorMetaComment
 
     parseRowCount :: Parser MetaComment
-    parseRowCount = "-- " *> (RowCountMetaComment <$> RowCount.parse "(")
+    parseRowCount = RowCountMetaComment <$> RowCount.parse prefix
 
     parseUnexpected :: Parser MetaComment
     parseUnexpected =  do
-      text <- "-- (" *> parseLineChars
-      error $ "-- (" <> text
+      text <- Text.string prefix *> parseLineChars
+      error $ prefix <> text
       where
         error :: Text -> b
         error
@@ -129,6 +152,16 @@ parseMetaComment = parseErrorComment <|> parseRowCount <|> parseUnexpected
           . convert
 
 testTree :: IO Tasty.TestTree
-testTree
-  = PGT.mkDirGolden (Path.relDir "src/PGT/Output/Test/Comments/examples/comments")
-  $ Text.parseOnly parse
+testTree = do
+  commentsTree <-
+    PGT.mkDirGolden (Path.relDir "src/PGT/Output/Test/Comments/examples/comments")
+      $ Text.parseOnly parseComments
+
+  commentTree <-
+    PGT.mkDirGolden (Path.relDir "src/PGT/Output/Test/Comments/examples/comment")
+      $ Text.parseOnly parseComment
+
+  pure $ Tasty.testGroup "Comments"
+    [ commentTree
+    , commentsTree
+    ]

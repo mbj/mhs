@@ -43,7 +43,7 @@ instance Render a => Render (Test a) where
 
 parse :: Parser (Test QueryStats)
 parse = do
-  comments  <- Comments.parse <* impureParseEmptyLine "after test comments"
+  comments  <- Comments.parseComments <* impureParseEmptyLine "after test comments"
   result    <- Result.parse
   queryPlan <- optional (parseEmptyLine "before a query plan" *> QueryPlan.parse)
 
