@@ -17,6 +17,7 @@ data DefinitionType
   = CompositeType
   | Domains
   | Functions
+  | Table
   | View
 
 instance Conversion Text DefinitionType where
@@ -24,6 +25,7 @@ instance Conversion Text DefinitionType where
     CompositeType -> "Composite type"
     Domains       -> "List of domains"
     Functions     -> "List of functions"
+    Table         -> "Table"
     View          -> "View"
 
 parse :: Parser Text
@@ -31,6 +33,7 @@ parse = Text.choice
   [ mkParser CompositeType
   , mkParser Domains
   , mkParser Functions
+  , mkParser Table
   , mkParser View
   ]
   where
@@ -53,6 +56,7 @@ parse = Text.choice
         parseTitle = case definitionType of
           CompositeType -> parseWithTail
           View          -> parseWithTail
+          Table         -> parseWithTail
           _             -> Text.string name <* Text.endOfLine
           where
             name :: Text

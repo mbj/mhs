@@ -1,0 +1,7 @@
+                       Table "public.example"
+     Column      |             Type             | Collation | Nullable | Default
+-----------------+------------------------------+-----------+----------+---------
+ id              | uuid                         |           | not null |
+ created_at      | timestamp                    |           | not null |
+Indexes:
+    "id_primary_key" PRIMARY KEY, btree (id)
