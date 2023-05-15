@@ -18,6 +18,7 @@ data DefinitionType
   | Domains
   | Functions
   | Table
+  | Types
   | View
 
 instance Conversion Text DefinitionType where
@@ -26,6 +27,7 @@ instance Conversion Text DefinitionType where
     Domains       -> "List of domains"
     Functions     -> "List of functions"
     Table         -> "Table"
+    Types         -> "List of data types"
     View          -> "View"
 
 parse :: Parser Text
@@ -34,6 +36,7 @@ parse = Text.choice
   , mkParser Domains
   , mkParser Functions
   , mkParser Table
+  , mkParser Types
   , mkParser View
   ]
   where

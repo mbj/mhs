@@ -1,0 +1,7 @@
+                                                                                      List of data types
+ Schema |                        Name                        |                Internal name                | Size |           Elements           |  Owner   | Access privileges | Description
+--------+----------------------------------------------------+---------------------------------------------+------+------------------------------+----------+-------------------+-------------
+ public | public.example_failure                             | example_failure                             | 4    | user_in_example_sy_not_found+| postgres |                   |
+        |                                                    |                                             |      | user_in_foo_bar_1_2_exists  +|          |                   |
+        |                                                    |                                             |      | user_in_foo_bar_12_ambiguous |          |                   |
+(1 row)
