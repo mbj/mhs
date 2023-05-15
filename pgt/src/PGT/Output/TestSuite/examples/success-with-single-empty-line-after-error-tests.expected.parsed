@@ -1,0 +1,9 @@
+-- When error test
+-- (ERROR)
+
+ERROR:  domain public.uuid_not_null does not allow null values
+
+-- When other error test
+-- (ERROR)
+
+ERROR:  domain vahana.date_not_null does not allow null values
