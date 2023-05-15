@@ -1,3 +1,5 @@
+{-# LANGUAGE  MultiWayIf #-}
+
 module PGT.Output.TestSuite
   ( TestSuite(..)
   , parse
@@ -6,7 +8,6 @@ module PGT.Output.TestSuite
 where
 
 import Data.Attoparsec.Text (Parser)
-import Data.List.NonEmpty (NonEmpty)
 import PGT.Output.Render
 import PGT.Output.Test(Test)
 import PGT.Output.Test.QueryPlan (QueryStats)
@@ -15,7 +16,7 @@ import PGT.Prelude
 
 import qualified Data.Attoparsec.Text  as Text
 import qualified Data.Foldable         as Foldable
-import qualified Data.List.NonEmpty    as NonEmpty
+import qualified Data.Text             as Text
 import qualified GHC.Err               as Err
 import qualified PGT.Output.Definition as Definition
 import qualified PGT.Output.Golden     as PGT
@@ -25,22 +26,28 @@ import qualified Test.Tasty            as Tasty
 
 data TestSuite a = TestSuite
   { definitions :: [Text]
-  , tests       :: NonEmpty (Test a)
+  , tests       :: [Test a]
   }
   deriving stock (Eq, Show)
 
 instance Render (TestSuite QueryStats) where
-  render TestSuite{..} = unlinesN 2 $ definitions <> [renderTests]
+  render TestSuite{..} = Text.stripEnd . unlinesN 2 $ definitions <> [renderTests]
     where
       renderTests :: Text
       renderTests = unlinesN 3 . Foldable.toList $ render <$> tests
 
 parse :: Parser (TestSuite QueryStats)
 parse = do
-  definitions <- Text.many' (Definition.parse <* Text.endOfLine)
+  definitions <- Text.many' (Definition.parse <* (Text.endOfInput <|> Text.endOfLine))
+  atEnd       <- Text.atEnd
 
-  either fail (pure . TestSuite definitions . NonEmpty.fromList)
-    =<< Text.eitherP (parseUnexpected (listToMaybe definitions)) parseTests
+  if | atEnd && Foldable.null definitions ->
+        fail "expected a valid test or database object definition but found none"
+     | atEnd                              ->
+        pure $ TestSuite definitions []
+     | otherwise                          ->
+        either fail (pure . TestSuite definitions)
+          =<< Text.eitherP (parseUnexpected (listToMaybe definitions)) parseTests
   where
     parseTests :: Parser [Test QueryStats]
     parseTests = Text.many1' (Test.parse <* (Text.endOfInput <|> emptyLines))

@@ -1,5 +1,3 @@
-Failed reading: expected a test or database object definition but found: 
-
                          View "public.example"
              Column              |        Type        | Collation | Nullable | Default
 ---------------------------------+--------------------+-----------+----------+---------
