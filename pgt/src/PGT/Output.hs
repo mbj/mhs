@@ -9,6 +9,7 @@ import Data.List.NonEmpty (NonEmpty(..))
 import PGT.Output.Render
 import PGT.Output.Test.QueryPlan (QueryStats)
 import PGT.Output.TestSuite (TestSuite)
+import PGT.Output.Text
 import PGT.Prelude
 
 import qualified Data.Attoparsec.Text as Text
@@ -26,7 +27,7 @@ newtype Document a = Document (NonEmpty (TestSuite a))
 instance Render (Document QueryStats) where
   render (Document outputs)
     = (`Text.snoc` '\n')
-    . Text.intercalate "\n\n"
+    . unlinesN 3
     . NonEmpty.toList $ render <$> outputs
 
 impureParse :: Text -> Text
