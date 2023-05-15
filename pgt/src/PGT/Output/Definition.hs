@@ -4,16 +4,11 @@ module PGT.Output.Definition
   )
 where
 
-import Control.Monad (replicateM)
 import Data.Attoparsec.Text (Parser)
-import Data.Int (Int)
-import Data.Maybe (maybeToList)
 import PGT.Output.Text
 import PGT.Prelude
 
 import qualified Data.Attoparsec.Text as Text
-import qualified Data.Char            as Char
-import qualified Data.Text            as Text
 import qualified PGT.Output.Golden    as PGT
 import qualified System.Path          as Path
 import qualified Test.Tasty           as Tasty
@@ -45,8 +40,7 @@ parse = Text.choice
       title           <- parseTitle
       subTitles       <- parseLineChars
       underLine       <- parseLineChars
-      definitionLines <- Text.many1' parseDefinitionLine
-      termination     <- parseTermination
+      definitionLines <- Text.many1' parseLineChars
 
       let title' = maybe title (<> title) padding
 
@@ -54,37 +48,7 @@ parse = Text.choice
         .  unlines
         $  [title', subTitles, underLine]
         <> definitionLines
-        <> termination
       where
-        parseDefinitionLine :: Parser Text
-        parseDefinitionLine = case definitionType of
-          CompositeType -> parseLine 2
-          Domains       -> parseLine 3
-          Functions     -> parseLine 3
-          View          -> parseLine 2
-          where
-            parseLine :: Int -> Parser Text
-            parseLine count = do
-              required  <- Text.concat <$> replicateM count parseRequiredValue
-              optional' <- parseLineChars
-
-              pure $ required <> optional'
-              where
-                parseRequiredValue :: Parser Text
-                parseRequiredValue = do
-                  value <- Text.space *> definitionName <* Text.char '|'
-
-                  pure $ " " <> value <> "|"
-
-                definitionName :: Parser Text
-                definitionName = Text.takeWhile1 isDefinitionName
-                  where
-                    isDefinitionName char = Char.isPrint char && char /= '|'
-
-        parseTermination :: Parser [Text]
-        parseTermination =
-          maybeToList <$> optional (Text.string "(1 row)" <* Text.endOfLine)
-
         parseTitle :: Parser Text
         parseTitle = case definitionType of
           CompositeType -> parseWithTail
