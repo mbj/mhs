@@ -14,15 +14,16 @@ import PGT.Output.Test.QueryPlan (QueryStats)
 import PGT.Output.Text
 import PGT.Prelude
 
-import qualified Data.Attoparsec.Text  as Text
-import qualified Data.Foldable         as Foldable
-import qualified Data.Text             as Text
-import qualified GHC.Err               as Err
-import qualified PGT.Output.Definition as Definition
-import qualified PGT.Output.Golden     as PGT
-import qualified PGT.Output.Test       as Test
-import qualified System.Path           as Path
-import qualified Test.Tasty            as Tasty
+import qualified Data.Attoparsec.Text     as Text
+import qualified Data.Foldable            as Foldable
+import qualified Data.Text                as Text
+import qualified GHC.Err                  as Err
+import qualified PGT.Output.Definition    as Definition
+import qualified PGT.Output.Golden        as PGT
+import qualified PGT.Output.Test          as Test
+import qualified PGT.Output.Test.Result   as Result
+import qualified System.Path              as Path
+import qualified Test.Tasty               as Tasty
 
 data TestSuite a = TestSuite
   { definitions :: [Text]
@@ -34,7 +35,12 @@ instance Render (TestSuite QueryStats) where
   render TestSuite{..} = Text.stripEnd . unlinesN 2 $ definitions <> [renderTests]
     where
       renderTests :: Text
-      renderTests = unlinesN 3 . Foldable.toList $ render <$> tests
+      renderTests = Text.stripEnd . Text.concat $ renderTest <$> tests
+
+      renderTest :: Test QueryStats -> Text
+      renderTest test = case test.result of
+        Result.Error _ -> render test <> "\n\n"
+        _              -> render test <> "\n\n\n"
 
 parse :: Parser (TestSuite QueryStats)
 parse = do
@@ -50,10 +56,22 @@ parse = do
           =<< Text.eitherP (parseUnexpected (listToMaybe definitions)) parseTests
   where
     parseTests :: Parser [Test QueryStats]
-    parseTests = Text.many1' (Test.parse <* (Text.endOfInput <|> emptyLines))
+    parseTests = Text.many1' parseTest
       where
-        emptyLines :: Parser ()
-        emptyLines = either Err.error pure =<< mkParseEmptyLines 2 "after a test"
+        parseTest :: Parser (Test QueryStats)
+        parseTest = do
+          test <- Test.parse
+
+          case test.result of
+            Result.Error _ -> emptyLines 1 "after an error result"
+            _              -> emptyLines 2 "after a test"
+
+          pure test
+          where
+            emptyLines :: Natural -> String -> Parser ()
+            emptyLines count message
+              = Text.endOfInput
+              <|> (either Err.error pure =<< mkParseEmptyLines count  message)
 
     parseUnexpected :: Maybe Text -> Parser String
     parseUnexpected definitions = parseUnexpectedEmptyLine <|> parseUnexpectedText
