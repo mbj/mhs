@@ -13,7 +13,7 @@ import Data.List.NonEmpty (NonEmpty(..), (<|))
 import Data.Maybe (maybeToList)
 import Data.Word (Word8)
 import PGT.Output.Render
-import PGT.Output.RowCount
+import PGT.Output.RowCount (RowCount(..))
 import PGT.Output.Text
 import PGT.Prelude
 
