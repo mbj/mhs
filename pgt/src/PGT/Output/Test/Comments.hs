@@ -40,7 +40,7 @@ data Comments = Comments
   deriving stock (Eq, Show)
 
 instance Render Comments where
-  render Comments{..} = Text.unlines $ commentsList <> [metaCommentText]
+  render Comments{..} = unlines $ commentsList <> [metaCommentText]
     where
       commentsList :: [Text]
       commentsList = Foldable.toList $ mkComment <$> comments

@@ -18,7 +18,6 @@ import PGT.Output.Text
 import PGT.Prelude
 
 import qualified Data.Attoparsec.Text      as Text
-import qualified Data.Text                 as Text
 import qualified GHC.Err                   as Err
 import qualified PGT.Output.Golden         as PGT
 import qualified PGT.Output.Test.Comments  as Comments
@@ -36,11 +35,11 @@ data Test a = Test
 
 instance Render a => Render (Test a) where
   render Test{..}
-    = unlines
+    = unlinesN 2
     $ [ render comments
       , render result
       ]
-      <> fmap (Text.cons '\n' . render) (maybeToList queryPlan)
+      <> fmap render (maybeToList queryPlan)
 
 parse :: Parser (Test QueryStats)
 parse = do
