@@ -20,6 +20,7 @@ import qualified Data.List.NonEmpty   as NonEmpty
 import qualified Data.Text            as Text
 import qualified GHC.Err              as Err
 import qualified PGT.Output.Golden    as PGT
+import qualified PGT.Output.RowCount  as RowCount
 import qualified System.Path          as Path
 import qualified Test.Tasty           as Tasty
 
@@ -111,23 +112,7 @@ parseMetaComment = parseErrorComment <|> parseRowCount <|> parseUnexpected
     parseErrorComment = "-- (ERROR)" *> Text.endOfLine $> ErrorMetaComment
 
     parseRowCount :: Parser MetaComment
-    parseRowCount = do
-      rowCount <- "-- (" *> (convertImpure <$> Text.scientific)
-
-      validateRowString rowCount =<< Text.space *> ("rows" <|> "row")
-
-      Text.char ')' *> Text.endOfLine $> RowCountMetaComment rowCount
-      where
-        validateRowString :: RowCount -> Text -> Parser ()
-        validateRowString rowCount@(RowCount count) string
-          | count == 1 && string /= "row"  = Err.error "expected (1 row) but found (1 rows)"
-          | count /= 1 && string /= "rows" = Err.error message
-          | otherwise                      = pure ()
-          where
-            message :: String
-            message
-              = convert
-              $ "expected " <> render rowCount <> " but found (" <> showc count <> " row)"
+    parseRowCount = "-- " *> (RowCountMetaComment <$> RowCount.parse "(")
 
     parseUnexpected :: Parser MetaComment
     parseUnexpected =  do
