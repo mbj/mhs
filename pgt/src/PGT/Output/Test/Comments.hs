@@ -57,7 +57,7 @@ parse = do
 
   metaComment <-
     either Err.error pure
-      =<< Text.eitherP parseUnexpectedEmptyLine parseCommentsMeta
+      =<< Text.eitherP parseUnexpectedEmptyLine parseMetaComment
 
   pure Comments{..}
   where
@@ -104,8 +104,8 @@ parse = do
       (Text.endOfLine <|> Text.endOfInput)
         $> "expected a row-count comment such as (0 rows) or (ERROR) comment but received empty line"
 
-parseCommentsMeta :: Parser MetaComment
-parseCommentsMeta = parseErrorComment <|> parseRowCount <|> parseUnexpected
+parseMetaComment :: Parser MetaComment
+parseMetaComment = parseErrorComment <|> parseRowCount <|> parseUnexpected
   where
     parseErrorComment :: Parser MetaComment
     parseErrorComment = "-- (ERROR)" *> Text.endOfLine $> ErrorMetaComment
