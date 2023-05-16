@@ -11,7 +11,7 @@ where
 import Data.Attoparsec.Text (Parser)
 import Data.List.NonEmpty (NonEmpty(..), (<|))
 import Data.Maybe (maybeToList)
-import Data.Word (Word8)
+import Data.Word (Word16)
 import PGT.Output.Render
 import PGT.Output.RowCount (RowCount(..))
 import PGT.Output.Text
@@ -213,7 +213,7 @@ parseRows = do
             tail = (" rows)" <|> " row)") *> Text.endOfLine
 
 recordsCount :: NonEmpty Record -> RowCount
-recordsCount = RowCount . convertImpure @Word8 . Foldable.length
+recordsCount = RowCount . convertImpure @Word16 . Foldable.length
 
 rowsCount :: RowResults -> RowCount
 rowsCount RowResults{..}
