@@ -68,7 +68,7 @@ parsePadding :: Parser Text
 parsePadding = Text.takeWhile1 (== ' ')
 
 unlines :: (Foldable f, Conversion Text a) => f a -> Text
-unlines = Text.intercalate "\n" . fmap (convert @Text) . Foldable.toList
+unlines = unlinesN 1
 
 unlinesN :: (Foldable f, Conversion Text a) => Word8 -> f a -> Text
 unlinesN count list
