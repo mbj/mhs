@@ -7,7 +7,6 @@ module PGT.Output.Test
   )
 where
 
-import Control.Applicative
 import Data.Attoparsec.Text (Parser)
 import Data.Maybe (maybeToList)
 import PGT.Output.Render
