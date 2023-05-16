@@ -9,7 +9,7 @@ where
 import Data.Attoparsec.Text (Parser)
 import Data.List.NonEmpty (NonEmpty(..))
 import PGT.Output.Render
-import PGT.Output.RowCount
+import PGT.Output.RowCount (RowCount(..))
 import PGT.Output.Text
 import PGT.Prelude
 
