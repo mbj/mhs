@@ -188,7 +188,7 @@ parseRows = do
 
   let title = unlines @[] [columns, columnUnderLine]
 
-  Rows . RowResults title <$> parseTableRows
+  Rows . RowResults title <$> parseRowLines
   where
     parseUnderLine :: Parser Text
     parseUnderLine = Text.takeWhile1 isUnderLineChar <* Text.endOfLine
@@ -201,8 +201,8 @@ parseRows = do
       columns <- parseLineChars
       pure $ padding <> columns
 
-    parseTableRows :: Parser (NonEmpty Text)
-    parseTableRows =
+    parseRowLines :: Parser (NonEmpty Text)
+    parseRowLines =
       NonEmpty.fromList
         <$> Text.manyTill' parseLineChars parseRowCount
       where
