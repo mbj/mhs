@@ -1,6 +1,5 @@
 module PGT.Output.TestSuite
-  ( Test(..)
-  , TestSuite(..)
+  ( TestSuite(..)
   , parse
   , testTree
   )
