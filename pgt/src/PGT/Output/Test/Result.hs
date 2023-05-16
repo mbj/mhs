@@ -22,6 +22,7 @@ import qualified Data.Foldable        as Foldable
 import qualified Data.List.NonEmpty   as NonEmpty
 import qualified Data.Text            as Text
 import qualified PGT.Output.Golden    as PGT
+import qualified PGT.Output.RowCount  as RowCount
 import qualified System.Path          as Path
 import qualified Test.Tasty           as Tasty
 
@@ -204,13 +205,7 @@ parseRows = do
     parseRowLines :: Parser (NonEmpty Text)
     parseRowLines =
       NonEmpty.fromList
-        <$> Text.manyTill' parseLineChars parseRowCount
-      where
-        parseRowCount :: Parser RowCount
-        parseRowCount = convertImpure <$> ("(" *> Text.scientific <* tail)
-          where
-            tail :: Parser ()
-            tail = (" rows)" <|> " row)") *> Text.endOfLine
+        <$> Text.manyTill' parseLineChars (RowCount.parse "(")
 
 recordsCount :: NonEmpty Record -> RowCount
 recordsCount = RowCount . convertImpure @Word16 . Foldable.length
