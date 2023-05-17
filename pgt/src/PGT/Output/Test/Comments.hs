@@ -12,6 +12,7 @@ where
 import Control.Monad (unless)
 import Data.Attoparsec.Text (Parser)
 import Data.List.NonEmpty (NonEmpty(..))
+import Data.Set.NonEmpty (NESet)
 import PGT.Output.Render
 import PGT.Output.RowCount (RowCount(..))
 import PGT.Output.Text
@@ -21,6 +22,7 @@ import qualified Data.Attoparsec.Text as Text
 import qualified Data.Char            as Char
 import qualified Data.Foldable        as Foldable
 import qualified Data.List.NonEmpty   as NonEmpty
+import qualified Data.Set.NonEmpty    as Set.NonEmpty
 import qualified Data.Text            as Text
 import qualified GHC.Err              as Err
 import qualified PGT.Output.Golden    as PGT
@@ -30,13 +32,26 @@ import qualified Test.Tasty           as Tasty
 
 data MetaComment
   = ErrorMetaComment
+  | FailureMetaComment  RowCount
   | RowCountMetaComment RowCount
+  | SuccessMetaComment  RowCount
   deriving stock (Eq, Show)
 
 instance Render MetaComment where
   render = \case
-    ErrorMetaComment             -> "(ERROR)"
-    RowCountMetaComment rowCount -> render rowCount
+    SuccessMetaComment rowsCount  -> renderWithRowCount rowsCount "success"
+    ErrorMetaComment              -> "(ERROR)"
+    FailureMetaComment  rowsCount -> renderWithRowCount rowsCount "failure"
+    RowCountMetaComment rowCount  -> render rowCount
+    where
+      renderWithRowCount :: RowCount -> Text -> Text
+      renderWithRowCount (RowCount count) text =
+        "(" <>  text <> ", " <> showc count <> suffix
+        where
+          suffix :: Text
+          suffix
+            | count == 1 = " row)"
+            | otherwise  = " rows)"
 
 data Commentary a = Commentary
   { metaComment :: MetaComment
@@ -74,9 +89,12 @@ parseComment = do
 
       char <- Text.peekChar'
 
-      unless (Char.isDigit char || char == 'E')
+      unless (Char.isDigit char || Foldable.any (char ==) acceptedFirstChars)
         $ (Err.error . convert . ("expected row count or error text such as (1 row) or (ERROR) but found: (" <>))
         =<< parseLineChars
+      where
+        acceptedFirstChars :: NESet Char.Char
+        acceptedFirstChars = Set.NonEmpty.fromList $ 'E' :| ['f', 's']
 
 parseComments :: Parser Comments
 parseComments = do
@@ -132,13 +150,26 @@ parseComments = do
         $> "expected a row-count comment such as (0 rows) or (ERROR) comment but received empty line"
 
 parseMetaComment :: Text -> Parser MetaComment
-parseMetaComment prefix = parseErrorComment <|> parseRowCount <|> parseUnexpected
+parseMetaComment prefix
+  = Text.choice
+    [ parseErrorComment
+    , parseFailureComment
+    , parseRowCount
+    , parseSuccessComment
+    , parseUnexpected
+    ]
   where
     parseErrorComment :: Parser MetaComment
     parseErrorComment = Text.string prefix *> "ERROR)" *> Text.endOfLine $> ErrorMetaComment
 
+    parseFailureComment :: Parser MetaComment
+    parseFailureComment = FailureMetaComment <$> RowCount.parse (prefix <> "failure, ")
+
     parseRowCount :: Parser MetaComment
     parseRowCount = RowCountMetaComment <$> RowCount.parse prefix
+
+    parseSuccessComment :: Parser MetaComment
+    parseSuccessComment = SuccessMetaComment <$> RowCount.parse (prefix <> "success, ")
 
     parseUnexpected :: Parser MetaComment
     parseUnexpected =  do
