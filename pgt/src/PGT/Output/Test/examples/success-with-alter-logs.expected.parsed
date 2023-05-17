@@ -1,0 +1,9 @@
+-- with table alter execution
+-- (1 row)
+
+NOTICE:  drop cascades to 16 other objects
+DETAIL:  drop cascades to constraint fk_example_id on table public.examples
+drop cascades to constraint fk_example_id_id on table public.users
+drop cascades to constraint fk_base_id on table public.domains
+-[ RECORD 1 ]---------+------------------------------------------------
+account_id            | 00000000-0000-4000-0000-000000000114
