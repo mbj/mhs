@@ -9,7 +9,6 @@ where
 
 import Data.Attoparsec.Text (Parser)
 import Data.List.NonEmpty (NonEmpty(..), (<|))
-import Data.Maybe (maybeToList)
 import Data.Word (Word16)
 import PGT.Output.Render
 import PGT.Output.RowCount (RowCount(..))
@@ -27,7 +26,7 @@ import qualified Test.Tasty           as Tasty
 
 data Result
   = Empty
-  | Error   (NonEmpty ErrorResult)
+  | Error   ErrorResult
   | Records (NonEmpty Record)
   | Rows    RowResults
   deriving stock (Eq, Show)
@@ -35,25 +34,18 @@ data Result
 instance Render Result where
   render = \case
     Empty           -> render $ RowCount 0
-    Error   error   -> unlines $ render <$> error
+    Error   error   -> render error
     Records records -> unlines $ render <$> records
     Rows    table   -> render table
 
 data ErrorResult = ErrorResult
-  { context :: Maybe Text
-  , detail  :: Maybe Text
-  , error   :: Text
-  , line    :: Maybe Text
+  { error   :: Text
+  , details :: [Text]
   }
   deriving stock (Eq, Show)
 
 instance Render ErrorResult where
-  render ErrorResult{..}
-    = unlines
-    $ [error]
-    <> maybeToList detail
-    <> maybeToList context
-    <> maybeToList line
+  render ErrorResult{..} = unlines $ error : details
 
 data Record = Record
   { title :: Text
@@ -94,19 +86,23 @@ parseEmpty :: Parser Result
 parseEmpty = Empty <$ "(0 rows)" <* Text.endOfLine
 
 parseError :: Parser Result
-parseError = Error . NonEmpty.fromList <$> Text.many1' parseErrorResult
+parseError = Error <$> parseErrorResult
   where
     parseErrorResult :: Parser ErrorResult
     parseErrorResult = do
       error   <- parseMessage "ERROR:"
-      detail  <- parseOptionalMessage "DETAIL:"
-      context <- parseOptionalMessage "CONTEXT:"
-      line    <- optional parseLineError
+      details <- Text.many' parseErrorDetails
 
       pure ErrorResult{..}
       where
-        parseOptionalMessage :: Text -> Parser (Maybe Text)
-        parseOptionalMessage = optional . parseMessage
+        parseErrorDetails :: Parser Text
+        parseErrorDetails
+          = Text.choice
+          [ parseMessage "ERROR:"
+          , parseMessage "DETAIL:"
+          , parseMessage "CONTEXT:"
+          , parseLineError
+          ]
 
         -- This parser is quite specialized and may need to be modified in future
         parseLineError :: Parser Text
