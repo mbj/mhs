@@ -101,6 +101,8 @@ parseError = Error <$> parseErrorResult
           [ parseMessage "ERROR:"
           , parseMessage "DETAIL:"
           , parseMessage "CONTEXT:"
+          , parseMessage "SQL"
+          , parseMessage "WARNING:"
           , parseLineError
           ]
 

@@ -1,0 +1,3 @@
+WARNING:  you don't own a lock of type ExclusiveLock
+ERROR:  advisory unlock failed for bar
+CONTEXT:  PL/pgSQL function advisory_unlock(present_text_not_null) line 6 at RAISE
