@@ -1,0 +1,4 @@
+ERROR:  null value in column "user_id" of relation "users" violates not-null constraint
+DETAIL:  Failing row contains (id, created_at).
+CONTEXT:  SQL function "create_users" statement 1
+SQL function "create_users" statement 1

@@ -90,7 +90,7 @@ parseError = Error <$> parseErrorResult
   where
     parseErrorResult :: Parser ErrorResult
     parseErrorResult = do
-      error   <- parseMessage "ERROR:"
+      error   <- parseMessage "ERROR:" <|> parseMessage "WARNING:"
       details <- Text.many' parseErrorDetails
 
       pure ErrorResult{..}
@@ -101,6 +101,8 @@ parseError = Error <$> parseErrorResult
           [ parseMessage "ERROR:"
           , parseMessage "DETAIL:"
           , parseMessage "CONTEXT:"
+          , parseMessage "SQL"
+          , parseMessage "WARNING:"
           , parseLineError
           ]
 
