@@ -11,11 +11,11 @@ import Data.Tuple (fst)
 import Data.Word (Word16)
 import GHC.Real (properFraction)
 import PGT.Output.Render
+import PGT.Output.Text
 import PGT.Prelude
 
 import qualified Data.Attoparsec.Text as Text
 import qualified Data.Scientific      as Scientific
-import qualified GHC.Err              as Err
 
 newtype RowCount = RowCount Word16
   deriving stock (Eq, Show)
@@ -61,11 +61,9 @@ parse prefix = do
   where
     validateRowString :: RowCount -> Text -> Parser ()
     validateRowString rowCount@(RowCount count) string
-      | count == 1 && string /= "row"  = Err.error "expected (1 row) but found (1 rows)"
-      | count /= 1 && string /= "rows" = Err.error message
+      | count == 1 && string /= "row"  = errorP ("expected (1 row) but found (1 rows)" :: Text)
+      | count /= 1 && string /= "rows" = errorP message
       | otherwise                      = pure ()
       where
-        message :: String
-        message
-          = convert
-          $ "expected " <> render rowCount <> " but found (" <> showc count <> " row)"
+        message :: Text
+        message = "expected " <> render rowCount <> " but found (" <> showc count <> " row)"

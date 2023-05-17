@@ -24,7 +24,6 @@ import qualified Data.Foldable        as Foldable
 import qualified Data.List.NonEmpty   as NonEmpty
 import qualified Data.Set.NonEmpty    as Set.NonEmpty
 import qualified Data.Text            as Text
-import qualified GHC.Err              as Err
 import qualified PGT.Output.Golden    as PGT
 import qualified PGT.Output.RowCount  as RowCount
 import qualified System.Path          as Path
@@ -90,7 +89,7 @@ parseComment = do
       char <- Text.peekChar'
 
       unless (Char.isDigit char || Foldable.any (char ==) acceptedFirstChars)
-        $ (Err.error . convert . ("expected row count or error text such as (1 row) or (ERROR) but found: (" <>))
+        $ (errorP . ("expected row count or error text such as (1 row) or (ERROR) but found: (" <>))
         =<< parseLineChars
       where
         acceptedFirstChars :: NESet Char.Char
@@ -101,7 +100,7 @@ parseComments = do
   text <- NonEmpty.fromList <$> Text.many1' parseCommentLine
 
   metaComment <-
-    either Err.error pure
+    eitherImpureError
       =<< Text.eitherP parseUnexpectedEmptyLine (parseMetaComment "-- (")
 
   pure Commentary{..}
@@ -112,15 +111,15 @@ parseComments = do
 
       case peekedChar of
         '-'                         -> parseLine <|> parseUnexpectedFirstChar
-        char | Char.isAlphaNum char -> Err.error . (message <>) . convert <$> parseLineChars
-        _                           -> fail . (message <>) . convert =<< parseLineChars
+        char | Char.isAlphaNum char -> errorP . (message <>) =<< parseLineChars
+        _                           -> failP . (message <>) =<< parseLineChars
       where
-        message :: String
+        message :: Text
         message = "expected valid test comment such as \"-- my test comment\" but received: \n\n"
 
         parseLine :: Parser Text
         parseLine
-          = either Err.error pure
+          = eitherImpureError
           =<< Text.eitherP parseUnexpectedEmptyComment parseExpected
           where
             parseExpected :: Parser Text
@@ -132,19 +131,19 @@ parseComments = do
         parseUnexpectedFirstChar = do
           void $ "-- " *> Text.satisfy (not . expectedFirstChar)
 
-          fail . ("expected a comment that starts with an alpha-num char but received:\n\n" <>) . convert
+          failP . ("expected a comment that starts with an alpha-num char but received:\n\n" <>)
             =<< parseLineChars
           where
             expectedFirstChar :: Char -> Bool
             expectedFirstChar char = Char.isAlphaNum char || char == '('
 
-        parseUnexpectedEmptyComment :: Parser String
+        parseUnexpectedEmptyComment :: Parser Text
         parseUnexpectedEmptyComment =
           "--"
             *> Text.endOfLine
             $> "expected comment text after \"--\" but found none"
 
-    parseUnexpectedEmptyLine :: Parser String
+    parseUnexpectedEmptyLine :: Parser Text
     parseUnexpectedEmptyLine =
       (Text.endOfLine <|> Text.endOfInput)
         $> "expected a row-count comment such as (0 rows) or (ERROR) comment but received empty line"
@@ -176,11 +175,10 @@ parseMetaComment prefix
       text <- Text.string prefix *> parseLineChars
       error $ prefix <> text
       where
-        error :: Text -> b
+        error :: Text -> Parser a
         error
-          = Err.error
+          = errorP
           . ("expected valid meta comment such as (ERROR) or (1 row) but received: \n\n" <>)
-          . convert
 
 testTree :: IO Tasty.TestTree
 testTree = do
