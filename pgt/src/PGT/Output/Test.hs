@@ -77,6 +77,7 @@ validate test
       case metaComment of
         ErrorMetaComment             -> assertErrorResult
         RowCountMetaComment rowCount -> assertRowCount rowCount
+        _                            -> assertRowCount (RowCount 1)
       where
         assertErrorResult :: Either String ()
         assertErrorResult = case result of
