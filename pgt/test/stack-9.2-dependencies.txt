@@ -86,6 +86,7 @@ indexed-traversable 0.1.2.1
 indexed-traversable-instances 0.1.1.2
 integer-gmp 1.1
 integer-logarithms 1.0.3.1
+invariant 0.6.1
 isomorphism-class 0.1.0.9
 libyaml 0.1.2
 memory 0.17.0
@@ -97,6 +98,8 @@ mtl 2.2.2
 network 3.1.2.9
 network-info 0.2.1
 network-ip 0.3.0.3
+nonempty-containers 0.3.4.4
+nonempty-vector 0.2.2.0
 old-locale 1.0.0.7
 optparse-applicative 0.17.0.0
 ordered-containers 0.2.3

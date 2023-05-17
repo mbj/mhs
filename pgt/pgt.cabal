@@ -102,6 +102,7 @@ library
     , filepath >=1.4
     , mprelude
     , mtl
+    , nonempty-containers
     , optparse-applicative >=0.15
     , ordered-containers >=0.2
     , pathtype >=0.8.1
@@ -169,6 +170,7 @@ executable pgt
     , filepath >=1.4
     , mprelude
     , mtl
+    , nonempty-containers
     , optparse-applicative >=0.15
     , ordered-containers >=0.2
     , pathtype >=0.8.1
@@ -245,6 +247,7 @@ test-suite test
     , filepath >=1.4
     , mprelude
     , mtl
+    , nonempty-containers
     , optparse-applicative >=0.15
     , ordered-containers >=0.2
     , pathtype >=0.8.1
