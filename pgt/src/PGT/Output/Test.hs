@@ -20,6 +20,7 @@ import PGT.Output.Text
 import PGT.Prelude
 
 import qualified Data.Attoparsec.Text      as Text
+import qualified Data.Text                 as Text
 import qualified PGT.Output.Golden         as PGT
 import qualified PGT.Output.Test.Comments  as Comments
 import qualified PGT.Output.Test.QueryPlan as QueryPlan
@@ -28,7 +29,8 @@ import qualified System.Path               as Path
 import qualified Test.Tasty                as Tasty
 
 data Test' commentary queryPlan = Test
-  { commentary :: commentary
+  { alterLogs  :: [Text]
+  , commentary :: commentary
   , queryPlan  :: Maybe queryPlan
   , result     :: Result
   , subTests   :: [Test' Comment queryPlan]
@@ -44,10 +46,18 @@ instance (Render a) => Render (Test a) where
       go count Test{..}
         = unlinesN count
         $ [ render commentary
-          , render result
+          , logsWithResults
           ]
         <> fmap render (maybeToList queryPlan)
         <> (go 1 <$> subTests)
+        where
+          logsWithResults :: Text
+          logsWithResults
+            = Text.stripStart
+            $ unlines @[]
+              [ unlines alterLogs
+              , render result
+              ]
 
 parse :: Parser (Test QueryStats)
 parse = do
@@ -59,10 +69,27 @@ parse = do
     mkParser :: Parser (Commentary a) -> Parser (Test' (Commentary a) QueryStats)
     mkParser commentsParser = do
       commentary <- commentsParser
+      alterLogs  <- parseAlterLogs
       result     <- Result.parse
       queryPlan  <- optional (parseEmptyLine "before a query plan" *> QueryPlan.parse)
 
       fmap QueryPlan.mkQueryStats <$> validate Test{ subTests = [], .. }
+
+parseAlterLogs :: Parser [Text]
+parseAlterLogs = Text.many' parseLog
+  where
+    parseLog :: Parser Text
+    parseLog = do
+      prefix <- Text.choice $ Text.string <$> logPrefixes
+
+      (prefix <>) <$> parseLineChars
+
+    logPrefixes :: [Text]
+    logPrefixes
+      = [ "NOTICE:"
+        , "DETAIL:"
+        , "drop"
+        ]
 
 validate :: Test' (Commentary a) b -> Parser (Test' (Commentary a) b)
 validate test

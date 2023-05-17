@@ -180,6 +180,7 @@ parseRecords = Records . NonEmpty.fromList <$> Text.many1' parseRecord
               padding <- parsePadding <* Text.char '|'
 
               pure $ name <> padding
+
 parseRows :: Parser Result
 parseRows = do
   columns         <- parseColumns
