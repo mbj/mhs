@@ -20,7 +20,6 @@ import PGT.Output.Text
 import PGT.Prelude
 
 import qualified Data.Attoparsec.Text      as Text
-import qualified GHC.Err                   as Err
 import qualified PGT.Output.Golden         as PGT
 import qualified PGT.Output.Test.Comments  as Comments
 import qualified PGT.Output.Test.QueryPlan as QueryPlan
@@ -68,30 +67,30 @@ parse = do
 validate :: Test' (Commentary a) b -> Parser (Test' (Commentary a) b)
 validate test
   = either
-    Err.error
+    errorP
     (const (pure test))
   $ validateTest test
   where
-    validateTest :: Test' (Commentary a) b -> Either String ()
+    validateTest :: Test' (Commentary a) b -> Either Text ()
     validateTest Test{commentary = Commentary{..}, ..} =
       case metaComment of
         ErrorMetaComment             -> assertErrorResult
         RowCountMetaComment rowCount -> assertRowCount rowCount
         _                            -> assertRowCount (RowCount 1)
       where
-        assertErrorResult :: Either String ()
+        assertErrorResult :: Either Text ()
         assertErrorResult = case result of
           Error _ -> pure ()
           _       -> Left . ("expected an error result but found:\n\n" <>) . convert $ render result
 
-        assertRowCount :: RowCount -> Either String ()
+        assertRowCount :: RowCount -> Either Text ()
         assertRowCount commentRowCount = case result of
           Records records -> assertCount $ Result.recordsCount records
           Rows    rows    -> assertCount $ rows.rowCount
           Empty           -> assertCount $ RowCount 0
           Error _         -> Left . ("expected a row result but found:\n\n" <>) . convert $ render result
           where
-            assertCount :: RowCount -> Either String ()
+            assertCount :: RowCount -> Either Text ()
             assertCount itemsRowCount =
               when (itemsRowCount /= commentRowCount)
                 . Left

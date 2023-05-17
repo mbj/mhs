@@ -63,13 +63,13 @@ mkParserFailure onFailure message = do
           . fst
           $ Text.splitAt (Text.fromPos position) string
 
-impureParseEmptyLine :: String -> Parser ()
-impureParseEmptyLine = either Err.error pure <=< mkParseEmptyLines 1
+impureParseEmptyLine :: Text -> Parser ()
+impureParseEmptyLine = eitherImpureError <=< mkParseEmptyLines 1
 
-parseEmptyLine :: String -> Parser ()
-parseEmptyLine = either fail pure <=< mkParseEmptyLines 1
+parseEmptyLine :: Text -> Parser ()
+parseEmptyLine = eitherFail <=< mkParseEmptyLines 1
 
-mkParseEmptyLines :: Natural -> String -> Parser (Either String ())
+mkParseEmptyLines :: Natural -> Text -> Parser (Either Text ())
 mkParseEmptyLines expectedLines message = do
   receivedLines <- Foldable.length <$> Text.many' Text.endOfLine
 
@@ -77,7 +77,7 @@ mkParseEmptyLines expectedLines message = do
     then pure $ pure ()
     else pure
       . Left
-      $ "found " <> show receivedLines <> " empty lines " <> message <> " instead of " <> show expectedLines
+      $ "found " <> showc receivedLines <> " empty lines " <> message <> " instead of " <> showc expectedLines
 
 parseLineChars :: Parser Text
 parseLineChars = Text.takeWhile1 Char.isPrint <* Text.endOfLine

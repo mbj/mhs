@@ -22,7 +22,6 @@ import qualified Data.Char            as Char
 import qualified Data.List.NonEmpty   as NonEmpty
 import qualified Data.Text            as Text hiding (take)
 import qualified Data.Text.Encoding   as Text
-import qualified GHC.Err              as Err
 import qualified PGT.Output.Golden    as PGT
 import qualified System.Path          as Path
 import qualified Test.Tasty           as Tasty
@@ -78,7 +77,7 @@ parse = do
 
   let json = unlines $ initJsonLines <> [NonEmpty.last jsonLines]
 
-  either Err.error (pure . NonEmpty.head)
+  either (errorP . convert) (pure . NonEmpty.head)
     $ JSON.eitherDecode @(NonEmpty QueryPlanJson)  (convert $ Text.encodeUtf8 json)
   where
     termination :: Text
@@ -87,7 +86,7 @@ parse = do
     stripTrailingPlus :: Text -> Parser Text
     stripTrailingPlus text =
       maybe
-        (Err.error $ "expected more than one json char but found: " <> convert text)
+        (errorP $ "expected more than one json char but found: " <> text)
         stripPlusParser
       $ Text.unsnoc text
       where
@@ -96,7 +95,7 @@ parse = do
           | char == '+' =
               pure init
           | otherwise   =
-              Err.error $ "expected a '+' char at the end of the json line but found " <> [char]
+              errorP $ "expected a '+' char at the end of the json line but found " <> Text.singleton char
 
 mkQueryStats :: QueryPlanJson -> QueryStats
 mkQueryStats QueryPlanJson{..} =
