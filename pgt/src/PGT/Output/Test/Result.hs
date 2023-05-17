@@ -151,9 +151,9 @@ parseRecords = Records . NonEmpty.fromList <$> Text.many1' parseRecord
                     beginJson :: Parser Text
                     beginJson = do
                       beginChar <- Text.space *> Text.char openingChar
-                      padding   <- parsePadding <* Text.char '+' <* Text.endOfLine
+                      padding   <- optional parsePadding <* Text.char '+' <* Text.endOfLine
 
-                      pure $ "| " <> Text.singleton beginChar <> padding <> "+"
+                      pure $ "| " <> Text.singleton beginChar <> fromMaybe mempty padding <> "+"
 
                     parseJsonChars :: Parser Text
                     parseJsonChars = do
@@ -180,7 +180,6 @@ parseRecords = Records . NonEmpty.fromList <$> Text.many1' parseRecord
               padding <- parsePadding <* Text.char '|'
 
               pure $ name <> padding
-
 parseRows :: Parser Result
 parseRows = do
   columns         <- parseColumns
