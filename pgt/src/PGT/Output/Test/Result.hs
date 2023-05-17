@@ -101,7 +101,7 @@ parseError = Error . NonEmpty.fromList <$> Text.many1' parseErrorResult
       error   <- parseMessage "ERROR:"
       detail  <- parseOptionalMessage "DETAIL:"
       context <- parseOptionalMessage "CONTEXT:"
-      line    <- optional parseLine
+      line    <- optional parseLineError
 
       pure ErrorResult{..}
       where
@@ -109,8 +109,8 @@ parseError = Error . NonEmpty.fromList <$> Text.many1' parseErrorResult
         parseOptionalMessage = optional . parseMessage
 
         -- This parser is quite specialized and may need to be modified in future
-        parseLine :: Parser Text
-        parseLine = do
+        parseLineError :: Parser Text
+        parseLineError = do
           firstLine <- parseMessage "LINE"
           padding   <- parsePadding
           followup  <- parseLineChars
