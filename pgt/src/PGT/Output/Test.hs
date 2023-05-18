@@ -10,7 +10,7 @@ where
 import Data.Attoparsec.Text (Parser)
 import Data.Maybe (maybeToList)
 import PGT.Output.Render
-import PGT.Output.RowCount
+import PGT.Output.RowCount (RowCount(..))
 import PGT.Output.Test.Comments (Comments(..), MetaComment(..))
 import PGT.Output.Test.QueryPlan (QueryStats)
 import PGT.Output.Test.Result (Result(..))

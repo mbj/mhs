@@ -9,7 +9,7 @@ where
 import Data.Attoparsec.Text (Parser)
 import Data.List.NonEmpty (NonEmpty(..))
 import PGT.Output.Render
-import PGT.Output.RowCount
+import PGT.Output.RowCount (RowCount(..))
 import PGT.Output.Text
 import PGT.Prelude
 
@@ -20,6 +20,7 @@ import qualified Data.List.NonEmpty   as NonEmpty
 import qualified Data.Text            as Text
 import qualified GHC.Err              as Err
 import qualified PGT.Output.Golden    as PGT
+import qualified PGT.Output.RowCount  as RowCount
 import qualified System.Path          as Path
 import qualified Test.Tasty           as Tasty
 
@@ -57,7 +58,7 @@ parse = do
 
   metaComment <-
     either Err.error pure
-      =<< Text.eitherP parseUnexpectedEmptyLine parseCommentsMeta
+      =<< Text.eitherP parseUnexpectedEmptyLine parseMetaComment
 
   pure Comments{..}
   where
@@ -104,30 +105,14 @@ parse = do
       (Text.endOfLine <|> Text.endOfInput)
         $> "expected a row-count comment such as (0 rows) or (ERROR) comment but received empty line"
 
-parseCommentsMeta :: Parser MetaComment
-parseCommentsMeta = parseErrorComment <|> parseRowCount <|> parseUnexpected
+parseMetaComment :: Parser MetaComment
+parseMetaComment = parseErrorComment <|> parseRowCount <|> parseUnexpected
   where
     parseErrorComment :: Parser MetaComment
     parseErrorComment = "-- (ERROR)" *> Text.endOfLine $> ErrorMetaComment
 
     parseRowCount :: Parser MetaComment
-    parseRowCount = do
-      rowCount <- "-- (" *> (convertImpure <$> Text.scientific)
-
-      validateRowString rowCount =<< Text.space *> ("rows" <|> "row")
-
-      Text.char ')' *> Text.endOfLine $> RowCountMetaComment rowCount
-      where
-        validateRowString :: RowCount -> Text -> Parser ()
-        validateRowString rowCount@(RowCount count) string
-          | count == 1 && string /= "row"  = Err.error "expected (1 row) but found (1 rows)"
-          | count /= 1 && string /= "rows" = Err.error message
-          | otherwise                      = pure ()
-          where
-            message :: String
-            message
-              = convert
-              $ "expected " <> render rowCount <> " but found (" <> showc count <> " row)"
+    parseRowCount = "-- " *> (RowCountMetaComment <$> RowCount.parse "(")
 
     parseUnexpected :: Parser MetaComment
     parseUnexpected =  do
