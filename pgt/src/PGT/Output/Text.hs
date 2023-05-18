@@ -6,10 +6,13 @@ module PGT.Output.Text
   , parseName
   , parsePadding
   , unlines
+  , unlinesN
   )
 where
 
 import Data.Attoparsec.Text (Parser)
+import Data.Word (Word8)
+import GHC.Integer (Integer)
 import PGT.Prelude
 
 import qualified Data.Attoparsec.Text as Text
@@ -65,4 +68,13 @@ parsePadding :: Parser Text
 parsePadding = Text.takeWhile1 (== ' ')
 
 unlines :: (Foldable f, Conversion Text a) => f a -> Text
-unlines = Text.intercalate "\n" . fmap (convert @Text) . Foldable.toList
+unlines = unlinesN 1
+
+unlinesN :: (Foldable f, Conversion Text a) => Word8 -> f a -> Text
+unlinesN count list
+  | Foldable.null list = mempty
+  -- ^ Note: that Text.intercalate returns the separator text when given an empty list
+  | otherwise          = Text.intercalate emptyLines . fmap (convert @Text) $ Foldable.toList list
+  where
+    emptyLines :: Text
+    emptyLines = Text.replicate (convertImpure $ convert @Integer count) "\n"

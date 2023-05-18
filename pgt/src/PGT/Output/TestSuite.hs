@@ -1,6 +1,5 @@
 module PGT.Output.TestSuite
-  ( Test(..)
-  , TestSuite(..)
+  ( TestSuite(..)
   , parse
   , testTree
   )
@@ -17,7 +16,6 @@ import PGT.Prelude
 import qualified Data.Attoparsec.Text  as Text
 import qualified Data.Foldable         as Foldable
 import qualified Data.List.NonEmpty    as NonEmpty
-import qualified Data.Text             as Text
 import qualified GHC.Err               as Err
 import qualified PGT.Output.Definition as Definition
 import qualified PGT.Output.Golden     as PGT
@@ -32,10 +30,10 @@ data TestSuite a = TestSuite
   deriving stock (Eq, Show)
 
 instance Render (TestSuite QueryStats) where
-  render TestSuite{..} = Text.intercalate "\n\n" $ definitions <> [renderTests]
+  render TestSuite{..} = unlinesN 2 $ definitions <> [renderTests]
     where
       renderTests :: Text
-      renderTests = Text.intercalate "\n\n\n" . Foldable.toList $ render <$> tests
+      renderTests = unlinesN 3 . Foldable.toList $ render <$> tests
 
 parse :: Parser (TestSuite QueryStats)
 parse = do

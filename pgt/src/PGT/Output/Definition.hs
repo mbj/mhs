@@ -4,7 +4,6 @@ module PGT.Output.Definition
   )
 where
 
-import Control.Applicative
 import Control.Monad (replicateM)
 import Data.Attoparsec.Text (Parser)
 import Data.Int (Int)
