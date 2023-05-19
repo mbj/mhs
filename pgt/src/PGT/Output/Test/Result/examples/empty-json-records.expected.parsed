@@ -1,3 +1,4 @@
 -[ RECORD 1 ]
 failure |
-jsonb   |
+jsonb   | [+
+        | ]
