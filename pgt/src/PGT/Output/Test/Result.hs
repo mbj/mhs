@@ -1,8 +1,8 @@
 module PGT.Output.Test.Result
   ( Result(..)
   , RowResults(..)
+  , itemsRowCount
   , parse
-  , recordsCount
   , testTree
   )
 where
@@ -211,8 +211,8 @@ parseRows = do
           space <- Text.space
           (Text.singleton space <>) <$> parseLineChars
 
-recordsCount :: NonEmpty Record -> RowCount
-recordsCount = RowCount . convertImpure @Word16 . Foldable.length
+itemsRowCount :: NonEmpty a -> RowCount
+itemsRowCount = RowCount . convertImpure @Word16 . Foldable.length
 
 testTree :: IO Tasty.TestTree
 testTree

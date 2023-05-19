@@ -110,7 +110,7 @@ validate test
         assertRowCount commentRowCount = case result of
           Empty           -> assertCount $ RowCount 0
           Error _         -> Left . ("expected a row result but found:\n\n" <>) . convert $ render result
-          Records records -> assertCount $ Result.recordsCount records
+          Records records -> assertCount $ Result.itemsRowCount records
           Rows    rows    -> assertCount $ rows.rowCount
           where
             assertCount :: RowCount -> Either Text ()
