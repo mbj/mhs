@@ -112,6 +112,7 @@ validate test
           Error _         -> Left . ("expected a row result but found:\n\n" <>) . convert $ render result
           Records records -> assertCount $ Result.itemsRowCount records
           Rows    rows    -> assertCount $ rows.rowCount
+          Tuples  tuples  -> assertCount $ Result.itemsRowCount tuples
           where
             assertCount :: RowCount -> Either Text ()
             assertCount itemsRowCount =
