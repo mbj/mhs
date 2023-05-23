@@ -29,6 +29,17 @@ exampleId1_created_at | 1970-02-02 02:01:57
  id                  | uuid_not_null                      |           |          |
  created_at          | timestamptz_not_null               |           |          |
 
+-- When other error test
+-- (ERROR)
+
+ERROR:  domain public.date_not_null does not allow null values
+
+                     View "public.accounts"
+        Column         |            Type             | Collation | Nullable | Default
+-----------------------+-----------------------------+-----------+----------+---------
+ account_ex_id         | uuid                        |           |          |
+ acc_example_text_123  | present_text_not_null[]     |           |          |
+
 -- Second test-suite
 -- (1 row)
 
