@@ -1,4 +1,5 @@
-                                               List of functions
+                                                example
  Schema |          Name          | Result data type |                Argument data types                | Type
 --------+------------------------+------------------+---------------------------------------------------+------
  public | create_example_amount1 | void             | arg_user_short_name_value1 user_short_name_domain | func
+(1 row)
