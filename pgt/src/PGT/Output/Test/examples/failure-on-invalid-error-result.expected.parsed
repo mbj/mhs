@@ -1,3 +1,3 @@
 expected a row result but found:
 
-ERROR:  domain create_example_amount1 does not allow null values
+ERROR:  domain create_example_amount1 does not allow null values at line: 4

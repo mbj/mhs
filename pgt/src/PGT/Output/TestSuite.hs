@@ -17,7 +17,6 @@ import PGT.Prelude
 import qualified Data.Attoparsec.Text     as Text
 import qualified Data.Foldable            as Foldable
 import qualified Data.Text                as Text
-import qualified GHC.Err                  as Err
 import qualified PGT.Output.Definition    as Definition
 import qualified PGT.Output.Golden        as PGT
 import qualified PGT.Output.Test          as Test
@@ -48,11 +47,11 @@ parse = do
   atEnd       <- Text.atEnd
 
   if | atEnd && Foldable.null definitions ->
-        fail "expected a valid test or database object definition but found none"
+        failP "expected a valid test or database object definition but found none"
      | atEnd                              ->
         pure $ TestSuite definitions []
      | otherwise                          ->
-        either fail (pure . TestSuite definitions)
+        either failP (pure . TestSuite definitions)
           =<< Text.eitherP (parseUnexpected (listToMaybe definitions)) parseTests
   where
     parseTests :: Parser [Test QueryStats]
@@ -68,29 +67,29 @@ parse = do
 
           pure test
           where
-            emptyLines :: Natural -> String -> Parser ()
+            emptyLines :: Natural -> Text -> Parser ()
             emptyLines count message
               = Text.endOfInput
-              <|> (either Err.error pure =<< mkParseEmptyLines count  message)
+              <|> (eitherImpureError =<< mkParseEmptyLines count message)
 
-    parseUnexpected :: Maybe Text -> Parser String
+    parseUnexpected :: Maybe Text -> Parser Text
     parseUnexpected definitions = parseUnexpectedEmptyLine <|> parseUnexpectedText
       where
-        parseUnexpectedEmptyLine :: Parser String
+        parseUnexpectedEmptyLine :: Parser Text
         parseUnexpectedEmptyLine = Text.endOfLine $> message
           where
-            message :: String
+            message :: Text
             message = "expected database object definition or test but found an empty line"
 
-        parseUnexpectedText :: Parser String
+        parseUnexpectedText :: Parser Text
         parseUnexpectedText = do
           char <- Text.peekChar'
 
           case char of
-            '-' -> fail "Unexpected failure! possible GHC Error"
-            _   -> (mkMessage <>) . convert <$> Text.takeText
+            '-' -> failP "Unexpected failure! possible GHC Error"
+            _   -> (mkMessage <>) <$> Text.takeText
           where
-            mkMessage :: String
+            mkMessage :: Text
             mkMessage =
               maybe
                 "expected a test or database object definition but found: \n\n"
