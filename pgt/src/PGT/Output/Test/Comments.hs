@@ -127,5 +127,5 @@ parseMetaComment = parseErrorComment <|> parseRowCount <|> parseUnexpected
 
 testTree :: IO Tasty.TestTree
 testTree
-  = PGT.mkDirGolden (Path.relDir "src/PGT/Output/Test/Comments/examples")
+  = PGT.mkDirGolden (Path.relDir "src/PGT/Output/Test/Comments/examples/comments")
   $ Text.parseOnly parse
