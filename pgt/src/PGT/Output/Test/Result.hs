@@ -1,8 +1,8 @@
 module PGT.Output.Test.Result
   ( Result(..)
   , RowResults(..)
+  , itemsRowCount
   , parse
-  , recordsCount
   , testTree
   )
 where
@@ -29,6 +29,7 @@ data Result
   | Error   ErrorResult
   | Records (NonEmpty Record)
   | Rows    RowResults
+  | Tuples  (NonEmpty Tuple)
   deriving stock (Eq, Show)
 
 instance Render Result where
@@ -37,6 +38,7 @@ instance Render Result where
     Error   error   -> render error
     Records records -> unlines $ render <$> records
     Rows    table   -> render table
+    Tuples  tuples  -> unlinesN 2 $ render <$> tuples
 
 data ErrorResult = ErrorResult
   { error   :: Text
@@ -73,6 +75,15 @@ instance Render RowResults where
         [] -> [render rowCount]
         _  -> [unlines rows, render rowCount]
 
+data Tuple = Tuple
+  { name  :: Text
+  , value :: Text
+  }
+  deriving stock (Eq, Show)
+
+instance Render Tuple where
+  render Tuple{..} = name <> " | " <> value
+
 parse :: Parser Result
 parse =
   Text.choice
@@ -80,6 +91,7 @@ parse =
     , parseError
     , parseRecords
     , parseRows
+    , parseTuples
     ]
 
 parseEmpty :: Parser Result
@@ -211,8 +223,19 @@ parseRows = do
           space <- Text.space
           (Text.singleton space <>) <$> parseLineChars
 
-recordsCount :: NonEmpty Record -> RowCount
-recordsCount = RowCount . convertImpure @Word16 . Foldable.length
+parseTuples :: Parser Result
+parseTuples =
+  Tuples . NonEmpty.fromList <$> Text.sepBy1' parseTuple Text.endOfLine
+  where
+    parseTuple :: Parser Tuple
+    parseTuple = do
+     name  <- parseName <* Text.space
+     value <- Text.char '|' *> Text.space *> parseLineChars
+
+     pure Tuple{..}
+
+itemsRowCount :: NonEmpty a -> RowCount
+itemsRowCount = RowCount . convertImpure @Word16 . Foldable.length
 
 testTree :: IO Tasty.TestTree
 testTree
