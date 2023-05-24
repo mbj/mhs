@@ -137,7 +137,7 @@ runTasty tastyOptions postProcess config tests = liftIO $ do
         else System.exitFailure
 
 runTests :: MonadIO m => Config -> Tests -> m ()
-runTests config = runTasty mempty identity config . Vector.toList
+runTests config = runTasty mempty PGT.impureParse config . Vector.toList
 
 runUpdates :: MonadIO m => Config -> Tests -> m ()
 runUpdates = runUpdates' identity
