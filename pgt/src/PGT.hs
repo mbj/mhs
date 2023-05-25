@@ -118,12 +118,12 @@ runExamples config = Foldable.mapM_ $ runTestSession config Process.runProcess_
 
 type PostProcess = Text -> Text
 
-runTasty :: MonadIO m => Tasty.OptionSet -> PostProcess -> Config -> [Test] -> m ()
-runTasty tastyOptions postProcess config tests = liftIO $ do
+runTasty :: MonadIO m => Tasty.OptionSet -> Config -> [Test] -> m ()
+runTasty tastyOptions config tests = liftIO $ do
   Tasty.Runners.installSignalHandlers
   maybe failIngredients run
     . Tasty.Runners.tryIngredients Tasty.defaultIngredients tastyOptions
-    $ testTree postProcess config tests
+    $ testTree PGT.impureParse config tests
   where
     failIngredients :: IO a
     failIngredients = fail "Internal failure running ingredients"
@@ -136,14 +136,11 @@ runTasty tastyOptions postProcess config tests = liftIO $ do
         else System.exitFailure
 
 runTests :: MonadIO m => Config -> Tests -> m ()
-runTests config = runTasty mempty PGT.impureParse config . Vector.toList
+runTests config = runTasty mempty config . Vector.toList
 
 runUpdates :: MonadIO m => Config -> Tests -> m ()
-runUpdates = runUpdates' PGT.impureParse
-
-runUpdates' :: MonadIO m => PostProcess -> Config -> Tests -> m ()
-runUpdates' postProcess config
-  = runTasty (Tasty.singleOption Tasty.MGolden.UpdateExpected) postProcess config
+runUpdates config
+  = runTasty (Tasty.singleOption Tasty.MGolden.UpdateExpected) config
   . Vector.toList
 
 testTree :: PostProcess -> Config -> [Test] -> Tasty.TestTree
