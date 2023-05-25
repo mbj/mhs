@@ -38,11 +38,10 @@ parserInfo = wrapHelper subcommands
 
     subcommands =
       CLI.subparser
-        $  mkCommand "list"      runList
-        <> mkCommand "run"       runExamples
-        <> mkCommand "test"      runTests
-        <> mkCommand "update"    runUpdatesWithLinter
-        <> mkCommand "update-v2" runUpdatesWithLinter
+        $  mkCommand "list"   runList
+        <> mkCommand "run"    runExamples
+        <> mkCommand "test"   runTests
+        <> mkCommand "update" runUpdatesWithLinter
 
     mkCommand
       :: String
