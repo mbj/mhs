@@ -41,7 +41,7 @@ parserInfo = wrapHelper subcommands
         $  mkCommand "list"      runList
         <> mkCommand "run"       runExamples
         <> mkCommand "test"      runTests
-        <> mkCommand "update"    runUpdates
+        <> mkCommand "update"    runUpdatesWithLinter
         <> mkCommand "update-v2" runUpdatesWithLinter
 
     mkCommand
