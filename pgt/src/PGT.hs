@@ -140,7 +140,7 @@ runTests :: MonadIO m => Config -> Tests -> m ()
 runTests config = runTasty mempty PGT.impureParse config . Vector.toList
 
 runUpdates :: MonadIO m => Config -> Tests -> m ()
-runUpdates = runUpdates' identity
+runUpdates = runUpdates' PGT.impureParse
 
 runUpdatesWithLinter :: MonadIO m => Config -> Tests -> m ()
 runUpdatesWithLinter = runUpdates' PGT.impureParse
