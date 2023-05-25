@@ -15,7 +15,6 @@ module PGT
   , runList
   , runTests
   , runUpdates
-  , runUpdatesWithLinter
   , selectShard
   , testTree
   )
@@ -141,9 +140,6 @@ runTests config = runTasty mempty PGT.impureParse config . Vector.toList
 
 runUpdates :: MonadIO m => Config -> Tests -> m ()
 runUpdates = runUpdates' PGT.impureParse
-
-runUpdatesWithLinter :: MonadIO m => Config -> Tests -> m ()
-runUpdatesWithLinter = runUpdates' PGT.impureParse
 
 runUpdates' :: MonadIO m => PostProcess -> Config -> Tests -> m ()
 runUpdates' postProcess config
