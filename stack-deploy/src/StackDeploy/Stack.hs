@@ -123,8 +123,8 @@ perform = \case
         handleNoUpdateError
           ( Amazonka.ServiceError
             Amazonka.ServiceError'
-            { _serviceErrorCode = Amazonka.ErrorCode "ValidationError"
-            , _serviceErrorMessage = Just (Amazonka.ErrorMessage "No updates are to be performed.")
+            { code    = Amazonka.ErrorCode "ValidationError"
+            , message = Just (Amazonka.ErrorMessage "No updates are to be performed.")
             }
           ) = pure RemoteOperationSuccess
         handleNoUpdateError _error = empty
@@ -202,8 +202,8 @@ getStack name =
     handleNotFoundError
       (Amazonka.ServiceError
         Amazonka.ServiceError'
-        { _serviceErrorCode    = Amazonka.ErrorCode "ValidationError"
-        , _serviceErrorMessage = Just actualMessage
+        { code    = Amazonka.ErrorCode "ValidationError"
+        , message = Just actualMessage
         }
       )
       = if actualMessage == expectedMessage

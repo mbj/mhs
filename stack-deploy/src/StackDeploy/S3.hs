@@ -43,7 +43,7 @@ testObjectExists bucketName objectKey =
   where
     withError :: AWS.Error -> MIO env Bool
     withError = \case
-      (AWS.ServiceError AWS.ServiceError' { _serviceErrorStatus = HTTP.Status { HTTP.statusCode = 404 } }) ->
+      (AWS.ServiceError AWS.ServiceError' { status = HTTP.Status { HTTP.statusCode = 404 } }) ->
          pure False
       error -> throwM error
 

@@ -9,7 +9,7 @@ import qualified Amazonka
 import qualified MIO.Amazonka as AWS
 
 listResource
-  :: (AWS.Env env, Amazonka.AWSPager a)
+  :: (AWS.Env env, Amazonka.AWSPager a, AWS.Transaction a)
   => a
   -> (Amazonka.AWSResponse a -> [b])
   -> ConduitT () b (MIO env) ()
