@@ -75,3 +75,10 @@ jobs:
       run: ./stack build --fast --test --no-run-tests ${{ matrix.project }}
     - name: Run tests
       run: ./stack build --fast --test ${{ matrix.project }}
+  all-checks:
+    runs-on: ubuntu-latest
+    name: All Checks Pass
+    needs:
+    - tests
+    steps:
+    - run: exit 0
