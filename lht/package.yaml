@@ -15,8 +15,8 @@ dependencies:
 - elf                >= 0.30
 - exceptions
 - http-types         >= 0.12
-- mprelude           >= 0.2
 - mio-core
+- mprelude           >= 0.2
 - pathtype           >= 0.8
 - source-constraints
 - tar                >= 0.5
