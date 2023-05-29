@@ -1,11 +1,11 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.1.
+-- This file has been generated from package.yaml by hpack version 0.35.2.
 --
 -- see: https://github.com/sol/hpack
 
 name:           lht
-version:        0.0.2
+version:        0.0.3
 synopsis:       AWS Lambda haskell tool
 homepage:       https://github.com/mbj/mhs#readme
 bug-reports:    https://github.com/mbj/mhs/issues
@@ -30,6 +30,7 @@ flag development
 library
   exposed-modules:
       LHT.Build
+      LHT.GHC
       LHT.Zip
   other-modules:
       LHT.Prelude
@@ -74,6 +75,7 @@ library
     , directory
     , elf >=0.30
     , exceptions
+    , ghc-boot
     , http-types >=0.12
     , mio-core
     , mprelude >=0.2
@@ -143,6 +145,7 @@ test-suite test
     , directory
     , elf >=0.30
     , exceptions
+    , ghc-boot
     , http-types >=0.12
     , lht
     , mio-core
