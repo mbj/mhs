@@ -20,7 +20,7 @@ binary 0.8.9.0
 bytestring 0.11.4.0
 call-stack 0.4.0
 case-insensitive 1.2.1.0
-cbt 0.2.1
+cbt 0.2.2
 clock 0.8.3
 cmdargs 0.10.22
 colour 2.3.6
@@ -73,7 +73,7 @@ indexed-traversable 0.1.2.1
 indexed-traversable-instances 0.1.1.2
 integer-gmp 1.1
 integer-logarithms 1.0.3.1
-lht 0.0.2
+lht 0.0.3
 libyaml 0.1.2
 memory 0.17.0
 mio-core 0.0.1

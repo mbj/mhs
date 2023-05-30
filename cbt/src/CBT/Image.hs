@@ -16,6 +16,7 @@ import CBT.Image.BuildDefinition
 import CBT.Prelude
 import CBT.Proc
 import Control.Monad (unless)
+import Data.Monoid (mconcat)
 
 import qualified CBT.Image.Name       as CBT.Image
 import qualified Data.ByteString.Lazy as LBS
@@ -104,10 +105,16 @@ build BuildDefinition{..}
         , "--platform", "linux/amd64"
         , "--tag", CBT.Image.nameString imageName
         ]
+      <> renderBuildArguments
       <> arguments
+
+    renderBuildArguments :: [String]
+    renderBuildArguments = mconcat $ mkBuildArgument <$> buildArguments
+      where
+        mkBuildArgument :: BuildArgument -> [String]
+        mkBuildArgument BuildArgument{..} = ["--build-arg", convert $ name <> "=" <> value]
 
 setVerbosity :: Verbosity -> Proc -> Proc
 setVerbosity = \case
   Quiet -> silence
   _     -> identity
-

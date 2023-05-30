@@ -2,7 +2,8 @@
 {-# LANGUAGE GADTs #-}
 
 module CBT.Image.BuildDefinition
-  ( BuildDefinition(..)
+  ( BuildArgument(..)
+  , BuildDefinition(..)
   , BuildSource(..)
   , DockerfileContent(..)
   , Verbosity(..)
@@ -39,12 +40,18 @@ data BuildSource
   = Directory Path.AbsRelDir
   | Instructions DockerfileContent
 
+data BuildArgument = BuildArgument
+  { name  :: Text
+  , value :: Text
+  }
+
 data BuildDefinition name where
   BuildDefinition
     :: CBT.Image.IsName name
-    => { source    :: BuildSource
-       , imageName :: name
-       , verbosity :: Verbosity
+    => { buildArguments :: [BuildArgument]
+       , source         :: BuildSource
+       , imageName      :: name
+       , verbosity      :: Verbosity
        }
     -> BuildDefinition name
 
@@ -65,9 +72,10 @@ fromDockerfileContent
   -> BuildDefinition CBT.Image.TaggedName
 fromDockerfileContent imageName content =
   BuildDefinition
-    { imageName = CBT.Image.setTag imageName tag
-    , source    = Instructions content
-    , verbosity = Verbose
+    { buildArguments = []
+    , imageName      = CBT.Image.setTag imageName tag
+    , source         = Instructions content
+    , verbosity      = Verbose
     , ..
     }
   where
@@ -118,7 +126,8 @@ fromDirectory imageName dir = do
   tag <- hashContentTag [Path.toString dir]
 
   pure $ BuildDefinition
-    { imageName = CBT.Image.setTag imageName tag
-    , source    = Directory dir
-    , verbosity = Verbose
+    { buildArguments = []
+    , imageName      = CBT.Image.setTag imageName tag
+    , source         = Directory dir
+    , verbosity      = Verbose
     }

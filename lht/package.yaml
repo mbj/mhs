@@ -1,7 +1,7 @@
 _common/package: !include "../common/package.yaml"
 
 name:        lht
-version:     0.0.2
+version:     0.0.3
 synopsis:    AWS Lambda haskell tool
 
 <<: *defaults
@@ -14,9 +14,10 @@ dependencies:
 - directory
 - elf                >= 0.30
 - exceptions
+- ghc-boot
 - http-types         >= 0.12
-- mprelude           >= 0.2
 - mio-core
+- mprelude           >= 0.2
 - pathtype           >= 0.8
 - source-constraints
 - tar                >= 0.5
@@ -36,6 +37,7 @@ library:
   - src
   exposed-modules:
   - LHT.Build
+  - LHT.GHC
   - LHT.Zip
 
 tests:
