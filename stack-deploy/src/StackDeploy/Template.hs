@@ -5,7 +5,6 @@ module StackDeploy.Template
   , encode
   , get
   , mk
-  , mkName
   , testTree
   )
 where
@@ -22,14 +21,15 @@ import qualified Stratosphere
 import qualified Test.Tasty               as Tasty
 import qualified Test.Tasty.MGolden       as Tasty
 
-type Name = Provider.Name Template
+type Name = BoundText "StackDeploy.Template.Name"
 
 data Template = Template
   { name         :: Name
   , stratosphere :: Stratosphere.Template
   }
 
-instance Provider.HasName Template where
+instance Provider.HasItemName Template where
+  type ItemName Template = Name
   name = (.name)
 
 type Provider = Provider.Provider Template
@@ -48,9 +48,6 @@ get = Provider.get "template"
 
 mk :: Name -> Stratosphere.Template -> Template
 mk = Template
-
-mkName :: Text -> Name
-mkName = Provider.mkName
 
 testTree :: Provider -> Tasty.TestTree
 testTree provider

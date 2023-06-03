@@ -37,6 +37,7 @@ bitvec 1.1.4.0
 blaze-builder 0.4.2.2
 blaze-html 0.9.1.2
 blaze-markup 0.8.2.8
+bounded 0.0.5
 byteorder 1.0.4
 bytestring 0.11.4.0
 cabal-doctest 1.0.9
@@ -146,7 +147,7 @@ socks 0.6.1
 source-constraints 0.0.4
 split 0.2.3.5
 splitmix 0.1.0.4
-stack-deploy 0.0.6
+stack-deploy 0.0.7
 stm 2.5.1.0
 stratosphere 1.0.0
 stratosphere-ecs 1.0.0
@@ -155,6 +156,7 @@ stratosphere-s3 1.0.0
 streaming-commons 0.2.2.6
 strict 0.5
 syb 0.7.2.3
+symbols 0.3.0.0
 tagged 0.8.7
 tasty 1.4.3
 tasty-expected-failure 0.12.3

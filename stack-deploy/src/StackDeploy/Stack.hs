@@ -194,7 +194,7 @@ printEvent event = do
     sayReason :: Maybe Text -> MIO env ()
     sayReason = maybe (pure ()) (say . ("- " <>))
 
-getStack :: AWS.Env env => InstanceSpec.Name env -> MIO env (Maybe CF.Stack)
+getStack :: AWS.Env env => InstanceSpec.Name -> MIO env (Maybe CF.Stack)
 getStack name =
   catchJust handleNotFoundError (pure <$> getExistingStack name) pure
   where
@@ -215,7 +215,7 @@ getStack name =
     expectedMessage =
       Amazonka.ErrorMessage $ "Stack with id " <> toText name <> " does not exist"
 
-getStackId :: AWS.Env env => InstanceSpec.Name env -> MIO env (Maybe Id)
+getStackId :: AWS.Env env => InstanceSpec.Name -> MIO env (Maybe Id)
 getStackId = getId <=< getStack
   where
     getId :: Maybe CF.Stack -> MIO env (Maybe Id)
@@ -223,7 +223,7 @@ getStackId = getId <=< getStack
 
 getExistingStack
   :: forall env . AWS.Env env
-  => InstanceSpec.Name env
+  => InstanceSpec.Name
   -> MIO env CF.Stack
 getExistingStack name = maybe failMissingRequested pure =<< doRequest
   where
@@ -242,11 +242,11 @@ getExistingStack name = maybe failMissingRequested pure =<< doRequest
 
 getExistingStackId
   :: AWS.Env env
-  => InstanceSpec.Name env
+  => InstanceSpec.Name
   -> MIO env Id
 getExistingStackId = idFromStack <=< getExistingStack
 
-getOutput :: AWS.Env env => InstanceSpec.Name env -> Text -> MIO env Text
+getOutput :: AWS.Env env => InstanceSpec.Name -> Text -> MIO env Text
 getOutput name key = do
   stack <- getExistingStack name
 
@@ -259,10 +259,10 @@ getOutput name key = do
     failStack message
       = throwString . convertText $ "Stack: " <> convertText name <> " " <> message
 
-stackNames :: AWS.Env env => ConduitT () (InstanceSpec.Name env) (MIO env) ()
+stackNames :: AWS.Env env => ConduitT () InstanceSpec.Name (MIO env) ()
 stackNames
   =  AWS.listResource CF.newDescribeStacks (fromMaybe [] . getField @"stacks")
-  .| map (InstanceSpec.mkName . getField @"stackName")
+  .| map (convertImpure . getField @"stackName")
 
 prepareOperation
   :: forall env a . (AWS.Env env, StackDeploy.Env env)
