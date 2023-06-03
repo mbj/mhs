@@ -5,12 +5,11 @@ import StackDeploy.Template
 import StackDeploy.Utils
 import Stratosphere hiding (Template)
 
-import qualified StackDeploy.Template   as Template
 import qualified Stratosphere.S3.Bucket as S3
 
 template :: Template
 template
-  = mk (Template.mkName "code")
+  = mk (fromType @"code")
   $ Stratosphere.mkTemplate [codeBucket]
   & set @"Outputs" outputs
   where

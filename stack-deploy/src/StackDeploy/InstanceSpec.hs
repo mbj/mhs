@@ -6,7 +6,6 @@ module StackDeploy.InstanceSpec
   , addTags
   , get
   , mk
-  , mkName
   , templateProvider
   )
 where
@@ -29,7 +28,7 @@ newtype RoleARN = RoleARN Text
   deriving (Conversion Text) via Text
   deriving stock Eq
 
-type Name env = Provider.Name (InstanceSpec env)
+type Name = BoundText "StackDeploy.InstanceSpec.Name"
 
 type Provider env = Provider.Provider (InstanceSpec env)
 
@@ -37,19 +36,20 @@ data InstanceSpec env = InstanceSpec
   { capabilities  :: [CF.Capability]
   , envParameters :: MIO env Parameters
   , envRoleARN    :: Maybe (MIO env RoleARN)
-  , name          :: Name env
+  , name          :: Name
   , onSuccess     :: MIO env ()
   , parameters    :: Parameters
   , roleARN       :: Maybe RoleARN
   , template      :: Template
   }
 
-instance Provider.HasName (InstanceSpec env) where
+instance Provider.HasItemName (InstanceSpec env) where
+  type ItemName (InstanceSpec env) = Name
   name = (.name)
 
 get
   :: Provider env
-  -> Name env
+  -> Name
   -> Parameters
   -> MIO env (InstanceSpec env)
 get provider targetName userParameters = do
@@ -75,7 +75,7 @@ get provider targetName userParameters = do
 
     union = Parameters.union
 
-mk :: Name env -> Template -> InstanceSpec env
+mk :: Name -> Template -> InstanceSpec env
 mk name template = InstanceSpec
   { capabilities  = empty
   , envParameters = pure Parameters.empty
@@ -85,9 +85,6 @@ mk name template = InstanceSpec
   , roleARN       = empty
   , ..
   }
-
-mkName :: Text -> Name env
-mkName = Provider.mkName
 
 templateProvider :: Provider env -> Template.Provider
 templateProvider provider = fromList $ (.template) <$> toList provider

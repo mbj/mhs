@@ -56,8 +56,8 @@ parserInfo instanceSpecProvider = wrapHelper commands "stack commands"
 
     templateCommands :: Parser (MIO env ExitCode)
     templateCommands = hsubparser
-      $  mkCommand "list"    (pure listTemplates)              "list templates"
-      <> mkCommand "render"  (render <$> templateNameArgument) "render template"
+      $  mkCommand "list"    (pure listTemplates)            "list templates"
+      <> mkCommand "render"  (render <$> templateNameOption) "render template"
 
     specCommands :: Parser (MIO env ExitCode)
     specCommands = hsubparser
@@ -72,24 +72,24 @@ parserInfo instanceSpecProvider = wrapHelper commands "stack commands"
     wrapHelper :: Parser b -> String -> ParserInfo b
     wrapHelper parser desc = info parser (progDesc desc)
 
-    cancel :: InstanceSpec.Name env -> MIO env ExitCode
+    cancel :: InstanceSpec.Name -> MIO env ExitCode
     cancel name = do
       void . AWS.send . CF.newCancelUpdateStack $ toText name
       success
 
-    create :: InstanceSpec.Name env -> Parameters -> MIO env ExitCode
+    create :: InstanceSpec.Name -> Parameters -> MIO env ExitCode
     create name params = do
       spec <- InstanceSpec.get instanceSpecProvider name params
       exitCode =<< perform (OpCreate spec)
 
-    update :: InstanceSpec.Name env -> Parameters -> MIO env ExitCode
+    update :: InstanceSpec.Name -> Parameters -> MIO env ExitCode
     update name params = do
       spec     <- InstanceSpec.get instanceSpecProvider name params
       stackId  <- getExistingStackId name
 
       exitCode =<< perform (OpUpdate stackId spec)
 
-    sync :: InstanceSpec.Name env -> Parameters -> MIO env ExitCode
+    sync :: InstanceSpec.Name -> Parameters -> MIO env ExitCode
     sync name params = do
       spec <- InstanceSpec.get instanceSpecProvider name params
 
@@ -97,10 +97,10 @@ parserInfo instanceSpecProvider = wrapHelper commands "stack commands"
         =<< perform . maybe (OpCreate spec) (`OpUpdate` spec)
         =<< getStackId name
 
-    wait :: InstanceSpec.Name env -> Token -> MIO env ExitCode
+    wait :: InstanceSpec.Name -> Token -> MIO env ExitCode
     wait name token = maybe success (waitForOperation token) =<< getStackId name
 
-    outputs :: InstanceSpec.Name env -> MIO env ExitCode
+    outputs :: InstanceSpec.Name -> MIO env ExitCode
     outputs name = do
       traverse_ printOutput . fromMaybe [] . (.outputs) =<< getExistingStack name
       success
@@ -108,7 +108,7 @@ parserInfo instanceSpecProvider = wrapHelper commands "stack commands"
         printOutput :: CF.Output -> MIO env ()
         printOutput = liftIO . Text.putStrLn . convertText . show
 
-    delete :: InstanceSpec.Name env -> MIO env ExitCode
+    delete :: InstanceSpec.Name -> MIO env ExitCode
     delete = maybe success (exitCode <=< perform . OpDelete) <=< getStackId
 
     list :: MIO env ExitCode
@@ -130,14 +130,14 @@ parserInfo instanceSpecProvider = wrapHelper commands "stack commands"
         (toList instanceSpecProvider)
       success
 
-    events :: InstanceSpec.Name env -> MIO env ExitCode
+    events :: InstanceSpec.Name -> MIO env ExitCode
     events name = do
       runConduit $ AWS.listResource req (fromMaybe [] . (.stackEvents)) .| Conduit.mapM_ printEvent
       success
       where
         req = CF.newDescribeStackEvents & CF.describeStackEvents_stackName .~ pure (toText name)
 
-    watch :: InstanceSpec.Name env -> MIO env ExitCode
+    watch :: InstanceSpec.Name -> MIO env ExitCode
     watch name = do
       stackId <- getExistingStackId name
       void $ pollEvents (defaultPoll stackId) printEvent
