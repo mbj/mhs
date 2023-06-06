@@ -24,6 +24,7 @@ dependencies:
 - mio-core
 - mio-log
 - mtl
+- retry
 - text
 - unliftio
 

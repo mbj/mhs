@@ -79,6 +79,7 @@ library
     , mio-log
     , mprelude
     , mtl
+    , retry
     , text
     , unliftio
   default-language: Haskell2010
@@ -138,6 +139,7 @@ test-suite test
     , mio-log
     , mprelude
     , mtl
+    , retry
     , text
     , unliftio
   default-language: Haskell2010
