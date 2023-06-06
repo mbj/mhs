@@ -76,6 +76,7 @@ library
     , http-client
     , http-types
     , mio-core
+    , mio-log
     , mprelude
     , mtl
     , text
@@ -134,6 +135,7 @@ test-suite test
     , http-client
     , http-types
     , mio-core
+    , mio-log
     , mprelude
     , mtl
     , text
