@@ -23,22 +23,24 @@ where
 
 import Control.Arrow (left)
 import Control.Monad.Reader (asks)
-import Data.Conversions (toText)
+import Data.Conversions (Conversion(..), convertImpure, toText)
 import GHC.Records (HasField(..))
 import MIO.Core
 import MPrelude
 
+import qualified Control.Retry              as Retry
 import qualified Data.Aeson                 as JSON
 import qualified Data.ByteString            as BS
 import qualified Data.ByteString.Lazy.Char8 as LBS
 import qualified Data.List                  as List
+import qualified MIO.Log                    as Log
 import qualified Network.HTTP.Client        as HTTP
 import qualified Network.HTTP.Types         as HTTP
 import qualified UnliftIO.Exception         as Exception
 
 type SendRequest = HTTP.Request -> IO (HTTP.Response LBS.ByteString)
 
-type Env env = HasField "httpSendRequest" env SendRequest
+type Env env = (HasField "httpSendRequest" env SendRequest, Log.Env env)
 
 data ResponseError
   = BodyDecodeFailure Text
@@ -138,16 +140,52 @@ send' transactionDecoder decoder request = do
   sendRequest sendRequest' transactionDecoder decoder request
 
 sendRequest
-  :: SendRequest
+  :: forall env a . Env env
+  => SendRequest
   -> TransactionDecoder a
   -> ResponseDecoder a
   -> HTTP.Request
   -> MIO env (Result a)
 sendRequest sendRequest' transactionDecoder decoder request =
-  either transactionDecoder decoder
-    <$> Exception.tryJust selectException (liftIO $ sendRequest' request)
+  either transactionDecoder decoder <$> retriableSendRequest
   where
-    selectException :: HTTP.HttpException -> Maybe HTTP.HttpExceptionContent
-    selectException = \case
-      (HTTP.HttpExceptionRequest _request content) -> pure content
-      _other                                       -> empty
+    retriableSendRequest :: MIO env (Either HTTP.HttpExceptionContent (HTTP.Response LBS.ByteString))
+    retriableSendRequest
+      = Retry.retrying
+        singleRetry
+        isRetriable
+      $ const (Exception.tryJust selectException . liftIO $ sendRequest' request)
+      where
+        singleRetry :: Retry.RetryPolicy
+        singleRetry = Retry.constantDelay 50_000 <> Retry.limitRetries (convertImpure retryLimit)
+
+        isRetriable
+          :: Retry.RetryStatus
+          -> Either HTTP.HttpExceptionContent (HTTP.Response LBS.ByteString)
+          -> MIO env Bool
+        isRetriable Retry.RetryStatus{..} = either process (const (pure False))
+          where
+            process :: HTTP.HttpExceptionContent -> MIO env Bool
+            process = \case
+              error@(HTTP.ConnectionFailure _) -> logWarning error $> True
+              _                                -> pure False
+              where
+                logWarning error
+                  = Log.warn
+                  $ "Retrying failed request due to "
+                  <> showc error
+                  <> " attempt "
+                  <> showc rsIterNumber
+                  <> " of "
+                  <> showc retryLimit
+
+        retryLimit :: Natural
+        retryLimit = 1
+
+        selectException :: HTTP.HttpException -> Maybe HTTP.HttpExceptionContent
+        selectException = \case
+          (HTTP.HttpExceptionRequest _request content) -> pure content
+          _other                                       -> empty
+
+showc :: forall a b . (Show a, Conversion b String) => a -> b
+showc = convert . show
