@@ -1,7 +1,8 @@
-resolver: lts-20.12
+resolver: lts-20.24
+compiler: ghc-9.2.8
 setup-info:
   ghc:
     linux64-lht:
-      9.2.6:
-        url: https://downloads.haskell.org/~ghc/9.2.6/ghc-9.2.6-x86_64-alpine3.12-linux-native.tar.xz
-        sha256: 80373e237328bcb48f491a93d562f127c7bb4be8aed6bc7caf834207b201745c
+      9.2.8:
+        url: https://downloads.haskell.org/~ghc/9.2.8/ghc-9.2.8-x86_64-alpine3.12-linux-native.tar.xz
+        sha256: d1c0736636f761c035b6982ef672c8d8c771b4afae031497fd2acb105cf622fb
