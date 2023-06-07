@@ -1,5 +1,4 @@
-resolver: nightly-2023-04-19
-compiler: ghc-9.4.5
+resolver: nightly-2023-06-04
 setup-info:
   ghc:
     linux64-lht:

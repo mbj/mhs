@@ -5,6 +5,7 @@ module CBT.Container
   , Detach(..)
   , Entrypoint(..)
   , EnvVariable(..)
+  , Exec(..)
   , Mount(..)
   , Name(..)
   , Port(..)
@@ -13,6 +14,7 @@ module CBT.Container
   , StopRemove(..)
   , buildRun
   , commit
+  , execReadStdout
   , getHostPort
   , minimalDefinition
   , mkEntrypoint
@@ -174,11 +176,11 @@ runProc Definition{..} = detachSilence <$> backendProc backendArguments
         , "--name",     convertText name
         , "--platform", "linux/amd64"
         ]
-      , detachFlag
-      , envOptions
+      , detachFlag detach
+      , envOptions env
       , mountOptions
       , publishOptions
-      , workDirOptions
+      , maybe [] workDirOptions workDir
       , removeFlag
       , convert <$> extraBackendArguments
       , [ "--"
@@ -216,21 +218,6 @@ runProc Definition{..} = detachSilence <$> backendProc backendArguments
           StopRemove   -> ["--rm"]
           StopNoRemove -> []
 
-        detachFlag :: [String]
-        detachFlag = case detach of
-          Detach     -> ["--detach"]
-          Foreground -> []
-
-        envOptions :: [String]
-        envOptions = mconcat $ ("--env" :) . pure . convert . option <$> env
-          where
-            option = \case
-              EnvInherit envName -> envName
-              EnvSet envName value -> envName <> "=" <> value
-
-        workDirOptions :: [String]
-        workDirOptions = maybe [] (("--workdir" :) . pure . Path.toString) workDir
-
         commandArguments :: [String]
         commandArguments =
           maybe [] (\arg -> convert <$> arg.name:arg.arguments) command
@@ -240,6 +227,30 @@ runProc Definition{..} = detachSilence <$> backendProc backendArguments
       case detach of
         Detach -> silenceStdout
         _      -> identity
+
+data Exec = Exec
+  { command       :: Entrypoint
+  , containerName :: Name
+  , detach        :: Detach
+  , env           :: [EnvVariable]
+  , workDir       :: Maybe Path.AbsDir
+  }
+
+execProc
+  :: Env env
+  => Exec
+  -> MIO env Proc
+execProc Exec{..} = backendProc backendArguments
+  where
+    backendArguments :: [String]
+    backendArguments = mconcat
+      [ ["exec"]
+      , detachFlag detach
+      , envOptions env
+      , maybe [] workDirOptions workDir
+      , [convert $ convert @Text containerName, convert command.name]
+      , convert <$> command.arguments
+      ]
 
 stop
   :: Env env
@@ -283,7 +294,15 @@ runReadStdout containerDefinition = do
   (exitCode, output) <- readProcessStdout =<< runProc containerDefinition'
   handleFailure containerDefinition (convert output) exitCode
   where
-    containerDefinition' = containerDefinition { detach = Foreground }
+    containerDefinition' =
+      case containerDefinition of
+        Definition{..} -> Definition{detach = Foreground, ..}
+
+execReadStdout
+  :: Env env
+  => Exec
+  -> MIO env BS.ByteString
+execReadStdout = fmap convert . readProcessStdout_ <=< execProc
 
 readFile
   :: Env env
@@ -383,3 +402,18 @@ nextName :: Prefix -> MIO env Name
 nextName prefix = do
   uuid <- liftIO UUID.nextRandom
   pure . Name $ toText prefix <> "-" <> convertText (show uuid)
+
+detachFlag :: Detach -> [String]
+detachFlag = \case
+  Detach     -> ["--detach"]
+  Foreground -> []
+
+envOptions :: [EnvVariable] -> [String]
+envOptions env = mconcat $ ("--env" :) . pure . convert . option <$> env
+  where
+    option = \case
+      EnvInherit envName -> envName
+      EnvSet envName value -> envName <> "=" <> value
+
+workDirOptions :: Path.AbsDir -> [String]
+workDirOptions dir = ["--workdir", Path.toString dir]
