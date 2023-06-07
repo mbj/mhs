@@ -20,7 +20,7 @@ binary 0.8.9.0
 bytestring 0.11.4.0
 call-stack 0.4.0
 case-insensitive 1.2.1.0
-cbt 0.2.2
+cbt 0.2.3
 clock 0.8.3
 cmdargs 0.10.22
 colour 2.3.6
