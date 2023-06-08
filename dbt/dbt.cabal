@@ -4,11 +4,11 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 
-name:           dbt-postgresql-connection
-version:        0.1.0
-synopsis:       DBT Postgresql database connection
+name:           dbt
+version:        0.2.0
+synopsis:       DBT - DataBase tool
 homepage:       https://github.com/mbj/mhs#readme
-bug-reports:    https://github.com/mbj/dbt/issues
+bug-reports:    https://github.com/mbj/mhs/issues
 author:         Markus Schirp
 maintainer:     mbj@schirp-dso.com
 copyright:      2023 Markus Schirp
@@ -19,7 +19,7 @@ tested-with:
 
 source-repository head
   type: git
-  location: https://github.com/mbj/dbt
+  location: https://github.com/mbj/mhs
 
 flag development
   description: Run GHC with development flags
@@ -30,9 +30,12 @@ library
   exposed-modules:
       DBT.Postgresql
       DBT.Postgresql.Connection
+      DBT.Postgresql.Container
+      DBT.Postgresql.Container.CLI
       DBT.Postgresql.Prelude
+      DBT.Postgresql.Wait
   other-modules:
-      Paths_dbt_postgresql_connection
+      Paths_dbt
   hs-source-dirs:
       src
   default-extensions:
@@ -67,15 +70,24 @@ library
   build-depends:
       base
     , bytestring
-    , containers
+    , cbt
+    , containers >=0.6
     , conversions
     , hasql >=1.4
     , mio-core
+    , mio-log
     , mprelude
     , mtl >=2.2
+    , network
+    , optparse-applicative >=0.15
+    , pathtype >=0.8
     , source-constraints
+    , template-haskell
     , text
+    , th-lift-instances >=0.1
+    , typed-process >=0.2
     , unliftio >=0.2
+    , unliftio-core >=0.2
   default-language: Haskell2010
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
@@ -84,11 +96,80 @@ library
   else
     ghc-options: -Wwarn
 
+executable dbt
+  main-is: Main.hs
+  other-modules:
+      Paths_dbt
+  hs-source-dirs:
+      app
+  default-extensions:
+      ConstraintKinds
+      DataKinds
+      DeriveAnyClass
+      DeriveGeneric
+      DerivingStrategies
+      DerivingVia
+      DuplicateRecordFields
+      FlexibleContexts
+      FlexibleInstances
+      GeneralizedNewtypeDeriving
+      LambdaCase
+      MultiParamTypeClasses
+      NoFieldSelectors
+      NoImplicitPrelude
+      NumericUnderscores
+      OverloadedLists
+      OverloadedRecordDot
+      OverloadedStrings
+      RankNTypes
+      RecordWildCards
+      ScopedTypeVariables
+      Strict
+      TemplateHaskell
+      TupleSections
+      TypeApplications
+      TypeFamilies
+      ViewPatterns
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wno-ambiguous-fields -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
+  build-depends:
+      base
+    , bytestring
+    , cbt
+    , containers >=0.6
+    , conversions
+    , dbt
+    , hasql >=1.4
+    , mio-core
+    , mio-log
+    , mprelude
+    , mtl >=2.2
+    , network
+    , optparse-applicative >=0.15
+    , pathtype >=0.8
+    , source-constraints
+    , template-haskell
+    , text
+    , th-lift-instances >=0.1
+    , typed-process >=0.2
+    , unliftio >=0.2
+    , unliftio-core >=0.2
+  default-language: Haskell2010
+  if flag(development)
+    ghc-options: -Werror -fplugin=SourceConstraints
+    build-depends:
+        source-constraints
+  else
+    ghc-options: -Wwarn
+  if flag(development)
+    buildable: True
+  else
+    buildable: False
+
 test-suite test
   type: exitcode-stdio-1.0
   main-is: Test.hs
   other-modules:
-      Paths_dbt_postgresql_connection
+      Paths_dbt
   hs-source-dirs:
       test
   default-extensions:
@@ -123,17 +204,28 @@ test-suite test
   build-depends:
       base
     , bytestring
-    , containers
+    , cbt
+    , containers >=0.6
     , conversions
-    , dbt-postgresql-connection
+    , dbt
     , devtools
     , hasql >=1.4
     , mio-core
+    , mio-log
     , mprelude
     , mtl >=2.2
+    , network
+    , optparse-applicative >=0.15
+    , pathtype >=0.8
     , source-constraints
+    , tasty
+    , tasty-mgolden
+    , template-haskell
     , text
+    , th-lift-instances >=0.1
+    , typed-process >=0.2
     , unliftio >=0.2
+    , unliftio-core >=0.2
   default-language: Haskell2010
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
