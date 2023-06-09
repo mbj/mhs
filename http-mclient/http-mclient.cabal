@@ -76,8 +76,10 @@ library
     , http-client
     , http-types
     , mio-core
+    , mio-log
     , mprelude
     , mtl
+    , retry
     , text
     , unliftio
   default-language: Haskell2010
@@ -132,12 +134,20 @@ test-suite test
     , conversions
     , devtools
     , http-client
+    , http-mclient
     , http-types
     , mio-core
+    , mio-log
     , mprelude
     , mtl
+    , network
+    , retry
+    , tasty
+    , tasty-hunit
     , text
     , unliftio
+    , wai
+    , warp
   default-language: Haskell2010
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints

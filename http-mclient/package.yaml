@@ -22,10 +22,20 @@ dependencies:
 - http-types
 - mprelude
 - mio-core
+- mio-log
 - mtl
+- retry
 - text
 - unliftio
 
 tests:
   test:
     <<: *test
+    dependencies:
+      - devtools
+      - http-mclient
+      - network
+      - tasty
+      - tasty-hunit
+      - wai
+      - warp
