@@ -75,7 +75,7 @@ library
     , control-bool >=0.2
     , conversions >=0.0.3
     , cryptonite >=0.26
-    , dbt-postgresql-connection
+    , dbt
     , hasql >=1.4
     , hasql-th >=0.4
     , hasql-transaction >=1.0
@@ -143,7 +143,7 @@ test-suite test
     , control-bool >=0.2
     , conversions >=0.0.3
     , cryptonite >=0.26
-    , dbt-postgresql-connection
+    , dbt
     , devtools
     , hasql >=1.4
     , hasql-th >=0.4

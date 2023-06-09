@@ -19,7 +19,7 @@ main = do
     containerName <- CBT.Container.nextName (CBT.Container.Prefix "dbt-test")
     DBT.withDatabaseContainerDefault containerName $ \clientConfig ->
       liftIO . Tasty.defaultMain $ Tasty.testGroup "dbt"
-        [ Devtools.testTree $$(Devtools.readDependencies [Devtools.Target "dbt-postgresql-container"])
+        [ Devtools.testTree $$(Devtools.readDependencies [Devtools.Target "dbt"])
         , testDB clientConfig
         ]
 

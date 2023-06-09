@@ -25,9 +25,7 @@ flags:
     development: true
   conversions:
     development: true
-  dbt-postgresql-connection:
-    development: true
-  dbt-postgresql-container:
+  dbt:
     development: true
   db-migrations:
     development: true
@@ -68,8 +66,7 @@ packages:
 - cbt
 - conversions
 - db-migrations
-- dbt-postgresql-connection
-- dbt-postgresql-container
+- dbt
 - devtools
 - http-mclient
 - lambda-alb

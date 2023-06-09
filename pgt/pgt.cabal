@@ -97,7 +97,7 @@ library
     , bytestring
     , containers >=0.6
     , conversions >=0.0.3
-    , dbt-postgresql-connection >=0.1.0
+    , dbt
     , directory >=1.3
     , filepath >=1.4
     , mprelude
@@ -165,7 +165,7 @@ executable pgt
     , bytestring
     , containers >=0.6
     , conversions >=0.0.3
-    , dbt-postgresql-connection >=0.1.0
+    , dbt
     , directory >=1.3
     , filepath >=1.4
     , mprelude
@@ -240,8 +240,7 @@ test-suite test
     , cbt
     , containers >=0.6
     , conversions >=0.0.3
-    , dbt-postgresql-connection >=0.1.0
-    , dbt-postgresql-container
+    , dbt
     , devtools
     , directory >=1.3
     , filepath >=1.4
