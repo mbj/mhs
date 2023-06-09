@@ -24,7 +24,6 @@ dependencies:
 - random
 - scientific
 - source-constraints
-- symbols
 - template-haskell
 - text
 - time
