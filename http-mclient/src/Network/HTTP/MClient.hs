@@ -3,7 +3,7 @@ module Network.HTTP.MClient
   , ResponseDecoder
   , ResponseError(..)
   , SendRequest
-  , TransactionDecoder
+  , Transaction(..)
   , addContentType
   , addHeader
   , decodeContentType
@@ -14,6 +14,7 @@ module Network.HTTP.MClient
   , decodeJSONStatus
   , decodeStatus
   , decodeStatuses
+  , defaultTransaction
   , send
   , send'
   , sendRequest
@@ -54,7 +55,9 @@ type Result a = Either ResponseError a
 
 type ResponseDecoder a = HTTP.Response LBS.ByteString -> Result a
 
-type TransactionDecoder a = HTTP.HttpExceptionContent -> Result a
+newtype  Transaction a = Transaction
+  { decoder :: HTTP.HttpExceptionContent -> Result a
+  }
 
 decodeStatus
   :: HTTP.Status
@@ -120,16 +123,21 @@ jsonContentType = "application/json; charset=utf-8"
 jsonLegacyContentType :: BS.ByteString
 jsonLegacyContentType = "application/json"
 
+defaultTransaction :: Transaction a
+defaultTransaction = Transaction
+  { decoder = Left . HTTPError
+  }
+
 send
   :: Env env
   => ResponseDecoder a
   -> HTTP.Request
   -> MIO env (Result a)
-send = send' (Left . HTTPError)
+send = send' defaultTransaction
 
 send'
   :: Env env
-  => TransactionDecoder a
+  => Transaction a
   -> ResponseDecoder a
   -> HTTP.Request
   -> MIO env (Result a)
@@ -139,11 +147,11 @@ send' transactionDecoder decoder request = do
 
 sendRequest
   :: SendRequest
-  -> TransactionDecoder a
+  -> Transaction a
   -> ResponseDecoder a
   -> HTTP.Request
   -> MIO env (Result a)
-sendRequest sendRequest' transactionDecoder decoder request =
+sendRequest sendRequest' Transaction{ decoder = transactionDecoder } decoder request =
   either transactionDecoder decoder
     <$> Exception.tryJust selectException (liftIO $ sendRequest' request)
   where
