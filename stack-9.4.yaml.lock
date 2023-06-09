@@ -5,13 +5,6 @@
 
 packages:
 - completed:
-    hackage: symbols-0.3.0.0@sha256:5d051bccbd4bcb33fa8ce076bd3cd2bacc90973682f7340976758947eaa128a9,964
-    pantry-tree:
-      sha256: 06746077732f4d49d3277821303292314d51df9a63efecd47217fc0946233026
-      size: 529
-  original:
-    hackage: symbols-0.3.0.0@sha256:5d051bccbd4bcb33fa8ce076bd3cd2bacc90973682f7340976758947eaa128a9,964
-- completed:
     name: amazonka
     pantry-tree:
       sha256: 2bbc87a5978cb3ae92e7f08f7b09406faa01e013a9578efcba2a8b2916af7c12

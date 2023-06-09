@@ -1,9 +1,9 @@
-{-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE StandaloneKindSignatures #-}
+{-# LANGUAGE UndecidableInstances     #-}
 
 module Data.Bounded.TypeLevel where
 
 import Data.Bounded.Prelude
-import Data.Symbol.Ascii (ToList)
 import Data.Word (Word16)
 import GHC.TypeLits
 
@@ -33,13 +33,14 @@ typeName
   . show
   $ typeOf (Proxy @a)
 
+type Length :: Symbol -> Nat
 type family Length (a :: Symbol) :: Nat where
-  Length symbol = Length' (ToList symbol)
+  Length symbol = Length' (UnconsSymbol symbol)
 
-type family Length' (a :: [Symbol]) :: Nat where
-  Length' '[] = 0
-  Length' (x ': xs) = 1 + Length' xs
-
+type Length' :: Maybe (Char, Symbol) -> Nat
+type family Length' symbol :: Nat where
+  Length' 'Nothing                  = 0
+  Length' ('Just '(char, reminder)) = 1 + Length' (UnconsSymbol reminder)
 
 mkRange
   :: forall min max integral . (KnownNat min, KnownNat max, Conversion integral Natural)
