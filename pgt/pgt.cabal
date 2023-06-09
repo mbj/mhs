@@ -15,7 +15,7 @@ license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
 tested-with:
-    GHC == 9.2
+    GHC == 9.4
 extra-source-files:
     examples/failure.test.sql
     examples/success.test.sql
