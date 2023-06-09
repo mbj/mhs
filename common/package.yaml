@@ -7,7 +7,7 @@
   maintainer: mbj@schirp-dso.com
 
   tested-with:
-  - GHC == 9.2
+  - GHC == 9.4
 
   when:
   - condition: flag(development)
