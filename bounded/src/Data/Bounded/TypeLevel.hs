@@ -26,9 +26,6 @@ type IsInRange (nat :: Nat) (min :: Nat) (max :: Nat)
 -- | Constructor for appending a type level string with a normal Type
 data (a :: Symbol) ++: (b :: Type)
 
-type family (++) (a :: Symbol) (b :: k) :: Symbol where
-  a ++ (b :: Symbol) = a `AppendSymbol` b
-
 typeName :: forall (a :: Type). Typeable a => String
 typeName
   = fromMaybe (error "GHC error invalid type name")
