@@ -70,7 +70,6 @@ library
     , conversions
     , mtl
     , scientific
-    , symbols
     , template-haskell
     , text
   default-language: Haskell2010
@@ -119,7 +118,6 @@ test-suite readme
     , markdown-unlit
     , mtl
     , scientific
-    , symbols
     , template-haskell
     , text
   default-language: Haskell2010
@@ -177,7 +175,6 @@ test-suite test
     , scientific
     , should-not-typecheck
     , source-constraints
-    , symbols
     , tasty
     , tasty-hunit
     , template-haskell
