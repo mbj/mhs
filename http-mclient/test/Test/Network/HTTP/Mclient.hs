@@ -2,7 +2,8 @@ module Test.Network.HTTP.Mclient (testTree) where
 
 import Control.Monad (when)
 import Control.Monad.Reader (asks)
-import Data.Word (Word8)
+import Data.Conversions (convert, convertImpure)
+import Data.Word (Word16, Word8)
 import GHC.Enum (succ)
 import GHC.Records (HasField(..))
 import MIO.Core
@@ -11,6 +12,7 @@ import Test.Tasty
 import Test.Tasty.HUnit ((@?=))
 
 import qualified Data.Aeson               as JSON
+import qualified Data.ByteString.Char8    as BS
 import qualified Data.List                as List
 import qualified MIO.Log                  as Log
 import qualified Network.HTTP.Client      as HTTP
@@ -26,7 +28,7 @@ import qualified UnliftIO.Concurrent      as UnliftIO
 data ExpectedResponse
   = ConnectionFailure
   | ResponseTimeout
-  | Status500
+  | Status Word16
   | Success
   deriving stock (Eq, Show)
 
@@ -74,7 +76,7 @@ testTree = testGroup "Network.HTTP.MClient"
               assertRequestsCount 0
 
               UnliftIO.withAsync (sendHttpRequest' port setRequest500 identity) $ \client -> do
-                assertResponse Status500 =<< UnliftIO.wait client
+                assertResponse (Status 500) =<< UnliftIO.wait client
 
                 assertRequestsCount 1
       , testGroup "with 200 HTTP status from server" . List.singleton .
@@ -106,10 +108,11 @@ testTree = testGroup "Network.HTTP.MClient"
 
         mkAssertion :: HTTP.ResponseError -> Tasty.Assertion
         mkAssertion error = case (expected, error) of
-          (ConnectionFailure, HTTP.HTTPError (HTTP.ConnectionFailure _))                   -> pure ()
-          (ResponseTimeout,   HTTP.HTTPError HTTP.ResponseTimeout)                         -> pure ()
-          (Status500,         HTTP.UnexpectedStatusCode status) | status == HTTP.status500 -> pure ()
-          (_,                 _)                                                           -> mkError error
+          (ConnectionFailure, HTTP.HTTPError (HTTP.ConnectionFailure _))     -> pure ()
+          (ResponseTimeout,   HTTP.HTTPError HTTP.ResponseTimeout)           -> pure ()
+          (Status code,       HTTP.UnexpectedStatusCode status)
+            | HTTP.statusCode status == convertImpure (convert @Natural code) -> pure ()
+          (_,                 _)                                              -> mkError error
 
         mkError :: Show a => a -> Tasty.Assertion
         mkError received
@@ -117,9 +120,12 @@ testTree = testGroup "Network.HTTP.MClient"
           $ "expected " <> show expected <> " but received " <> show received
 
     setRequest500 :: HTTP.Request -> HTTP.Request
-    setRequest500 request =
+    setRequest500 = setRequestByStatus 500
+
+    setRequestByStatus :: Word16 -> HTTP.Request -> HTTP.Request
+    setRequestByStatus status request =
       request
-        { HTTP.path = "500"
+        { HTTP.path = BS.pack $ show status
         }
 
     setRequestTimeout :: HTTP.Request -> HTTP.Request
