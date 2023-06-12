@@ -62,7 +62,7 @@ testTree = testGroup "Network.HTTP.MClient"
           withServer application $ \port -> do
             assertRequestsCount 0
 
-            UnliftIO.withAsync (sendHttpRequest' port setRequestTimeout) $ \client -> do
+            UnliftIO.withAsync (sendHttpRequest' port setRequestTimeout identity) $ \client -> do
               assertResponse ResponseTimeout =<< UnliftIO.wait client
 
               assertRequestsCount 1
@@ -73,7 +73,7 @@ testTree = testGroup "Network.HTTP.MClient"
             withServer application $ \port -> do
               assertRequestsCount 0
 
-              UnliftIO.withAsync (sendHttpRequest' port setRequest500) $ \client -> do
+              UnliftIO.withAsync (sendHttpRequest' port setRequest500 identity) $ \client -> do
                 assertResponse Status500 =<< UnliftIO.wait client
 
                 assertRequestsCount 1
@@ -169,15 +169,18 @@ sendHttpRequest
   :: HTTP.Env env
   => Warp.Port
   -> MIO env (HTTP.Result JSON.Value)
-sendHttpRequest port = sendHttpRequest' port identity
+sendHttpRequest port = sendHttpRequest' port identity identity
 
 sendHttpRequest'
   :: HTTP.Env env
   => Warp.Port
   -> (HTTP.Request -> HTTP.Request)
+  -> (HTTP.Transaction JSON.Value -> HTTP.Transaction JSON.Value)
   -> MIO env (HTTP.Result JSON.Value)
-sendHttpRequest' port modifyRequest
-  = HTTP.send HTTP.decodeJSONOk
+sendHttpRequest' port modifyRequest modifyTransaction
+  = HTTP.send'
+    (modifyTransaction HTTP.defaultTransaction)
+    HTTP.decodeJSONOk
   $ modifyRequest request
   where
     request :: HTTP.Request
