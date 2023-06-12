@@ -1,10 +1,16 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Main (main) where
-
-import System.IO (IO)
+import MPrelude
 
 import qualified Devtools
+import qualified Test.Network.HTTP.Mclient
+import qualified Test.Tasty                as Tasty
 
 main :: IO ()
-main = Devtools.main $$(Devtools.readDependencies [Devtools.Target "http-mclient"])
+main =
+  liftIO . Tasty.defaultMain .
+    Tasty.testGroup "HTTP" $
+      [ Devtools.testTree $$(Devtools.readDependencies [Devtools.Target "http-mclient"])
+      , Test.Network.HTTP.Mclient.testTree
+      ]

@@ -2,8 +2,9 @@ module Network.HTTP.MClient
   ( Env
   , ResponseDecoder
   , ResponseError(..)
+  , Result
   , SendRequest
-  , TransactionDecoder
+  , Transaction(..)
   , addContentType
   , addHeader
   , decodeContentType
@@ -14,6 +15,7 @@ module Network.HTTP.MClient
   , decodeJSONStatus
   , decodeStatus
   , decodeStatuses
+  , defaultTransaction
   , send
   , send'
   , sendRequest
@@ -23,22 +25,24 @@ where
 
 import Control.Arrow (left)
 import Control.Monad.Reader (asks)
-import Data.Conversions (toText)
+import Data.Conversions (Conversion(..), toText)
 import GHC.Records (HasField(..))
 import MIO.Core
 import MPrelude
 
+import qualified Control.Retry              as Retry
 import qualified Data.Aeson                 as JSON
 import qualified Data.ByteString            as BS
 import qualified Data.ByteString.Lazy.Char8 as LBS
 import qualified Data.List                  as List
+import qualified MIO.Log                    as Log
 import qualified Network.HTTP.Client        as HTTP
 import qualified Network.HTTP.Types         as HTTP
 import qualified UnliftIO.Exception         as Exception
 
 type SendRequest = HTTP.Request -> IO (HTTP.Response LBS.ByteString)
 
-type Env env = HasField "httpSendRequest" env SendRequest
+type Env env = (HasField "httpSendRequest" env SendRequest, Log.Env env)
 
 data ResponseError
   = BodyDecodeFailure Text
@@ -54,7 +58,11 @@ type Result a = Either ResponseError a
 
 type ResponseDecoder a = HTTP.Response LBS.ByteString -> Result a
 
-type TransactionDecoder a = HTTP.HttpExceptionContent -> Result a
+data Transaction a = Transaction
+  { decoder     :: HTTP.HttpExceptionContent -> Result a
+  , shouldRetry :: HTTP.HttpExceptionContent -> Bool
+  , retryPolicy :: Retry.RetryPolicy
+  }
 
 decodeStatus
   :: HTTP.Status
@@ -120,34 +128,76 @@ jsonContentType = "application/json; charset=utf-8"
 jsonLegacyContentType :: BS.ByteString
 jsonLegacyContentType = "application/json"
 
+defaultTransaction :: Transaction a
+defaultTransaction = Transaction
+  { decoder     = Left . HTTPError
+  , retryPolicy = Retry.constantDelay 50000 <> Retry.limitRetries 1
+  , ..
+  }
+  where
+    shouldRetry :: HTTP.HttpExceptionContent -> Bool
+    shouldRetry = \case
+      HTTP.ConnectionFailure _ -> True
+      _                        -> False
+
 send
   :: Env env
   => ResponseDecoder a
   -> HTTP.Request
   -> MIO env (Result a)
-send = send' (Left . HTTPError)
+send = send' defaultTransaction
 
 send'
   :: Env env
-  => TransactionDecoder a
+  => Transaction a
   -> ResponseDecoder a
   -> HTTP.Request
   -> MIO env (Result a)
-send' transactionDecoder decoder request = do
+send' transaction decoder request = do
   sendRequest' <- asks (.httpSendRequest)
-  sendRequest sendRequest' transactionDecoder decoder request
+  sendRequest sendRequest' transaction decoder request
 
 sendRequest
-  :: SendRequest
-  -> TransactionDecoder a
+  :: forall env a . Env env
+  => SendRequest
+  -> Transaction a
   -> ResponseDecoder a
   -> HTTP.Request
   -> MIO env (Result a)
-sendRequest sendRequest' transactionDecoder decoder request =
-  either transactionDecoder decoder
-    <$> Exception.tryJust selectException (liftIO $ sendRequest' request)
+sendRequest sendRequest' Transaction{ decoder = transactionDecoder, .. } decoder request =
+  either transactionDecoder decoder <$> retriableSendRequest
   where
-    selectException :: HTTP.HttpException -> Maybe HTTP.HttpExceptionContent
-    selectException = \case
-      (HTTP.HttpExceptionRequest _request content) -> pure content
-      _other                                       -> empty
+    retriableSendRequest :: MIO env (Either HTTP.HttpExceptionContent (HTTP.Response LBS.ByteString))
+    retriableSendRequest
+      = Retry.retrying
+        retryPolicy
+        isRetriable
+      $ const (Exception.tryJust selectException . liftIO $ sendRequest' request)
+      where
+        isRetriable
+          :: Retry.RetryStatus
+          -> Either HTTP.HttpExceptionContent (HTTP.Response LBS.ByteString)
+          -> MIO env Bool
+        isRetriable Retry.RetryStatus{..}
+          = either
+            process
+            (const (pure False))
+          where
+            process :: HTTP.HttpExceptionContent -> MIO env Bool
+            process error = if shouldRetry error then logWarning error $> True else pure False
+
+            logWarning :: HTTP.HttpExceptionContent -> MIO env ()
+            logWarning error
+              = Log.warn
+              $ "Retrying failed request due to "
+              <> showc error
+              <> " attempt "
+              <> showc rsIterNumber
+
+        selectException :: HTTP.HttpException -> Maybe HTTP.HttpExceptionContent
+        selectException = \case
+          (HTTP.HttpExceptionRequest _request content) -> pure content
+          _other                                       -> empty
+
+showc :: forall a b . (Show a, Conversion b String) => a -> b
+showc = convert . show

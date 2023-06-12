@@ -3,7 +3,7 @@ _common/package: !include "../common/package.yaml"
 name:                http-mclient
 synopsis:            Minimal http-client
 description:         Minimal http-client built on top of http-client library
-version:             0.0.6
+version:             0.0.7
 author:              gamsnjaga@gmail.com, epicallan.al@gmail.com
 maintainer:          gamsnjaga@gmail.com, epicallan.al@gmail.com, mbj@schirp-dso.com
 category:            Web
@@ -22,10 +22,20 @@ dependencies:
 - http-types
 - mprelude
 - mio-core
+- mio-log
 - mtl
+- retry
 - text
 - unliftio
 
 tests:
   test:
     <<: *test
+    dependencies:
+      - devtools
+      - http-mclient
+      - network
+      - tasty
+      - tasty-hunit
+      - wai
+      - warp
