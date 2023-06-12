@@ -79,6 +79,15 @@ testTree = testGroup "Network.HTTP.MClient"
                 assertResponse (Status 500) =<< UnliftIO.wait client
 
                 assertRequestsCount 1
+      , testGroup "with 503 HTTP status set to be retried" . List.singleton .
+          Tasty.testCase "return a 503 HTTP response with a single retry" .
+            withServer application $ \port -> do
+              assertRequestsCount 0
+
+              UnliftIO.withAsync (sendHttpRequest' port setRequest503 setRetry503) $ \client -> do
+                assertResponse (Status 503) =<< UnliftIO.wait client
+
+                assertRequestsCount 2
       , testGroup "with 200 HTTP status from server" . List.singleton .
           Tasty.testCase "return a single successful HTTP response" .
             withServer application $ \port -> do
@@ -119,8 +128,21 @@ testTree = testGroup "Network.HTTP.MClient"
           = Tasty.assertFailure
           $ "expected " <> show expected <> " but received " <> show received
 
+    setRetry503 :: HTTP.Transaction a -> HTTP.Transaction a
+    setRetry503 transaction = transaction
+      { HTTP.shouldRetry = shouldRetry
+      }
+      where
+        shouldRetry :: HTTP.ResponseError -> Bool
+        shouldRetry = \case
+          HTTP.UnexpectedStatusCode (HTTP.Status 503 _) -> True
+          _                                             -> False
+
     setRequest500 :: HTTP.Request -> HTTP.Request
     setRequest500 = setRequestByStatus 500
+
+    setRequest503 :: HTTP.Request -> HTTP.Request
+    setRequest503 = setRequestByStatus 503
 
     setRequestByStatus :: Word16 -> HTTP.Request -> HTTP.Request
     setRequestByStatus status request =
@@ -147,6 +169,7 @@ application req respond = do
     status :: HTTP.Status
     status = case WAI.pathInfo req of
       ["500"] -> HTTP.status500
+      ["503"] -> HTTP.status503
       _       -> HTTP.status200
 
     jsonHeader :: HTTP.Header
