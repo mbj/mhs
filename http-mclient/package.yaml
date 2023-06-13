@@ -3,7 +3,7 @@ _common/package: !include "../common/package.yaml"
 name:                http-mclient
 synopsis:            Minimal http-client
 description:         Minimal http-client built on top of http-client library
-version:             0.0.7
+version:             0.0.8
 author:              gamsnjaga@gmail.com, epicallan.al@gmail.com
 maintainer:          gamsnjaga@gmail.com, epicallan.al@gmail.com, mbj@schirp-dso.com
 category:            Web

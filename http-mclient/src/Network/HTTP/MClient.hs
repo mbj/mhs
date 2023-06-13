@@ -60,7 +60,7 @@ type ResponseDecoder a = HTTP.Response LBS.ByteString -> Result a
 
 data Transaction a = Transaction
   { decoder     :: HTTP.HttpExceptionContent -> Result a
-  , shouldRetry :: HTTP.HttpExceptionContent -> Bool
+  , shouldRetry :: ResponseError             -> Bool
   , retryPolicy :: Retry.RetryPolicy
   }
 
@@ -135,10 +135,10 @@ defaultTransaction = Transaction
   , ..
   }
   where
-    shouldRetry :: HTTP.HttpExceptionContent -> Bool
+    shouldRetry :: ResponseError -> Bool
     shouldRetry = \case
-      HTTP.ConnectionFailure _ -> True
-      _                        -> False
+      HTTPError (HTTP.ConnectionFailure _) -> True
+      _                                    -> False
 
 send
   :: Env env
@@ -164,40 +164,41 @@ sendRequest
   -> ResponseDecoder a
   -> HTTP.Request
   -> MIO env (Result a)
-sendRequest sendRequest' Transaction{ decoder = transactionDecoder, .. } decoder request =
-  either transactionDecoder decoder <$> retriableSendRequest
+sendRequest sendRequest' Transaction{ decoder = transactionDecoder, .. } decoder request
+  = Retry.retrying
+    retryPolicy
+    isRetriable
+  $ const retriableSendRequest
   where
-    retriableSendRequest :: MIO env (Either HTTP.HttpExceptionContent (HTTP.Response LBS.ByteString))
+    retriableSendRequest :: MIO env (Result a)
     retriableSendRequest
-      = Retry.retrying
-        retryPolicy
-        isRetriable
-      $ const (Exception.tryJust selectException . liftIO $ sendRequest' request)
+      = either transactionDecoder decoder
+      <$> Exception.tryJust selectException (liftIO $ sendRequest' request)
+
+    isRetriable
+      :: Retry.RetryStatus
+      -> Result a
+      -> MIO env Bool
+    isRetriable Retry.RetryStatus{..}
+      = either
+        process
+        (const (pure False))
       where
-        isRetriable
-          :: Retry.RetryStatus
-          -> Either HTTP.HttpExceptionContent (HTTP.Response LBS.ByteString)
-          -> MIO env Bool
-        isRetriable Retry.RetryStatus{..}
-          = either
-            process
-            (const (pure False))
-          where
-            process :: HTTP.HttpExceptionContent -> MIO env Bool
-            process error = if shouldRetry error then logWarning error $> True else pure False
+        process :: ResponseError -> MIO env Bool
+        process error = if shouldRetry error then logWarning error $> True else pure False
 
-            logWarning :: HTTP.HttpExceptionContent -> MIO env ()
-            logWarning error
-              = Log.warn
-              $ "Retrying failed request due to "
-              <> showc error
-              <> " attempt "
-              <> showc rsIterNumber
+        logWarning :: ResponseError -> MIO env ()
+        logWarning error
+          = Log.warn
+          $ "Retrying failed request due to "
+          <> showc error
+          <> " attempt "
+          <> showc rsIterNumber
 
-        selectException :: HTTP.HttpException -> Maybe HTTP.HttpExceptionContent
-        selectException = \case
-          (HTTP.HttpExceptionRequest _request content) -> pure content
-          _other                                       -> empty
+    selectException :: HTTP.HttpException -> Maybe HTTP.HttpExceptionContent
+    selectException = \case
+      (HTTP.HttpExceptionRequest _request content) -> pure content
+      _other                                       -> empty
 
 showc :: forall a b . (Show a, Conversion b String) => a -> b
 showc = convert . show
