@@ -24,8 +24,8 @@ import qualified Network.HTTP.Types  as HTTP
 import qualified XRay.TraceHeader    as XRay
 
 data Connection = Connection
-  { request :: HTTP.Request
-  , manager :: HTTP.Manager
+  { baseRequest :: HTTP.Request
+  , manager     :: HTTP.Manager
   }
 
 data InternalLambdaClientError
@@ -49,7 +49,7 @@ getConnection = do
   awsLambdaRuntimeApi <- ExceptT $ maybeToEither MissingLambdaRunTimeApi
     <$> lookupEnv "AWS_LAMBDA_RUNTIME_API"
 
-  request <- withExceptT (InvalidLambdaRunTimeApi . showc @Text)
+  baseRequest <- withExceptT (InvalidLambdaRunTimeApi . showc @Text)
     . ExceptT
     . try @_ @HTTP.HttpException
     $ HTTP.parseRequest ("http://" <> awsLambdaRuntimeApi)
@@ -91,7 +91,7 @@ parseTraceHeader value
 
 getNextEventValue :: JSON.FromJSON a => Connection -> LambdaClient (HTTP.Response a)
 getNextEventValue Connection{..} = do
-  response <- performHttpRequest $ Connection { request = toNextEventRequest request, .. }
+  response <- performHttpRequest
 
   let statusCode = HTTP.responseStatus response
 
@@ -100,10 +100,22 @@ getNextEventValue Connection{..} = do
 
   pure response
   where
-    toNextEventRequest :: HTTP.Request -> HTTP.Request
-    toNextEventRequest req = req
+    nextEventRequest :: HTTP.Request
+    nextEventRequest
+      = baseRequest
       { HTTP.path = "2018-06-01/runtime/invocation/next"
       }
+
+    performHttpRequest :: JSON.FromJSON a => LambdaClient (HTTP.Response a)
+    performHttpRequest = do
+      response <- catchConnectionError $ HTTP.httpLbs nextEventRequest manager
+
+      body <- liftEither
+        . first (ResponseBodyDecodeFailure . convert)
+        . JSON.eitherDecode
+        $ HTTP.responseBody response
+
+      pure $ fmap (const body) response
 
 sendEventResponse
   :: (JSON.ToJSON a, MonadCatch m, MonadIO m)
@@ -112,9 +124,7 @@ sendEventResponse
   -> a
   -> m ()
 sendEventResponse Connection{..} requestId value = do
-  response <- catchConnectionError
-    . flip HTTP.httpNoBody manager
-    $ toEventSuccessRequest request
+  response <- catchConnectionError $ HTTP.httpNoBody eventSuccessRequest manager
 
   let statusCode = HTTP.responseStatus response
 
@@ -123,8 +133,9 @@ sendEventResponse Connection{..} requestId value = do
   unless (HTTP.statusIsSuccessful statusCode) .
     throwM $ UnSuccessfulEventSending statusCode "Could not post handler result"
   where
-    toEventSuccessRequest :: HTTP.Request -> HTTP.Request
-    toEventSuccessRequest request' = request'
+    eventSuccessRequest :: HTTP.Request
+    eventSuccessRequest =
+      baseRequest
       { HTTP.requestBody = HTTP.RequestBodyLBS (JSON.encode value)
       , HTTP.method      = "POST"
       , HTTP.path        = "2018-06-01/runtime/invocation/" <> convert requestId <> "/response"
@@ -134,32 +145,20 @@ sendBootError :: MonadIO m => Connection -> InternalLambdaClientError -> m ()
 sendBootError Connection{..} error
   = void
   . liftIO
-  . flip HTTP.httpNoBody manager
-  $ toInitErrorRequest request
+  $ HTTP.httpNoBody initErrorRequest manager
   where
-    toInitErrorRequest :: HTTP.Request -> HTTP.Request
-    toInitErrorRequest request' = (toBaseErrorRequest error request')
+    initErrorRequest :: HTTP.Request
+    initErrorRequest = (mkBaseErrorRequest error baseRequest)
       { HTTP.path = "2018-06-01/runtime/init/error"
       }
-
-performHttpRequest :: JSON.FromJSON a => Connection -> LambdaClient (HTTP.Response a)
-performHttpRequest Connection{..} = do
-  response <- catchConnectionError $ HTTP.httpLbs request manager
-
-  body <- liftEither
-    . first (ResponseBodyDecodeFailure . convert)
-    . JSON.eitherDecode
-    $ HTTP.responseBody response
-
-  pure $ fmap (const body) response
 
 catchConnectionError :: (MonadCatch m, MonadIO m) => IO a -> m a
 catchConnectionError action =
   catch (liftIO action)
     $ \e -> throwM . ConnectionError $ (e :: HTTP.HttpException)
 
-toBaseErrorRequest :: Exception e => e -> HTTP.Request -> HTTP.Request
-toBaseErrorRequest (displayException -> error) req = req
+mkBaseErrorRequest :: Exception e => e -> HTTP.Request -> HTTP.Request
+mkBaseErrorRequest (displayException -> error) request = request
   { HTTP.requestBody    = HTTP.RequestBodyLBS (JSON.encode error)
   , HTTP.method         = "POST"
   , HTTP.requestHeaders = [("Content-Type", "application/vnd.aws.lambda.error+json")]
