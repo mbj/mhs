@@ -26,7 +26,7 @@ bytestring 0.11.4.0
 bytestring-strict-builder 0.4.5.6
 call-stack 0.4.0
 case-insensitive 1.2.1.0
-cbt 0.2.3
+cbt 0.2.4
 cereal 0.5.8.3
 charset 0.3.9
 clock 0.8.3
