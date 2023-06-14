@@ -1,4 +1,4 @@
-resolver: nightly-2023-05-12
+resolver: nightly-2023-06-13
 extra-deps:
 - mprelude
 - github: brendanhay/amazonka
