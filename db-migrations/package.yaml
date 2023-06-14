@@ -17,14 +17,14 @@ dependencies:
 - containers
 - control-bool         >= 0.2
 - conversions          >= 0.0.3
-- cryptonite           >= 0.26
+- crypton
 - dbt
 - hasql                >= 1.4
 - hasql-th             >= 0.4
 - hasql-transaction    >= 1.0
 - memory               >= 0.15
-- mprelude             >= 0.2
 - mio-core             >= 0.0.1
+- mprelude             >= 0.2
 - mtl
 - network
 - optparse-applicative >= 0.15

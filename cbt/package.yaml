@@ -1,7 +1,7 @@
 _common/package: !include "../common/package.yaml"
 
 name:        cbt
-version:     0.2.3
+version:     0.2.4
 synopsis:    A container backend toolkit
 
 <<: *defaults
@@ -11,7 +11,7 @@ dependencies:
 - bytestring
 - conduit              >= 1.3.3
 - conversions
-- cryptonite           >= 0.25
+- crypton
 - directory
 - exceptions           >= 0.10
 - filepath

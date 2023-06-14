@@ -136,7 +136,7 @@ packages:
     url: https://github.com/mbj/stratosphere/archive/7c462f2de4369a76df22d4b34b2f3a9e7754c731.tar.gz
 snapshots:
 - completed:
-    sha256: 440ac8e798b5384646296f8c7f622dca92d4675a75d42f9178a666552534f2b5
-    size: 629112
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2023/5/12.yaml
-  original: nightly-2023-05-12
+    sha256: a26536f646ba307798210fe1d56ba18c2abd57ddfdf5c3555dc2d3f5f5cee878
+    size: 632543
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2023/6/13.yaml
+  original: nightly-2023-06-13
