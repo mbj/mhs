@@ -11,7 +11,7 @@ dependencies:
 - bytestring
 - conduit              >= 1.3.3
 - conversions
-- cryptonite           >= 0.25
+- crypton
 - directory
 - exceptions           >= 0.10
 - filepath
