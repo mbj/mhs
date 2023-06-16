@@ -140,6 +140,9 @@ instance Conversion Int Word8 where
 instance Conversion Int Word16 where
   convert = fromIntegral
 
+instance Conversion Int Word32 where
+  convert = fromIntegral
+
 instance Conversion Natural Word where
   convert = fromIntegral
 
@@ -180,7 +183,7 @@ instance (MonadError (BoundError Int Word16) m) => Conversion (m Word16) Int whe
   convert = convertBoundedFromIntegral
 
 instance (MonadError (BoundError Int Word32) m) => Conversion (m Word32) Int where
-  convert = checkedFromIntegralToBounded
+  convert = convertBoundedFromIntegral
 
 instance (MonadError (BoundError Int Word64) m) => Conversion (m Word64) Int where
   convert value = do
