@@ -3,7 +3,7 @@
 module Data.Conversions where
 
 import Control.Exception (Exception)
-import Control.Monad (MonadPlus(..))
+import Control.Monad (MonadPlus(..), when)
 import Control.Monad.Catch (MonadThrow, throwM)
 import Control.Monad.Except (MonadError, throwError)
 import Data.Coerce (Coercible)
@@ -46,23 +46,27 @@ class Conversion b a where
   convert = coerce
 
 instance (MonadError (UserBoundError Int Natural) m) => Conversion (m Natural) Int where
-  convert = convertErrorFromIntegral
+  convert = convertErrorBounded
 
 instance (MonadError (UserBoundError Int8 Natural) m) => Conversion (m Natural) Int8 where
-  convert = convertErrorFromIntegral
+  convert = convertErrorBounded
 
 instance (MonadError (UserBoundError Int16 Natural) m) => Conversion (m Natural) Int16 where
-  convert = convertErrorFromIntegral
+  convert = convertErrorBounded
 
 instance (MonadError (UserBoundError Int32 Natural) m) => Conversion (m Natural) Int32 where
-  convert = convertErrorFromIntegral
+  convert = convertErrorBounded
 
 instance (MonadError (UserBoundError Int64 Natural) m) => Conversion (m Natural) Int64 where
-  convert = convertErrorFromIntegral
+  convert = convertErrorBounded
 
 instance (MonadError (UserBoundError Integer Text) m) => Conversion (m Natural) Integer where
-  convert value = maybe (throwError $ UserBoundError value "0" "Natural") pure
-    $ checkedFromIntegral value
+  convert value = do
+    when (value < 0) $ throwError userBoundError
+
+    maybe (throwError userBoundError) pure $ checkedFromIntegral value
+    where
+      userBoundError = UserBoundError value "0" "Natural"
 
 instance (MonadError (UserBoundError Natural Int) m) => Conversion (m Int) Natural where
   convert = convertErrorFromNatural
@@ -136,6 +140,9 @@ instance Conversion Int Word8 where
 instance Conversion Int Word16 where
   convert = fromIntegral
 
+instance Conversion Int Word32 where
+  convert = fromIntegral
+
 instance Conversion Natural Word where
   convert = fromIntegral
 
@@ -157,29 +164,34 @@ instance Conversion Scientific Integer where
 instance (MonadError (BoundError Integer Int) m) => Conversion (m Int) Integer where
   convert = convertBoundedFromIntegral
 
-instance (MonadError (BoundError Integer Word64) m) => Conversion (m Word64) Integer where
-  convert = convertBoundedFromIntegral
-
-instance (MonadError (BoundError Integer Word32) m) => Conversion (m Word32)  Integer where
+instance (MonadError (BoundError Integer Word8) m) => Conversion (m Word8) Integer where
   convert = convertBoundedFromIntegral
 
 instance (MonadError (BoundError Integer Word16) m) => Conversion (m Word16) Integer where
   convert = convertBoundedFromIntegral
 
-instance (MonadError (BoundError Integer Word8) m) => Conversion (m Word8) Integer where
+instance (MonadError (BoundError Integer Word32) m) => Conversion (m Word32) Integer where
   convert = convertBoundedFromIntegral
 
-instance (MonadError (BoundError Int Word64) m) => Conversion (m Word64) Int where
-  convert = checkedFromIntegralToBounded
-
-instance (MonadError (BoundError Int Word32) m) => Conversion (m Word32) Int where
-  convert = checkedFromIntegralToBounded
-
-instance (MonadError (BoundError Int Word16) m) => Conversion (m Word16) Int where
+instance (MonadError (BoundError Integer Word64) m) => Conversion (m Word64) Integer where
   convert = convertBoundedFromIntegral
 
 instance (MonadError (BoundError Int Word8) m) => Conversion (m Word8) Int where
   convert = convertBoundedFromIntegral
+
+instance (MonadError (BoundError Int Word16) m) => Conversion (m Word16) Int where
+  convert = convertBoundedFromIntegral
+
+instance (MonadError (BoundError Int Word32) m) => Conversion (m Word32) Int where
+  convert = convertBoundedFromIntegral
+
+instance (MonadError (BoundError Int Word64) m) => Conversion (m Word64) Int where
+  convert value = do
+    when (value < 0) $ throwError error
+
+    maybe (throwError error) pure $ checkedFromIntegral value
+      where
+        error = BoundError value
 
 instance Conversion LBS.ByteString BS.ByteString where
   convert = LBS.fromStrict
@@ -213,25 +225,22 @@ convertErrorFromNatural value =
   maybe (throwError $ UserBoundError value minBound maxBound) pure
     $ checkedFromIntegral value
 
-convertErrorFromIntegral
+convertErrorBounded
   :: forall a m
    . (Integral a, Bounded a, MonadError (UserBoundError a Natural) m)
   => a
   -> m Natural
-convertErrorFromIntegral value =
-  maybe (throwError $ UserBoundError value 0 maxBound') pure
+convertErrorBounded value = do
+  when (value < 0) $ throwError userBoundError
+
+  maybe (throwError userBoundError) pure
     $ checkedFromIntegral value
  where
   maxBound' :: Natural
   maxBound' = fromIntegral $ maxBound @a
 
-checkedFromIntegralToBounded
-  :: forall a b m
-   . (Integral a, Integral b, Bounded b, Show a, Show b, MonadError (BoundError a b) m)
-  => a
-  -> m b
-checkedFromIntegralToBounded value =
-  maybe (throwError $ BoundError value) pure $ checkedFromIntegral value
+  userBoundError :: UserBoundError a Natural
+  userBoundError = UserBoundError value 0 maxBound'
 
 convertBoundedFromIntegral
   :: forall a b m
