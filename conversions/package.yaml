@@ -30,10 +30,12 @@ default-extensions:
 - KindSignatures
 - LambdaCase
 - MultiParamTypeClasses
+- NegativeLiterals
 - NoImplicitPrelude
 - OverloadedLists
 - OverloadedStrings
 - PolyKinds
+- RecordWildCards
 - ScopedTypeVariables
 - StrictData
 - TupleSections
