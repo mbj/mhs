@@ -21,6 +21,7 @@ import qualified Data.ByteString               as BS
 import qualified Data.ByteString.Lazy          as LBS
 import qualified Data.Text                     as Text
 import qualified Data.Text.Lazy                as Text.Lazy
+import qualified GHC.Err                       as Err
 import qualified GHC.Show                      as Show
 import qualified Language.Haskell.TH.Syntax    as TH
 
@@ -261,7 +262,7 @@ convertEither :: forall b a e . (Conversion (Either e b) a) => a -> Either e b
 convertEither = convert
 
 convertImpure :: forall b a e . (HasCallStack, Conversion (Either e b) a, Show e) => a -> b
-convertImpure = either (error . show) id . convertEither @b @a @e
+convertImpure = either (Err.error . show) id . convertEither @b @a @e
 
 convertThrow
   :: forall b a e m
