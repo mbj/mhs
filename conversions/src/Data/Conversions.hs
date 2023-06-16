@@ -143,6 +143,16 @@ instance Conversion Int Word16 where
 instance Conversion Int Word32 where
   convert = fromIntegral
 
+instance (MonadError (BoundError Word64 Int) m) => Conversion (m Int) Word64 where
+  convert value = do
+    when (value > convertImpure (maxBound @Int))
+      $ throwError error
+
+    maybe (throwError error) pure $ checkedFromIntegral value
+    where
+      error :: BoundError Word64 Int
+      error = BoundError value
+
 instance Conversion Natural Word where
   convert = fromIntegral
 
@@ -162,6 +172,21 @@ instance Conversion Scientific Integer where
   convert = fromInteger . convert
 
 instance (MonadError (BoundError Integer Int) m) => Conversion (m Int) Integer where
+  convert = convertBoundedFromIntegral
+
+instance (MonadError (BoundError Integer Int8) m) => Conversion (m Int8) Integer where
+  convert = convertBoundedFromIntegral
+
+instance (MonadError (BoundError Integer Int16) m) => Conversion (m Int16) Integer where
+  convert = convertBoundedFromIntegral
+
+instance (MonadError (BoundError Integer Int32) m) => Conversion (m Int32) Integer where
+  convert = convertBoundedFromIntegral
+
+instance (MonadError (BoundError Integer Int64) m) => Conversion (m Int64) Integer where
+  convert = convertBoundedFromIntegral
+
+instance (MonadError (BoundError Integer Word) m) => Conversion (m Word) Integer where
   convert = convertBoundedFromIntegral
 
 instance (MonadError (BoundError Integer Word8) m) => Conversion (m Word8) Integer where
