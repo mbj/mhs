@@ -157,29 +157,29 @@ instance Conversion Scientific Integer where
 instance (MonadError (BoundError Integer Int) m) => Conversion (m Int) Integer where
   convert = convertBoundedFromIntegral
 
-instance (MonadError (BoundError Integer Word64) m) => Conversion (m Word64) Integer where
-  convert = convertBoundedFromIntegral
-
-instance (MonadError (BoundError Integer Word32) m) => Conversion (m Word32) Integer where
+instance (MonadError (BoundError Integer Word8) m) => Conversion (m Word8) Integer where
   convert = convertBoundedFromIntegral
 
 instance (MonadError (BoundError Integer Word16) m) => Conversion (m Word16) Integer where
   convert = convertBoundedFromIntegral
 
-instance (MonadError (BoundError Integer Word8) m) => Conversion (m Word8) Integer where
+instance (MonadError (BoundError Integer Word32) m) => Conversion (m Word32) Integer where
   convert = convertBoundedFromIntegral
 
-instance (MonadError (BoundError Int Word64) m) => Conversion (m Word64) Int where
-  convert = checkedFromIntegralToBounded
-
-instance (MonadError (BoundError Int Word32) m) => Conversion (m Word32) Int where
-  convert = checkedFromIntegralToBounded
-
-instance (MonadError (BoundError Int Word16) m) => Conversion (m Word16) Int where
+instance (MonadError (BoundError Integer Word64) m) => Conversion (m Word64) Integer where
   convert = convertBoundedFromIntegral
 
 instance (MonadError (BoundError Int Word8) m) => Conversion (m Word8) Int where
   convert = convertBoundedFromIntegral
+
+instance (MonadError (BoundError Int Word16) m) => Conversion (m Word16) Int where
+  convert = convertBoundedFromIntegral
+
+instance (MonadError (BoundError Int Word32) m) => Conversion (m Word32) Int where
+  convert = checkedFromIntegralToBounded
+
+instance (MonadError (BoundError Int Word64) m) => Conversion (m Word64) Int where
+  convert = checkedFromIntegralToBounded
 
 instance Conversion LBS.ByteString BS.ByteString where
   convert = LBS.fromStrict
