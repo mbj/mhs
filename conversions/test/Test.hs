@@ -5,7 +5,7 @@ module Main
   )
 where
 
-import System.IO (IO)
+import MPrelude
 
 import qualified Devtools
 

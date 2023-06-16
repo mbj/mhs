@@ -62,6 +62,7 @@ library
       base
     , bytestring
     , exceptions
+    , mprelude
     , mtl
     , scientific
     , template-haskell
@@ -111,6 +112,7 @@ test-suite test
     , conversions
     , devtools
     , exceptions
+    , mprelude
     , mtl
     , scientific
     , template-haskell
