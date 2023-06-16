@@ -3,7 +3,7 @@ _common/package: !include "../common/package.yaml"
 maintainer: Markus Schirp mbj@schirp-ds.com, Allan Lukwago <epicallan.al@gmail.com>
 name:       conversions
 synopsis:   Injective explicit total and partial conversions
-version:    0.0.9
+version:    0.0.10
 
 <<: *defaults
 
@@ -11,9 +11,13 @@ dependencies:
 - base
 - bytestring
 - exceptions
+- hedgehog
 - mprelude
 - mtl
+- mprelude
 - scientific
+- tasty
+- tasty-hedgehog
 - template-haskell
 - text
 
@@ -30,10 +34,12 @@ default-extensions:
 - KindSignatures
 - LambdaCase
 - MultiParamTypeClasses
+- NegativeLiterals
 - NoImplicitPrelude
 - OverloadedLists
 - OverloadedStrings
 - PolyKinds
+- RecordWildCards
 - ScopedTypeVariables
 - StrictData
 - TupleSections

@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           conversions
-version:        0.0.9
+version:        0.0.10
 synopsis:       Injective explicit total and partial conversions
 homepage:       https://github.com/mbj/mhs#readme
 bug-reports:    https://github.com/mbj/mhs/issues
@@ -30,6 +30,7 @@ library
   exposed-modules:
       Data.Conversions
       Data.Conversions.FromType
+      Data.Conversions.Hedgehog
   other-modules:
       Paths_conversions
   hs-source-dirs:
@@ -47,10 +48,12 @@ library
       KindSignatures
       LambdaCase
       MultiParamTypeClasses
+      NegativeLiterals
       NoImplicitPrelude
       OverloadedLists
       OverloadedStrings
       PolyKinds
+      RecordWildCards
       ScopedTypeVariables
       StrictData
       TupleSections
@@ -62,9 +65,12 @@ library
       base
     , bytestring
     , exceptions
+    , hedgehog
     , mprelude
     , mtl
     , scientific
+    , tasty
+    , tasty-hedgehog
     , template-haskell
     , text
   default-language: Haskell2010
@@ -79,6 +85,7 @@ test-suite test
   type: exitcode-stdio-1.0
   main-is: Test.hs
   other-modules:
+      Test.Data.Conversions.Integral
       Paths_conversions
   hs-source-dirs:
       test
@@ -95,10 +102,12 @@ test-suite test
       KindSignatures
       LambdaCase
       MultiParamTypeClasses
+      NegativeLiterals
       NoImplicitPrelude
       OverloadedLists
       OverloadedStrings
       PolyKinds
+      RecordWildCards
       ScopedTypeVariables
       StrictData
       TupleSections
@@ -112,9 +121,12 @@ test-suite test
     , conversions
     , devtools
     , exceptions
+    , hedgehog
     , mprelude
     , mtl
     , scientific
+    , tasty
+    , tasty-hedgehog
     , template-haskell
     , text
   default-language: Haskell2010
