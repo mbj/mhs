@@ -46,19 +46,19 @@ class Conversion b a where
   convert = coerce
 
 instance (MonadError (UserBoundError Int Natural) m) => Conversion (m Natural) Int where
-  convert = convertErrorFromIntegral
+  convert = convertErrorBounded
 
 instance (MonadError (UserBoundError Int8 Natural) m) => Conversion (m Natural) Int8 where
-  convert = convertErrorFromIntegral
+  convert = convertErrorBounded
 
 instance (MonadError (UserBoundError Int16 Natural) m) => Conversion (m Natural) Int16 where
-  convert = convertErrorFromIntegral
+  convert = convertErrorBounded
 
 instance (MonadError (UserBoundError Int32 Natural) m) => Conversion (m Natural) Int32 where
-  convert = convertErrorFromIntegral
+  convert = convertErrorBounded
 
 instance (MonadError (UserBoundError Int64 Natural) m) => Conversion (m Natural) Int64 where
-  convert = convertErrorFromIntegral
+  convert = convertErrorBounded
 
 instance (MonadError (UserBoundError Integer Text) m) => Conversion (m Natural) Integer where
   convert value = do
@@ -225,12 +225,12 @@ convertErrorFromNatural value =
   maybe (throwError $ UserBoundError value minBound maxBound) pure
     $ checkedFromIntegral value
 
-convertErrorFromIntegral
+convertErrorBounded
   :: forall a m
    . (Integral a, Bounded a, MonadError (UserBoundError a Natural) m)
   => a
   -> m Natural
-convertErrorFromIntegral value = do
+convertErrorBounded value = do
   when (value < 0) $ throwError userBoundError
 
   maybe (throwError userBoundError) pure
