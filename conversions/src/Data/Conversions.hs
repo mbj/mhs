@@ -3,7 +3,7 @@
 module Data.Conversions where
 
 import Control.Exception (Exception)
-import Control.Monad (MonadPlus(..))
+import Control.Monad (MonadPlus(..), when)
 import Control.Monad.Catch (MonadThrow, throwM)
 import Control.Monad.Except (MonadError, throwError)
 import Data.Coerce (Coercible)
@@ -61,8 +61,12 @@ instance (MonadError (UserBoundError Int64 Natural) m) => Conversion (m Natural)
   convert = convertErrorFromIntegral
 
 instance (MonadError (UserBoundError Integer Text) m) => Conversion (m Natural) Integer where
-  convert value = maybe (throwError $ UserBoundError value "0" "Natural") pure
-    $ checkedFromIntegral value
+  convert value = do
+    when (value < 0) $ throwError userBoundError
+
+    maybe (throwError userBoundError) pure $ checkedFromIntegral value
+    where
+      userBoundError = UserBoundError value "0" "Natural"
 
 instance (MonadError (UserBoundError Natural Int) m) => Conversion (m Int) Natural where
   convert = convertErrorFromNatural
