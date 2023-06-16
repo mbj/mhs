@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           conversions
-version:        0.0.9
+version:        0.0.10
 synopsis:       Injective explicit total and partial conversions
 homepage:       https://github.com/mbj/mhs#readme
 bug-reports:    https://github.com/mbj/mhs/issues
@@ -30,6 +30,7 @@ library
   exposed-modules:
       Data.Conversions
       Data.Conversions.FromType
+      Data.Conversions.Hedgehog
   other-modules:
       Paths_conversions
   hs-source-dirs:

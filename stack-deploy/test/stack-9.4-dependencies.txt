@@ -56,7 +56,7 @@ connection 0.3.1
 constraints 0.13.4
 containers 0.6.7
 contravariant 1.5.5
-conversions 0.0.9
+conversions 0.0.10
 cookie 0.4.6
 cpphs 1.20.9.1
 cryptohash-md5 0.11.101.0
