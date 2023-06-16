@@ -11,9 +11,13 @@ dependencies:
 - base
 - bytestring
 - exceptions
+- hedgehog
 - mprelude
 - mtl
+- mprelude
 - scientific
+- tasty
+- tasty-hedgehog
 - template-haskell
 - text
 

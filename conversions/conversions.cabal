@@ -47,10 +47,12 @@ library
       KindSignatures
       LambdaCase
       MultiParamTypeClasses
+      NegativeLiterals
       NoImplicitPrelude
       OverloadedLists
       OverloadedStrings
       PolyKinds
+      RecordWildCards
       ScopedTypeVariables
       StrictData
       TupleSections
@@ -62,9 +64,12 @@ library
       base
     , bytestring
     , exceptions
+    , hedgehog
     , mprelude
     , mtl
     , scientific
+    , tasty
+    , tasty-hedgehog
     , template-haskell
     , text
   default-language: Haskell2010
@@ -95,10 +100,12 @@ test-suite test
       KindSignatures
       LambdaCase
       MultiParamTypeClasses
+      NegativeLiterals
       NoImplicitPrelude
       OverloadedLists
       OverloadedStrings
       PolyKinds
+      RecordWildCards
       ScopedTypeVariables
       StrictData
       TupleSections
@@ -112,9 +119,12 @@ test-suite test
     , conversions
     , devtools
     , exceptions
+    , hedgehog
     , mprelude
     , mtl
     , scientific
+    , tasty
+    , tasty-hedgehog
     , template-haskell
     , text
   default-language: Haskell2010
