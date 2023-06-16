@@ -230,12 +230,17 @@ convertErrorFromIntegral
    . (Integral a, Bounded a, MonadError (UserBoundError a Natural) m)
   => a
   -> m Natural
-convertErrorFromIntegral value =
-  maybe (throwError $ UserBoundError value 0 maxBound') pure
+convertErrorFromIntegral value = do
+  when (value < 0) $ throwError userBoundError
+
+  maybe (throwError userBoundError) pure
     $ checkedFromIntegral value
  where
   maxBound' :: Natural
   maxBound' = fromIntegral $ maxBound @a
+
+  userBoundError :: UserBoundError a Natural
+  userBoundError = UserBoundError value 0 maxBound'
 
 convertBoundedFromIntegral
   :: forall a b m
