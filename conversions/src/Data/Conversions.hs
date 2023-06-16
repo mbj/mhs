@@ -143,6 +143,16 @@ instance Conversion Int Word16 where
 instance Conversion Int Word32 where
   convert = fromIntegral
 
+instance (MonadError (BoundError Word64 Int) m) => Conversion (m Int) Word64 where
+  convert value = do
+    when (value > convertImpure (maxBound @Int))
+      $ throwError error
+
+    maybe (throwError error) pure $ checkedFromIntegral value
+    where
+      error :: BoundError Word64 Int
+      error = BoundError value
+
 instance Conversion Natural Word where
   convert = fromIntegral
 
