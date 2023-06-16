@@ -183,7 +183,12 @@ instance (MonadError (BoundError Int Word32) m) => Conversion (m Word32) Int whe
   convert = checkedFromIntegralToBounded
 
 instance (MonadError (BoundError Int Word64) m) => Conversion (m Word64) Int where
-  convert = checkedFromIntegralToBounded
+  convert value = do
+    when (value < 0) $ throwError error
+
+    maybe (throwError error) pure $ checkedFromIntegral value
+      where
+        error = BoundError value
 
 instance Conversion LBS.ByteString BS.ByteString where
   convert = LBS.fromStrict
