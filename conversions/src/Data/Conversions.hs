@@ -160,7 +160,7 @@ instance (MonadError (BoundError Integer Int) m) => Conversion (m Int) Integer w
 instance (MonadError (BoundError Integer Word64) m) => Conversion (m Word64) Integer where
   convert = convertBoundedFromIntegral
 
-instance (MonadError (BoundError Integer Word32) m) => Conversion (m Word32)  Integer where
+instance (MonadError (BoundError Integer Word32) m) => Conversion (m Word32) Integer where
   convert = convertBoundedFromIntegral
 
 instance (MonadError (BoundError Integer Word16) m) => Conversion (m Word16) Integer where
