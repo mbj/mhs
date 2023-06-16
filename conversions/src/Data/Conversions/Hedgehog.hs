@@ -79,11 +79,11 @@ run BiConvert{..} Generators{failure = failure', ..}
             Success -> onSuccess $ toTarget source
             Failure -> onFailure $ toTarget source
             where
-              onFailure :: Either ConversionError target -> PropertyIO
-              onFailure = either (const (pure ())) mkError
-
               onSuccess :: Either ConversionError target -> PropertyIO
               onSuccess = either mkError (either mkError (const (pure ())) . fromTarget)
+
+              onFailure :: Either ConversionError target -> PropertyIO
+              onFailure = either (const (pure ())) mkError
 
               mkError :: Show a => a -> PropertyIO
               mkError value
@@ -98,7 +98,7 @@ run BiConvert{..} Generators{failure = failure', ..}
 mkConvertEither :: Show error => (a -> Either error b) -> (a -> Either ConversionError b)
 mkConvertEither f = left (ConversionError . show) . f
 
-typeName :: forall (a :: Type). Typeable a => String
+typeName :: forall (a :: Type) . Typeable a => String
 typeName
   = fromMaybe (Err.error "GHC error! invalid type name")
   . List.stripPrefix "Proxy * "
