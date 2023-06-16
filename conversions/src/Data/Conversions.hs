@@ -11,13 +11,14 @@ import Data.Int (Int, Int16, Int32, Int64, Int8)
 import Data.Scientific (Scientific)
 import Data.Typeable (Typeable)
 import Data.Word (Word, Word16, Word32, Word64, Word8)
-import GHC.Num (Integer, fromInteger)
+import GHC.Num (Integer)
 import GHC.Real (Integral, fromIntegral)
 import GHC.Stack (HasCallStack)
 import MPrelude
 
 import qualified Data.ByteString               as BS
 import qualified Data.ByteString.Lazy          as LBS
+import qualified Data.Scientific               as Scientific
 import qualified Data.Text                     as Text
 import qualified Data.Text.Lazy                as Text.Lazy
 import qualified GHC.Err                       as Err
@@ -169,7 +170,7 @@ instance Conversion Natural Word64 where
   convert = fromIntegral
 
 instance Conversion Scientific Integer where
-  convert = fromInteger . convert
+  convert = (`Scientific.scientific` 0)
 
 instance (MonadError (BoundError Integer Int) m) => Conversion (m Int) Integer where
   convert = convertBoundedFromIntegral
