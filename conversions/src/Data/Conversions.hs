@@ -237,14 +237,6 @@ convertErrorFromIntegral value =
   maxBound' :: Natural
   maxBound' = fromIntegral $ maxBound @a
 
-checkedFromIntegralToBounded
-  :: forall a b m
-   . (Integral a, Integral b, Bounded b, Show a, Show b, MonadError (BoundError a b) m)
-  => a
-  -> m b
-checkedFromIntegralToBounded value =
-  maybe (throwError $ BoundError value) pure $ checkedFromIntegral value
-
 convertBoundedFromIntegral
   :: forall a b m
    . ( Integral a
