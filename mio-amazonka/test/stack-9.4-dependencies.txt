@@ -27,7 +27,7 @@ base-compat 0.12.2
 base-compat-batteries 0.12.2
 base-orphans 0.9.0
 base64-bytestring 1.2.1.0
-basement 0.0.15
+basement 0.0.16
 bifunctors 5.5.15
 binary 0.8.9.1
 bitvec 1.1.4.0
@@ -184,5 +184,5 @@ x509-system 1.6.7
 x509-validation 1.6.12
 xml-conduit 1.9.1.2
 xml-types 0.3.8
-yaml 0.11.11.0
+yaml 0.11.11.1
 zlib 0.6.3.0

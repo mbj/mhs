@@ -18,7 +18,7 @@ base 4.17.1.0
 base-compat 0.12.2
 base-compat-batteries 0.12.2
 base-orphans 0.9.0
-basement 0.0.15
+basement 0.0.16
 bifunctors 5.5.15
 binary 0.8.9.1
 bitvec 1.1.4.0
@@ -149,7 +149,7 @@ typed-process 0.2.11.0
 unbounded-delays 0.1.1.1
 uniplate 1.6.13
 unix 2.7.3
-unliftio 0.2.24.0
+unliftio 0.2.25.0
 unliftio-core 0.2.1.0
 unordered-containers 0.2.19.1
 utf8-string 1.0.2
@@ -161,6 +161,6 @@ vector-algorithms 0.9.0.1
 vector-stream 0.1.0.0
 witherable 0.4.2
 wl-pprint-annotated 0.1.0.1
-yaml 0.11.11.0
+yaml 0.11.11.1
 zip-archive 0.4.3
 zlib 0.6.3.0
