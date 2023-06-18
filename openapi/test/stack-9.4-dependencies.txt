@@ -141,4 +141,4 @@ vector-algorithms 0.9.0.1
 vector-stream 0.1.0.0
 witherable 0.4.2
 wl-pprint-annotated 0.1.0.1
-yaml 0.11.11.0
+yaml 0.11.11.1
