@@ -2,7 +2,7 @@ resolver: lts-21.0
 extra-deps:
 - mprelude
 - github: brendanhay/amazonka
-  commit: 3e66cc1b07f2818d0b4fc346310ecdb1c3c27599
+  commit: ba38c7584463e301410b390895afd28a0211fa48
   subdirs:
   - lib/amazonka
   - lib/amazonka-core
