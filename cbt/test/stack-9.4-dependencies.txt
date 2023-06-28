@@ -38,7 +38,7 @@ conversions 0.0.10
 cpphs 1.20.9.1
 cryptohash-md5 0.11.101.0
 cryptohash-sha1 0.11.101.0
-crypton 0.31
+crypton 0.32
 data-default 0.7.1.1
 data-default-class 0.1.2.0
 data-default-instances-containers 0.0.1
@@ -71,7 +71,7 @@ ghc-lib-parser 9.4.5.20230430
 ghc-lib-parser-ex 9.4.0.0
 ghc-prim 0.9.0
 ghci 9.4.5
-happy 1.20.0
+happy 1.20.1.1
 hashable 1.4.2.0
 haskell-lexer 1.1.1
 hedgehog 1.2
