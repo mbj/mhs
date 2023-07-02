@@ -50,10 +50,10 @@ withDatabaseContainerProcessRun_ prefix proc =
   withDatabaseContainerProcess prefix proc Process.withProcessWait_ Process.checkExitCode
 
 populateDatabaseBuildDefinitionIfAbsent
-  :: (CBT.Env env, CBT.Image.IsName buildImageName, CBT.Image.IsName imageName)
+  :: (CBT.Env env, CBT.Image.IsName buildImageName, CBT.Image.IsName targetImageName)
   => CBT.Image.BuildDefinition buildImageName
   -> CBT.Container.Name
-  -> imageName
+  -> targetImageName
   -> (Postgresql.ClientConfig -> MIO env ())
   -> MIO env ()
 populateDatabaseBuildDefinitionIfAbsent buildDefinition containerName targetImageName action = do
