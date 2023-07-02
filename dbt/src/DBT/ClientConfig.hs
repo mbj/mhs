@@ -1,6 +1,6 @@
 {-# LANGUAGE TupleSections #-}
 
-module DBT.Postgresql
+module DBT.ClientConfig
   ( ClientConfig(..)
   , DatabaseName(..)
   , HostName(..)
@@ -17,7 +17,7 @@ module DBT.Postgresql
   )
 where
 
-import DBT.Postgresql.Prelude
+import DBT.Prelude
 import Data.Maybe (catMaybes)
 import Data.Word (Word16)
 import Text.Read (readMaybe)

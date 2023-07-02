@@ -28,12 +28,12 @@ flag development
 
 library
   exposed-modules:
-      DBT.Postgresql
-      DBT.Postgresql.Connection
-      DBT.Postgresql.Container
-      DBT.Postgresql.Container.CLI
-      DBT.Postgresql.Prelude
-      DBT.Postgresql.Wait
+      DBT.ClientConfig
+      DBT.Connection
+      DBT.Container
+      DBT.Container.CLI
+      DBT.Prelude
+      DBT.Wait
   other-modules:
       Paths_dbt
   hs-source-dirs:

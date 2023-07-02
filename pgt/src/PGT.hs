@@ -26,7 +26,7 @@ import Prelude ((-), div, succ)
 import System.Posix.Types (ProcessID)
 import UnliftIO.Exception (bracket)
 
-import qualified DBT.Postgresql             as Postgresql
+import qualified DBT.ClientConfig           as DBT
 import qualified Data.ByteString.Lazy       as LBS
 import qualified Data.Foldable              as Foldable
 import qualified Data.Text                  as Text
@@ -102,8 +102,8 @@ type Tests = Vector Test
 
 data Config = Config
   { pid       :: ProcessID
-  , psqlAdmin :: Postgresql.ClientConfig
-  , psqlUser  :: Postgresql.ClientConfig
+  , psqlAdmin :: DBT.ClientConfig
+  , psqlUser  :: DBT.ClientConfig
   }
   deriving stock Show
 
@@ -183,9 +183,9 @@ runTestSession
 runTestSession config runProcess test@Test{..} =
   withTestDatabase config test runSession
   where
-    runSession :: Postgresql.ClientConfig -> m a
+    runSession :: DBT.ClientConfig -> m a
     runSession psqlConfig = do
-      env  <- Postgresql.getEnv psqlConfig
+      env  <- DBT.getEnv psqlConfig
       body <- LBS.fromStrict . Text.encodeUtf8 <$> readFile path
 
       runProcess
@@ -203,16 +203,16 @@ runTestSession config runProcess test@Test{..} =
       , "ON_ERROR_STOP=1"
       ]
 
-withTestDatabase :: MonadUnliftIO m => Config -> Test -> (Postgresql.ClientConfig -> m a) -> m a
+withTestDatabase :: MonadUnliftIO m => Config -> Test -> (DBT.ClientConfig -> m a) -> m a
 withTestDatabase config@Config{..} test action =
   bracket
     (createTestDatabase config test)
     (dropDatabase psqlAdmin)
-    (\testDatabase -> action $ psqlUser { Postgresql.databaseName = testDatabase })
+    (\testDatabase -> action $ psqlUser { DBT.databaseName = testDatabase })
 
-createTestDatabase :: MonadIO m => Config -> Test -> m Postgresql.DatabaseName
+createTestDatabase :: MonadIO m => Config -> Test -> m DBT.DatabaseName
 createTestDatabase Config{..} Test{..} = do
-  env <- Postgresql.getEnv psqlAdmin
+  env <- DBT.getEnv psqlAdmin
   Process.runProcess_ $ Process.setEnv env command
   pure testDatabase
   where
@@ -227,7 +227,7 @@ createTestDatabase Config{..} Test{..} = do
       ]
 
     testDatabase =
-      Postgresql.DatabaseName $
+      DBT.DatabaseName $
         Text.intercalate
           "_"
           [ convertText masterDatabase
@@ -235,15 +235,15 @@ createTestDatabase Config{..} Test{..} = do
           , convertText $ show id
           ]
 
-dropDatabase :: MonadIO m => Postgresql.ClientConfig -> Postgresql.DatabaseName -> m ()
+dropDatabase :: MonadIO m => DBT.ClientConfig -> DBT.DatabaseName -> m ()
 dropDatabase config databaseName = do
-  env <- Postgresql.getEnv config
+  env <- DBT.getEnv config
   Process.runProcess_ . Process.setEnv env $ Process.proc "dropdb" ["--", convertText databaseName]
 
 configure
   :: MonadIO m
-  => Postgresql.ClientConfig
-  -> Maybe Postgresql.ClientConfig
+  => DBT.ClientConfig
+  -> Maybe DBT.ClientConfig
   -> m Config
 configure psqlAdmin psqlUser = do
   pid          <- liftIO Process.getProcessID
@@ -255,18 +255,18 @@ configure psqlAdmin psqlUser = do
 
 fromEnv :: forall m . MonadIO m => m Config
 fromEnv = do
-  databaseName <- Postgresql.DatabaseName <$> lookup "PGDATABASE"
-  hostName     <- Postgresql.HostName     <$> lookup "PGHOST"
-  pgtUser      <- Postgresql.UserName     <$> lookup "PGTUSER"
-  userName     <- Postgresql.UserName     <$> lookup "PGUSER"
+  databaseName <- DBT.DatabaseName <$> lookup "PGDATABASE"
+  hostName     <- DBT.HostName     <$> lookup "PGHOST"
+  pgtUser      <- DBT.UserName     <$> lookup "PGTUSER"
+  userName     <- DBT.UserName     <$> lookup "PGUSER"
 
-  sslMode      <- pure . Postgresql.SSLMode      <$> lookup "PGSSLMODE"
-  sslRootCert  <- pure . Postgresql.SSLRootCert  <$> lookup "PGSSLROOTCERT"
+  sslMode      <- pure . DBT.SSLMode      <$> lookup "PGSSLMODE"
+  sslRootCert  <- pure . DBT.SSLRootCert  <$> lookup "PGSSLROOTCERT"
 
-  hostPort     <- pure <$> (Postgresql.parseHostPort =<< lookup "PGPORT")
+  hostPort     <- pure <$> (DBT.parseHostPort =<< lookup "PGPORT")
 
-  let psqlAdmin = Postgresql.ClientConfig{password = empty, ..}
-      psqlUser  = psqlAdmin { Postgresql.userName = pgtUser }
+  let psqlAdmin = DBT.ClientConfig{password = empty, ..}
+      psqlUser  = psqlAdmin { DBT.userName = pgtUser }
 
   configure psqlAdmin $ pure psqlUser
   where

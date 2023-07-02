@@ -7,8 +7,8 @@ import Prelude (error)
 
 import qualified CBT
 import qualified CBT.Container
-import qualified DBT.Postgresql           as Postgresql
-import qualified DBT.Postgresql.Container as DBT
+import qualified DBT.ClientConfig         as DBT
+import qualified DBT.Container            as DBT
 import qualified Data.Text.IO             as Text
 import qualified Devtools
 import qualified PGT
@@ -33,7 +33,7 @@ main = do
   CBT.runDefaultEnvironment $ do
     containerName <- CBT.Container.nextName $ CBT.Container.Prefix "pgt"
     DBT.withDatabaseContainerDefault containerName $ \pgConfig -> do
-      let adminConfig = pgConfig { Postgresql.databaseName = Postgresql.DatabaseName "template1" }
+      let adminConfig = pgConfig { DBT.databaseName = DBT.DatabaseName "template1" }
       liftIO $ setupSchema adminConfig
       config         <- PGT.configure adminConfig empty
       outputTestTree <-
@@ -55,9 +55,9 @@ main = do
           , testSharding
           ] <> outputTestTree
 
-setupSchema :: Postgresql.ClientConfig -> IO ()
+setupSchema :: DBT.ClientConfig -> IO ()
 setupSchema pgConfig = do
-  env  <- Postgresql.getEnv pgConfig
+  env  <- DBT.getEnv pgConfig
 
   Process.runProcess_
     . Process.setEnv env

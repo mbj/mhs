@@ -1,17 +1,13 @@
-module DBT.Postgresql.Connection
-  ( Env
-  , runSession
-  , runSessionEither
-  , withConnection
+module DBT.Connection
+  ( withConnection
   , withConnectionEither
   , withConnectionSession
   )
 where
 
-import Control.Monad.Reader (asks)
-import DBT.Postgresql.Prelude
+import DBT.ClientConfig
+import DBT.Prelude
 
-import qualified DBT.Postgresql     as Postgresql
 import qualified Data.ByteString    as BS
 import qualified Data.Maybe         as Maybe
 import qualified Data.Text          as Text
@@ -20,23 +16,15 @@ import qualified Hasql.Connection   as Hasql
 import qualified Hasql.Session      as Hasql
 import qualified UnliftIO.Exception as Exception
 
-type Env env = HasField "hasqlConnection" env Hasql.Connection
-
 withConnection
-  :: Postgresql.ClientConfig
+  :: ClientConfig
   -> (Hasql.Connection -> MIO env a)
   -> MIO env a
 withConnection config =
   either (Exception.throwString . show) pure <=< withConnectionEither config
 
-runSession :: Env env => Hasql.Session a -> MIO env a
-runSession = either Exception.throwIO pure <=< runSessionEither
-
-runSessionEither :: Env env => Hasql.Session a -> MIO env (Either Hasql.QueryError a)
-runSessionEither session = liftIO . Hasql.run session =<< asks (.hasqlConnection)
-
 withConnectionEither
-  :: forall a env . Postgresql.ClientConfig
+  :: forall a env . ClientConfig
   -> (Hasql.Connection -> MIO env a)
   -> MIO env (Either Hasql.ConnectionError a)
 withConnectionEither config action = do
@@ -51,19 +39,19 @@ withConnectionEither config action = do
 
 withConnectionSession
   :: forall a env . ()
-  => Postgresql.ClientConfig
+  => ClientConfig
   -> Hasql.Session a
   -> MIO env a
 withConnectionSession config session
   = withConnection config
   $ either Exception.throwIO pure <=< (liftIO . Hasql.run session)
 
-settings :: Postgresql.ClientConfig -> Hasql.Settings
-settings config@Postgresql.ClientConfig{..}
+settings :: ClientConfig -> Hasql.Settings
+settings config@ClientConfig{..}
   = render
   [ required "dbname"   databaseName
   , required "host"     hostName
-  , required "port"     (Postgresql.effectiveHostPort config)
+  , required "port"     (effectiveHostPort config)
   , required "user"     userName
   , optional "password" password
   , optional "sslmode"  sslMode

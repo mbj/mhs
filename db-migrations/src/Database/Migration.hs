@@ -32,11 +32,11 @@ import Hasql.TH (resultlessStatement, uncheckedSql, vectorStatement)
 import Prelude (error)
 import System.Path ((<.>), (</>))
 import Text.Read (readMaybe)
-import UnliftIO.Exception (throwString)
+import UnliftIO.Exception (throwIO, throwString)
 
 import qualified Crypto.Hash                as Hash
-import qualified DBT.Postgresql             as Postgresql
-import qualified DBT.Postgresql.Connection  as Connection
+import qualified DBT.ClientConfig           as DBT
+import qualified DBT.Connection             as DBT
 import qualified Data.ByteArray             as BA
 import qualified Data.ByteString            as BS
 import qualified Data.ByteString.Lazy       as LBS
@@ -53,14 +53,15 @@ import qualified System.Process.Typed       as Process
 
 type Digest = Hash.Digest Hash.SHA3_256
 
-type WithClientConfig env = forall a . (Postgresql.ClientConfig -> MIO env a) -> MIO env a
+type WithClientConfig env = forall a . (DBT.ClientConfig -> MIO env a) -> MIO env a
 
 type RunPGDump env = [Text] -> MIO env LBS.ByteString
 
-type Env env
-  = ( HasField "migrationDir" env Path.RelDir
-    , HasField "schemaFile"   env Path.RelFile
-    )
+type Env env =
+  ( HasField "hasqlConnection" env Hasql.Connection
+  , HasField "migrationDir"    env Path.RelDir
+  , HasField "schemaFile"      env Path.RelFile
+  )
 
 data AppliedMigration = AppliedMigration
   { digest :: Digest
@@ -87,7 +88,7 @@ data ConnectionEnv = ConnectionEnv
   , schemaFile      :: Path.RelFile
   }
 
-dryApply :: (Env env, Connection.Env env) => MIO env ()
+dryApply :: Env env => MIO env ()
 dryApply = do
   files <- getNewMigrations
 
@@ -95,7 +96,7 @@ dryApply = do
     then printStatus ("No new migrations to apply" :: Text)
     else Foldable.traverse_ printMigrationFile files
 
-status :: (Env env, Connection.Env env) => MIO env ()
+status :: Env env => MIO env ()
 status = do
   applied <- readAppliedMigrations
 
@@ -105,9 +106,9 @@ status = do
 
   Foldable.traverse_ printMigrationFile . newMigrations applied =<< readMigrationFiles
 
-localPGDump :: [Text] -> Postgresql.ClientConfig -> MIO env LBS.ByteString
+localPGDump :: [Text] -> DBT.ClientConfig -> MIO env LBS.ByteString
 localPGDump arguments clientConfig =  do
-  env <- Postgresql.getEnv clientConfig
+  env <- DBT.getEnv clientConfig
   Process.readProcessStdout_
     . Process.setEnv env
     $ Process.proc "pg_dump" (convert <$> arguments)
@@ -120,21 +121,21 @@ dumpSchema DynamicConfig{..} = do
   migrations <- runPGDump ["--data-only", "--inserts", "--table=schema_migrations"]
   liftIO $ LBS.writeFile schemaFileString $ schema <> migrations
 
-loadSchema :: (Env env, Connection.Env env) => MIO env ()
+loadSchema :: Env env => MIO env ()
 loadSchema = do
   schemaFileString <- getSchemaFileString
   printStatus $ "Loading schema from " <> schemaFileString
-  Connection.runSession $ Transaction.transaction
+  runSession $ Transaction.transaction
     Transaction.Serializable
     Transaction.Write . Transaction.sql =<< liftIO (BS.readFile schemaFileString)
 
-apply :: (Env env, Connection.Env env) => MIO env ()
+apply :: Env env => MIO env ()
 apply = do
   migrations <- getNewMigrations
   printStatus $ "Applying " <> show (Foldable.length migrations) <> " pending migrations"
   Foldable.traverse_ applyMigration migrations
 
-new :: (Env env, Connection.Env env) => MIO env ()
+new :: Env env => MIO env ()
 new = do
   applied       <- max . fmap appliedIndex <$> readAppliedMigrations
   files         <- max . fmap fileIndex    <$> readMigrationFiles
@@ -153,8 +154,8 @@ new = do
     max :: (Foldable t, Num a, Ord a) => t a -> a
     max xs = if Foldable.null xs then 0 else Foldable.maximum xs
 
-setup :: Connection.Env env => MIO env ()
-setup = Connection.runSession $ Hasql.sql
+setup :: Env env => MIO env ()
+setup = runSession $ Hasql.sql
   [uncheckedSql|
     CREATE TABLE IF NOT EXISTS
       schema_migrations
@@ -167,10 +168,10 @@ setup = Connection.runSession $ Hasql.sql
 printMigrationFile :: MigrationFile -> MIO env ()
 printMigrationFile MigrationFile{..} = printStatus $ Path.toString path
 
-applyMigration :: Connection.Env env => MigrationFile -> MIO env ()
+applyMigration :: Env env => MigrationFile -> MIO env ()
 applyMigration MigrationFile{..} = do
   printStatus $ "Applying migration: " <> Path.toString path
-  Connection.runSession . Transaction.transaction Transaction.Serializable Transaction.Write $ do
+  runSession . Transaction.transaction Transaction.Serializable Transaction.Write $ do
     Transaction.sql sql
 
     Transaction.statement (BS.pack $ BA.unpack digest, convertImpure index)
@@ -184,8 +185,8 @@ applyMigration MigrationFile{..} = do
 
   printStatus ("Success" :: Text)
 
-readAppliedMigrations :: Connection.Env env => MIO env [AppliedMigration]
-readAppliedMigrations = Connection.runSession $ do
+readAppliedMigrations :: Env env => MIO env [AppliedMigration]
+readAppliedMigrations = runSession $ do
   rows <- Foldable.toList <$> Hasql.statement ()
     [vectorStatement|
       SELECT
@@ -238,7 +239,7 @@ readMigrationFiles = do
 getMigrationDir :: Env env => MIO env Path.RelDir
 getMigrationDir = asks (.migrationDir)
 
-getNewMigrations :: (Env env, Connection.Env env) => MIO env [MigrationFile]
+getNewMigrations :: Env env => MIO env [MigrationFile]
 getNewMigrations = newMigrations <$> readAppliedMigrations <*> readMigrationFiles
 
 appliedIndex :: AppliedMigration -> Natural
@@ -264,14 +265,14 @@ printStatus = liftIO . Text.putStrLn . convert
 
 withConnectionEnv
   :: Env env
-  => Postgresql.ClientConfig
+  => DBT.ClientConfig
   -> MIO ConnectionEnv a
   -> MIO env a
 withConnectionEnv clientConfig action' = do
   migrationDir <- asks (.migrationDir)
   schemaFile   <- asks (.schemaFile)
 
-  Connection.withConnection clientConfig $ \hasqlConnection ->
+  DBT.withConnection clientConfig $ \hasqlConnection ->
     runMIO ConnectionEnv{..} action'
 
 withDynamicConnectionEnv
@@ -297,3 +298,9 @@ applyDump
 applyDump dynamicConfig = do
   withDynamicConnectionEnv dynamicConfig apply
   dumpSchema dynamicConfig
+
+runSession :: Env env => Hasql.Session a -> MIO env a
+runSession = either throwIO pure <=< runSessionEither
+
+runSessionEither :: Env env => Hasql.Session a -> MIO env (Either Hasql.QueryError a)
+runSessionEither session = liftIO . Hasql.run session =<< asks (.hasqlConnection)
