@@ -77,7 +77,7 @@ data MigrationFile = MigrationFile
 
 
 data DynamicConfig env = DynamicConfig
-  { runPGDump  :: RunPGDump env
+  { runPGDump        :: RunPGDump env
   , withClientConfig :: WithClientConfig env
   }
 
@@ -104,7 +104,6 @@ status = do
   Foldable.traverse_ (printStatus . show) applied
 
   Foldable.traverse_ printMigrationFile . newMigrations applied =<< readMigrationFiles
-
 
 localPGDump :: [Text] -> Postgresql.ClientConfig -> MIO env LBS.ByteString
 localPGDump arguments clientConfig =  do
@@ -235,7 +234,6 @@ readMigrationFiles = do
         { digest = Hash.hash sql
         , ..
         }
-
 
 getMigrationDir :: Env env => MIO env Path.RelDir
 getMigrationDir = asks (.migrationDir)
