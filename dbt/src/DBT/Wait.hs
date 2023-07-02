@@ -1,21 +1,21 @@
 {-# LANGUAGE RankNTypes #-}
 
-module DBT.Postgresql.Wait (Config(..), wait) where
+module DBT.Wait (Config(..), wait) where
 
 import Control.Concurrent (threadDelay)
-import DBT.Postgresql.Connection
-import DBT.Postgresql.Prelude
+import DBT.ClientConfig
+import DBT.Connection
+import DBT.Prelude
 import Data.Int (Int)
 import GHC.Enum (succ)
 import GHC.Real (fromIntegral)
 import UnliftIO.Exception (throwString)
 
-import qualified DBT.Postgresql   as Postgresql
 import qualified Hasql.Connection as Hasql
 import qualified MIO.Log          as Log
 
 data Config env = Config
-  { clientConfig :: Postgresql.ClientConfig
+  { clientConfig :: ClientConfig
   , maxAttempts  :: Natural
   , onFail       :: MIO env ()
   , prefix       :: String

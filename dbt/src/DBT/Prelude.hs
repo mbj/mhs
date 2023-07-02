@@ -1,4 +1,4 @@
-module DBT.Postgresql.Prelude (module Exports) where
+module DBT.Prelude (module Exports) where
 
 import Data.Conversions as Exports
 import GHC.Records      as Exports (HasField, getField)

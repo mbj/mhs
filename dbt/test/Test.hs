@@ -4,14 +4,14 @@ import MPrelude
 
 import qualified CBT
 import qualified CBT.Container
-import qualified DBT.Postgresql           as Postgresql
-import qualified DBT.Postgresql.Container as DBT
-import qualified Data.ByteString.Lazy     as LBS
-import qualified Data.Text.Encoding       as Text
+import qualified DBT.ClientConfig     as DBT
+import qualified DBT.Container        as DBT
+import qualified Data.ByteString.Lazy as LBS
+import qualified Data.Text.Encoding   as Text
 import qualified Devtools
-import qualified System.Process.Typed     as Process
-import qualified Test.Tasty               as Tasty
-import qualified Test.Tasty.MGolden       as Tasty
+import qualified System.Process.Typed as Process
+import qualified Test.Tasty           as Tasty
+import qualified Test.Tasty.MGolden   as Tasty
 
 main :: IO ()
 main = do
@@ -23,10 +23,10 @@ main = do
         , testDB clientConfig
         ]
 
-testDB :: Postgresql.ClientConfig -> Tasty.TestTree
+testDB :: DBT.ClientConfig -> Tasty.TestTree
 testDB clientConfig
   = Tasty.goldenTest "postgresql" "test/postgresql.expected" $ do
-    env <- Postgresql.getEnv clientConfig
+    env <- DBT.getEnv clientConfig
     readText
       . Process.setEnv env
       $ Process.proc "psql" ["--no-psqlrc", "--command", "SELECT 1"]
