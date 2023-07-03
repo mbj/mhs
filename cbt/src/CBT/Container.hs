@@ -301,8 +301,8 @@ runReadStdout containerDefinition = do
 execReadStdout
   :: Env env
   => Exec
-  -> MIO env BS.ByteString
-execReadStdout = fmap convert . readProcessStdout_ <=< execProc
+  -> MIO env LBS.ByteString
+execReadStdout = readProcessStdout_ <=< execProc
 
 readFile
   :: Env env
