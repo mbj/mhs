@@ -11,11 +11,16 @@ dependencies:
 - bytestring
 - cbt
 - containers           >= 0.6
+- control-bool
 - conversions
+- crypton
 - hasql                >= 1.4
-- mprelude
-- mio-log
+- hasql-th
+- hasql-transaction
+- memory
 - mio-core
+- mio-log
+- mprelude
 - mtl                  >= 2.2
 - network
 - optparse-applicative >= 0.15

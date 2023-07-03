@@ -39,7 +39,6 @@ jobs:
         project:
         - cbt
         - conversions
-        - db-migrations
         - dbt
         - devtools
         - http-mclient
