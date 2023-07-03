@@ -139,7 +139,7 @@ random 1.2.1.1
 refact 0.3.0.2
 resourcet 1.2.6
 rts 1.0.2
-safe-exceptions 0.1.7.3
+safe-exceptions 0.1.7.4
 scientific 0.3.7.0
 selective 0.7
 semialign 1.3
