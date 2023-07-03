@@ -1,5 +1,3 @@
-{-# LANGUAGE TupleSections #-}
-
 module DBT.ClientConfig
   ( ClientConfig(..)
   , DatabaseName(..)

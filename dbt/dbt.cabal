@@ -32,6 +32,8 @@ library
       DBT.Connection
       DBT.Container
       DBT.Container.CLI
+      DBT.Migration
+      DBT.Migration.CLI
       DBT.Prelude
       DBT.Wait
   other-modules:
@@ -72,8 +74,13 @@ library
     , bytestring
     , cbt
     , containers >=0.6
+    , control-bool
     , conversions
+    , crypton
     , hasql >=1.4
+    , hasql-th
+    , hasql-transaction
+    , memory
     , mio-core
     , mio-log
     , mprelude
@@ -136,9 +143,14 @@ executable dbt
     , bytestring
     , cbt
     , containers >=0.6
+    , control-bool
     , conversions
+    , crypton
     , dbt
     , hasql >=1.4
+    , hasql-th
+    , hasql-transaction
+    , memory
     , mio-core
     , mio-log
     , mprelude
@@ -206,10 +218,15 @@ test-suite test
     , bytestring
     , cbt
     , containers >=0.6
+    , control-bool
     , conversions
+    , crypton
     , dbt
     , devtools
     , hasql >=1.4
+    , hasql-th
+    , hasql-transaction
+    , memory
     , mio-core
     , mio-log
     , mprelude
