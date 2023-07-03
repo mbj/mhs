@@ -36,23 +36,27 @@ data Name = Name
   , repository :: Repository
   , tag        :: Maybe Tag
   }
+  deriving stock (Eq, Show)
 
 data TaglessName = TaglessName
   { registry   :: Maybe Registry
   , repository :: Repository
   }
+  deriving stock (Eq, Show)
 
 data TaggedName = TaggedName
   { registry   :: Maybe Registry
   , repository :: Repository
   , tag        :: Tag
   }
+  deriving stock (Eq, Show)
 
 data QualifiedName = QualifiedName
   { registry   :: Registry
   , repository :: Repository
   , tag        :: Tag
   }
+  deriving stock (Eq, Show)
 
 instance Conversion Text Name where
   convert Name{..}
