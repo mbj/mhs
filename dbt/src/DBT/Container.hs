@@ -4,6 +4,7 @@ module DBT.Container
   , populateDatabaseBuildDefinition
   , populateDatabaseBuildDefinitionDefault
   , populateDatabaseBuildDefinitionIfAbsent
+  , readClientConfig
   , withDatabaseContainer
   , withDatabaseContainerDefault
   , withDatabaseContainerImage
@@ -25,6 +26,7 @@ import qualified CBT.TH
 import qualified DBT.Wait
 import qualified Data.Text                 as Text
 import qualified Data.Text.Encoding        as Text
+import qualified MIO.Log                   as Log
 import qualified System.Path               as Path
 import qualified System.Process.Typed      as Process
 
@@ -164,14 +166,20 @@ runAction
   -> (ClientConfig -> MIO env a)
   -> MIO env a
 runAction containerName action = do
-  hostPort <- getHostPort       containerName
-  password <- getMasterPassword containerName
+  Log.info $ "container name: " <> convert containerName
 
-  let config = mkClientConfig hostPort password
+  clientConfig <- readClientConfig containerName
 
-  waitForPort containerName config
+  waitForPort containerName clientConfig
 
-  action config
+  action clientConfig
+
+readClientConfig
+  :: CBT.Env env
+  => CBT.Container.Name
+  -> MIO env ClientConfig
+readClientConfig containerName =
+  mkClientConfig <$> getHostPort containerName <*> getMasterPassword containerName
 
 getHostPort
   :: forall env . CBT.Env env
