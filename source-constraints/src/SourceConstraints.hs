@@ -1,5 +1,4 @@
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE ViewPatterns     #-}
 
 module SourceConstraints (Context(..), plugin, warnings) where
 
@@ -65,7 +64,7 @@ run _options ModSummary{ms_location = ModLocation{..}} parsedResult@ParsedResult
   let sDocContext = initSDocContext dynFlags defaultUserStyle
       diagOpts    = initDiagOpts dynFlags
 
-  when (allowLocation ml_hs_file) . (emitWarnings diagOpts logger) $
+  when (allowLocation ml_hs_file) . emitWarnings diagOpts logger $
     warnings Context{..} (hpm_module parsedResultModule)
 
   pure parsedResult
