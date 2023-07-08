@@ -22,7 +22,7 @@ where
 
 import Data.Vector (Vector)
 import PGT.Prelude
-import Prelude ((-), div, succ)
+import PGT.Shard
 import System.Posix.Types (ProcessID)
 import UnliftIO.Exception (bracket)
 
@@ -42,54 +42,6 @@ import qualified Test.Tasty                 as Tasty
 import qualified Test.Tasty.MGolden         as Tasty.MGolden
 import qualified Test.Tasty.Options         as Tasty
 import qualified Test.Tasty.Runners         as Tasty.Runners
-
-newtype ShardCount = ShardCount Natural
-  deriving stock (Eq, Show)
-
-newtype ShardIndex = ShardIndex Natural
-  deriving stock (Eq, Show)
-
-defaultShardCount :: ShardCount
-defaultShardCount = ShardCount 1
-
-defaultShardIndex :: ShardIndex
-defaultShardIndex = ShardIndex 0
-
-parseShardCount :: Natural -> Either String ShardCount
-parseShardCount = \case
-  0 -> Left "Shard count cannot be 0"
-  n -> pure $ ShardCount n
-
-parseShardConfig :: ShardCount -> ShardIndex -> Either String ShardConfig
-parseShardConfig count@(ShardCount countValue) index@(ShardIndex indexValue) =
-  if indexValue >= countValue
-    then Left "Shard index ouside of shard count"
-    else pure ShardConfig{..}
-
-selectShard :: ShardConfig -> Vector a -> Vector a
-selectShard ShardConfig{count=(ShardCount count), index=(ShardIndex index)} items =
-    Vector.slice (convertImpure startIndex) (convertImpure effectiveChunkSize) items
-  where
-    nominalChunkSize :: Natural
-    nominalChunkSize = length `div` count
-
-    startIndex :: Natural
-    startIndex = index * nominalChunkSize
-
-    effectiveChunkSize :: Natural
-    effectiveChunkSize =
-      if succ index == count
-        then length - startIndex
-        else nominalChunkSize
-
-    length :: Natural
-    length = convertImpure $ Vector.length items
-
-data ShardConfig = ShardConfig
-  { count :: ShardCount
-  , index :: ShardIndex
-  }
-  deriving stock (Eq, Show)
 
 data Test = Test
   { id   :: Natural

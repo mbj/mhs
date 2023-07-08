@@ -57,6 +57,7 @@ library
       PGT.Output.Text
       PGT.Prelude
       PGT.Selector
+      PGT.Shard
   other-modules:
       Paths_pgt
   hs-source-dirs:
