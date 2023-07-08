@@ -28,7 +28,6 @@ import UnliftIO.Exception (bracket)
 
 import qualified DBT.ClientConfig           as DBT
 import qualified Data.ByteString.Lazy       as LBS
-import qualified Data.Foldable              as Foldable
 import qualified Data.Text                  as Text
 import qualified Data.Text.Encoding         as Text
 import qualified Data.Text.IO               as Text
@@ -107,18 +106,20 @@ data Config = Config
   }
   deriving stock Show
 
-runList :: forall m . (MonadIO m) => Config -> Tests -> m ()
-runList _config = traverse_ printTest
+runList :: forall m . (MonadIO m) => Config -> Tests -> m System.ExitCode
+runList _config tests = traverse_ printTest tests $> System.ExitSuccess
   where
     printTest :: Test -> m ()
     printTest Test{..} = liftIO . Text.putStrLn . convertText $ Path.toString path
 
-runExamples :: forall f m . (Foldable f, MonadUnliftIO m) => Config -> f Test -> m ()
-runExamples config = Foldable.mapM_ $ runTestSession config Process.runProcess_
+runExamples :: forall f m . (Foldable f, MonadUnliftIO m) => Config -> f Test -> m System.ExitCode
+runExamples config tests = do
+  traverse_ (runTestSession config Process.runProcess_) tests
+  pure System.ExitSuccess
 
 type PostProcess = Text -> Text
 
-runTasty :: MonadIO m => Tasty.OptionSet -> Config -> [Test] -> m ()
+runTasty :: MonadIO m => Tasty.OptionSet -> Config -> [Test] -> m System.ExitCode
 runTasty tastyOptions config tests = liftIO $ do
   Tasty.Runners.installSignalHandlers
   maybe failIngredients run
@@ -128,17 +129,17 @@ runTasty tastyOptions config tests = liftIO $ do
     failIngredients :: IO a
     failIngredients = fail "Internal failure running ingredients"
 
-    run :: IO Bool -> IO ()
+    run :: IO Bool -> IO System.ExitCode
     run action = do
       ok <- action
-      if ok
-        then System.exitSuccess
-        else System.exitFailure
+      pure $ if ok
+        then System.ExitSuccess
+        else System.ExitFailure 1
 
-runTests :: MonadIO m => Config -> Tests -> m ()
+runTests :: MonadIO m => Config -> Tests -> m System.ExitCode
 runTests config = runTasty mempty config . Vector.toList
 
-runUpdates :: MonadIO m => Config -> Tests -> m ()
+runUpdates :: MonadIO m => Config -> Tests -> m System.ExitCode
 runUpdates config
   = runTasty (Tasty.singleOption Tasty.MGolden.UpdateExpected) config
   . Vector.toList
