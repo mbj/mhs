@@ -6,7 +6,7 @@ cabal-version: 1.12
 
 name:           mio-core
 version:        0.0.1
-synopsis:       Minimal version of rio with the MIO core type.
+synopsis:       Minimal version of RIO pattern idea but using the MIO core type.
 homepage:       https://github.com/mbj/mhs#readme
 bug-reports:    https://github.com/mbj/mhs/issues
 author:         Markus Schirp

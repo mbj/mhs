@@ -1,6 +1,3 @@
--- | This module takes code from MIO.Prelude.MIO and reproduces it here
---  so that we can propose rio-core package to the rio team.
---
 {-# OPTIONS -Wno-noncanonical-monoid-instances #-}
 module MIO.Core
   ( MIO(..)
@@ -49,9 +46,9 @@ runMIO env (MIO (ReaderT f)) = liftIO (f env)
 --
 -- @since 0.0.1.0
 liftMIO :: (MonadIO m, MonadReader env m) => MIO env a -> m a
-liftMIO rio = do
+liftMIO action = do
   env <- ask
-  runMIO env rio
+  runMIO env action
 
 -- | Lift one MIO env to another.
 --

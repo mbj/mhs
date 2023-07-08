@@ -1,3 +1,3 @@
-# rio-core
+# mio-core
 
-Minimal version of rio with the MIO core type.
+Minimal version of mio with the MIO core type.
