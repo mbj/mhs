@@ -1,4 +1,3 @@
-{-# OPTIONS -Wno-noncanonical-monoid-instances #-}
 module MIO.Core
   ( MIO(..)
   , liftMIO
@@ -34,7 +33,6 @@ instance Semigroup a => Semigroup (MIO env a) where
 
 instance Monoid a => Monoid (MIO env a) where
   mempty  = pure mempty
-  mappend = liftA2 mappend
 
 -- | Using the environment run in IO the action that requires that environment.
 --
