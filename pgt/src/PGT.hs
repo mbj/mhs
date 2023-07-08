@@ -64,7 +64,7 @@ runList _config tests = traverse_ printTest tests $> System.ExitSuccess
     printTest :: Test -> m ()
     printTest Test{..} = liftIO . Text.putStrLn . convertText $ Path.toString path
 
-runExamples :: forall f m . (Foldable f, MonadUnliftIO m) => Config -> f Test -> m System.ExitCode
+runExamples :: MonadUnliftIO m => Config -> Vector Test -> m System.ExitCode
 runExamples config tests = do
   traverse_ (runTestSession config Process.runProcess_) tests
   pure System.ExitSuccess
