@@ -8,6 +8,7 @@ import PGT
 import PGT.Prelude
 import PGT.Selector
 
+import qualified Data.Vector         as Vector
 import qualified Options.Applicative as CLI
 import qualified System.Exit         as System
 import qualified System.IO           as IO
@@ -34,7 +35,7 @@ parserInfoCommand :: CLI.ParserInfo Command
 parserInfoCommand = wrapHelper subcommands
   where
     selector  = CLI.argument (Selector <$> CLI.eitherReader Path.parse) (CLI.metavar "SELECTOR")
-    selectors = many selector
+    selectors = Vector.fromList <$> many selector
 
     wrapHelper :: CLI.Parser a -> CLI.ParserInfo a
     wrapHelper parser = CLI.info (CLI.helper <*> parser) CLI.idm

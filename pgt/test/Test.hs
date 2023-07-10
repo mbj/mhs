@@ -21,60 +21,47 @@ import qualified PGT.Output.TestSuite
 import qualified PGT.Selector             as PGT
 import qualified System.Path              as Path
 import qualified System.Posix.Process     as Process
-import qualified System.Process.Typed     as Process
 import qualified Test.Tasty               as Tasty
 import qualified Test.Tasty.HUnit         as Tasty
 
 main :: IO ()
 main = do
   Text.putStrLn ""
-  success <- PGT.expand selectors
 
   CBT.runDefaultEnvironment $ do
     containerName <- CBT.Container.nextName $ CBT.Container.Prefix "pgt"
     DBT.withDatabaseContainerDefault containerName $ \pgConfig -> do
       let clientConfig = pgConfig { DBT.databaseName = DBT.DatabaseName "template1" }
-      liftIO $ setupSchema clientConfig
-      let pgtConfig = PGT.Config{..}
-      outputTestTree <-
-        liftIO
-          $ sequence
-          [ PGT.Output.Definition.testTree
-          , PGT.Output.Test.Comments.testTree
-          , PGT.Output.Test.QueryPlan.testTree
-          , PGT.Output.Test.Result.testTree
-          , PGT.Output.Test.testTree
-          , PGT.Output.TestSuite.testTree
-          , PGT.Output.testTree
-          ]
-
+      let pgtConfig = PGT.Config{setupFile = pure $ Path.file "test/setup.sql", ..}
       pgtPid <- liftIO Process.getProcessID
-      test   <- runMIO PGT.Environment{..} $ PGT.testTree identity success
+      runMIO PGT.Environment{..} $ do
+        PGT.withSetupDatabase $ \setupDatabase -> do
+          testExamples <- PGT.testTree setupDatabase identity =<< PGT.expand selectors
 
-      liftIO . Tasty.defaultMain .
-        Tasty.testGroup "" $
-          [ Devtools.testTree $$(Devtools.readDependencies [Devtools.Target "pgt"])
-          , test
-          , testSharding
-          ] <> outputTestTree
+          outputTestTree <-
+            liftIO
+              $ sequence
+              [ PGT.Output.Definition.testTree
+              , PGT.Output.Test.Comments.testTree
+              , PGT.Output.Test.QueryPlan.testTree
+              , PGT.Output.Test.Result.testTree
+              , PGT.Output.Test.testTree
+              , PGT.Output.TestSuite.testTree
+              , PGT.Output.testTree
+              ]
 
-setupSchema :: DBT.ClientConfig -> IO ()
-setupSchema pgConfig = do
-  env  <- DBT.getEnv pgConfig
-
-  Process.runProcess_
-    . Process.setEnv env
-    . Process.setStdin (Process.byteStringInput "CREATE TABLE test (id serial)")
-    $ Process.proc "psql" arguments
-
+          liftIO . Tasty.defaultMain .
+            Tasty.testGroup "" $
+              [ Devtools.testTree $$(Devtools.readDependencies [Devtools.Target "pgt"])
+              , testExamples
+              , testSharding
+              ] <> outputTestTree
   where
-    arguments :: [String]
-    arguments =
-      [ "--no-password"
-      , "--no-psqlrc"
-      , "--no-readline"
-      , "--quiet"
-      , "--set", "ON_ERROR_STOP=1"
+    selectors :: Vector PGT.Selector
+    selectors =
+      [ PGT.Selector $ Path.rel "examples/success.test.sql"
+      , PGT.Selector $ Path.rel "examples/write-1.test.sql"
+      , PGT.Selector $ Path.rel "examples/write-2.test.sql"
       ]
 
 testSharding :: Tasty.TestTree
@@ -109,10 +96,3 @@ testSharding = Tasty.testGroup "PGT.selectShard"
       $ PGT.parseShardConfig
         (either error identity $ PGT.parseShardCount 2)
         (PGT.ShardIndex index)
-
-selectors :: [PGT.Selector]
-selectors =
- [ PGT.Selector $ Path.rel "examples/success.test.sql"
- , PGT.Selector $ Path.rel "examples/write-1.test.sql"
- , PGT.Selector $ Path.rel "examples/write-2.test.sql"
- ]

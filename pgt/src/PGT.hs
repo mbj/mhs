@@ -19,6 +19,7 @@ module PGT
   , runUpdates
   , selectShard
   , testTree
+  , withSetupDatabase
   )
 where
 
@@ -27,7 +28,7 @@ import PGT.Selector
 import PGT.Shard
 import PGT.Test
 import System.Posix.Types (ProcessID)
-import UnliftIO.Exception (bracket)
+import UnliftIO.Exception (bracket_)
 
 import qualified DBT.ClientConfig     as DBT
 import qualified Data.ByteString.Lazy as LBS
@@ -53,19 +54,20 @@ data Environment = Environment
 
 type PostProcess = Text -> Text
 
-newtype Config = Config
+data Config = Config
   { clientConfig :: DBT.ClientConfig
+  , setupFile    :: Maybe Path.AbsRelFile
   }
   deriving stock Show
 
-data Command = Command (Tests -> MIO Environment System.ExitCode) ShardCount ShardIndex [Selector]
+data Command = Command (Tests -> MIO Environment System.ExitCode) ShardCount ShardIndex (Vector Selector)
 
 runCommand :: forall m . MonadUnliftIO m => Command -> Config -> m System.ExitCode
 runCommand (Command action shardCount shardIndex selectors) pgtConfig = do
   pgtPid <- liftIO Process.getProcessID
   runMIO Environment{..} $ do
     shardConfig <- either throwString pure $ parseShardConfig shardCount shardIndex
-    action . selectShard shardConfig . Vector.fromList =<< expand selectors
+    action . selectShard shardConfig =<< expand selectors
 
 runList :: Tests -> MIO Environment System.ExitCode
 runList tests = traverse_ printTest tests $> System.ExitSuccess
@@ -75,15 +77,17 @@ runList tests = traverse_ printTest tests $> System.ExitSuccess
 
 runExamples :: Vector Test -> MIO Environment System.ExitCode
 runExamples tests = do
-  traverse_ (runTestSession Process.runProcess_) tests
-  pure System.ExitSuccess
+  withSetupDatabase $ \setupDatabaseName -> do
+    traverse_ (runTestSession setupDatabaseName Process.runProcess_) tests
+    pure System.ExitSuccess
 
-runTasty :: Tasty.OptionSet -> [Test] -> MIO Environment System.ExitCode
+runTasty :: Tasty.OptionSet -> Tests -> MIO Environment System.ExitCode
 runTasty tastyOptions tests = do
-  liftIO Tasty.Runners.installSignalHandlers
-  maybe (liftIO failIngredients) (liftIO . run)
-    . Tasty.Runners.tryIngredients Tasty.defaultIngredients tastyOptions
-    =<< testTree PGT.impureParse tests
+  withSetupDatabase $ \setupDatabaseName -> do
+    liftIO Tasty.Runners.installSignalHandlers
+    maybe (liftIO failIngredients) (liftIO . run)
+      . Tasty.Runners.tryIngredients Tasty.defaultIngredients tastyOptions
+      =<< testTree setupDatabaseName PGT.impureParse tests
   where
     failIngredients :: IO a
     failIngredients = fail "Internal failure running ingredients"
@@ -96,32 +100,32 @@ runTasty tastyOptions tests = do
         else System.ExitFailure 1
 
 runTests :: Tests -> MIO Environment System.ExitCode
-runTests = runTasty mempty . Vector.toList
+runTests = runTasty mempty
 
 runUpdates :: Tests -> MIO Environment System.ExitCode
-runUpdates
-  = runTasty (Tasty.singleOption Tasty.MGolden.UpdateExpected)
-  . Vector.toList
+runUpdates = runTasty (Tasty.singleOption Tasty.MGolden.UpdateExpected)
 
-testTree :: PostProcess -> [Test] -> MIO Environment Tasty.TestTree
-testTree postProcess tests = Tasty.testGroup "pgt" <$> traverse (mkGolden postProcess) tests
+testTree :: DBT.DatabaseName -> PostProcess -> Tests -> MIO Environment Tasty.TestTree
+testTree setupDatabaseName postProcess tests = Tasty.testGroup "pgt" <$> traverse mkGolden (Vector.toList tests)
+  where
+    mkGolden :: Test -> MIO Environment Tasty.TestTree
+    mkGolden test@Test{..} = do
+      env <- ask
 
-mkGolden :: PostProcess -> Test -> MIO Environment Tasty.TestTree
-mkGolden postProcess test@Test{..} = do
-  env <- ask
-
-  pure $ Tasty.MGolden.goldenTest (Path.toString path) (Path.toString $ expectedFileName test)
-    $ runMIO env $ captureTest postProcess test
+      pure
+        $ Tasty.MGolden.goldenTest (Path.toString path) (Path.toString $ expectedFileName test)
+        $ runMIO env $ captureTest setupDatabaseName postProcess test
 
 expectedFileName :: Test -> Path.RelFile
 expectedFileName Test{..} = Path.addExtension path ".expected"
 
 captureTest
-  :: PostProcess
+  :: DBT.DatabaseName
+  -> PostProcess
   -> Test
   -> MIO Environment Text
-captureTest postProcess
-  = runTestSession
+captureTest setupDatabaseName postProcess
+  = runTestSession setupDatabaseName
   $ (postProcess . stripTrailing . Text.decodeUtf8 . LBS.toStrict <$>)
   . Process.readProcessInterleaved_
   where
@@ -133,88 +137,125 @@ captureTest postProcess
       . Text.lines
 
 runTestSession
-  :: forall a . (Process.ProcessConfig () () () -> MIO Environment a)
+  :: forall a . DBT.DatabaseName
+  -> (Process.ProcessConfig () () () -> MIO Environment a)
   -> Test
   -> MIO Environment a
-runTestSession runProcess test@Test{..} =
-  withTestDatabase test runTest
+runTestSession setupDatabaseName runProcess test@Test{..} = withTestDatabase setupDatabaseName test runTest
   where
     runTest :: DBT.ClientConfig -> MIO Environment a
     runTest psqlConfig = do
       env  <- DBT.getEnv psqlConfig
-      body <- LBS.fromStrict . Text.encodeUtf8 <$> readFile path
 
-      runProcess
-        . Process.setEnv env
-        . Process.setStdin (Process.byteStringInput body)
-        $ Process.proc "psql" arguments
+      runEnvProcess
+        runProcess
+        env
+        "psql"
+        [ "--echo-queries"
+        , "--file", Path.toString path
+        , "--no-password"
+        , "--no-psqlrc"
+        , "--no-readline"
+        , "--set", "ON_ERROR_STOP=1"
+        ]
 
-    arguments :: [String]
-    arguments =
-      [ "--echo-queries"
-      , "--no-password"
-      , "--no-psqlrc"
-      , "--no-readline"
-      , "--set"
-      , "ON_ERROR_STOP=1"
-      ]
+withSetupDatabase :: forall a . (DBT.DatabaseName -> MIO Environment a) -> MIO Environment a
+withSetupDatabase action = do
+  Config{..} <- asks (.pgtConfig)
+
+  maybe (action clientConfig.databaseName) setupDatabase setupFile
+  where
+    setupDatabase :: Path.AbsRelFile -> MIO Environment a
+    setupDatabase setupFile = do
+      clientConfig <- asks (.pgtConfig.clientConfig)
+      pid          <- asks (.pgtPid)
+
+      let setupDatabaseName = DBT.DatabaseName
+                            $ Text.intercalate "_"
+                            [ convert clientConfig.databaseName
+                            , convert $ show pid
+                            , "setup"
+                            ]
+
+      withDatabaseFromTemplate setupDatabaseName clientConfig.databaseName $ do
+        env <- DBT.getEnv clientConfig{DBT.databaseName = setupDatabaseName}
+
+        runEnvProcess
+          Process.runProcess_
+          env
+          "psql"
+          [ "--file", Path.toString setupFile
+          , "--no-password"
+          , "--no-psqlrc"
+          , "--no-readline"
+          , "--quiet"
+          , "--set", "ON_ERROR_STOP=1"
+          ]
+
+        action setupDatabaseName
+
 
 withTestDatabase
-  :: Test
+  :: DBT.DatabaseName
+  -> Test
   -> (DBT.ClientConfig -> MIO Environment a)
   -> MIO Environment a
-withTestDatabase test action = do
-  Config{..} <- asks (.pgtConfig)
-  bracket
-    (createTestDatabase test)
-    dropDatabase
-    (\testDatabase -> action clientConfig{DBT.databaseName = testDatabase})
-
-createTestDatabase :: Test -> MIO Environment DBT.DatabaseName
-createTestDatabase Test{..} = do
+withTestDatabase mainDatabaseName Test{..} action = do
   Config{..} <- asks (.pgtConfig)
   pid        <- asks (.pgtPid)
 
-  let mainDatabaseName = clientConfig.databaseName
-      testDatabaseName = DBT.DatabaseName
+  let testDatabaseName = DBT.DatabaseName
                        $ Text.intercalate "_"
                        [ convert mainDatabaseName
                        , convert $ show pid
                        , convert $ show id
                        ]
 
-  env <- DBT.getEnv clientConfig
+  withDatabaseFromTemplate testDatabaseName mainDatabaseName
+    (action clientConfig{DBT.databaseName = testDatabaseName})
 
-  Process.runProcess_
-    . Process.setEnv env
-    $ Process.proc "createdb"
-    [ "--template", convertText mainDatabaseName
-    , "--"
-    , convertText testDatabaseName
-    ]
+withDatabaseFromTemplate :: DBT.DatabaseName -> DBT.DatabaseName -> MIO Environment a -> MIO Environment a
+withDatabaseFromTemplate databaseName templateDatabaseName action =
+  withDBEnv =<< DBT.getEnv =<< asks (.pgtConfig.clientConfig)
+  where
+    withDBEnv env =
+      bracket_
+        (runEnvProcess
+          Process.runProcess_
+          env
+          "createdb"
+          [ "--template", convertText templateDatabaseName
+          , "--"
+          , convertText databaseName
+          ]
+        )
+        (runEnvProcess Process.runProcess_ env "dropdb" ["--", convertText databaseName])
+        action
 
-  pure testDatabaseName
-
-dropDatabase :: DBT.DatabaseName -> MIO Environment ()
-dropDatabase databaseName = do
-  env <- DBT.getEnv =<< asks (.pgtConfig.clientConfig)
-  Process.runProcess_ . Process.setEnv env $ Process.proc "dropdb" ["--", convertText databaseName]
+runEnvProcess
+  :: (Process.ProcessConfig () () () -> m a)
+  -> [(String, String)]
+  -> String
+  -> [String]
+  -> m a
+runEnvProcess runProcess env name arguments
+  = runProcess
+  . Process.setEnv env
+  $ Process.proc name arguments
 
 fromEnv :: forall m . MonadIO m => m Config
 fromEnv = do
-  databaseName <- DBT.DatabaseName <$> lookup "PGDATABASE"
-  hostName     <- DBT.HostName     <$> lookup "PGHOST"
-  userName     <- DBT.UserName     <$> lookup "PGUSER"
+  databaseName <- DBT.DatabaseName <$> readEnv "PGDATABASE"
+  hostName     <- DBT.HostName     <$> readEnv "PGHOST"
+  userName     <- DBT.UserName     <$> readEnv "PGUSER"
 
-  sslMode      <- pure . DBT.SSLMode      <$> lookup "PGSSLMODE"
-  sslRootCert  <- pure . DBT.SSLRootCert  <$> lookup "PGSSLROOTCERT"
+  sslMode      <- pure . DBT.SSLMode      <$> readEnv "PGSSLMODE"
+  sslRootCert  <- pure . DBT.SSLRootCert  <$> readEnv "PGSSLROOTCERT"
 
-  hostPort     <- pure <$> (DBT.parseHostPort =<< lookup "PGPORT")
+  hostPort     <- pure <$> (DBT.parseHostPort =<< readEnv "PGPORT")
+  setupFile    <- fmap (Path.file . convert) <$> liftIO (System.lookupEnv "PGTSETUP")
 
-  pure $ Config{clientConfig = DBT.ClientConfig{password = empty, ..}}
+  pure $ Config{clientConfig = DBT.ClientConfig{password = empty, ..}, ..}
   where
-    lookup :: String -> m Text
-    lookup = (convertText <$>) . liftIO . System.getEnv
-
-readFile :: MonadIO m => Path.RelFile -> m Text
-readFile = liftIO . Text.readFile . Path.toString
+    readEnv :: String -> m Text
+    readEnv = (convertText <$>) . liftIO . System.getEnv

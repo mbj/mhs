@@ -12,6 +12,6 @@ data Test = Test
   { id   :: Natural
   , path :: Path.RelFile
   }
-  deriving stock (Eq, Ord)
+  deriving stock (Eq, Ord, Show)
 
 type Tests = Vector Test
