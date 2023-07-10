@@ -146,13 +146,13 @@ runTestSession setupDatabaseName runProcess test@Test{..} = withTestDatabase set
     runTest :: DBT.ClientConfig -> MIO Environment a
     runTest psqlConfig = do
       env  <- DBT.getEnv psqlConfig
+      body <- liftIO $ LBS.readFile (Path.toString path)
 
       runEnvProcess
-        runProcess
+        (runProcess . Process.setStdin (Process.byteStringInput body))
         env
         "psql"
         [ "--echo-queries"
-        , "--file", Path.toString path
         , "--no-password"
         , "--no-psqlrc"
         , "--no-readline"
