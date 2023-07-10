@@ -1,8 +1,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 import Control.Monad (sequence)
-import Data.Vector (Vector)
-import MPrelude
+import PGT.Prelude
 import Prelude (error)
 
 import qualified CBT
@@ -21,6 +20,7 @@ import qualified PGT.Output.Test.Result
 import qualified PGT.Output.TestSuite
 import qualified PGT.Selector             as PGT
 import qualified System.Path              as Path
+import qualified System.Posix.Process     as Process
 import qualified System.Process.Typed     as Process
 import qualified Test.Tasty               as Tasty
 import qualified Test.Tasty.HUnit         as Tasty
@@ -33,9 +33,9 @@ main = do
   CBT.runDefaultEnvironment $ do
     containerName <- CBT.Container.nextName $ CBT.Container.Prefix "pgt"
     DBT.withDatabaseContainerDefault containerName $ \pgConfig -> do
-      let adminConfig = pgConfig { DBT.databaseName = DBT.DatabaseName "template1" }
-      liftIO $ setupSchema adminConfig
-      config         <- PGT.configure adminConfig empty
+      let clientConfig = pgConfig { DBT.databaseName = DBT.DatabaseName "template1" }
+      liftIO $ setupSchema clientConfig
+      let pgtConfig = PGT.Config{..}
       outputTestTree <-
         liftIO
           $ sequence
@@ -48,10 +48,13 @@ main = do
           , PGT.Output.testTree
           ]
 
+      pgtPid <- liftIO Process.getProcessID
+      test   <- runMIO PGT.Environment{..} $ PGT.testTree identity success
+
       liftIO . Tasty.defaultMain .
         Tasty.testGroup "" $
           [ Devtools.testTree $$(Devtools.readDependencies [Devtools.Target "pgt"])
-          , PGT.testTree identity config success
+          , test
           , testSharding
           ] <> outputTestTree
 

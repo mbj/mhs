@@ -10,7 +10,6 @@ where
 import Data.Attoparsec.Text (Parser)
 import Data.List.NonEmpty (NonEmpty(..))
 import Data.Scientific (Scientific)
-import Data.Vector (Vector)
 import PGT.Output.Render
 import PGT.Output.Text
 import PGT.Prelude

@@ -10,7 +10,6 @@ module PGT.Shard
   )
 where
 
-import Data.Vector (Vector)
 import PGT.Prelude
 import Prelude ((-), div, succ)
 
