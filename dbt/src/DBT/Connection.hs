@@ -17,21 +17,23 @@ import qualified Hasql.Session      as Hasql
 import qualified UnliftIO.Exception as Exception
 
 withConnection
-  :: ClientConfig
-  -> (Hasql.Connection -> MIO env a)
-  -> MIO env a
+  :: MonadUnliftIO m
+  => ClientConfig
+  -> (Hasql.Connection -> m a)
+  -> m a
 withConnection config =
   either (Exception.throwString . show) pure <=< withConnectionEither config
 
 withConnectionEither
-  :: forall a env . ClientConfig
-  -> (Hasql.Connection -> MIO env a)
-  -> MIO env (Either Hasql.ConnectionError a)
+  :: forall m a . MonadUnliftIO m
+  => ClientConfig
+  -> (Hasql.Connection -> m a)
+  -> m (Either Hasql.ConnectionError a)
 withConnectionEither config action = do
   (liftIO . Hasql.acquire $ settings config)
      >>= either (pure . Left) (fmap Right . handleAction)
   where
-    handleAction :: Hasql.Connection -> MIO env a
+    handleAction :: Hasql.Connection -> m a
     handleAction connection =
       Exception.finally
         (action connection)
