@@ -1,7 +1,7 @@
 _common/package: !include "../common/package.yaml"
 
 name:       mio-core
-synopsis:   Minimal version of rio with the MIO core type.
+synopsis:   Minimal version of RIO pattern idea but using the MIO core type.
 homepage:   https://github.com/mbj/mhs#readme
 maintainer: Markus Schirp mbj@schirp-dso.com, Allan Lukwago <epicallan.al@gmail.com>
 version:    0.0.1

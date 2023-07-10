@@ -3,14 +3,14 @@
 module PGT.Selector (Selector(..), expand) where
 
 import Data.Set.Ordered (OSet, (|<>))
-import Data.Traversable (Traversable)
-import PGT
 import PGT.Prelude
+import PGT.Test
 import System.Path ((</>))
 
 import qualified Data.Foldable         as Foldable
 import qualified Data.List             as List
 import qualified Data.Set.Ordered      as OSet
+import qualified Data.Vector           as Vector
 import qualified System.Path           as Path
 import qualified System.Path.Directory as Path
 import qualified System.Posix.Files    as FS
@@ -18,16 +18,16 @@ import qualified System.Posix.Files    as FS
 newtype Selector = Selector Path.RelFileDir
 
 expand
-  :: (MonadFail m, MonadIO m, Traversable t)
-  => t Selector
-  -> m [Test]
-expand = fmap (makeTests . Foldable.toList . flatten) . traverse expandSelector
+  :: MonadIO m
+  => Vector Selector
+  -> m Tests
+expand = fmap (makeTests . Vector.fromList . Foldable.toList . flatten) . traverse expandSelector
   where
-    makeTests :: [Path.RelFile] -> [Test]
-    makeTests files = (\(id, path) -> Test{..}) <$> List.zip [0..] files
+    makeTests :: Vector Path.RelFile -> Tests
+    makeTests files = (\(id, path) -> Test{id = convertImpure id, ..}) <$> Vector.indexed files
 
 expandSelector
-  :: forall m . (MonadFail m, MonadIO m)
+  :: forall m . MonadIO m
   => Selector
   -> m (OSet Path.RelFile)
 expandSelector (Selector path) = expandStatus =<< liftIO (FS.getFileStatus stringPath)
@@ -36,7 +36,7 @@ expandSelector (Selector path) = expandStatus =<< liftIO (FS.getFileStatus strin
     expandStatus status
       | FS.isRegularFile status = pure . expandRegular $ Path.relFile stringPath
       | FS.isDirectory status   = expandDirectory $ Path.relDir stringPath
-      | otherwise               = fail $ "Path: " <> stringPath <> " is not a regular file or directory"
+      | otherwise               = throwString $ "Path: " <> stringPath <> " is not a regular file or directory"
 
     stringPath = Path.toString path
 

@@ -1,7 +1,7 @@
 {-# LANGUAGE ApplicativeDo             #-}
 {-# LANGUAGE ExistentialQuantification #-}
 
-module PGT.CLI (Command, parserInfo, run, runCommand) where
+module PGT.CLI (Command, parserInfo, parserInfoCommand, run, runCommand) where
 
 import Control.Applicative (Alternative(many))
 import PGT
@@ -10,28 +10,32 @@ import PGT.Selector
 
 import qualified Data.Vector         as Vector
 import qualified Options.Applicative as CLI
+import qualified System.Exit         as System
 import qualified System.IO           as IO
 import qualified System.Path         as Path
 
-data Command = Command (Config -> Tests -> IO ()) ShardCount ShardIndex [Selector]
-
-run :: forall m . MonadIO m => [String] -> m ()
+run :: forall m . MonadUnliftIO m => [String] -> m System.ExitCode
 run arguments = liftIO $ do
   IO.hSetBuffering IO.stdout IO.LineBuffering
   command <- CLI.handleParseResult $
-    CLI.execParserPure CLI.defaultPrefs parserInfo arguments
+    CLI.execParserPure CLI.defaultPrefs parserInfoCommand arguments
   runCommand command =<< fromEnv
 
-runCommand :: forall m . MonadIO m => Command -> Config -> m ()
-runCommand (Command action shardCount shardIndex selectors) config = liftIO $ do
-  shardConfig <- either fail pure $ parseShardConfig shardCount shardIndex
-  action config . selectShard shardConfig . Vector.fromList =<< expand selectors
+parserInfo
+  :: forall m . MonadUnliftIO m
+  => ((Config -> m System.ExitCode)
+  -> m System.ExitCode)
+  -> CLI.ParserInfo (m System.ExitCode)
+parserInfo withConfig = run' <$> parserInfoCommand
+  where
+    run' :: Command -> m System.ExitCode
+    run' command = withConfig $ runCommand command
 
-parserInfo :: CLI.ParserInfo Command
-parserInfo = wrapHelper subcommands
+parserInfoCommand :: CLI.ParserInfo Command
+parserInfoCommand = wrapHelper subcommands
   where
     selector  = CLI.argument (Selector <$> CLI.eitherReader Path.parse) (CLI.metavar "SELECTOR")
-    selectors = many selector
+    selectors = Vector.fromList <$> many selector
 
     wrapHelper :: CLI.Parser a -> CLI.ParserInfo a
     wrapHelper parser = CLI.info (CLI.helper <*> parser) CLI.idm
@@ -45,10 +49,10 @@ parserInfo = wrapHelper subcommands
 
     mkCommand
       :: String
-      -> (Config -> Tests -> IO ())
+      -> (Tests -> MIO Environment System.ExitCode)
       -> CLI.Mod CLI.CommandFields Command
-    mkCommand name action =
-      CLI.command name $ wrapHelper (Command action <$> shardCountOption <*> shardIndexOption <*> selectors)
+    mkCommand name action
+      = CLI.command name $ wrapHelper (Command action <$> shardCountOption <*> shardIndexOption <*> selectors)
 
 shardIndexOption :: CLI.Parser ShardIndex
 shardIndexOption = CLI.option (ShardIndex <$> CLI.auto)
