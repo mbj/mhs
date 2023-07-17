@@ -231,14 +231,14 @@ readMigrationFiles = do
         fmap pure . readMigration file =<< parseIndex file
 
     isMigrationFile :: Path.RelFile -> Bool
-    isMigrationFile = (== ".sql") . Path.takeExtension
+    isMigrationFile = (== ".sql") . Path.takeExtensions
 
     parseIndex :: Path.RelFile -> MIO env Natural
     parseIndex file =
       maybe
         (throwString $ "Invalid migration file name: " <> Path.toString file)
         pure
-        (readMaybe . Path.toString $ Path.dropExtension file)
+        (readMaybe . Path.toString $ Path.dropExtensions file)
 
     readMigration :: Path.RelFile -> Natural -> MIO env MigrationFile
     readMigration path index = do
