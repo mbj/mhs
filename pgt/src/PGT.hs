@@ -36,7 +36,6 @@ import qualified Data.Text            as Text
 import qualified Data.Text.Encoding   as Text
 import qualified Data.Text.IO         as Text
 import qualified Data.Vector          as Vector
-import qualified PGT.Output           as PGT
 import qualified System.Environment   as System
 import qualified System.Exit          as System
 import qualified System.Path          as Path
@@ -81,13 +80,13 @@ runExamples tests = do
     traverse_ (runTestSession setupDatabaseName Process.runProcess_) tests
     pure System.ExitSuccess
 
-runTasty :: Tasty.OptionSet -> Tests -> MIO Environment System.ExitCode
-runTasty tastyOptions tests = do
+runTasty :: PostProcess -> Tasty.OptionSet -> Tests -> MIO Environment System.ExitCode
+runTasty postProcess tastyOptions tests = do
   withSetupDatabase $ \setupDatabaseName -> do
     liftIO Tasty.Runners.installSignalHandlers
     maybe (liftIO failIngredients) (liftIO . run)
       . Tasty.Runners.tryIngredients Tasty.defaultIngredients tastyOptions
-      =<< testTree setupDatabaseName PGT.impureParse tests
+      =<< testTree setupDatabaseName postProcess tests
   where
     failIngredients :: IO a
     failIngredients = fail "Internal failure running ingredients"
@@ -99,11 +98,11 @@ runTasty tastyOptions tests = do
         then System.ExitSuccess
         else System.ExitFailure 1
 
-runTests :: Tests -> MIO Environment System.ExitCode
-runTests = runTasty mempty
+runTests :: PostProcess -> Tests -> MIO Environment System.ExitCode
+runTests postProcess = runTasty postProcess mempty
 
-runUpdates :: Tests -> MIO Environment System.ExitCode
-runUpdates = runTasty (Tasty.singleOption Tasty.MGolden.UpdateExpected)
+runUpdates :: PostProcess -> Tests -> MIO Environment System.ExitCode
+runUpdates postProcess = runTasty postProcess (Tasty.singleOption Tasty.MGolden.UpdateExpected)
 
 testTree :: DBT.DatabaseName -> PostProcess -> Tests -> MIO Environment Tasty.TestTree
 testTree setupDatabaseName postProcess tests = Tasty.testGroup "pgt" <$> traverse mkGolden (Vector.toList tests)

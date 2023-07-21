@@ -10,6 +10,7 @@ import PGT.Selector
 
 import qualified Data.Vector         as Vector
 import qualified Options.Applicative as CLI
+import qualified PGT.Output          as PGT
 import qualified System.Exit         as System
 import qualified System.IO           as IO
 import qualified System.Path         as Path
@@ -44,8 +45,8 @@ parserInfoCommand = wrapHelper subcommands
       CLI.subparser
         $  mkCommand "list"   runList
         <> mkCommand "run"    runExamples
-        <> mkCommand "test"   runTests
-        <> mkCommand "update" runUpdates
+        <> mkCommand "test"   (runTests PGT.impureParse)
+        <> mkCommand "update" (runUpdates PGT.impureParse)
 
     mkCommand
       :: String
