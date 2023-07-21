@@ -43,10 +43,12 @@ parserInfoCommand = wrapHelper subcommands
 
     subcommands =
       CLI.subparser
-        $  mkCommand "list"   runList
-        <> mkCommand "run"    runExamples
-        <> mkCommand "test"   (runTests PGT.impureParse)
-        <> mkCommand "update" (runUpdates PGT.impureParse)
+        $  mkCommand "list"           runList
+        <> mkCommand "run"            runExamples
+        <> mkCommand "test"           (runTests PGT.impureParse)
+        <> mkCommand "test-no-lint"   (runTests identity)
+        <> mkCommand "update"         (runUpdates PGT.impureParse)
+        <> mkCommand "update-no-lint" (runUpdates identity)
 
     mkCommand
       :: String
