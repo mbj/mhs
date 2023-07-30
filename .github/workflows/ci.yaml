@@ -37,6 +37,7 @@ jobs:
         ghc: ['9.4']
         os:  [ubuntu-latest]
         project:
+        - aws-checkip
         - cbt
         - conversions
         - dbt
