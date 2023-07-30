@@ -1,15 +1,12 @@
 resolver: lts-21.3
 extra-deps:
+- amazonka-2.0
+- amazonka-cloudformation-2.0
+- amazonka-core-2.0
+- amazonka-s3-2.0
+- amazonka-sso-2.0
+- amazonka-sts-2.0
 - mprelude
-- github: brendanhay/amazonka
-  commit: 59d4ec96a7116d44455cfce0bd398e0e014d1894
-  subdirs:
-  - lib/amazonka
-  - lib/amazonka-core
-  - lib/services/amazonka-cloudformation
-  - lib/services/amazonka-s3
-  - lib/services/amazonka-sso
-  - lib/services/amazonka-sts
 - github: mbj/stratosphere
   commit: 7c462f2de4369a76df22d4b34b2f3a9e7754c731
   subdirs:
