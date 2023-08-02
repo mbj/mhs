@@ -80,7 +80,7 @@ instance Conversion Text TaggedName where
 instance Conversion Text QualifiedName where
   convert = convert . toName
 
-class (SetTag a, SetRegistry a) => IsName a where
+class (SetTag a, SetRegistry a, Show a) => IsName a where
   toName :: a -> Name
 
   nameString :: a -> String

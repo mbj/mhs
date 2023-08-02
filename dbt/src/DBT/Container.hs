@@ -8,6 +8,7 @@ module DBT.Container
   , withDatabaseContainer
   , withDatabaseContainerDefault
   , withDatabaseContainerImage
+  , withDatabaseContainerImageModifyDefinition
   , withDatabaseContainerProcess
   , withDatabaseContainerProcessRun_
   )
@@ -95,6 +96,7 @@ populateDatabase baseImageName containerName targetImageName
   where
     containerDefinition' = (containerDefinition baseImageName containerName)
       { CBT.Container.stopRemove = CBT.Container.StopNoRemove
+      , CBT.Container.pull       = pure CBT.Container.PullNever
       }
 
 populate
@@ -142,12 +144,25 @@ withDatabaseContainerImage
   -> (ClientConfig -> MIO env a)
   -> MIO env a
 withDatabaseContainerImage containerName targetImageName
+  = withDatabaseContainerImageModifyDefinition containerName targetImageName identity
+
+withDatabaseContainerImageModifyDefinition
+  :: forall env imageName a . (CBT.Env env, CBT.Image.IsName imageName)
+  => CBT.Container.Name
+  -> imageName
+  -> (CBT.Container.Definition imageName -> CBT.Container.Definition imageName)
+  -> (ClientConfig -> MIO env a)
+  -> MIO env a
+withDatabaseContainerImageModifyDefinition containerName targetImageName modify
   = CBT.Container.withRun containerDefinition'
   . runAction containerName
   where
     containerDefinition' :: CBT.Container.Definition imageName
-    containerDefinition' = setImageName
-      (containerDefinition defaultBuildDefinition.imageName containerName) targetImageName
+    containerDefinition'
+      = modify
+      $ setImageName
+        (containerDefinition defaultBuildDefinition.imageName containerName)
+        targetImageName
 
 setImageName
   :: CBT.Image.IsName imageName

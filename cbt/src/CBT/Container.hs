@@ -1,4 +1,5 @@
-{-# LANGUAGE GADTs #-}
+{-# LANGUAGE GADTs              #-}
+{-# LANGUAGE StandaloneDeriving #-}
 
 module CBT.Container
   ( Definition(..)
@@ -11,6 +12,7 @@ module CBT.Container
   , Port(..)
   , Prefix(..)
   , PublishPort(..)
+  , Pull(..)
   , StopRemove(..)
   , buildRun
   , commit
@@ -56,6 +58,7 @@ data PublishPort = PublishPort
   { container :: Port
   , host      :: Maybe Port
   }
+  deriving stock Show
 
 newtype Port = Port Word16
   deriving newtype (Conversion Word16)
@@ -70,8 +73,11 @@ data Status = Running | Absent
 instance Conversion Text Status where
   convert = convertText . show
 
-data Detach     = Detach | Foreground
+data Detach = Detach | Foreground
+  deriving stock Show
+
 data StopRemove = StopRemove | StopNoRemove
+  deriving stock Show
 
 newtype Name = Name Text
   deriving newtype (Conversion Text)
@@ -81,13 +87,19 @@ data Mount = Mount
   { containerPath :: Path.AbsDir
   , hostPath      :: Path.AbsDir
   }
+  deriving stock Show
 
 data Entrypoint = Entrypoint
   { arguments :: [Text]
   , name      :: Text
   }
+  deriving stock Show
 
 data EnvVariable = EnvInherit Text | EnvSet Text Text
+  deriving stock Show
+
+data Pull = PullAlways | PullMissing | PullNever
+  deriving stock Show
 
 data Definition imageName where
   Definition
@@ -100,11 +112,14 @@ data Definition imageName where
        , mounts                :: [Mount]
        , name                  :: Name
        , publishPorts          :: [PublishPort]
+       , pull                  :: Maybe Pull
        , stopRemove            :: StopRemove
        , stopRemoveOnRunFail   :: StopRemove
        , workDir               :: Maybe Path.AbsDir
        }
     -> Definition name
+
+deriving stock instance Show (Definition imageName)
 
 newtype ContainerRunFailure = ContainerRunFailure Name
 
@@ -127,6 +142,7 @@ minimalDefinition imageName name
   , extraBackendArguments = []
   , mounts                = []
   , publishPorts          = []
+  , pull                  = empty
   , stopRemove            = StopRemove
   , stopRemoveOnRunFail   = StopRemove
   , workDir               = empty
@@ -180,6 +196,7 @@ runProc Definition{..} = detachSilence <$> backendProc backendArguments
       , envOptions env
       , mountOptions
       , publishOptions
+      , pullOptions
       , maybe [] workDirOptions workDir
       , removeFlag
       , convert <$> extraBackendArguments
@@ -217,6 +234,16 @@ runProc Definition{..} = detachSilence <$> backendProc backendArguments
         removeFlag = case stopRemove of
           StopRemove   -> ["--rm"]
           StopNoRemove -> []
+
+        pullOptions :: [String]
+        pullOptions =
+          maybe [] (("--pull":) . pure . mkOption) pull
+          where
+            mkOption :: Pull -> String
+            mkOption = \case
+              PullAlways  -> "always"
+              PullMissing -> "missing"
+              PullNever   -> "never"
 
         commandArguments :: [String]
         commandArguments =
