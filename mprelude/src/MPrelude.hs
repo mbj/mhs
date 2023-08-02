@@ -118,6 +118,11 @@ import Data.Tuple as Exports
   ( uncurry
   )
 
+import GHC.Records as Exports
+  ( HasField
+  , getField
+  )
+
 import GHC.Enum as Exports
   ( Bounded
   , Enum

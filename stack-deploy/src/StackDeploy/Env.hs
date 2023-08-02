@@ -1,6 +1,5 @@
 module StackDeploy.Env (Config(..), Env, defaultConfig) where
 
-import GHC.Records (HasField)
 import StackDeploy.Prelude
 
 import qualified Amazonka.S3.Types as S3

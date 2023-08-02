@@ -79,7 +79,7 @@ mio-log 0.0.3
 mmorph 1.2.0
 monad-control 1.0.3.1
 mono-traversable 1.0.15.3
-mprelude 0.2.1
+mprelude 0.2.2
 mtl 2.2.2
 old-locale 1.0.0.7
 optparse-applicative 0.17.1.0

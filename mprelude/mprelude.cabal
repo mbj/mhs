@@ -5,7 +5,7 @@ cabal-version: 1.18
 -- see: https://github.com/sol/hpack
 
 name:           mprelude
-version:        0.2.1
+version:        0.2.2
 synopsis:       A minimalish prelude.
 description:    Prelude extracted from observing NoImplicitPrelude using
                 projects by https://github.com/mbj.

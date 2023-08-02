@@ -19,7 +19,6 @@ import Control.Monad.Reader (asks)
 import Data.Conversions
 import Data.Function
 import GHC.Exception (Exception, displayException)
-import GHC.Records (HasField)
 import MIO.Core
 import MIO.Log.Formatter
 import MIO.Log.Types

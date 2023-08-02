@@ -26,7 +26,6 @@ where
 import Control.Arrow (left)
 import Control.Monad.Reader (asks)
 import Data.Conversions (Conversion(..), toText)
-import GHC.Records (HasField(..))
 import MIO.Core
 import MPrelude
 
