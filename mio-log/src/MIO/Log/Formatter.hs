@@ -6,7 +6,6 @@ module MIO.Log.Formatter where
 import Data.Conversions
 import Data.Function
 import Data.List.NonEmpty (NonEmpty((:|)))
-import GHC.Records (HasField, getField)
 import MIO.Log.Types
 import MPrelude
 

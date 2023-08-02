@@ -5,7 +5,6 @@ import Control.Monad.Reader (asks)
 import Data.Conversions (convert, convertImpure)
 import Data.Word (Word16, Word8)
 import GHC.Enum (succ)
-import GHC.Records (HasField(..))
 import MIO.Core
 import MPrelude
 import Test.Tasty

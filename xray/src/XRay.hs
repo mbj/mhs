@@ -3,7 +3,6 @@
 module XRay where
 
 import Control.Monad.Reader (asks)
-import GHC.Records (HasField)
 import MIO.Core
 import System.Random (randomIO)
 import XRay.Config

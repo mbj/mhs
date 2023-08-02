@@ -10,7 +10,6 @@ import Control.Monad.Reader as Exports (ask, asks)
 import Data.Char            as Exports (Char)
 import Data.Conversions     as Exports
 import Data.Vector          as Exports (Vector)
-import GHC.Records          as Exports (HasField)
 import MIO.Core             as Exports
 import MPrelude             as Exports
 import UnliftIO.Exception   as Exports (throwIO, throwString)
