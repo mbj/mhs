@@ -12,6 +12,7 @@ module CBT.Container
   , Port(..)
   , Prefix(..)
   , PublishPort(..)
+  , Pull(..)
   , StopRemove(..)
   , buildRun
   , commit
@@ -97,6 +98,9 @@ data Entrypoint = Entrypoint
 data EnvVariable = EnvInherit Text | EnvSet Text Text
   deriving stock Show
 
+data Pull = PullAlways | PullMissing | PullNever
+  deriving stock Show
+
 data Definition imageName where
   Definition
     :: CBT.Image.IsName imageName
@@ -108,6 +112,7 @@ data Definition imageName where
        , mounts                :: [Mount]
        , name                  :: Name
        , publishPorts          :: [PublishPort]
+       , pull                  :: Maybe Pull
        , stopRemove            :: StopRemove
        , stopRemoveOnRunFail   :: StopRemove
        , workDir               :: Maybe Path.AbsDir
@@ -137,6 +142,7 @@ minimalDefinition imageName name
   , extraBackendArguments = []
   , mounts                = []
   , publishPorts          = []
+  , pull                  = empty
   , stopRemove            = StopRemove
   , stopRemoveOnRunFail   = StopRemove
   , workDir               = empty
@@ -190,6 +196,7 @@ runProc Definition{..} = detachSilence <$> backendProc backendArguments
       , envOptions env
       , mountOptions
       , publishOptions
+      , pullOptions
       , maybe [] workDirOptions workDir
       , removeFlag
       , convert <$> extraBackendArguments
@@ -227,6 +234,16 @@ runProc Definition{..} = detachSilence <$> backendProc backendArguments
         removeFlag = case stopRemove of
           StopRemove   -> ["--rm"]
           StopNoRemove -> []
+
+        pullOptions :: [String]
+        pullOptions =
+          maybe [] (("--pull":) . pure . mkOption) pull
+          where
+            mkOption :: Pull -> String
+            mkOption = \case
+              PullAlways  -> "always"
+              PullMissing -> "missing"
+              PullNever   -> "never"
 
         commandArguments :: [String]
         commandArguments =
