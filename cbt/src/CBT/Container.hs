@@ -1,4 +1,5 @@
-{-# LANGUAGE GADTs #-}
+{-# LANGUAGE GADTs              #-}
+{-# LANGUAGE StandaloneDeriving #-}
 
 module CBT.Container
   ( Definition(..)
@@ -56,6 +57,7 @@ data PublishPort = PublishPort
   { container :: Port
   , host      :: Maybe Port
   }
+  deriving stock Show
 
 newtype Port = Port Word16
   deriving newtype (Conversion Word16)
@@ -70,8 +72,11 @@ data Status = Running | Absent
 instance Conversion Text Status where
   convert = convertText . show
 
-data Detach     = Detach | Foreground
+data Detach = Detach | Foreground
+  deriving stock Show
+
 data StopRemove = StopRemove | StopNoRemove
+  deriving stock Show
 
 newtype Name = Name Text
   deriving newtype (Conversion Text)
@@ -81,13 +86,16 @@ data Mount = Mount
   { containerPath :: Path.AbsDir
   , hostPath      :: Path.AbsDir
   }
+  deriving stock Show
 
 data Entrypoint = Entrypoint
   { arguments :: [Text]
   , name      :: Text
   }
+  deriving stock Show
 
 data EnvVariable = EnvInherit Text | EnvSet Text Text
+  deriving stock Show
 
 data Definition imageName where
   Definition
@@ -105,6 +113,8 @@ data Definition imageName where
        , workDir               :: Maybe Path.AbsDir
        }
     -> Definition name
+
+deriving stock instance Show (Definition imageName)
 
 newtype ContainerRunFailure = ContainerRunFailure Name
 
