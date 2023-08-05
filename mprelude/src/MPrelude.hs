@@ -123,6 +123,10 @@ import GHC.Records as Exports
   , getField
   )
 
+import GHC.Stack as Exports
+  ( HasCallStack
+  )
+
 import GHC.Enum as Exports
   ( Bounded
   , Enum

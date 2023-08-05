@@ -92,7 +92,7 @@ mio-core 0.0.1
 mmorph 1.2.0
 monad-control 1.0.3.1
 mono-traversable 1.0.15.3
-mprelude 0.2.2
+mprelude 0.2.3
 mtl 2.2.2
 network 3.1.4.0
 network-uri 2.6.4.2
