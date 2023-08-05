@@ -16,6 +16,7 @@ module Network.HTTP.MClient
   , decodeStatus
   , decodeStatuses
   , defaultTransaction
+  , mkManagerSendRequest
   , send
   , send'
   , sendRequest
@@ -62,6 +63,9 @@ data Transaction a = Transaction
   , shouldRetry :: ResponseError             -> Bool
   , retryPolicy :: Retry.RetryPolicy
   }
+
+mkManagerSendRequest :: HTTP.Manager -> SendRequest
+mkManagerSendRequest manager request = HTTP.httpLbs request manager
 
 decodeStatus
   :: HTTP.Status
