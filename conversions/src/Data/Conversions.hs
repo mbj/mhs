@@ -13,7 +13,6 @@ import Data.Typeable (Typeable)
 import Data.Word (Word, Word16, Word32, Word64, Word8)
 import GHC.Num (Integer)
 import GHC.Real (Integral, fromIntegral)
-import GHC.Stack (HasCallStack)
 import MPrelude
 
 import qualified Data.ByteString               as BS

@@ -110,7 +110,7 @@ mime-types 0.1.1.0
 mio-amazonka 0.0.2
 mio-core 0.0.1
 mono-traversable 1.0.15.3
-mprelude 0.2.2
+mprelude 0.2.3
 mtl 2.2.2
 mtl-compat 0.2.2
 network 3.1.4.0
