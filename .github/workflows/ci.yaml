@@ -39,6 +39,7 @@ jobs:
         project:
         - aws-checkip
         - cbt
+        - bounded
         - conversions
         - dbt
         - devtools
