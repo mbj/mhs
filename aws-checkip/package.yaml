@@ -1,0 +1,31 @@
+_common/package: !include "../common/package.yaml"
+
+name:    aws-checkip
+version: 0.0.1
+
+<<: *defaults
+
+dependencies:
+- base
+- bytestring
+- data-textual
+- exceptions
+- http-client
+- http-client-tls
+- http-mclient
+- http-types
+- mio-core
+- mprelude
+- network-ip
+- text
+- unliftio
+
+tests:
+  test:
+    <<: *test
+    dependencies:
+    - aws-checkip
+    - devtools
+    - mio-log
+    - tasty
+    - tasty-hunit
