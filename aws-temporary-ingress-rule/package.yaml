@@ -1,0 +1,38 @@
+_common/package: !include "../common/package.yaml"
+
+name:    aws-temporary-ingress-rule
+version: 0.0.1
+
+<<: *defaults
+
+dependencies:
+- amazonka
+- amazonka-cloudformation
+- amazonka-ec2
+- aws-checkip
+- base
+- cli-utils
+- conduit
+- conversions
+- http-mclient
+- lens
+- mio-amazonka
+- mio-core
+- mio-log
+- mprelude
+- network-ip
+- optparse-applicative
+- stack-deploy
+- stratosphere
+- text
+- time
+- unliftio
+
+tests:
+  test:
+    <<: *test
+    dependencies:
+    - aws-temporary-ingress-rule
+    - devtools
+    - tasty
+    - tasty-hunit

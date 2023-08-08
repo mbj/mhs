@@ -1,0 +1,163 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.35.2.
+--
+-- see: https://github.com/sol/hpack
+
+name:           aws-temporary-ingress-rule
+version:        0.0.1
+homepage:       https://github.com/mbj/mhs#readme
+bug-reports:    https://github.com/mbj/mhs/issues
+author:         Markus Schirp
+maintainer:     mbj@schirp-dso.com
+copyright:      2023 Markus Schirp
+license:        BSD3
+build-type:     Simple
+tested-with:
+    GHC == 9.4
+
+source-repository head
+  type: git
+  location: https://github.com/mbj/mhs
+
+flag development
+  description: Run GHC with development flags
+  manual: True
+  default: False
+
+library
+  exposed-modules:
+      AWS.TemporaryIngressRule
+      AWS.TemporaryIngressRule.Prelude
+  other-modules:
+      Paths_aws_temporary_ingress_rule
+  hs-source-dirs:
+      src
+  default-extensions:
+      ConstraintKinds
+      DataKinds
+      DeriveAnyClass
+      DeriveGeneric
+      DerivingStrategies
+      DerivingVia
+      DuplicateRecordFields
+      FlexibleContexts
+      FlexibleInstances
+      GeneralizedNewtypeDeriving
+      LambdaCase
+      MultiParamTypeClasses
+      NoFieldSelectors
+      NoImplicitPrelude
+      NumericUnderscores
+      OverloadedLists
+      OverloadedRecordDot
+      OverloadedStrings
+      RankNTypes
+      RecordWildCards
+      ScopedTypeVariables
+      Strict
+      TemplateHaskell
+      TupleSections
+      TypeApplications
+      TypeFamilies
+      ViewPatterns
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wno-ambiguous-fields -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path
+  build-depends:
+      amazonka
+    , amazonka-cloudformation
+    , amazonka-ec2
+    , aws-checkip
+    , base
+    , cli-utils
+    , conduit
+    , conversions
+    , http-mclient
+    , lens
+    , mio-amazonka
+    , mio-core
+    , mio-log
+    , mprelude
+    , network-ip
+    , optparse-applicative
+    , stack-deploy
+    , stratosphere
+    , text
+    , time
+    , unliftio
+  default-language: Haskell2010
+  if flag(development)
+    ghc-options: -Werror -fplugin=SourceConstraints
+    build-depends:
+        source-constraints
+  else
+    ghc-options: -Wwarn
+
+test-suite test
+  type: exitcode-stdio-1.0
+  main-is: Test.hs
+  other-modules:
+      Paths_aws_temporary_ingress_rule
+  hs-source-dirs:
+      test
+  default-extensions:
+      ConstraintKinds
+      DataKinds
+      DeriveAnyClass
+      DeriveGeneric
+      DerivingStrategies
+      DerivingVia
+      DuplicateRecordFields
+      FlexibleContexts
+      FlexibleInstances
+      GeneralizedNewtypeDeriving
+      LambdaCase
+      MultiParamTypeClasses
+      NoFieldSelectors
+      NoImplicitPrelude
+      NumericUnderscores
+      OverloadedLists
+      OverloadedRecordDot
+      OverloadedStrings
+      RankNTypes
+      RecordWildCards
+      ScopedTypeVariables
+      Strict
+      TemplateHaskell
+      TupleSections
+      TypeApplications
+      TypeFamilies
+      ViewPatterns
+  ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wno-ambiguous-fields -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
+  build-depends:
+      amazonka
+    , amazonka-cloudformation
+    , amazonka-ec2
+    , aws-checkip
+    , aws-temporary-ingress-rule
+    , base
+    , cli-utils
+    , conduit
+    , conversions
+    , devtools
+    , http-mclient
+    , lens
+    , mio-amazonka
+    , mio-core
+    , mio-log
+    , mprelude
+    , network-ip
+    , optparse-applicative
+    , stack-deploy
+    , stratosphere
+    , tasty
+    , tasty-hunit
+    , text
+    , time
+    , unliftio
+  default-language: Haskell2010
+  if flag(development)
+    ghc-options: -Werror -fplugin=SourceConstraints
+    build-depends:
+        source-constraints
+  else
+    ghc-options: -Wwarn

@@ -3,6 +3,7 @@ extra-deps:
 - amazonka-2.0
 - amazonka-cloudformation-2.0
 - amazonka-core-2.0
+- amazonka-ec2-2.0
 - amazonka-s3-2.0
 - amazonka-secretsmanager-2.0
 - amazonka-sso-2.0
@@ -20,6 +21,8 @@ flags:
   aws-checkip:
     development: true
   aws-secrets:
+    development: true
+  aws-temporary-ingress-rule:
     development: true
   bounded:
     development: true
@@ -66,6 +69,7 @@ flags:
 packages:
 - aws-checkip
 - aws-secrets
+- aws-temporary-ingress-rule
 - bounded
 - cbt
 - cli-utils

@@ -26,6 +26,13 @@ packages:
   original:
     hackage: amazonka-core-2.0
 - completed:
+    hackage: amazonka-ec2-2.0@sha256:9344b87d8f8328fd91023b96565e79e7676aa5e7dd40b87b3f3f3a22a9da7736,74154
+    pantry-tree:
+      sha256: d1f2d4fce5b0664605d730d4232b25f26a5f49e3b7d07f4b282e8c36773e5ffd
+      size: 234434
+  original:
+    hackage: amazonka-ec2-2.0
+- completed:
     hackage: amazonka-s3-2.0@sha256:e3143e11ab9e57ee0dfd9d1dd95a44c5b4a7d34af78c8f5b2e6c00afad118a02,13853
     pantry-tree:
       sha256: 49f801400582ef0ca290312243b55e6e3c540c0c94c1a3110735bc400386fefb
