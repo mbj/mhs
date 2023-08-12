@@ -1,0 +1,34 @@
+_common/package: !include "../common/package.yaml"
+
+name:    aws-secrets
+version: 0.0.1
+
+<<: *defaults
+
+dependencies:
+- aeson
+- amazonka
+- amazonka-cloudformation
+- amazonka-secretsmanager
+- base
+- conversions
+- mio-amazonka
+- mio-core
+- mio-log
+- mprelude
+- optparse-applicative
+- stack-deploy
+- stratosphere
+- stratosphere-secretsmanager
+- text
+- unliftio
+
+tests:
+  test:
+    <<: *test
+    dependencies:
+    - aws-secrets
+    - devtools
+    - mio-log
+    - tasty
+    - tasty-hunit
