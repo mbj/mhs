@@ -27,7 +27,7 @@ byteorder 1.0.4
 bytestring 0.11.4.0
 call-stack 0.4.0
 case-insensitive 1.2.1.0
-clock 0.8.3
+clock 0.8.4
 cmdargs 0.10.22
 colour 2.3.6
 comonad 5.0.8
@@ -71,7 +71,7 @@ ghc-lib-parser-ex 9.4.0.0
 ghc-prim 0.9.0
 ghci 9.4.5
 happy 1.20.1.1
-hashable 1.4.2.0
+hashable 1.4.3.0
 haskell-lexer 1.1.1
 hedgehog 1.2
 hlint 3.5
@@ -120,7 +120,7 @@ splitmix 0.1.0.4
 stm 2.5.1.0
 streaming-commons 0.2.2.6
 strict 0.5
-syb 0.7.2.3
+syb 0.7.2.4
 tagged 0.8.7
 tasty 1.4.3
 tasty-expected-failure 0.12.3
@@ -134,7 +134,7 @@ text 2.0.2
 text-short 0.1.5
 th-abstraction 0.4.5.0
 th-compat 0.1.4
-th-lift 0.8.3
+th-lift 0.8.4
 these 1.2
 time 1.12.2
 time-compat 1.9.6.1
