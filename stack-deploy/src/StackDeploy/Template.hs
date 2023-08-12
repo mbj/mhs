@@ -27,6 +27,7 @@ data Template = Template
   { name         :: Name
   , stratosphere :: Stratosphere.Template
   }
+  deriving stock (Eq, Show)
 
 instance Provider.HasItemName Template where
   type ItemName Template = Name

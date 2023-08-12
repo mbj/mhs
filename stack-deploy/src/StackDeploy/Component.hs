@@ -17,6 +17,7 @@ data Component = Component
   , resources  :: Stratosphere.Resources
   , mappings   :: Map Text (Map Text JSON.Object)
   }
+  deriving stock (Eq, Show)
 
 instance Semigroup Component where
   left <> right = Component
