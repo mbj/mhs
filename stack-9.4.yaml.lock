@@ -33,6 +33,13 @@ packages:
   original:
     hackage: amazonka-s3-2.0
 - completed:
+    hackage: amazonka-secretsmanager-2.0@sha256:de4b8b2e1d5d0743dda1eb85c8be96897ab6ccf5aa62494d2d6318d869a49d42,4473
+    pantry-tree:
+      sha256: aa576fda0382f75e7f7e632a270754d875e41b5099851a1d8ab176cef56c7b50
+      size: 7039
+  original:
+    hackage: amazonka-secretsmanager-2.0
+- completed:
     hackage: amazonka-sso-2.0@sha256:902be13b604e4a3b51a9b8e1adc6a32f42322ae11f738a72a8c737b2d0a91a5e,2995
     pantry-tree:
       sha256: f87dd959a78bf54295bd6f8c7da58f7f8f860251d5548ecb05ab758e03cba50b
@@ -97,6 +104,19 @@ packages:
     version: 1.0.0
   original:
     subdir: services/s3
+    url: https://github.com/mbj/stratosphere/archive/7c462f2de4369a76df22d4b34b2f3a9e7754c731.tar.gz
+- completed:
+    name: stratosphere-secretsmanager
+    pantry-tree:
+      sha256: ca004cb2d9876f121873baab2f45b1eb77abe0eb2968bab8b28de6810cc63cfb
+      size: 1408
+    sha256: 2f2cd065af1071679630bb4de341ad8c4c30cb130d7527a5730e4252127c9d83
+    size: 2244006
+    subdir: services/secretsmanager
+    url: https://github.com/mbj/stratosphere/archive/7c462f2de4369a76df22d4b34b2f3a9e7754c731.tar.gz
+    version: 1.0.0
+  original:
+    subdir: services/secretsmanager
     url: https://github.com/mbj/stratosphere/archive/7c462f2de4369a76df22d4b34b2f3a9e7754c731.tar.gz
 snapshots:
 - completed:

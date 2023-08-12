@@ -4,6 +4,7 @@ extra-deps:
 - amazonka-cloudformation-2.0
 - amazonka-core-2.0
 - amazonka-s3-2.0
+- amazonka-secretsmanager-2.0
 - amazonka-sso-2.0
 - amazonka-sts-2.0
 - mprelude
@@ -14,8 +15,11 @@ extra-deps:
   - services/ecs
   - services/lambda
   - services/s3
+  - services/secretsmanager
 flags:
   aws-checkip:
+    development: true
+  aws-secrets:
     development: true
   bounded:
     development: true
@@ -59,6 +63,7 @@ flags:
     development: true
 packages:
 - aws-checkip
+- aws-secrets
 - bounded
 - cbt
 - conversions

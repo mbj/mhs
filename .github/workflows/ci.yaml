@@ -38,8 +38,9 @@ jobs:
         os:  [ubuntu-latest]
         project:
         - aws-checkip
-        - cbt
+        - aws-secrets
         - bounded
+        - cbt
         - conversions
         - dbt
         - devtools

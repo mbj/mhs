@@ -12,6 +12,7 @@ amazonka 2.0
 amazonka-cloudformation 2.0
 amazonka-core 2.0
 amazonka-s3 2.0
+amazonka-secretsmanager 2.0
 amazonka-sso 2.0
 amazonka-sts 2.0
 ansi-terminal 0.11.5
@@ -25,6 +26,7 @@ asn1-types 0.3.4
 assoc 1.1
 async 2.2.4
 attoparsec 0.14.4
+aws-secrets 0.0.1
 barbies 2.0.4.0
 base 4.17.1.0
 base-compat 0.12.3
@@ -122,6 +124,7 @@ memory 0.18.0
 mime-types 0.1.1.0
 mio-amazonka 0.0.2
 mio-core 0.0.1
+mio-log 0.0.3
 mmorph 1.2.0
 monad-control 1.0.3.1
 mono-traversable 1.0.15.3
@@ -165,6 +168,7 @@ stratosphere 1.0.0
 stratosphere-ecs 1.0.0
 stratosphere-lambda 1.0.0
 stratosphere-s3 1.0.0
+stratosphere-secretsmanager 1.0.0
 streaming-commons 0.2.2.6
 strict 0.5
 syb 0.7.2.3
