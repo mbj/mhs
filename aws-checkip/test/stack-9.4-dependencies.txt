@@ -15,7 +15,7 @@ asn1-types 0.3.4
 assoc 1.1
 async 2.2.4
 attoparsec 0.14.4
-aws-checkip 0.0.1
+aws-checkip 0.0.2
 barbies 2.0.4.0
 base 4.17.1.0
 base-compat 0.12.3
