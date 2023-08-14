@@ -4,6 +4,7 @@ module AWS.Secrets.CLI (parserInfo) where
 
 import AWS.Secrets
 import AWS.Secrets.Prelude
+import CLI.Utils
 
 import qualified Data.Aeson            as JSON
 import qualified Data.Foldable         as Foldable
@@ -50,16 +51,6 @@ parserInfo = CLI.info (CLI.helper <*> subcommands) CLI.idm
           stack <- StackDeploy.getExistingStack instanceSpecName
           putStrLn =<< action stack secret
           pure System.ExitSuccess
-
-mkCommand
-  :: String
-  -> CLI.Parser a
-  -> String
-  -> CLI.Mod CLI.CommandFields a
-mkCommand name parser desc = CLI.command name (wrapHelper parser desc)
-
-wrapHelper :: CLI.Parser a -> String -> CLI.ParserInfo a
-wrapHelper parser desc = CLI.info parser (CLI.progDesc desc)
 
 putStrLn :: MonadIO m => Text -> m ()
 putStrLn = liftIO . IO.putStrLn

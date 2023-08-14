@@ -73,6 +73,7 @@ library
       base
     , bytestring
     , cbt
+    , cli-utils
     , containers >=0.6
     , control-bool
     , conversions
@@ -142,6 +143,7 @@ executable dbt
       base
     , bytestring
     , cbt
+    , cli-utils
     , containers >=0.6
     , control-bool
     , conversions
@@ -217,6 +219,7 @@ test-suite test
       base
     , bytestring
     , cbt
+    , cli-utils
     , containers >=0.6
     , control-bool
     , conversions

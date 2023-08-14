@@ -1,0 +1,19 @@
+_common/package: !include "../common/package.yaml"
+
+name:    cli-utils
+version: 0.0.1
+
+<<: *defaults
+
+dependencies:
+- base
+- mprelude
+- optparse-applicative
+
+tests:
+  test:
+    <<: *test
+    dependencies:
+    - cli-utils
+    - devtools
+    - tasty
