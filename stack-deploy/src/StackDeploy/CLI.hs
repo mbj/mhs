@@ -1,5 +1,6 @@
 module StackDeploy.CLI (parserInfo) where
 
+import CLI.Utils
 import Control.Lens ((.~))
 import Data.Conduit ((.|), runConduit)
 import Options.Applicative hiding (value)
@@ -65,12 +66,6 @@ parserInfo instanceSpecProvider = wrapHelper commands "stack commands"
 
     tokenParser :: Parser Token
     tokenParser = Token <$> argument str (metavar "TOKEN")
-
-    mkCommand :: String -> Parser b -> String -> Mod CommandFields b
-    mkCommand name parser desc = command name (wrapHelper parser desc)
-
-    wrapHelper :: Parser b -> String -> ParserInfo b
-    wrapHelper parser desc = info parser (progDesc desc)
 
     cancel :: InstanceSpec.Name -> MIO env ExitCode
     cancel name = do

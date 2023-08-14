@@ -1,5 +1,6 @@
 module DBT.Container.CLI (main) where
 
+import CLI.Utils
 import Control.Monad (join)
 import DBT.Container
 import DBT.Prelude
@@ -30,15 +31,15 @@ run arguments = do
     preferences = prefs showHelpOnEmpty
 
     parser :: ParserInfo (MIO env ())
-    parser = wrapHelper "dbt commands" commands
+    parser = wrapHelper commands "dbt commands"
 
     commands :: Parser (MIO env ())
     commands
       = hsubparser
       $ mkCommand
         "run-ephemeral"
-        "run program with ephemeral database"
         (withDatabaseContainerProcessRun_ prefix <$> processProc)
+        "run program with ephemeral database"
 
     prefix :: CBT.Container.Prefix
     prefix = CBT.Container.Prefix "dbt"
@@ -56,10 +57,3 @@ run arguments = do
       = many
       . strArgument
       $ metavar "ARGUMENT"
-
-mkCommand :: String -> String -> Parser a -> Mod CommandFields a
-mkCommand name description parser =
-  command name (wrapHelper description parser)
-
-wrapHelper :: String -> Parser b -> ParserInfo b
-wrapHelper description parser = info parser (progDesc description)

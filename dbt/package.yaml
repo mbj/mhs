@@ -10,6 +10,7 @@ dependencies:
 - base
 - bytestring
 - cbt
+- cli-utils
 - containers           >= 0.6
 - control-bool
 - conversions
