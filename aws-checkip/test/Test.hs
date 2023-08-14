@@ -38,9 +38,13 @@ testHTTP request
       (mkSuccessResponse "")
       (Left $ HTTP.BodyDecodeFailure "cannot parse IP")
   , testResponse
-      "valid body"
+      "valid ipv4 body"
       (mkSuccessResponse "127.0.0.1\n")
-      (pure $ Network.IPv4 Network.loopbackIP4)
+      (pure $ Network.netAddr (Network.IPv4 Network.loopbackIP4) 32)
+  , testResponse
+      "valid ipv6 body"
+      (mkSuccessResponse "::1\n")
+      (pure $ Network.netAddr (Network.IPv6 Network.loopbackIP6) 128)
   , testResponse
       "non 2xx"
       (mkResponse HTTP.status500 "some random body")
@@ -50,7 +54,7 @@ testHTTP request
     testResponse
       :: String
       -> HTTP.Response LBS.ByteString
-      -> Either HTTP.ResponseError Network.IP
+      -> Either HTTP.ResponseError (Network.NetAddr Network.IP)
       -> Tasty.TestTree
     testResponse name response expected = Tasty.testCase name $ do
       Tasty.assertEqual "" (show expected) =<<
@@ -59,7 +63,7 @@ testHTTP request
           { httpSendRequest = const $ pure response
           , logAction       = Log.noopAction
           }
-        (show <$> AWS.Checkip.eitherReadIP)
+        (show <$> AWS.Checkip.eitherReadNetAddr)
 
     mkResponse :: HTTP.Status -> LBS.ByteString -> HTTP.Response LBS.ByteString
     mkResponse status body

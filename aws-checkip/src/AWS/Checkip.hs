@@ -1,4 +1,4 @@
-module AWS.Checkip (eitherReadIP, printIP, readIP, readRequest) where
+module AWS.Checkip (eitherReadNetAddr, printNetAddr, readNetAddr, readRequest) where
 
 import AWS.Checkip.Prelude
 import Control.Arrow (left)
@@ -17,23 +17,30 @@ import qualified UnliftIO.Exception   as UnliftIO
 
 type Env env = (HasCallStack, HTTP.Env env)
 
-printIP :: Env env => MIO env ()
-printIP = readIP >>= liftIO . IO.putStrLn . toString
+type NetAddr = Network.NetAddr Network.IP
 
-readIP :: Env env => MIO env Network.IP
-readIP = either UnliftIO.throwIO pure =<< eitherReadIP
+printNetAddr :: Env env => MIO env ()
+printNetAddr = readNetAddr >>= liftIO . IO.putStrLn . toString
 
-eitherReadIP :: forall env . Env env => MIO env (HTTP.Result Network.IP)
-eitherReadIP = readRequest >>= HTTP.send decoder
+readNetAddr :: Env env => MIO env NetAddr
+readNetAddr = either UnliftIO.throwIO pure =<< eitherReadNetAddr
+
+eitherReadNetAddr :: forall env . Env env => MIO env (HTTP.Result NetAddr)
+eitherReadNetAddr = readRequest >>= HTTP.send decoder
   where
-    parseLine :: Text -> Either HTTP.ResponseError Network.IP
+    parseLine :: Text -> Either HTTP.ResponseError NetAddr
     parseLine
-      = maybe (Left $ HTTP.BodyDecodeFailure "cannot parse IP") pure
+      = maybe (Left $ HTTP.BodyDecodeFailure "cannot parse IP") (pure . mkNetAddr)
       . fromString
       . Text.unpack
       . Text.dropWhileEnd (== '\n')
 
-    decoder :: HTTP.ResponseDecoder Network.IP
+    mkNetAddr :: Network.IP -> NetAddr
+    mkNetAddr ip = case ip of
+      Network.IPv4{} -> Network.netAddr ip 32
+      Network.IPv6{} -> Network.netAddr ip 128
+
+    decoder :: HTTP.ResponseDecoder NetAddr
     decoder
       = parseLine <=< HTTP.decodeStatus HTTP.status200 decodeBody
 
