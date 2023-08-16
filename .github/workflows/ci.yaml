@@ -39,6 +39,7 @@ jobs:
         project:
         - aws-checkip
         - aws-secrets
+        - aws-temporary-ingress-rule
         - bounded
         - cbt
         - conversions
