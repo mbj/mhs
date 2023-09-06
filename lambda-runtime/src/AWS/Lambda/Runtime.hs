@@ -2,6 +2,7 @@ module AWS.Lambda.Runtime
   ( module AWS.Lambda.Runtime.Types
   , Client.getConnection
   , processNextEvent
+  , readHandler
   , run
   , runWithSegment
   )
@@ -14,6 +15,7 @@ import MIO.Core
 
 import qualified AWS.Lambda.Runtime.Client as Client
 import qualified Data.Aeson                as JSON
+import qualified UnliftIO.Environment      as Environment
 import qualified XRay
 import qualified XRay.Segment              as XRay
 import qualified XRay.TraceHeader          as XRay
@@ -60,3 +62,8 @@ processNextEvent connection function = do
   event@Event{..} <- eitherThrow =<< liftIO (runExceptT $ Client.getNextEvent connection)
 
   Client.sendEventResponse connection requestId =<< function event
+
+readHandler
+  :: forall m . (MonadIO m)
+  => m Text
+readHandler = convert <$> Environment.getEnv "_HANDLER"

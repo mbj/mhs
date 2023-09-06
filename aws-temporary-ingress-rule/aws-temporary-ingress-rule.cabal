@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.2.
+-- This file has been generated from package.yaml by hpack version 0.35.4.
 --
 -- see: https://github.com/sol/hpack
 
@@ -63,7 +63,8 @@ library
       ViewPatterns
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wno-ambiguous-fields -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
-      amazonka
+      aeson
+    , amazonka
     , amazonka-cloudformation
     , amazonka-ec2
     , aws-checkip
@@ -81,6 +82,9 @@ library
     , optparse-applicative
     , stack-deploy
     , stratosphere
+    , stratosphere-events
+    , stratosphere-iam
+    , stratosphere-lambda
     , text
     , time
     , unliftio
@@ -129,7 +133,8 @@ test-suite test
       ViewPatterns
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wno-ambiguous-fields -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      amazonka
+      aeson
+    , amazonka
     , amazonka-cloudformation
     , amazonka-ec2
     , aws-checkip
@@ -149,6 +154,9 @@ test-suite test
     , optparse-applicative
     , stack-deploy
     , stratosphere
+    , stratosphere-events
+    , stratosphere-iam
+    , stratosphere-lambda
     , tasty
     , tasty-hunit
     , text

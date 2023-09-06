@@ -167,6 +167,7 @@ stack-deploy 0.0.8
 stm 2.5.1.0
 stratosphere 1.0.0
 stratosphere-ecs 1.0.0
+stratosphere-iam 1.0.0
 stratosphere-lambda 1.0.0
 stratosphere-s3 1.0.0
 stratosphere-secretsmanager 1.0.0

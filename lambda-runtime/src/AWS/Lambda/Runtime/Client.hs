@@ -15,13 +15,13 @@ import Control.Exception (displayException)
 import Control.Monad.Except (ExceptT(..), liftEither, throwError, withExceptT)
 import Data.List (filter, map)
 import Data.Tuple (fst, snd)
-import System.Environment (lookupEnv)
 
-import qualified Data.Aeson          as JSON
-import qualified Data.ByteString     as BS
-import qualified Network.HTTP.Client as HTTP
-import qualified Network.HTTP.Types  as HTTP
-import qualified XRay.TraceHeader    as XRay
+import qualified Data.Aeson           as JSON
+import qualified Data.ByteString      as BS
+import qualified Network.HTTP.Client  as HTTP
+import qualified Network.HTTP.Types   as HTTP
+import qualified UnliftIO.Environment as Environment
+import qualified XRay.TraceHeader     as XRay
 
 data Connection = Connection
   { baseRequest :: HTTP.Request
@@ -47,7 +47,7 @@ type LambdaClient = ExceptT InternalLambdaClientError IO
 getConnection :: LambdaClient Connection
 getConnection = do
   awsLambdaRuntimeApi <- ExceptT $ maybeToEither MissingLambdaRunTimeApi
-    <$> lookupEnv "AWS_LAMBDA_RUNTIME_API"
+    <$> Environment.lookupEnv "AWS_LAMBDA_RUNTIME_API"
 
   baseRequest <- withExceptT (InvalidLambdaRunTimeApi . showc @Text)
     . ExceptT

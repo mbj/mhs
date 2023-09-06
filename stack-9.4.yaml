@@ -14,6 +14,8 @@ extra-deps:
   subdirs:
   - .
   - services/ecs
+  - services/events
+  - services/iam
   - services/lambda
   - services/s3
   - services/secretsmanager

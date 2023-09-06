@@ -7,6 +7,7 @@ import qualified Data.Aeson                    as JSON
 import qualified Data.Foldable                 as Foldable
 import qualified Data.Vector                   as Vector
 import qualified Stratosphere                  as CFT
+import qualified Stratosphere.IAM.Role         as IAM
 import qualified Stratosphere.S3.Bucket        as S3.Bucket
 
 mkName :: CFT.Value Text -> CFT.Value Text
@@ -92,3 +93,25 @@ resolveSecretsmanagerSecret arn = wrap $ CFT.Join ":" ["resolve", "secretsmanage
   where
     wrap :: CFT.Value Text -> CFT.Value Text
     wrap value = CFT.Join "" ["{{", value, "}}"]
+
+lambdaLogsPolicy :: CFT.Value Text -> IAM.PolicyProperty
+lambdaLogsPolicy lambdaFunctionName = IAM.mkPolicyProperty [("Statement", policyStatement)] "lambda-logging"
+  where
+    policyStatement :: JSON.Value
+    policyStatement = JSON.Object
+      [ ("Action",   JSON.Array ["logs:CreateLogStream", "logs:PutLogEvents"])
+      , ("Effect",   JSON.String "Allow")
+      , ("Resource", JSON.toJSON lambdaLogGroupArnValue)
+      ]
+
+    lambdaLogGroupArnValue :: CFT.Value Text
+    lambdaLogGroupArnValue =
+      CFT.Join
+        ":"
+        [ "arn"
+        , "aws"
+        , "logs"
+        , CFT.awsRegion
+        , CFT.awsAccountId
+        , CFT.Join "/" ["/aws/lambda", lambdaFunctionName]
+        ]

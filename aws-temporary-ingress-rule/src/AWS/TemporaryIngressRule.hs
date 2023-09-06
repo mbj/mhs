@@ -1,7 +1,9 @@
 module AWS.TemporaryIngressRule
-  ( Config(..)
-  , Env
+  ( Env
+  , IngressConfig(..)
+  , StackConfig(..)
   , WithTemporaryIngressRule
+  , component
   , parserInfo
   , withTemporaryIngressRule
   )
@@ -21,6 +23,7 @@ import qualified Amazonka.EC2.CreateTags                    as EC2
 import qualified Amazonka.EC2.DescribeSecurityGroupRules    as EC2
 import qualified Amazonka.EC2.RevokeSecurityGroupIngress    as EC2
 import qualified Amazonka.EC2.Types                         as EC2
+import qualified Data.Aeson                                 as JSON
 import qualified Data.Conduit                               as Conduit
 import qualified Data.Conduit.Combinators                   as Conduit
 import qualified Data.Foldable                              as Foldable
@@ -33,10 +36,15 @@ import qualified Network.HTTP.MClient                       as HTTP
 import qualified Network.IP.Addr                            as Network
 import qualified Options.Applicative                        as CLI
 import qualified StackDeploy.CLI.Utils                      as StackDeploy.CLI
+import qualified StackDeploy.Component                      as StackDeploy
 import qualified StackDeploy.InstanceSpec
 import qualified StackDeploy.Stack                          as StackDeploy
 import qualified StackDeploy.Utils
 import qualified Stratosphere                               as CFT
+import qualified Stratosphere.Events.Rule                   as Events
+import qualified Stratosphere.IAM.Role                      as IAM
+import qualified Stratosphere.Lambda.Function               as Lambda
+import qualified Stratosphere.Lambda.Permission             as Lambda
 import qualified System.Exit                                as System
 import qualified UnliftIO.Exception                         as UnliftIO
 
@@ -44,7 +52,7 @@ type Env env = (AWS.Env env, HTTP.Env env, Log.Env env)
 
 type NetAddr = Network.NetAddr Network.IP
 
-data Config = Config
+data IngressConfig = IngressConfig
   { securityGroupIdOutput :: CFT.Output
   , portOutput            :: CFT.Output
   }
@@ -63,11 +71,11 @@ data Request = Request
 formatRequest :: Request -> Text
 formatRequest Request{..} = groupId <> " cidr: " <> cidr <> " port: " <> convert (show port)
 
-withTemporaryIngressRule :: Env env => Config -> WithTemporaryIngressRule env a
+withTemporaryIngressRule :: Env env => IngressConfig -> WithTemporaryIngressRule env a
 withTemporaryIngressRule config stack action = authorizeIngressRule config stack >> action
 
-authorizeIngressRule :: forall env . Env env => Config -> CloudFormation.Stack -> MIO env ()
-authorizeIngressRule Config{..} stack = do
+authorizeIngressRule :: forall env . Env env => IngressConfig -> CloudFormation.Stack -> MIO env ()
+authorizeIngressRule IngressConfig{..} stack = do
   request <- readRequest
   maybe (createIngressRule request) (updateIngressRuleLastSeen request) =<< findIngressRule request
   where
@@ -79,7 +87,7 @@ authorizeIngressRule Config{..} stack = do
       port    <- read . convert <$> liftIO (StackDeploy.Utils.fetchOutput stack portOutput)
       pure Request{cidr = convert @Text @String $ Network.printNetAddr netAddr, ..}
 
-revokeExpiredIngressRules :: forall env . Env env => [Config] -> CloudFormation.Stack -> MIO env ()
+revokeExpiredIngressRules :: forall env . Env env => [IngressConfig] -> CloudFormation.Stack -> MIO env ()
 revokeExpiredIngressRules config stack =
   Conduit.runConduit $ expiredIngressRulesC config stack .| Conduit.mapM_ revoke
   where
@@ -97,7 +105,7 @@ revokeExpiredIngressRules config stack =
       where
         require access = maybe (UnliftIO.throwString "incoherent rule") pure (access rule)
 
-listExpiredIngressRules :: forall env . Env env => [Config] -> CloudFormation.Stack -> MIO env ()
+listExpiredIngressRules :: forall env . Env env => [IngressConfig] -> CloudFormation.Stack -> MIO env ()
 listExpiredIngressRules config stack = do
   Conduit.runConduit
     $  expiredIngressRulesC config stack
@@ -107,7 +115,7 @@ formatSecurityGroupRule :: EC2.SecurityGroupRule -> Text
 formatSecurityGroupRule rule
   =  field "cidr" (.cidrIpv4)
   <> field "cidr" (.cidrIpv6)
-  <> field "Port" (fmap (convert . show) . (.fromPort))
+  <> field "port" (fmap (convert . show) . (.fromPort))
   where
     field :: Text -> (EC2.SecurityGroupRule -> Maybe Text) -> Text
     field label access = maybe "" (\value -> label <> ": " <> value <> " ") (access rule)
@@ -119,7 +127,7 @@ data TemporaryIngressRule = TemporaryIngressRule
 
 temporaryIngressRulesC
   :: forall env . Env env
-  => [Config]
+  => [IngressConfig]
   -> CloudFormation.Stack
   -> ConduitT () TemporaryIngressRule (MIO env) ()
 temporaryIngressRulesC config stack = do
@@ -152,7 +160,7 @@ temporaryIngressRulesC config stack = do
 
 expiredIngressRulesC
   :: forall env . Env env
-  => [Config]
+  => [IngressConfig]
   -> CloudFormation.Stack
   -> ConduitT () EC2.SecurityGroupRule (MIO env) ()
 expiredIngressRulesC config stack = do
@@ -270,14 +278,14 @@ createIngressRule request = do
             description = "managed by aws-temporary-ingress-rule"
 
 
-parserInfo :: forall env . Env env => [Config] -> CLI.ParserInfo (MIO env System.ExitCode)
+parserInfo :: forall env . Env env => [IngressConfig] -> CLI.ParserInfo (MIO env System.ExitCode)
 parserInfo configs = CLI.info (CLI.helper <*> subcommands) CLI.idm
   where
     subcommands
       =  CLI.hsubparser
       $  mkCommand
            "config"
-           (pure $ printConfigurations $> System.ExitSuccess)
+           (pure $ printIngressConfigurations $> System.ExitSuccess)
            "show configuration"
       <> mkCommand
            "authorize-all"
@@ -292,7 +300,7 @@ parserInfo configs = CLI.info (CLI.helper <*> subcommands) CLI.idm
            (runStack (listExpiredIngressRules configs) <$> StackDeploy.CLI.instanceSpecNameOption)
            "list expired ingress rules"
 
-    printConfigurations  = traverse_ (liftIO . IO.putStrLn . convert . show) configs
+    printIngressConfigurations  = traverse_ (liftIO . IO.putStrLn . convert . show) configs
 
     runStack
       :: (CloudFormation.Stack -> MIO env ())
@@ -342,3 +350,72 @@ mkTagFilter :: EC2.Tag -> EC2.Filter
 mkTagFilter tag
   = EC2.newFilter ("tag:" <> tag.key)
   & EC2.filter_values ?~ [tag.value]
+
+newtype StackConfig = StackConfig
+  { lambdaCode :: Lambda.CodeProperty
+  }
+
+component
+  :: StackConfig
+  -> [IngressConfig]
+  -> StackDeploy.Component
+component StackConfig{..} ingressConfigurations = mempty
+  { StackDeploy.resources = [lambdaFunction, lambdaRole, lambdaPermission, eventsRule]
+  }
+  where
+    prefix :: Text
+    prefix = "TemporyIngressRuleExpiry"
+
+    lambdaFunction
+      = CFT.resource (prefix <> "LambdaFunction")
+      $ Lambda.mkFunction lambdaCode (StackDeploy.Utils.getAttArn lambdaRole)
+      & CFT.set @"Handler" "function.handler"
+      & CFT.set @"Runtime" "provided.al2"
+
+    lambdaRole
+      = CFT.resource (prefix <> "LambdaRule")
+      $ IAM.mkRole (StackDeploy.Utils.assumeRole "lambda.amazonaws.com")
+      & CFT.set @"Policies" [StackDeploy.Utils.lambdaLogsPolicy lambdaFunctionName, ingressRulePolicy]
+
+    lambdaFunctionName :: CFT.Value Text
+    lambdaFunctionName = StackDeploy.Utils.mkName $ CFT.Literal prefix
+
+    lambdaPermission :: CFT.Resource
+    lambdaPermission
+      = CFT.resource (prefix <> "LambdaPermission")
+      $ Lambda.mkPermission "lambda:InvokeFunction" (CFT.toRef lambdaFunction) "events.amazonaws.com"
+      & CFT.set @"SourceArn" (StackDeploy.Utils.getAttArn eventsRule)
+
+    eventsRule :: CFT.Resource
+    eventsRule
+      = CFT.resource logicalName
+      $ Events.mkRule
+      & CFT.set @"Description"        (CFT.Literal ("Trigger rule for " <> prefix))
+      & CFT.set @"Name"               (StackDeploy.Utils.mkName (CFT.Literal logicalName))
+      & CFT.set @"ScheduleExpression" (CFT.Literal "rate(1 minute)")
+      & CFT.set @"State"              "ENABLED"
+      & CFT.set @"Targets"            [lambdaTarget]
+      where
+        logicalName = prefix <> "EventsRule"
+
+        lambdaTarget =
+          Events.mkTargetProperty (StackDeploy.Utils.getAttArn lambdaFunction) (CFT.Literal logicalName)
+
+    ingressRulePolicy = IAM.mkPolicyProperty [("Statement", policyStatement)] "revoke-ingress-rules"
+      where
+        policyStatement = JSON.Object
+          [ ("Action",   JSON.Array ["ec2:RevokeSecurityGroupIngress"])
+          , ("Effect",   "Allow")
+          , ("Resource", JSON.toJSON $ JSON.toJSON <$> securityGroupArns)
+          ]
+
+    securityGroupArns = securityGroupArnValue . (.securityGroupIdOutput.value) <$> ingressConfigurations
+
+    securityGroupArnValue securityGroupIdValue = CFT.Join ":"
+      [ "arn"
+      , "aws"
+      , "ec2"
+      , CFT.awsRegion
+      , CFT.awsAccountId
+      , CFT.Join "/" ["security-group", securityGroupIdValue]
+      ]
