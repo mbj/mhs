@@ -19,11 +19,11 @@ dependencies:
 - exceptions
 - http-client
 - http-types
+- mio-core
 - mprelude
 - mtl
-- mio-core
-- optparse-applicative >= 0.15
 - text
+- unliftio
 - xray
 
 library:
