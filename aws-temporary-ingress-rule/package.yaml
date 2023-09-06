@@ -6,6 +6,7 @@ version: 0.0.1
 <<: *defaults
 
 dependencies:
+- aeson
 - amazonka
 - amazonka-cloudformation
 - amazonka-ec2
@@ -24,6 +25,9 @@ dependencies:
 - optparse-applicative
 - stack-deploy
 - stratosphere
+- stratosphere-events
+- stratosphere-iam
+- stratosphere-lambda
 - text
 - time
 - unliftio

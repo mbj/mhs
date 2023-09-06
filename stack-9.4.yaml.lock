@@ -87,6 +87,19 @@ packages:
     subdir: services/ecs
     url: https://github.com/mbj/stratosphere/archive/7c462f2de4369a76df22d4b34b2f3a9e7754c731.tar.gz
 - completed:
+    name: stratosphere-events
+    pantry-tree:
+      sha256: c596c7457035fac103af033eda1f5169a9bd1540e57ebc3c453c4ea07de6c29b
+      size: 8137
+    sha256: 2f2cd065af1071679630bb4de341ad8c4c30cb130d7527a5730e4252127c9d83
+    size: 2244006
+    subdir: services/events
+    url: https://github.com/mbj/stratosphere/archive/7c462f2de4369a76df22d4b34b2f3a9e7754c731.tar.gz
+    version: 1.0.0
+  original:
+    subdir: services/events
+    url: https://github.com/mbj/stratosphere/archive/7c462f2de4369a76df22d4b34b2f3a9e7754c731.tar.gz
+- completed:
     name: stratosphere-iam
     pantry-tree:
       sha256: 27abc0202f5ae4e57602f6396f6845e19c3904a5c578cad95b00c24a25000964
