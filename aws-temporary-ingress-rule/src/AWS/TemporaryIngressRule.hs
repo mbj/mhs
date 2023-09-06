@@ -107,7 +107,7 @@ formatSecurityGroupRule :: EC2.SecurityGroupRule -> Text
 formatSecurityGroupRule rule
   =  field "cidr" (.cidrIpv4)
   <> field "cidr" (.cidrIpv6)
-  <> field "Port" (fmap (convert . show) . (.fromPort))
+  <> field "port" (fmap (convert . show) . (.fromPort))
   where
     field :: Text -> (EC2.SecurityGroupRule -> Maybe Text) -> Text
     field label access = maybe "" (\value -> label <> ": " <> value <> " ") (access rule)
