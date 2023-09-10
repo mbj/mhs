@@ -72,7 +72,10 @@ library
     , cli-utils
     , conduit
     , conversions
+    , http-client
+    , http-client-tls
     , http-mclient
+    , lambda-runtime
     , lens
     , mio-amazonka
     , mio-core
@@ -144,7 +147,10 @@ test-suite test
     , conduit
     , conversions
     , devtools
+    , http-client
+    , http-client-tls
     , http-mclient
+    , lambda-runtime
     , lens
     , mio-amazonka
     , mio-core

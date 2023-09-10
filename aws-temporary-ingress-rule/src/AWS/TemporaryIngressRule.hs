@@ -3,6 +3,7 @@ module AWS.TemporaryIngressRule
   , IngressConfig(..)
   , StackConfig(..)
   , WithTemporaryIngressRule
+  , bootLambdaExpire
   , component
   , parserInfo
   , withTemporaryIngressRule
@@ -16,6 +17,7 @@ import Data.Conduit (ConduitT, (.|))
 import Text.Read (read)
 
 import qualified AWS.Checkip
+import qualified AWS.Lambda.Runtime
 import qualified Amazonka
 import qualified Amazonka.CloudFormation.Types              as CloudFormation
 import qualified Amazonka.EC2.AuthorizeSecurityGroupIngress as EC2
@@ -27,16 +29,20 @@ import qualified Data.Aeson                                 as JSON
 import qualified Data.Conduit                               as Conduit
 import qualified Data.Conduit.Combinators                   as Conduit
 import qualified Data.Foldable                              as Foldable
+import qualified Data.Text                                  as Text
 import qualified Data.Text.IO                               as IO
 import qualified Data.Time                                  as Time
 import qualified Data.Time.Format.ISO8601                   as Time
 import qualified MIO.Amazonka                               as AWS
 import qualified MIO.Log                                    as Log
+import qualified Network.HTTP.Client                        as HTTP
+import qualified Network.HTTP.Client.TLS                    as HTTP
 import qualified Network.HTTP.MClient                       as HTTP
 import qualified Network.IP.Addr                            as Network
 import qualified Options.Applicative                        as CLI
 import qualified StackDeploy.CLI.Utils                      as StackDeploy.CLI
 import qualified StackDeploy.Component                      as StackDeploy
+import qualified StackDeploy.EnvSpec                        as EnvSpec
 import qualified StackDeploy.InstanceSpec
 import qualified StackDeploy.Stack                          as StackDeploy
 import qualified StackDeploy.Utils
@@ -46,6 +52,7 @@ import qualified Stratosphere.IAM.Role                      as IAM
 import qualified Stratosphere.Lambda.Function               as Lambda
 import qualified Stratosphere.Lambda.Permission             as Lambda
 import qualified System.Exit                                as System
+import qualified System.IO                                  as System
 import qualified UnliftIO.Exception                         as UnliftIO
 
 type Env env = (AWS.Env env, HTTP.Env env, Log.Env env)
@@ -81,15 +88,15 @@ authorizeIngressRule IngressConfig{..} stack = do
   where
     readRequest :: MIO env Request
     readRequest = do
-      groupId <- liftIO $ StackDeploy.Utils.fetchOutput stack securityGroupIdOutput
       netAddr <- AWS.Checkip.readNetAddr
       now     <- liftIO Time.getCurrentTime
+      groupId <- liftIO (StackDeploy.Utils.fetchOutput stack securityGroupIdOutput)
       port    <- read . convert <$> liftIO (StackDeploy.Utils.fetchOutput stack portOutput)
       pure Request{cidr = convert @Text @String $ Network.printNetAddr netAddr, ..}
 
-revokeExpiredIngressRules :: forall env . Env env => [IngressConfig] -> CloudFormation.Stack -> MIO env ()
-revokeExpiredIngressRules config stack =
-  Conduit.runConduit $ expiredIngressRulesC config stack .| Conduit.mapM_ revoke
+revokeExpiredIngressRules :: forall env . Env env => [Text] -> MIO env ()
+revokeExpiredIngressRules groupIds =
+  Conduit.runConduit $ expiredIngressRulesC groupIds .| Conduit.mapM_ revoke
   where
     revoke :: EC2.SecurityGroupRule -> MIO env ()
     revoke rule = do
@@ -105,10 +112,10 @@ revokeExpiredIngressRules config stack =
       where
         require access = maybe (UnliftIO.throwString "incoherent rule") pure (access rule)
 
-listExpiredIngressRules :: forall env . Env env => [IngressConfig] -> CloudFormation.Stack -> MIO env ()
-listExpiredIngressRules config stack = do
+listExpiredIngressRules :: forall env . Env env => [Text] -> MIO env ()
+listExpiredIngressRules groupIds = do
   Conduit.runConduit
-    $  expiredIngressRulesC config stack
+    $  expiredIngressRulesC groupIds
     .| Conduit.mapM_ (liftIO . IO.putStrLn . formatSecurityGroupRule)
 
 formatSecurityGroupRule :: EC2.SecurityGroupRule -> Text
@@ -127,18 +134,14 @@ data TemporaryIngressRule = TemporaryIngressRule
 
 temporaryIngressRulesC
   :: forall env . Env env
-  => [IngressConfig]
-  -> CloudFormation.Stack
+  => [Text]
   -> ConduitT () TemporaryIngressRule (MIO env) ()
-temporaryIngressRulesC config stack = do
-  groupIds <- traverse
-     (liftIO . StackDeploy.Utils.fetchOutput stack . (.securityGroupIdOutput)) config
-
-  AWS.paginate (mkRequest groupIds)
+temporaryIngressRulesC groupIds = do
+  AWS.paginate mkRequest
     .| Conduit.concatMap (fromMaybe [] . (.securityGroupRules))
     .| Conduit.mapM parseRule
   where
-    mkRequest groupIds
+    mkRequest
       = EC2.newDescribeSecurityGroupRules
       & EC2.describeSecurityGroupRules_filters ?~ [mkGroupIdsFilter groupIds, mkTagFilter managedTag]
 
@@ -160,13 +163,12 @@ temporaryIngressRulesC config stack = do
 
 expiredIngressRulesC
   :: forall env . Env env
-  => [IngressConfig]
-  -> CloudFormation.Stack
+  => [Text]
   -> ConduitT () EC2.SecurityGroupRule (MIO env) ()
-expiredIngressRulesC config stack = do
+expiredIngressRulesC groupIds = do
    now <- liftIO Time.getCurrentTime
 
-   temporaryIngressRulesC config stack
+   temporaryIngressRulesC groupIds
     .| Conduit.filter (isStale now)
     .| Conduit.map (.securityGroupRule)
   where
@@ -293,11 +295,11 @@ parserInfo configs = CLI.info (CLI.helper <*> subcommands) CLI.idm
            "authorize all ingress configurations"
       <> mkCommand
            "revoke-expired"
-           (runStack (revokeExpiredIngressRules configs) <$> StackDeploy.CLI.instanceSpecNameOption)
+           (runGroupIds revokeExpiredIngressRules <$> StackDeploy.CLI.instanceSpecNameOption)
            "revoke expired ingress rules"
       <> mkCommand
            "list-expired"
-           (runStack (listExpiredIngressRules configs) <$> StackDeploy.CLI.instanceSpecNameOption)
+           (runGroupIds listExpiredIngressRules <$> StackDeploy.CLI.instanceSpecNameOption)
            "list expired ingress rules"
 
     printIngressConfigurations  = traverse_ (liftIO . IO.putStrLn . convert . show) configs
@@ -307,9 +309,18 @@ parserInfo configs = CLI.info (CLI.helper <*> subcommands) CLI.idm
       -> StackDeploy.InstanceSpec.Name
       -> MIO env System.ExitCode
     runStack action instanceSpecName = do
-      stack <- StackDeploy.getExistingStack instanceSpecName
-      action stack
+      action =<< StackDeploy.getExistingStack instanceSpecName
       pure System.ExitSuccess
+
+    runGroupIds
+      :: ([Text] -> MIO env ())
+      -> StackDeploy.InstanceSpec.Name
+      -> MIO env System.ExitCode
+    runGroupIds action =
+      runStack $ \stack -> do
+        groupIds <- traverse
+           (liftIO . StackDeploy.Utils.fetchOutput stack . (.securityGroupIdOutput)) configs
+        action groupIds
 
     authorizeAll :: CloudFormation.Stack ->  MIO env ()
     authorizeAll stack = traverse_ (`authorizeIngressRule` stack) configs
@@ -351,16 +362,68 @@ mkTagFilter tag
   = EC2.newFilter ("tag:" <> tag.key)
   & EC2.filter_values ?~ [tag.value]
 
-newtype StackConfig = StackConfig
-  { lambdaCode :: Lambda.CodeProperty
+data StackConfig = StackConfig
+  { lambdaCode            :: Lambda.CodeProperty
+  , lambdaFunctionHandler :: CFT.Value Text
   }
+
+data Environment = Environment
+  { awsEnv          :: Amazonka.Env
+  , httpSendRequest :: HTTP.SendRequest
+  , logAction       :: Log.Action
+  , resourceMap     :: AWS.ResourceMap
+  }
+
+instance AWS.HasResourceMap Environment where
+  resourceMap = (.resourceMap)
+
+bootLambdaExpire :: [IngressConfig] -> IO ()
+bootLambdaExpire ingressConfigurations = do
+  withEnvironment $ do
+    groupIds <- Text.split (== ',') <$> EnvSpec.loadEnv (groupIdsEnvSpec ingressConfigurations)
+    AWS.Lambda.Runtime.run (const $ revokeExpiredIngressRules groupIds $> JSON.Null)
+
+withEnvironment :: MIO Environment a -> IO a
+withEnvironment action = do
+  httpManager <- HTTP.newTlsManagerWith . HTTP.managerSetProxy HTTP.noProxy $ HTTP.tlsManagerSettings
+  awsLogger   <- Amazonka.newLogger Amazonka.Info System.stderr
+  awsEnv      <- setup awsLogger <$> Amazonka.newEnvFromManager httpManager Amazonka.discover
+
+  AWS.withResourceMap $ \resourceMap ->
+    runMIO
+      Environment
+      { httpSendRequest = HTTP.mkManagerSendRequest httpManager
+      , logAction       = Log.defaultCLIAction
+      , ..
+      }
+      action
+  where
+    setup :: Amazonka.Logger -> Amazonka.Env -> Amazonka.Env
+    setup logger env = env
+      { Amazonka.logger = logger
+      }
+
+groupIdsEnvSpec :: [IngressConfig] -> EnvSpec.Entry
+groupIdsEnvSpec ingressConfigurations
+  = EnvSpec.Entry
+  { envName  = "TEMPORARY_INGRESS_RULE_GROUP_IDS"
+  , envValue = EnvSpec.StackOutput $ mkGroupIdsOutput ingressConfigurations
+  }
+
+mkGroupIdsOutput :: [IngressConfig] -> CFT.Output
+mkGroupIdsOutput ingressConfigurations
+  = CFT.mkOutput "TempoaryIngressRuleGroupIds"
+  . CFT.Join ","
+  . CFT.ValueList
+  $ ((.securityGroupIdOutput.value) <$> ingressConfigurations)
 
 component
   :: StackConfig
   -> [IngressConfig]
   -> StackDeploy.Component
 component StackConfig{..} ingressConfigurations = mempty
-  { StackDeploy.resources = [lambdaFunction, lambdaRole, lambdaPermission, eventsRule]
+  { StackDeploy.resources = [lambdaFunction, lambdaLogGroup, lambdaRole, lambdaPermission, eventsRule]
+  , StackDeploy.outputs   = [mkGroupIdsOutput ingressConfigurations]
   }
   where
     prefix :: Text
@@ -369,13 +432,20 @@ component StackConfig{..} ingressConfigurations = mempty
     lambdaFunction
       = CFT.resource (prefix <> "LambdaFunction")
       $ Lambda.mkFunction lambdaCode (StackDeploy.Utils.getAttArn lambdaRole)
-      & CFT.set @"Handler" "function.handler"
-      & CFT.set @"Runtime" "provided.al2"
+      & CFT.set @"Environment"  (EnvSpec.lambdaEnvironment [groupIdsEnvSpec ingressConfigurations])
+      & CFT.set @"FunctionName" lambdaFunctionName
+      & CFT.set @"Handler"      lambdaFunctionHandler
+      & CFT.set @"Runtime"      "provided.al2"
+      & CFT.set @"Timeout"      (CFT.Literal 60)
+
+    lambdaLogGroup
+      = CFT.resource (prefix <> "LogGroup")
+      $ StackDeploy.Utils.mkLambdaLogGroup lambdaFunctionName
 
     lambdaRole
       = CFT.resource (prefix <> "LambdaRule")
       $ IAM.mkRole (StackDeploy.Utils.assumeRole "lambda.amazonaws.com")
-      & CFT.set @"Policies" [StackDeploy.Utils.lambdaLogsPolicy lambdaFunctionName, ingressRulePolicy]
+      & CFT.set @"Policies" [StackDeploy.Utils.mkLambdaLogsPolicy lambdaFunctionName, ingressRulePolicy]
 
     lambdaFunctionName :: CFT.Value Text
     lambdaFunctionName = StackDeploy.Utils.mkName $ CFT.Literal prefix
@@ -401,21 +471,33 @@ component StackConfig{..} ingressConfigurations = mempty
         lambdaTarget =
           Events.mkTargetProperty (StackDeploy.Utils.getAttArn lambdaFunction) (CFT.Literal logicalName)
 
-    ingressRulePolicy = IAM.mkPolicyProperty [("Statement", policyStatement)] "revoke-ingress-rules"
+    ingressRulePolicy
+      = IAM.mkPolicyProperty
+        [ ("Statement", JSON.Array [describePolicyStatement, revokePolicyStatement])
+        ]
+        "revoke-ingress-rules"
       where
-        policyStatement = JSON.Object
-          [ ("Action",   JSON.Array ["ec2:RevokeSecurityGroupIngress"])
+        describePolicyStatement = JSON.Object
+          [ ("Action",   JSON.Array ["ec2:DescribeSecurityGroupRules"])
           , ("Effect",   "Allow")
-          , ("Resource", JSON.toJSON $ JSON.toJSON <$> securityGroupArns)
+          , ("Resource", "*")
           ]
 
-    securityGroupArns = securityGroupArnValue . (.securityGroupIdOutput.value) <$> ingressConfigurations
+        revokePolicyStatement = JSON.Object
+          [ ("Action",   JSON.Array ["ec2:RevokeSecurityGroupIngress"])
+          , ("Effect",   "Allow")
+          , ("Resource", mkResources securityGroupArnValue)
+          ]
 
-    securityGroupArnValue securityGroupIdValue = CFT.Join ":"
-      [ "arn"
-      , "aws"
-      , "ec2"
-      , CFT.awsRegion
-      , CFT.awsAccountId
-      , CFT.Join "/" ["security-group", securityGroupIdValue]
-      ]
+        mkResources function
+          = JSON.toJSON
+          $ JSON.toJSON . function . (.securityGroupIdOutput.value) <$> ingressConfigurations
+
+        securityGroupArnValue securityGroupIdValue = CFT.Join ":"
+          [ "arn"
+          , "aws"
+          , "ec2"
+          , CFT.awsRegion
+          , CFT.awsAccountId
+          , CFT.Join "/" ["security-group", securityGroupIdValue]
+          ]

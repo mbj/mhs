@@ -126,6 +126,19 @@ packages:
     subdir: services/lambda
     url: https://github.com/mbj/stratosphere/archive/7c462f2de4369a76df22d4b34b2f3a9e7754c731.tar.gz
 - completed:
+    name: stratosphere-logs
+    pantry-tree:
+      sha256: 017e18db12d5296a48e069bb3c8be0b8a262d27e9e74030cccf9a02a9cfe6c2e
+      size: 1083
+    sha256: 2f2cd065af1071679630bb4de341ad8c4c30cb130d7527a5730e4252127c9d83
+    size: 2244006
+    subdir: services/logs
+    url: https://github.com/mbj/stratosphere/archive/7c462f2de4369a76df22d4b34b2f3a9e7754c731.tar.gz
+    version: 1.0.0
+  original:
+    subdir: services/logs
+    url: https://github.com/mbj/stratosphere/archive/7c462f2de4369a76df22d4b34b2f3a9e7754c731.tar.gz
+- completed:
     name: stratosphere-s3
     pantry-tree:
       sha256: 4d1a621d3adef87f2b808a59ea318ae041927e42cbd073489b7871ca3722b200

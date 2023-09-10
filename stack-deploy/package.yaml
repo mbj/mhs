@@ -38,6 +38,7 @@ dependencies:
 - stratosphere-ecs        >= 1.0
 - stratosphere-iam        >= 1.0
 - stratosphere-lambda     >= 1.0
+- stratosphere-logs       >= 1.0
 - stratosphere-s3         >= 1.0
 - tasty                   >= 1.3
 - tasty-mgolden           >= 0.0.1

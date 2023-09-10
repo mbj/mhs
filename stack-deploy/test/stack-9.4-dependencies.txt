@@ -166,6 +166,7 @@ stratosphere 1.0.0
 stratosphere-ecs 1.0.0
 stratosphere-iam 1.0.0
 stratosphere-lambda 1.0.0
+stratosphere-logs 1.0.0
 stratosphere-s3 1.0.0
 streaming-commons 0.2.2.6
 strict 0.5
