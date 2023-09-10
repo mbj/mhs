@@ -17,6 +17,7 @@ extra-deps:
   - services/events
   - services/iam
   - services/lambda
+  - services/logs
   - services/s3
   - services/secretsmanager
 flags:

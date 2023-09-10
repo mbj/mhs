@@ -15,7 +15,10 @@ dependencies:
 - cli-utils
 - conduit
 - conversions
+- http-client
+- http-client-tls
 - http-mclient
+- lambda-runtime
 - lens
 - mio-amazonka
 - mio-core
