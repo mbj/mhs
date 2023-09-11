@@ -38,7 +38,7 @@ bitvec 1.1.5.0
 blaze-builder 0.4.2.2
 blaze-html 0.9.1.2
 blaze-markup 0.8.2.8
-bounded 0.0.5
+bounded 0.0.6
 byteorder 1.0.4
 bytestring 0.11.5.1
 cabal-doctest 1.0.9

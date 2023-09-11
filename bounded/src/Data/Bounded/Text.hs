@@ -43,6 +43,9 @@ instance Show.Show BoundTextError where
     <> " but was "
     <> show actual
 
+instance Conversion Text BoundTextError where
+  convert = convert . show
+
 instance Exception BoundTextError
 
 class BoundTextLabel label where
