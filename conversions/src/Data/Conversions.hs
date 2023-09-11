@@ -31,6 +31,9 @@ instance Show.Show (BoundError a b) where
 
 instance (Typeable a, Typeable b) => Exception (BoundError a b)
 
+instance Conversion Text (BoundError a b) where
+  convert = convert . show
+
 data UserBoundError a b = UserBoundError a b b
   deriving stock (Typeable)
 
@@ -38,6 +41,9 @@ instance (Show a, Show b) => Show.Show (UserBoundError a b) where
   show (UserBoundError value min max) = boundError value min max
 
 instance (Show a, Show b, Typeable a, Typeable b) => Exception (UserBoundError a b)
+
+instance (Show a, Show b) => Conversion Text (UserBoundError a b) where
+  convert = convert . show
 
 class Conversion b a where
   convert :: a -> b
