@@ -1,0 +1,28 @@
+_common/package: !include "../common/package.yaml"
+
+name:    aws-rds
+version: 0.0.1
+
+<<: *defaults
+
+# https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem
+extra-source-files: global-bundle.pem
+
+dependencies:
+- base
+- bytestring
+- conversions
+- file-embed
+- mio-core
+- mio-log
+- mprelude
+- pathtype
+
+tests:
+  test:
+    <<: *test
+    dependencies:
+    - aws-rds
+    - devtools
+    - mprelude
+    - tasty
