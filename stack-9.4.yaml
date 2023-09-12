@@ -23,6 +23,8 @@ extra-deps:
 flags:
   aws-checkip:
     development: true
+  aws-rds:
+    development: true
   aws-secrets:
     development: true
   aws-temporary-ingress-rule:
@@ -71,6 +73,7 @@ flags:
     development: true
 packages:
 - aws-checkip
+- aws-rds
 - aws-secrets
 - aws-temporary-ingress-rule
 - bounded
