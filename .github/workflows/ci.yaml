@@ -38,6 +38,7 @@ jobs:
         os:  [ubuntu-latest]
         project:
         - aws-checkip
+        - aws-rds
         - aws-secrets
         - aws-temporary-ingress-rule
         - bounded
