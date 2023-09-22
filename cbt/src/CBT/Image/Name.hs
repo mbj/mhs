@@ -3,6 +3,7 @@ module CBT.Image.Name
   , Name(..)
   , QualifiedName(..)
   , Registry(..)
+  , RegistryName(..)
   , Repository(..)
   , SetRegistry(..)
   , SetTag(..)
@@ -51,6 +52,13 @@ data TaggedName = TaggedName
   }
   deriving stock (Eq, Show)
 
+data RegistryName = RegistryName
+  { registry   :: Registry
+  , repository :: Repository
+  , tag        :: Maybe Tag
+  }
+  deriving stock (Eq, Show)
+
 data QualifiedName = QualifiedName
   { registry   :: Registry
   , repository :: Repository
@@ -95,6 +103,9 @@ instance IsName TaglessName where
 instance IsName TaggedName where
   toName TaggedName{..} = Name{tag = pure tag, ..}
 
+instance IsName RegistryName where
+  toName RegistryName{..} = Name{registry = pure registry, ..}
+
 instance IsName QualifiedName where
   toName QualifiedName{..}
     = Name
@@ -123,6 +134,11 @@ instance SetTag TaggedName where
 
   setTag TaggedName{..} newTag = TaggedName{tag = newTag, ..}
 
+instance SetTag RegistryName where
+  type SetTagResult RegistryName = QualifiedName
+
+  setTag RegistryName{..} newTag = QualifiedName{tag = newTag, ..}
+
 instance SetTag QualifiedName where
   type SetTagResult QualifiedName = QualifiedName
 
@@ -134,12 +150,16 @@ class SetRegistry a where
   setRegistry :: a -> Registry -> SetRegistryResult a
 
 instance SetRegistry Name where
-  type SetRegistryResult Name = Name
-  setRegistry Name{..} newRegistry = Name{registry = pure newRegistry, ..}
+  type SetRegistryResult Name = RegistryName
+  setRegistry Name{..} newRegistry = RegistryName{registry = newRegistry, ..}
+
+instance SetRegistry RegistryName where
+  type SetRegistryResult RegistryName = RegistryName
+  setRegistry RegistryName{..} newRegistry = RegistryName{registry = newRegistry, ..}
 
 instance SetRegistry TaglessName where
-  type SetRegistryResult TaglessName = TaglessName
-  setRegistry TaglessName{..} newRegistry = TaglessName{registry = pure newRegistry, ..}
+  type SetRegistryResult TaglessName = RegistryName
+  setRegistry TaglessName{..} newRegistry = RegistryName{registry = newRegistry, tag = empty, ..}
 
 instance SetRegistry TaggedName where
   type SetRegistryResult TaggedName = QualifiedName

@@ -117,10 +117,13 @@ hashContents contents = runResourceT $ Hash.hashFinalize <$> runConduit conduit
       Conduit.sourceFile path
 
 fromDirectory
-  :: MonadUnliftIO m
-  => CBT.Image.TaglessName
+  :: ( CBT.Image.IsName (CBT.Image.SetTagResult imageName)
+     , CBT.Image.SetTag imageName
+     , MonadUnliftIO m
+     )
+  => imageName
   -> Path.AbsRelDir
-  -> m (BuildDefinition CBT.Image.TaggedName)
+  -> m (BuildDefinition (CBT.Image.SetTagResult imageName))
 fromDirectory imageName dir = do
   tag <- hashContentTag [HashItemFilePath $ Path.toString dir]
 
