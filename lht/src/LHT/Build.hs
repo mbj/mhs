@@ -38,6 +38,7 @@ data Flag = Flag PackageName Text
 data Config = Config
   { cbtBuildDefinition             :: CBT.Image.BuildDefinition CBT.Image.TaggedName
   , executablePath                 :: Path.RelFile
+  , extraArchiveFiles              :: [(Path.RelFile, BS.ByteString)]
   , extraContainerBackendArguments :: [Text]
   , extraStackArguments            :: [Text]
   , flags                          :: [Flag]
@@ -54,7 +55,7 @@ buildZip
   :: CBT.Env env
   => Config
   -> MIO env BS.ByteString
-buildZip config = fmap (convert . Zip.mkZip) (build config)
+buildZip config = fmap (convert . Zip.mkZip config.extraArchiveFiles) (build config)
 
 build
   :: CBT.Env env
