@@ -12,22 +12,25 @@ nobody:x:65534:\n\A'\
 RUN mkdir -p -m 0700 /opt/build
 
 # Install dependencies
-RUN apk add      \
-  --no-cache     \
-  --             \
-  curl           \
-  g++            \
-  gcc            \
-  git            \
-  grep           \
-  libffi         \
-  make           \
-  musl-dev       \
-  ncurses-dev    \
-  ncurses-static \
-  tar            \
-  xz             \
-  zlib-dev       \
+RUN apk add           \
+  --no-cache          \
+  --                  \
+  curl                \
+  gcc                 \
+  g++                 \
+  git                 \
+  gmp-dev             \
+  grep                \
+  libffi              \
+  make                \
+  musl-dev            \
+  ncurses-dev         \
+  ncurses-static      \
+  openssl-libs-static \
+  postgresql-dev      \
+  tar                 \
+  xz                  \
+  zlib-dev            \
   zlib-static
 
 # Download stack

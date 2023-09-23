@@ -29,6 +29,7 @@ config :: LHT.Build.Config
 config = LHT.Build.Config
   { cbtBuildDefinition             = LHT.Build.defaultCBTBuildDefinition
   , executablePath                 = Path.relFile ".local/bin/hello-world"
+  , extraArchiveFiles              = [(Path.file "hello.txt", "world\n")]
   , extraContainerBackendArguments = []
   , extraStackArguments            = []
   , flags                          = [LHT.Build.Flag packageName "lht"]

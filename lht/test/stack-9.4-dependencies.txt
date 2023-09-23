@@ -86,7 +86,7 @@ indexed-traversable 0.1.2.1
 indexed-traversable-instances 0.1.1.2
 integer-gmp 1.1
 integer-logarithms 1.0.3.1
-lht 0.0.3
+lht 0.0.4
 libyaml 0.1.2
 lifted-async 0.10.2.4
 lifted-base 0.2.3.12
