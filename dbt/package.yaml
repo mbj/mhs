@@ -1,7 +1,7 @@
 _common/package: !include "../common/package.yaml"
 
 name:     dbt
-version:  0.2.0
+version:  0.2.1
 synopsis: DBT - DataBase tool
 
 <<: *defaults
@@ -61,4 +61,5 @@ tests:
     - dbt
     - devtools
     - tasty
+    - tasty-hunit
     - tasty-mgolden

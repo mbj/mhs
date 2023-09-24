@@ -60,7 +60,7 @@ data-endian 0.1.1
 data-fix 0.3.2
 data-serializer 0.3.5
 data-textual 0.3.0.3
-dbt 0.2.0
+dbt 0.2.1
 deepseq 1.4.8.0
 deferred-folds 0.9.18.3
 deriving-aeson 0.2.9
