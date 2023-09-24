@@ -9,6 +9,7 @@ version: 0.0.1
 extra-source-files: global-bundle.pem
 
 dependencies:
+- aeson
 - base
 - bytestring
 - conversions
@@ -17,12 +18,17 @@ dependencies:
 - mio-log
 - mprelude
 - pathtype
+- stratosphere
+- stratosphere-iam
 
 tests:
   test:
     <<: *test
     dependencies:
+    - aeson-pretty
     - aws-rds
     - devtools
     - mprelude
     - tasty
+    - tasty-mgolden
+    - text
