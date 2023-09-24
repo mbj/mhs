@@ -30,7 +30,7 @@ main = do
           $ DBT.toSettings defaultConfig
           , Tasty.testCase "maximal"
           . Tasty.assertEqual ""
-            "dbname='test_database' host='test.example.com' port='5555' user='test_user_name' password='test-password' sslmode='verify-full'"
+            "dbname='test_database' host='test.example.com' port='5555' user='test_user_name' password='test-password' sslmode='verify-full' sslrootcert='system'"
           $ DBT.toSettings
             defaultConfig
             { DBT.hostPort    = pure $ DBT.HostPort 5555
@@ -40,7 +40,7 @@ main = do
             }
           , Tasty.testCase "escapes"
           . Tasty.assertEqual ""
-            "dbname='test_database' host='test.example.com' port='5555' user='test_user_name' password='test-password\\'' sslmode='verify-full\\''"
+            "dbname='test_database' host='test.example.com' port='5555' user='test_user_name' password='test-password\\'' sslmode='verify-full\\'' sslrootcert='system\\''"
           $ DBT.toSettings
             defaultConfig
             { DBT.hostPort    = pure $ DBT.HostPort 5555

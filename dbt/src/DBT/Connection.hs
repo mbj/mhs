@@ -58,6 +58,7 @@ toSettings config@ClientConfig{..}
   , required "user"        userName
   , optional "password"    password
   , optional "sslmode"     sslMode
+  , optional "sslrootcert" sslRootCert
   ]
   where
     required :: ToText a => Text -> a -> Maybe Parameter
