@@ -1,5 +1,6 @@
 module DBT.Connection
-  ( withConnection
+  ( toSettings
+  , withConnection
   , withConnectionEither
   , withConnectionSession
   )
@@ -30,7 +31,7 @@ withConnectionEither
   -> (Hasql.Connection -> m a)
   -> m (Either Hasql.ConnectionError a)
 withConnectionEither config action = do
-  (liftIO . Hasql.acquire $ settings config)
+  (liftIO . Hasql.acquire $ toSettings config)
      >>= either (pure . Left) (fmap Right . handleAction)
   where
     handleAction :: Hasql.Connection -> m a
@@ -48,15 +49,15 @@ withConnectionSession config session
   = withConnection config
   $ either Exception.throwIO pure <=< (liftIO . Hasql.run session)
 
-settings :: ClientConfig -> Hasql.Settings
-settings config@ClientConfig{..}
+toSettings :: ClientConfig -> Hasql.Settings
+toSettings config@ClientConfig{..}
   = render
-  [ required "dbname"   databaseName
-  , required "host"     hostName
-  , required "port"     (effectiveHostPort config)
-  , required "user"     userName
-  , optional "password" password
-  , optional "sslmode"  sslMode
+  [ required "dbname"      databaseName
+  , required "host"        hostName
+  , required "port"        (effectiveHostPort config)
+  , required "user"        userName
+  , optional "password"    password
+  , optional "sslmode"     sslMode
   ]
   where
     required :: ToText a => Text -> a -> Maybe Parameter
@@ -69,20 +70,19 @@ render :: [Maybe Parameter] -> BS.ByteString
 render parameters
   = Text.encodeUtf8
   . Text.intercalate " "
-  $ toText <$> Maybe.catMaybes parameters
+  $ renderParameter <$> Maybe.catMaybes parameters
+  where
+    renderParameter Parameter{..} = name <> "='" <> toText (escape $ convertText value) <> "'"
+        where
+          escape []     = []
+          escape (x:xs) = case x of
+            '\'' -> '\\' : x : suffix
+            '\\' -> '\\' : x : suffix
+            _    ->        x : suffix
+            where
+              suffix = escape xs
 
 data Parameter = Parameter
   { name  :: Text
   , value :: Text
   }
-
-instance Conversion Text Parameter where
-  convert Parameter{..} = name <> "='" <> toText (escape $ convertText value) <> "'"
-    where
-      escape []     = []
-      escape (x:xs) = case x of
-        '\'' -> '\\' : x : suffix
-        '\\' -> '\\' : x : suffix
-        _    ->        x : suffix
-        where
-          suffix = escape xs

@@ -61,4 +61,5 @@ tests:
     - dbt
     - devtools
     - tasty
+    - tasty-hunit
     - tasty-mgolden
