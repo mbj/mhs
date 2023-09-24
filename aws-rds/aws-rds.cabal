@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.4.
+-- This file has been generated from package.yaml by hpack version 0.35.5.
 --
 -- see: https://github.com/sol/hpack
 
@@ -64,7 +64,8 @@ library
       ViewPatterns
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wno-ambiguous-fields -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path
   build-depends:
-      base
+      aeson
+    , base
     , bytestring
     , conversions
     , file-embed
@@ -72,6 +73,8 @@ library
     , mio-log
     , mprelude
     , pathtype
+    , stratosphere
+    , stratosphere-iam
   default-language: Haskell2010
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints
@@ -117,7 +120,9 @@ test-suite test
       ViewPatterns
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wno-ambiguous-fields -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N
   build-depends:
-      aws-rds
+      aeson
+    , aeson-pretty
+    , aws-rds
     , base
     , bytestring
     , conversions
@@ -127,7 +132,11 @@ test-suite test
     , mio-log
     , mprelude
     , pathtype
+    , stratosphere
+    , stratosphere-iam
     , tasty
+    , tasty-mgolden
+    , text
   default-language: Haskell2010
   if flag(development)
     ghc-options: -Werror -fplugin=SourceConstraints

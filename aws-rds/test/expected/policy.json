@@ -1,0 +1,35 @@
+{
+    "PolicyDocument": {
+        "Statement": {
+            "Action": "rds-db:connect",
+            "Effect": "Allow",
+            "Resource": {
+                "Fn::Join": [
+                    ":",
+                    [
+                        "arn",
+                        "aws",
+                        "rds-db",
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        {
+                            "Ref": "AWS::AccountId"
+                        },
+                        "dbuser",
+                        {
+                            "Fn::Join": [
+                                "/",
+                                [
+                                    "TestDatabaseLogicalName",
+                                    "test_db_user_name"
+                                ]
+                            ]
+                        }
+                    ]
+                ]
+            }
+        }
+    },
+    "PolicyName": "rds-connect"
+}
