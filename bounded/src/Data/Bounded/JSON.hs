@@ -8,26 +8,6 @@ import Data.Scientific (Scientific)
 import qualified Data.Aeson       as JSON
 import qualified Data.Aeson.Types as JSON
 import qualified Data.Scientific  as Scientific
-import qualified Data.Text        as Text
-
-parseJSONTextBoundedLength
-  :: String
-  -> (Natural, Natural)
-  -> JSON.Value
-  -> JSON.Parser Text
-parseJSONTextBoundedLength field (min, max) = JSON.withText field parseLength
-  where
-    parseLength text
-      | length == 0  = failMessage "cannot be empty String"
-      | length < min = failMessage $ "cannot have less than " <> show min <> " characters"
-      | length > max = failMessage $ "cannot be longer than " <> show max <> " characters"
-      | otherwise    = pure text
-      where
-        length :: Natural
-        length = convertImpure $ Text.length text
-
-        failMessage :: String -> JSON.Parser Text
-        failMessage message = fail $ "parsing " <> field <> " failed, " <> message
 
 parseJSONIntegralBounded
   :: forall b a . (a ~ ToBoundedIntegral b, Conversion b a, Bounded a, Integral a, Integral b, Show b)
