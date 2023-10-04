@@ -15,7 +15,8 @@ import Test.Tasty.HUnit
 import Test.TypeSpec (Expect, ShouldBe, TypeSpec(..))
 import Test.TypedSpec
 
-type Example = BoundText' "Example" '(2, 2)
+type Example  = BoundText' "Example" '(2, 2)
+type Example0 = BoundText' "Example0" '(0, 2)
 
 testTree :: TestTree
 testTree = testGroup "BoundText Tests"
@@ -26,12 +27,18 @@ testTree = testGroup "BoundText Tests"
 valueSpec :: TestTree
 valueSpec = testGroup "BoundText value tests"
   [ acceptsValidJson
+  , acceptsValidJson0
   , invalidExamples
   , rejectsInvalidJson
   , truncateExamples
   , validExamples
   ]
   where
+    acceptsValidJson0 :: TestTree
+    acceptsValidJson0 = testGroup "Accepts bound JSON 0 values"
+      [ acceptJSONText ("", fromType @"" @Example0)
+      ]
+
     acceptsValidJson :: TestTree
     acceptsValidJson = testGroup "Accepts bound JSON values"
       [ acceptJSONText ("CA", fromType @"CA" @Example)
@@ -40,8 +47,8 @@ valueSpec = testGroup "BoundText value tests"
 
     rejectsInvalidJson :: TestTree
     rejectsInvalidJson = testGroup "Rejects out of bound JSON values"
-      [ rejectJSONText @Example (mempty, "parsing Example failed, cannot be empty String")
-      , rejectJSONText @Example ("Foo", "parsing Example failed, cannot be longer than 2 characters")
+      [ rejectJSONText @Example ("", "parsing Example failed, actual length: 0 needs to be within min: 2 and max: 2")
+      , rejectJSONText @Example ("Foo", "parsing Example failed, actual length: 3 needs to be within min: 2 and max: 2")
       ]
 
     invalidExamples :: TestTree

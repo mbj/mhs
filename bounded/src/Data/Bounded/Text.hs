@@ -9,7 +9,6 @@ module Data.Bounded.Text
   )
 where
 
-import Data.Bounded.JSON
 import Data.Bounded.Prelude
 import Data.Bounded.TypeLevel
 import GHC.TypeLits (type (<=?))
@@ -57,11 +56,20 @@ instance (KnownSymbol a, Typeable b) => BoundTextLabel (a ++: b) where
 instance
   ( KnownNat min, KnownNat max, BoundTextLabel label
   , HasValidTypeRange '(min, max) (min <=? max)
-  )
-  => JSON.FromJSON (BoundText' label '( min, max) ) where
-  parseJSON value
-    = BoundText
-   <$> parseJSONTextBoundedLength (labelName @label) (mkRange @min @max) value
+  ) => JSON.FromJSON (BoundText' label '( min, max) ) where
+    parseJSON = JSON.withText field (either failError pure . convert)
+      where
+        field = labelName @label
+        failError BoundTextError{..} =
+          fail
+            $  "parsing "
+            <> field
+            <> " failed, actual length: "
+            <> show actual
+            <> " needs to be within min: "
+            <> show min
+            <> " and max: "
+            <> show max
 
 instance
   ( length ~ Length value
