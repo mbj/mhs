@@ -5,10 +5,13 @@ module AWS.Secrets
   , IsSecret(..)
   , SecretConfig(..)
   , arnValue
+  , envSpecEntries
   , externalTemplate
   , fetchStackSecretArn
+  , getSecretValuePolicy
   , internalComponent
   , rdsGeneratePostgresqlPassword
+  , readEnvSecretValue
   , readStackSecretValue
   , secretNameValue
   , secrets
@@ -20,14 +23,19 @@ import AWS.Secrets.Prelude
 import qualified Amazonka
 import qualified Amazonka.CloudFormation.Types          as CF
 import qualified Amazonka.SecretsManager.GetSecretValue as SecretsManager
+import qualified Data.Aeson                             as JSON
 import qualified Data.List                              as List
+import qualified Data.Text                              as Text
 import qualified MIO.Amazonka                           as AWS
 import qualified MIO.Log                                as Log
 import qualified StackDeploy.Component                  as StackDeploy
+import qualified StackDeploy.EnvSpec
 import qualified StackDeploy.Template                   as StackDeploy
 import qualified StackDeploy.Utils
 import qualified Stratosphere                           as CFT
+import qualified Stratosphere.IAM.Role                  as IAM.Role
 import qualified Stratosphere.SecretsManager.Secret     as SecretsManager
+import qualified UnliftIO.Environment                   as Environment
 import qualified UnliftIO.Exception                     as UnliftIO
 
 type Env env = (AWS.Env env, Log.Env env)
@@ -48,23 +56,17 @@ externalSecretsStackParameter = CFT.mkParameter "ExternalSecretsStack" "String"
 internalComponent :: forall a . IsSecret a => StackDeploy.Component
 internalComponent = mempty
   { StackDeploy.outputs    = CFT.Outputs $ internalOutputs <> externalOutputs
-  , StackDeploy.resources  = CFT.Resources $ mkResource <$> internalSecrets
+  , StackDeploy.resources  = CFT.Resources $ mkSecretResource <$> internalSecrets
   , StackDeploy.parameters = CFT.Parameters effectiveParameters
   }
   where
-    internalOutputs = mkInternalOutput <$> internalSecrets
-    externalOutputs = mkExternalOutput <$> externalSecrets @a
+    internalOutputs = mkInternalOutput         <$> internalSecrets
+    externalOutputs = mkInternalExternalOutput <$> externalSecrets
 
     effectiveParameters =
       [externalSecretsStackParameter | not $ List.null externalOutputs]
 
-    mkExternalOutput :: a -> CFT.Output
-    mkExternalOutput secret
-      = CFT.mkOutput (arnOutputName secret) (arnExternalValue secret)
-
-    internalSecrets = filterSecrets @a $ \case
-      Internal{} -> True
-      External{} -> False
+    (externalSecrets, internalSecrets) = partitionSecrets @a
 
 externalTemplate
   :: forall a . IsSecret a
@@ -77,7 +79,7 @@ externalTemplate =
   where
     stratosphere :: CFT.Template
     stratosphere =
-      (CFT.mkTemplate . CFT.Resources $ mkResource <$> externalSecrets @a)
+      (CFT.mkTemplate . CFT.Resources $ mkSecretResource <$> externalSecrets)
         { CFT.outputs = pure . CFT.Outputs $ mkExternalOutput <$> externalSecrets }
 
     mkExternalOutput :: a -> CFT.Output
@@ -88,18 +90,21 @@ externalTemplate =
          $ mkOutputExportNameValue CFT.awsStackName secret
       }
 
-externalSecrets :: forall a . IsSecret a => [a]
-externalSecrets = filterSecrets @a $ \case
-  Internal{} -> False
-  External{} -> True
+    (externalSecrets, _internalSecrets) = partitionSecrets @a
 
-filterSecrets :: forall a . IsSecret a => (SecretConfig -> Bool) -> [a]
-filterSecrets filter = List.filter (filter . secretConfig) $ secrets @a
+mkInternalExternalOutput :: IsSecret a => a -> CFT.Output
+mkInternalExternalOutput secret
+  = CFT.mkOutput (arnOutputName secret) (arnExternalValue secret)
 
-extractSecretsManagerSecret :: SecretConfig -> SecretsManager.Secret
-extractSecretsManagerSecret = \case
-  (Internal secret) -> secret
-  (External secret) -> secret
+mkInternalOutput :: IsSecret a => a -> CFT.Output
+mkInternalOutput secret = CFT.mkOutput (arnOutputName secret) (arnInternalValue secret)
+
+partitionSecrets :: forall a . IsSecret a => ([a], [a])
+partitionSecrets = List.partition (filter . secretConfig) $ secrets @a
+  where
+    filter = \case
+      Internal{} -> False
+      External{} -> True
 
 logicalResourceName :: IsSecret a => a -> Text
 logicalResourceName = (<> "Secret") . convert . show
@@ -122,14 +127,15 @@ mkOutputExportNameValue :: IsSecret a => CFT.Value Text -> a -> CFT.Value Text
 mkOutputExportNameValue stackName secret
   = CFT.Join "-" [stackName, CFT.Literal $ arnOutputName secret]
 
-mkResource :: IsSecret a => a -> CFT.Resource
-mkResource secret
+mkSecretResource :: IsSecret a => a -> CFT.Resource
+mkSecretResource secret
   = CFT.resource (logicalResourceName secret)
   . extractSecretsManagerSecret
   $ secretConfig secret
-
-mkInternalOutput :: IsSecret a => a -> CFT.Output
-mkInternalOutput secret = CFT.mkOutput (arnOutputName secret) (arnInternalValue secret)
+  where
+    extractSecretsManagerSecret = \case
+      (Internal value) -> value
+      (External value) -> value
 
 secretNameValue :: Text -> CFT.Value Text -> CFT.Value Text
 secretNameValue namespace name
@@ -145,6 +151,9 @@ fetchStackSecretArn stack
 
 readStackSecretValue :: Env env => IsSecret a => CF.Stack -> a -> MIO env Text
 readStackSecretValue stack secret = readSecretsManagerSecret =<< fetchStackSecretArn stack secret
+
+readEnvSecretValue :: (Env env, IsSecret a) => a -> MIO env Text
+readEnvSecretValue = readSecretsManagerSecret . convert <=< Environment.getEnv . convert . envArnName
 
 readSecretsManagerSecret :: Env env => Text -> MIO env Text
 readSecretsManagerSecret arn = do
@@ -163,3 +172,25 @@ rdsGeneratePostgresqlPassword
   = SecretsManager.mkGenerateSecretStringProperty
   & CFT.set @"ExcludeCharacters" "/\"@"
   & CFT.set @"PasswordLength"    (CFT.Literal 48)
+
+envArnName :: IsSecret a => a -> Text
+envArnName = (<> "_ARN") . Text.toUpper . convert . JSON.camelTo2 '_' . show
+
+envSpecEntries :: IsSecret a => [a] -> [StackDeploy.EnvSpec.Entry]
+envSpecEntries = fmap $ \secret ->
+  StackDeploy.EnvSpec.Entry
+  { envName  = envArnName secret
+  , envValue = StackDeploy.EnvSpec.StackOutput $ case secretConfig secret of
+      Internal{} -> mkInternalOutput secret
+      External{} -> mkInternalExternalOutput secret
+  }
+
+getSecretValuePolicy :: IsSecret a => [a] -> IAM.Role.PolicyProperty
+getSecretValuePolicy values = IAM.Role.mkPolicyProperty [("Statement", statement)] "allow-secrets"
+  where
+    statement :: JSON.Value
+    statement = JSON.Object
+      [ ("Action",   "secretsmanager:GetSecretValue")
+      , ("Effect",   "Allow")
+      , ("Resource", JSON.toJSON $ arnValue <$> values)
+      ]

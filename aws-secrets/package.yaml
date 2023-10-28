@@ -20,6 +20,7 @@ dependencies:
 - optparse-applicative
 - stack-deploy
 - stratosphere
+- stratosphere-iam
 - stratosphere-secretsmanager
 - text
 - unliftio
@@ -31,5 +32,6 @@ tests:
     - aws-secrets
     - devtools
     - mio-log
+    - stratosphere-lambda
     - tasty
     - tasty-hunit
