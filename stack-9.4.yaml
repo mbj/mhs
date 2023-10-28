@@ -1,4 +1,4 @@
-resolver: lts-21.12
+resolver: lts-21.17
 extra-deps:
 - amazonka-2.0
 - amazonka-cloudformation-2.0
