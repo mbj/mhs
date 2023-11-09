@@ -82,6 +82,13 @@ jobs:
       run: ./stack build --fast --test --no-run-tests --copy-bins --flag pgt:build-executable ${{ matrix.project }}
     - name: Run tests
       run: ./stack build --fast --test ${{ matrix.project }}
+    - name: Add pgt binary artifact
+      if: matrix.project == 'pgt'
+      uses: actions/upload-artifact@v3
+      with:
+        name: pgt-linux-x86-64
+        path: /home/runner/.local/bin/pgt
+        if-no-files-found: error
   all-checks:
     runs-on: ubuntu-latest
     name: All Checks Pass
