@@ -75,7 +75,11 @@ jobs:
     - name: Install dependencies
       run: ./stack build --test --only-dependencies
     - name: Build
+      if: matrix.project != 'pgt'
       run: ./stack build --fast --test --no-run-tests ${{ matrix.project }}
+    - name: Build pgt binary
+      if: matrix.project == 'pgt'
+      run: ./stack build --fast --test --no-run-tests --copy-bins --flag pgt:build-executable ${{ matrix.project }}
     - name: Run tests
       run: ./stack build --fast --test ${{ matrix.project }}
   all-checks:
