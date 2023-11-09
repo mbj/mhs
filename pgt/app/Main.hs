@@ -4,7 +4,8 @@ import PGT.Prelude
 import System.Environment (getArgs)
 
 import qualified PGT.CLI
+import qualified System.Exit as System
 
 -- | Main entry point
 main :: IO ()
-main = PGT.CLI.run =<< getArgs
+main = System.exitWith =<< PGT.CLI.run =<< getArgs
