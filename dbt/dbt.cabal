@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.5.
+-- This file has been generated from package.yaml by hpack version 0.36.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -89,7 +89,6 @@ library
     , network
     , optparse-applicative >=0.15
     , pathtype >=0.8
-    , source-constraints
     , template-haskell
     , text
     , th-lift-instances >=0.1
@@ -160,7 +159,6 @@ executable dbt
     , network
     , optparse-applicative >=0.15
     , pathtype >=0.8
-    , source-constraints
     , template-haskell
     , text
     , th-lift-instances >=0.1
@@ -237,7 +235,6 @@ test-suite test
     , network
     , optparse-applicative >=0.15
     , pathtype >=0.8
-    , source-constraints
     , tasty
     , tasty-hunit
     , tasty-mgolden

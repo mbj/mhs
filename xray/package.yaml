@@ -23,7 +23,6 @@ dependencies:
 - pathtype
 - random
 - scientific
-- source-constraints
 - template-haskell
 - text
 - time

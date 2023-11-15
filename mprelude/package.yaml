@@ -16,7 +16,6 @@ extra-doc-files: README.md
 
 dependencies:
 - base
-- source-constraints
 - text
 - unliftio-core      >= 0.2
 

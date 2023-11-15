@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.5.
+-- This file has been generated from package.yaml by hpack version 0.36.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -80,7 +80,6 @@ library
     , mio-core
     , mprelude >=0.2
     , pathtype >=0.8
-    , source-constraints
     , tar >=0.5
     , template-haskell
     , text
@@ -151,7 +150,6 @@ test-suite test
     , mio-core
     , mprelude >=0.2
     , pathtype >=0.8
-    , source-constraints
     , tar >=0.5
     , tasty
     , tasty-hunit

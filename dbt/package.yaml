@@ -26,7 +26,6 @@ dependencies:
 - network
 - optparse-applicative >= 0.15
 - pathtype             >= 0.8
-- source-constraints
 - template-haskell
 - text
 - th-lift-instances    >= 0.1
