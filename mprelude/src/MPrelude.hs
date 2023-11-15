@@ -118,15 +118,6 @@ import Data.Tuple as Exports
   ( uncurry
   )
 
-import GHC.Records as Exports
-  ( HasField
-  , getField
-  )
-
-import GHC.Stack as Exports
-  ( HasCallStack
-  )
-
 import GHC.Enum as Exports
   ( Bounded
   , Enum
@@ -143,6 +134,16 @@ import GHC.Num as Exports
   , (*)
   , (+)
   )
+
+import GHC.Records as Exports
+  ( HasField
+  , getField
+  )
+
+import GHC.Stack as Exports
+  ( HasCallStack
+  )
+
 
 import Numeric.Natural as Exports
   ( Natural
