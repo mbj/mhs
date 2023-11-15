@@ -6,16 +6,12 @@ module MIO.Core
   )
 where
 
-import           Control.Applicative            ( liftA2 )
-import           Control.Monad.Catch            ( MonadCatch, MonadThrow )
-import           Control.Monad.IO.Unlift        ( MonadIO(..)
-                                                , MonadUnliftIO(..)
-                                                )
-import           Control.Monad.Primitive        ( PrimMonad(..) )
-import           Control.Monad.Reader           ( MonadReader(..)
-                                                , ReaderT(..)
-                                                )
-import           Prelude
+import Control.Applicative (liftA2)
+import Control.Monad.Catch (MonadCatch, MonadThrow)
+import Control.Monad.IO.Unlift (MonadIO(..), MonadUnliftIO(..))
+import Control.Monad.Primitive (PrimMonad(..) )
+import Control.Monad.Reader (MonadReader(..), ReaderT(..))
+import Prelude
 
 -- | The Reader+IO monad. This is different from a 'ReaderT' because:
 --
