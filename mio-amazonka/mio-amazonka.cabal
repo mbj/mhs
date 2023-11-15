@@ -72,11 +72,13 @@ library
     , unliftio-core >=0.2
   default-language: Haskell2010
   if flag(development)
-    ghc-options: -Werror -fplugin=SourceConstraints
-    build-depends:
-        source-constraints
+    ghc-options: -Werror
   else
     ghc-options: -Wwarn
+  if impl(ghc < 9.5)
+    ghc-options: -fplugin=SourceConstraints
+    build-depends:
+        source-constraints
 
 test-suite test
   type: exitcode-stdio-1.0
@@ -126,8 +128,10 @@ test-suite test
     , unliftio-core >=0.2
   default-language: Haskell2010
   if flag(development)
-    ghc-options: -Werror -fplugin=SourceConstraints
-    build-depends:
-        source-constraints
+    ghc-options: -Werror
   else
     ghc-options: -Wwarn
+  if impl(ghc < 9.5)
+    ghc-options: -fplugin=SourceConstraints
+    build-depends:
+        source-constraints

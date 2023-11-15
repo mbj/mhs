@@ -103,11 +103,13 @@ library
     , yaml >=0.11
   default-language: Haskell2010
   if flag(development)
-    ghc-options: -Werror -fplugin=SourceConstraints
-    build-depends:
-        source-constraints
+    ghc-options: -Werror
   else
     ghc-options: -Wwarn
+  if impl(ghc < 9.5)
+    ghc-options: -fplugin=SourceConstraints
+    build-depends:
+        source-constraints
 
 test-suite tasty
   type: exitcode-stdio-1.0
@@ -161,8 +163,10 @@ test-suite tasty
     , yaml >=0.11
   default-language: Haskell2010
   if flag(development)
-    ghc-options: -Werror -fplugin=SourceConstraints
-    build-depends:
-        source-constraints
+    ghc-options: -Werror
   else
     ghc-options: -Wwarn
+  if impl(ghc < 9.5)
+    ghc-options: -fplugin=SourceConstraints
+    build-depends:
+        source-constraints
