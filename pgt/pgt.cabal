@@ -16,6 +16,7 @@ license-file:   LICENSE
 build-type:     Simple
 tested-with:
     GHC == 9.4
+  , GHC == 9.6
 extra-source-files:
     examples/failure.test.sql
     examples/success.test.sql

@@ -1,4 +1,6 @@
+{-# LANGUAGE CPP         #-}
 {-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE TypeApplications #-}
 
 module Main (main) where
 
@@ -114,9 +116,21 @@ getWarnings file = runGhc (pure libdir) $ do
     render sDocContext warning = do
       caretDiagnostic <- liftIO $
         getCaretDiagnostic
-          (MCDiagnostic (errMsgSeverity warning) WarningWithoutFlag)
+#if MIN_VERSION_base(4,18,0)
+            (MCDiagnostic (errMsgSeverity warning) WarningWithoutFlag Nothing)
+#else
+            (MCDiagnostic (errMsgSeverity warning) WarningWithoutFlag)
+#endif
           (errMsgSpan warning)
+
 
       pure $ renderWithContext
         sDocContext
-        (formatBulleted sDocContext (diagnosticMessage $ errMsgDiagnostic warning) $+$ caretDiagnostic)
+#if MIN_VERSION_base(4,18,0)
+          (formatBulleted
+            sDocContext
+            (diagnosticMessage (defaultDiagnosticOpts @GhcMessage) $ errMsgDiagnostic warning) $+$ caretDiagnostic
+          )
+#else
+          (formatBulleted sDocContext (diagnosticMessage $ errMsgDiagnostic warning) $+$ caretDiagnostic)
+#endif

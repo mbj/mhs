@@ -15,6 +15,7 @@ license:        BSD3
 build-type:     Simple
 tested-with:
     GHC == 9.4
+  , GHC == 9.6
 extra-source-files:
     global-bundle.pem
 

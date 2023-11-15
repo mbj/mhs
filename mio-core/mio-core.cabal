@@ -16,6 +16,7 @@ license:        BSD3
 build-type:     Simple
 tested-with:
     GHC == 9.4
+  , GHC == 9.6
 
 source-repository head
   type: git
