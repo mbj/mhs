@@ -89,6 +89,18 @@ jobs:
         name: pgt-linux-x86-64
         path: /home/runner/.local/bin/pgt
         if-no-files-found: error
+    - name: Upload latest pgt release
+      if: ${{ matrix.project == 'pgt' && github.ref == 'refs/heads/main' }}
+      run: |
+        name=pgt-latest-linux-x86-64
+
+        # Initialize the latest release
+        gh release create "$name" --title "$name" --notes 'Latest linux x86 release of pgt' --repo ${{ github.repository }} 2> /dev/null || true
+
+        # Upload the latest release
+        gh release upload "$name" "$HOME/.local/bin/pgt" --clobber --repo ${{ github.repository }}
+      env:
+        GH_TOKEN: ${{ github.token }}
   all-checks:
     runs-on: ubuntu-latest
     name: All Checks Pass
