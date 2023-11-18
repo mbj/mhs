@@ -19,7 +19,6 @@ dependencies:
 - mio-core
 - mprelude           >= 0.2
 - pathtype           >= 0.8
-- source-constraints
 - tar                >= 0.5
 - template-haskell
 - text

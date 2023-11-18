@@ -1,0 +1,100 @@
+resolver: nightly-2023-11-08
+extra-deps:
+- amazonka-2.0
+- amazonka-cloudformation-2.0
+- amazonka-core-2.0
+- amazonka-ec2-2.0
+- amazonka-s3-2.0
+- amazonka-secretsmanager-2.0
+- amazonka-sso-2.0
+- amazonka-sts-2.0
+- mprelude
+- github: ndmitchell/hlint
+  commit: 505a4d57b972f3ba605ad7a59721cef1f3d98a84
+- github: mbj/stratosphere
+  commit: 7c462f2de4369a76df22d4b34b2f3a9e7754c731
+  subdirs:
+  - .
+  - services/ecs
+  - services/events
+  - services/iam
+  - services/lambda
+  - services/logs
+  - services/s3
+  - services/secretsmanager
+flags:
+  aws-checkip:
+    development: true
+  aws-rds:
+    development: true
+  aws-secrets:
+    development: true
+  aws-temporary-ingress-rule:
+    development: true
+  bounded:
+    development: true
+  cbt:
+    development: true
+  cli-utils:
+    development: true
+  conversions:
+    development: true
+  dbt:
+    development: true
+  devtools:
+    development: true
+  http-mclient:
+    development: true
+  lambda-alb:
+    development: true
+  lambda-runtime:
+    development: true
+  lht:
+    development: true
+  mio-amazonka:
+    development: true
+  mio-core:
+    development: true
+  mio-log:
+    development: true
+  mprelude:
+    development: true
+  oauth:
+    development: true
+  openapi:
+    development: true
+  pgt:
+    development: true
+  source-constraints:
+    development: true
+  stack-deploy:
+    development: true
+  tasty-mgolden:
+    development: true
+  xray:
+    development: true
+packages:
+- aws-checkip
+- aws-rds
+- aws-secrets
+- aws-temporary-ingress-rule
+- bounded
+- cbt
+- cli-utils
+- conversions
+- dbt
+- devtools
+- http-mclient
+- lambda-alb
+- lambda-runtime
+- lht
+- mio-amazonka
+- mio-core
+- mio-log
+- oauth
+- openapi
+- pgt
+- source-constraints
+- stack-deploy
+- tasty-mgolden
+- xray

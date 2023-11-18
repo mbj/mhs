@@ -22,7 +22,6 @@ dependencies:
 - mtl
 - pathtype
 - resourcet            >= 1.2.4
-- source-constraints
 - tar                  >= 0.5
 - template-haskell
 - text

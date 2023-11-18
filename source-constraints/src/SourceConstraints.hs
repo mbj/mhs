@@ -1,4 +1,6 @@
+{-# LANGUAGE CPP              #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE TypeApplications #-}
 
 module SourceConstraints (Context(..), plugin, warnings) where
 
@@ -64,15 +66,27 @@ run _options ModSummary{ms_location = ModLocation{..}} parsedResult@ParsedResult
   let sDocContext = initSDocContext dynFlags defaultUserStyle
       diagOpts    = initDiagOpts dynFlags
 
+#if MIN_VERSION_base(4,18,0)
+  when (allowLocation ml_hs_file) . emitWarnings diagOpts logger (defaultDiagnosticOpts @GhcMessage) $
+    warnings Context{..} (hpm_module parsedResultModule)
+#else
   when (allowLocation ml_hs_file) . emitWarnings diagOpts logger $
     warnings Context{..} (hpm_module parsedResultModule)
+#endif
 
   pure parsedResult
   where
     allowLocation = maybe False (notElem "autogen/" . splitPath)
 
+#if MIN_VERSION_base(4,18,0)
+    emitWarnings :: DiagOpts -> Logger -> GhcMessageOpts -> WarningMessages -> Hsc ()
+    emitWarnings diagOpts logger ghcMessageOpts
+      = liftIO . printOrThrowDiagnostics logger ghcMessageOpts diagOpts
+#else
     emitWarnings :: DiagOpts -> Logger -> WarningMessages -> Hsc ()
-    emitWarnings diagOpts logger = liftIO . printOrThrowDiagnostics logger diagOpts
+    emitWarnings diagOpts logger
+      = liftIO . printOrThrowDiagnostics logger diagOpts
+#endif
 
 -- | Find warnings for node
 warnings
@@ -101,7 +115,11 @@ locatedWarnings context node
   , mkQ Nothing sortedMultipleDeriving  node
   ]
   where
-
+#if MIN_VERSION_base(4,18,0)
+    sortedImportStatement :: HsModule GhcPs -> Maybe Message
+#else
+    sortedImportStatement :: HsModule -> Maybe Message
+#endif
     sortedImportStatement HsModule{..} =
       sortedLocated
         "import statement"
@@ -160,11 +178,15 @@ locatedWarnings context node
           -> IEClass
         mkClass constructor name = constructor $ render context name
 
+#if MIN_VERSION_base(4,18,0)
+mkWarnMsg :: DiagOpts -> SrcSpan -> NamePprCtx -> SDoc -> Message
+#else
 mkWarnMsg :: DiagOpts -> SrcSpan -> PrintUnqualified -> SDoc -> Message
+#endif
 mkWarnMsg diagOpts srcSpan printUnqualified sdoc
   = MsgEnvelope
   { errMsgContext    = printUnqualified
-  , errMsgDiagnostic = GhcUnknownMessage $ mkPlainDiagnostic WarningWithoutFlag [] sdoc
+  , errMsgDiagnostic = ghcUnknownMessage $ mkPlainDiagnostic WarningWithoutFlag [] sdoc
   , errMsgSeverity   = (diagReasonSeverity diagOpts WarningWithoutFlag)
   , errMsgSpan       = srcSpan
   }

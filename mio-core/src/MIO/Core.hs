@@ -1,3 +1,5 @@
+{-# LANGUAGE CPP #-}
+
 module MIO.Core
   ( MIO(..)
   , liftMIO
@@ -6,16 +8,14 @@ module MIO.Core
   )
 where
 
-import           Control.Applicative            ( liftA2 )
-import           Control.Monad.Catch            ( MonadCatch, MonadThrow )
-import           Control.Monad.IO.Unlift        ( MonadIO(..)
-                                                , MonadUnliftIO(..)
-                                                )
-import           Control.Monad.Primitive        ( PrimMonad(..) )
-import           Control.Monad.Reader           ( MonadReader(..)
-                                                , ReaderT(..)
-                                                )
-import           Prelude
+#if !MIN_VERSION_base(4,18,0)
+import Control.Applicative (liftA2)
+#endif
+import Control.Monad.Catch (MonadCatch, MonadThrow)
+import Control.Monad.IO.Unlift (MonadIO(..), MonadUnliftIO(..))
+import Control.Monad.Primitive (PrimMonad(..) )
+import Control.Monad.Reader (MonadReader(..), ReaderT(..))
+import Prelude
 
 -- | The Reader+IO monad. This is different from a 'ReaderT' because:
 --

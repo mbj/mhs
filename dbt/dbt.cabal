@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.5.
+-- This file has been generated from package.yaml by hpack version 0.36.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -16,6 +16,7 @@ license:        BSD3
 build-type:     Simple
 tested-with:
     GHC == 9.4
+  , GHC == 9.6
 
 source-repository head
   type: git
@@ -89,7 +90,6 @@ library
     , network
     , optparse-applicative >=0.15
     , pathtype >=0.8
-    , source-constraints
     , template-haskell
     , text
     , th-lift-instances >=0.1
@@ -98,11 +98,13 @@ library
     , unliftio-core >=0.2
   default-language: Haskell2010
   if flag(development)
-    ghc-options: -Werror -fplugin=SourceConstraints
-    build-depends:
-        source-constraints
+    ghc-options: -Werror
   else
     ghc-options: -Wwarn
+  if impl(ghc < 9.5)
+    ghc-options: -fplugin=SourceConstraints
+    build-depends:
+        source-constraints
 
 executable dbt
   main-is: Main.hs
@@ -160,7 +162,6 @@ executable dbt
     , network
     , optparse-applicative >=0.15
     , pathtype >=0.8
-    , source-constraints
     , template-haskell
     , text
     , th-lift-instances >=0.1
@@ -169,11 +170,13 @@ executable dbt
     , unliftio-core >=0.2
   default-language: Haskell2010
   if flag(development)
-    ghc-options: -Werror -fplugin=SourceConstraints
-    build-depends:
-        source-constraints
+    ghc-options: -Werror
   else
     ghc-options: -Wwarn
+  if impl(ghc < 9.5)
+    ghc-options: -fplugin=SourceConstraints
+    build-depends:
+        source-constraints
   if flag(development)
     buildable: True
   else
@@ -237,7 +240,6 @@ test-suite test
     , network
     , optparse-applicative >=0.15
     , pathtype >=0.8
-    , source-constraints
     , tasty
     , tasty-hunit
     , tasty-mgolden
@@ -249,8 +251,10 @@ test-suite test
     , unliftio-core >=0.2
   default-language: Haskell2010
   if flag(development)
-    ghc-options: -Werror -fplugin=SourceConstraints
-    build-depends:
-        source-constraints
+    ghc-options: -Werror
   else
     ghc-options: -Wwarn
+  if impl(ghc < 9.5)
+    ghc-options: -fplugin=SourceConstraints
+    build-depends:
+        source-constraints

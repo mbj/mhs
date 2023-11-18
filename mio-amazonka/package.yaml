@@ -14,7 +14,6 @@ dependencies:
 - mio-core
 - mtl
 - resourcet          >= 1.2.4
-- source-constraints
 - unliftio-core      >= 0.2
 
 tests:

@@ -50,7 +50,6 @@ tests:
     dependencies:
     - bounded
     - should-not-typecheck
-    - source-constraints
     - tasty
     - tasty-hunit
     - type-spec

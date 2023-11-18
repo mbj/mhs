@@ -1,0 +1,7 @@
+resolver: nightly-2023-11-08
+setup-info:
+  ghc:
+    linux64-lht:
+      9.6.3:
+        url: https://downloads.haskell.org/~ghc/9.6.3/ghc-9.6.3-x86_64-alpine3_12-linux.tar.xz
+        sha256: 8f457af0aa40127049c11134c8793f64351a446e87da1f8ec256e1279b5ab61f

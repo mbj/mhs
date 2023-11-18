@@ -22,7 +22,6 @@ dependencies:
 - mtl
 - pathtype             >= 0.8
 - scientific           >= 0.3
-- source-constraints   >= 0.0.1
 - text
 - unordered-containers >= 0.2
 - yaml                 >= 0.11

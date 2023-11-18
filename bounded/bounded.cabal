@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.5.
+-- This file has been generated from package.yaml by hpack version 0.36.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -17,6 +17,7 @@ license-file:   LICENSE
 build-type:     Simple
 tested-with:
     GHC == 9.4
+  , GHC == 9.6
 
 source-repository head
   type: git
@@ -74,11 +75,13 @@ library
     , text
   default-language: Haskell2010
   if flag(development)
-    ghc-options: -Werror -fplugin=SourceConstraints
-    build-depends:
-        source-constraints
+    ghc-options: -Werror
   else
     ghc-options: -Wwarn
+  if impl(ghc < 9.5)
+    ghc-options: -fplugin=SourceConstraints
+    build-depends:
+        source-constraints
 
 test-suite readme
   type: exitcode-stdio-1.0
@@ -122,11 +125,13 @@ test-suite readme
     , text
   default-language: Haskell2010
   if flag(development)
-    ghc-options: -Werror -fplugin=SourceConstraints
-    build-depends:
-        source-constraints
+    ghc-options: -Werror
   else
     ghc-options: -Wwarn
+  if impl(ghc < 9.5)
+    ghc-options: -fplugin=SourceConstraints
+    build-depends:
+        source-constraints
 
 test-suite test
   type: exitcode-stdio-1.0
@@ -174,7 +179,6 @@ test-suite test
     , mtl
     , scientific
     , should-not-typecheck
-    , source-constraints
     , tasty
     , tasty-hunit
     , template-haskell
@@ -182,8 +186,10 @@ test-suite test
     , type-spec
   default-language: Haskell2010
   if flag(development)
-    ghc-options: -Werror -fplugin=SourceConstraints
-    build-depends:
-        source-constraints
+    ghc-options: -Werror
   else
     ghc-options: -Wwarn
+  if impl(ghc < 9.5)
+    ghc-options: -fplugin=SourceConstraints
+    build-depends:
+        source-constraints

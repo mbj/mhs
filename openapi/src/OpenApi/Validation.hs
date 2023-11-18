@@ -146,7 +146,7 @@ visitDiscriminator :: Schema -> Discriminator -> Validator ()
 visitDiscriminator Schema{..} Discriminator{..} = do
   unless (isJust anyOf || isJust oneOf || isJust allOf)
     $ addFlag @Text "Discriminator used on schema without allOf anyOf or oneOf"
-  traverse_ (traverse_ $ visitDiscriminatorMappingKey propertyName) (Map.toList <$> mapping)
+  traverse_ (traverse_ (visitDiscriminatorMappingKey propertyName) . Map.toList) mapping
 
 visitDiscriminatorMappingKey :: PropertyName -> (DiscriminatorKey, Reference Schema) -> Validator ()
 visitDiscriminatorMappingKey propertyName (key, reference)
