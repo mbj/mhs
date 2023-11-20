@@ -127,11 +127,24 @@ addResourcePropertiesTags tags Stratosphere.ResourceProperties{..}
   , ..
   }
   where
+    addPropagateAtLaunch value =
+      if awsType == "AWS::AutoScaling::AutoScalingGroup"
+        then mergeArrayObject value (JSON.Object [("PropagateAtLaunch", JSON.toJSON True)])
+        else value
+
     newProperties =
       if supportsTags
-        then KeyMap.unionWith merge [("Tags", JSON.toJSON tags)] properties
+        then KeyMap.unionWith mergeArray [("Tags", addPropagateAtLaunch $ JSON.toJSON tags)] properties
         else properties
 
-    merge leftValue rightValue = case (leftValue, rightValue) of
+    mergeArrayObject leftValue rightValue = case leftValue of
+      JSON.Array leftItems -> JSON.Array $ mergeObject rightValue <$> leftItems
+      other                -> error $ "invalid array merge:" <> show (other, rightValue)
+
+    mergeObject leftValue rightValue = case (leftValue, rightValue) of
+      (JSON.Object leftMap, JSON.Object rightMap) -> JSON.Object $ leftMap <> rightMap
+      other                                       -> error $ "invalid object merge:" <> show other
+
+    mergeArray leftValue rightValue = case (leftValue, rightValue) of
       (JSON.Array leftItems, JSON.Array rightItems) -> JSON.Array $ leftItems <> rightItems
-      other                                         -> error $ "non tag array merge:" <> show other
+      other                                         -> error $ "invalid array merge:" <> show other
