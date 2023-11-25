@@ -75,6 +75,7 @@ random 1.2.1.1
 refact 0.3.0.2
 resourcet 1.3.0
 rts 1.0.2
+safe-exceptions 0.1.7.4
 scientific 0.3.7.0
 semialign 1.3
 semigroupoids 6.0.0.1
@@ -102,6 +103,7 @@ typed-process 0.2.11.1
 unbounded-delays 0.1.1.1
 uniplate 1.6.13
 unix 2.8.1.0
+unliftio 0.2.25.0
 unliftio-core 0.2.1.0
 unordered-containers 0.2.19.1
 utf8-string 1.0.2
