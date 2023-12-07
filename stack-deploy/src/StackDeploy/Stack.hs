@@ -158,29 +158,29 @@ printEvent event = do
     , resourceType
     , resourceStatus
     ]
-  sayReason $ getField @"resourceStatusReason" event
+  sayReason event.resourceStatusReason
   where
     logicalResourceId =
       fromMaybe
         "[unknown-logical-resource-id]"
-        (getField @"logicalResourceId" event)
+        (event.logicalResourceId)
 
     physicalResourceId =
       fromMaybe
         "[unknown-physical-resource-id]"
-        (getField @"physicalResourceId" event)
+        (event.physicalResourceId)
 
     resourceType =
       fromMaybe
         "[unknown-resource-type]"
-        (getField @"resourceType" event)
+        event.resourceType
 
     resourceStatus :: Text
     resourceStatus =
       maybe
         "[unknown-resource-type]"
         CF.fromResourceStatus
-        (getField @"resourceStatus" event)
+        event.resourceStatus
 
     timeFormat :: String
     timeFormat = "%Y-%m-%dT%H:%M:%S"
@@ -229,8 +229,8 @@ getExistingStack name = maybe failMissingRequested pure =<< doRequest
   where
     doRequest :: MIO env (Maybe CF.Stack)
     doRequest = runConduit
-      $ AWS.listResource describeSpecificStack (fromMaybe [] . getField @"stacks")
-      .| find ((toText name ==) . getField @"stackName")
+      $ AWS.listResource describeSpecificStack (fromMaybe [] . (.stacks))
+      .| find ((toText name ==) . (.stackName))
 
     failMissingRequested :: MIO env a
     failMissingRequested
@@ -252,8 +252,8 @@ getOutput name key = do
 
   maybe
     (failStack $ "Output " <> convertText key <> " missing")
-    (maybe (failStack $ "Output " <> convertText key <> " has no value") pure . getField @"outputValue")
-    (Foldable.find ((==) (pure key) . getField @"outputKey") (fromMaybe [] $ getField @"outputs" stack))
+    (maybe (failStack $ "Output " <> convertText key <> " has no value") pure . (.outputValue))
+    (Foldable.find ((==) (pure key) . (.outputKey)) (fromMaybe [] $ stack.outputs))
   where
     failStack :: Text -> MIO env a
     failStack message
@@ -261,8 +261,8 @@ getOutput name key = do
 
 stackNames :: AWS.Env env => ConduitT () InstanceSpec.Name (MIO env) ()
 stackNames
-  =  AWS.listResource CF.newDescribeStacks (fromMaybe [] . getField @"stacks")
-  .| map (convertImpure . getField @"stackName")
+  =  AWS.listResource CF.newDescribeStacks (fromMaybe [] . (.stacks))
+  .| map (convertImpure . (.stackName))
 
 prepareOperation
   :: forall env a . (AWS.Env env, StackDeploy.Env env)
@@ -287,7 +287,7 @@ prepareOperation OperationFields{..} InstanceSpec{..} token
     s3Template :: a -> MIO env a
     s3Template request = do
       ask >>=
-        (maybe failMissingTemplateBucket (doUpload request =<<) . (.getTemplateBucketName)) . getField @"stackDeployConfig"
+        (maybe failMissingTemplateBucket (doUpload request =<<) . (.getTemplateBucketName)) . (.stackDeployConfig)
 
     doUpload :: a -> S3.BucketName -> MIO env a
     doUpload request bucketName@(S3.BucketName bucketNameText) = do

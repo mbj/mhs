@@ -70,7 +70,7 @@ fetchOutput
 fetchOutput stack stratosphereOutput =
   maybe
     (failOutputKey "missing")
-    (maybe (failOutputKey "has no value") pure . getField @"outputValue")
+    (maybe (failOutputKey "has no value") pure . (.outputValue))
     $ Foldable.find
       ((==) (pure key) . (.outputKey))
       (fromMaybe [] stack.outputs)

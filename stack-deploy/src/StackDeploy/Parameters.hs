@@ -51,11 +51,7 @@ fromStratosphereParameter
   :: Stratosphere.Parameter
   -> ParameterValue
   -> Parameter
-fromStratosphereParameter stratosphereParameter = Parameter name
-  where
-    name
-      = ParameterName
-      $ getField @"name" stratosphereParameter
+fromStratosphereParameter = Parameter . ParameterName . (.name)
 
 instance IsList Parameters where
   type Item Parameters = Parameter
@@ -114,11 +110,9 @@ expandTemplate parameters@(Parameters hash) template
     templateParameterNames :: Set ParameterName
     templateParameterNames
       = Set.fromList
-      $ ParameterName . getField @"name" <$> templateParameters
+      $ ParameterName . (.name) <$> templateParameters
 
     templateParameters :: [Stratosphere.Parameter]
     templateParameters
-      = maybe
-          Alternative.empty
-          (getField @"parameterList")
+      = maybe Alternative.empty (.parameterList)
       $ template.stratosphere.parameters

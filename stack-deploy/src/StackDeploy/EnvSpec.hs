@@ -95,10 +95,10 @@ fetchParam
 fetchParam stack stratosphereParameter =
   maybe
     (failOutputKey "missing")
-    (maybe (failOutputKey "has no value") pure . getField @"parameterValue")
+    (maybe (failOutputKey "has no value") pure . (.parameterValue))
     $ Foldable.find
-      ((==) (pure key) . getField @"parameterKey")
-      (fromMaybe [] $ getField @"parameters" stack)
+      ((==) (pure key) . (.parameterKey))
+      (fromMaybe [] stack.parameters)
   where
     key = stratosphereParameter.name
 
