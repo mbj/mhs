@@ -1,5 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
-
 import Data.IORef
 import MIO.Core
 import MPrelude

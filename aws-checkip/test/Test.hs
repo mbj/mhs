@@ -1,5 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
-
 module Main (main) where
 
 import AWS.Checkip.Prelude

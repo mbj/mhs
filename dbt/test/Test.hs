@@ -1,5 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
-
 import MPrelude
 
 import qualified CBT
