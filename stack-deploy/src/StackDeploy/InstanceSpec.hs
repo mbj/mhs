@@ -1,128 +1,142 @@
 module StackDeploy.InstanceSpec
-  ( InstanceSpec(..)
-  , Name
-  , Provider
-  , RoleARN(..)
+  ( InstanceName
+  , InstanceSpec(..)
+  , InstanceSpecMap
+  , RoleARN
   , addTags
-  , get
-  , mk
-  , templateProvider
+  , fetchInstanceSpec
+  , instanceSpecMapFromList
+  , instanceSpecMapTestTree
+  , mkInstanceSpec
+  , setInstanceSpecParameter
+  , templateMapFromInstanceSpecMap
   )
 where
 
 import Data.MonoTraversable (omap)
 import Prelude (error)
-import StackDeploy.Parameters (Parameters)
 import StackDeploy.Prelude
-import StackDeploy.Template (Template)
 
 import qualified Amazonka.CloudFormation.Types as CF
 import qualified Data.Aeson                    as JSON
 import qualified Data.Aeson.KeyMap             as KeyMap
-import qualified StackDeploy.Parameters        as Parameters
-import qualified StackDeploy.Provider          as Provider
-import qualified StackDeploy.Template          as Template
-import qualified Stratosphere
+import qualified Data.Map.Strict               as Map
+import qualified StackDeploy.NamedTemplate     as StackDeploy
+import qualified StackDeploy.Parameters        as StackDeploy
+import qualified Stratosphere                  as CFT
+import qualified Test.Tasty                    as Tasty
 
-newtype RoleARN = RoleARN Text
-  deriving (Conversion Text) via Text
-  deriving stock Eq
+-- $setup
+-- >>> import StackDeploy.Prelude
+-- >>> import qualified StackDeploy.InstanceSpec  as StackDeploy
+-- >>> import qualified StackDeploy.NamedTemplate as StackDeploy
+-- >>> import qualified Stratosphere              as CFT
 
-type Name = BoundText "StackDeploy.InstanceSpec.Name"
-
-type Provider env = Provider.Provider (InstanceSpec env)
+type RoleARN             = BoundText "StackDeploy.InstanceSpec.RoleARN"
+type InstanceName        = BoundText "StackDeploy.InstanceSpec.Name"
+type InstanceSpecMap env = Map InstanceName (InstanceSpec env)
 
 data InstanceSpec env = InstanceSpec
   { capabilities  :: [CF.Capability]
-  , envParameters :: MIO env Parameters
-  , envRoleARN    :: Maybe (MIO env RoleARN)
-  , name          :: Name
+  , name          :: InstanceName
+  , namedTemplate :: StackDeploy.NamedTemplate
+  , onLoad        :: InstanceSpec env -> MIO env (InstanceSpec env)
   , onSuccess     :: MIO env ()
-  , parameters    :: Parameters
-  , roleARN       :: Maybe RoleARN
-  , template      :: Template
+  , parameterMap  :: StackDeploy.ParameterMap
+  , roleArn       :: Maybe RoleARN
   }
 
-instance Provider.HasItemName (InstanceSpec env) where
-  type ItemName (InstanceSpec env) = Name
-  name = (.name)
-
-get
-  :: Provider env
-  -> Name
-  -> Parameters
-  -> MIO env (InstanceSpec env)
-get provider targetName userParameters = do
-  instanceSpec <- Provider.get "instance-spec" provider targetName
-  env          <- instanceSpec.envParameters
-  roleARN      <- tryEnvRole instanceSpec
-
-  pure $ instanceSpec
-    { parameters
-        =  expandedParameters instanceSpec
-        `union` env
-        `union` userParameters
-    , roleARN  = roleARN
-    }
-
+fetchInstanceSpec :: MonadIO m => InstanceName -> InstanceSpecMap env -> m (InstanceSpec env)
+fetchInstanceSpec instanceName = maybe absent pure . Map.lookup instanceName
   where
-    expandedParameters :: InstanceSpec env -> Parameters
-    expandedParameters InstanceSpec{..} =
-      Parameters.expandTemplate parameters template
+    absent = throwString $ "Instance spec not known: " <> convertVia @Text instanceName
 
-    tryEnvRole :: InstanceSpec env -> MIO env (Maybe RoleARN)
-    tryEnvRole InstanceSpec{..} = maybe (pure roleARN) (pure <$>) envRoleARN
+-- | Set instance spec parameter
+setInstanceSpecParameter :: StackDeploy.Parameter -> InstanceSpec env -> InstanceSpec env
+setInstanceSpecParameter parameter instanceSpec@InstanceSpec{..}
+  = instanceSpec
+  { parameterMap = Map.insert parameter.name parameter.value parameterMap
+  }
 
-    union = Parameters.union
+-- | Construct instance spec map from list
+-- >>> let namedTemplate = StackDeploy.mkNamedTemplate (fromType @"test") (CFT.mkTemplate [])
+-- >>> let instanceSpec = StackDeploy.mkInstanceSpec (fromType @"test") namedTemplate
+-- >>> let instanceSpecMap = StackDeploy.instanceSpecMapFromList [instanceSpec]
+instanceSpecMapFromList :: [InstanceSpec env] -> InstanceSpecMap env
+instanceSpecMapFromList = Map.fromList . fmap (\instanceSpec -> (instanceSpec.name, instanceSpec))
 
-mk :: Name -> Template -> InstanceSpec env
-mk name template = InstanceSpec
+-- | Construct minimal instance spec
+-- >>> let namedTemplate = StackDeploy.mkNamedTemplate (fromType @"test") (CFT.mkTemplate [])
+-- >>> let instanceSpec = StackDeploy.mkInstanceSpec (fromType @"test") namedTemplate
+-- >>> instanceSpec.capabilities
+-- []
+-- >>> instanceSpec.name
+-- BoundText "test"
+-- >>> instanceSpec.parameterMap
+-- fromList []
+-- >>> instanceSpec.roleArn
+-- Nothing
+mkInstanceSpec :: InstanceName -> StackDeploy.NamedTemplate -> InstanceSpec env
+mkInstanceSpec name namedTemplate = InstanceSpec
   { capabilities  = empty
-  , envParameters = pure Parameters.empty
-  , envRoleARN    = empty
+  , onLoad        = pure
   , onSuccess     = pure ()
-  , parameters    = Parameters.empty
-  , roleARN       = empty
+  , parameterMap  = []
+  , roleArn       = empty
   , ..
   }
 
-templateProvider :: Provider env -> Template.Provider
-templateProvider provider = fromList $ (.template) <$> toList provider
+-- | Construct template map from instance spec map
+-- >>> let namedTemplate = StackDeploy.mkNamedTemplate (fromType @"test") (CFT.mkTemplate [])
+-- >>> let instanceSpec  = StackDeploy.mkInstanceSpec (fromType @"test") namedTemplate
+-- >>> StackDeploy.templateMapFromInstanceSpecMap [((fromType @"test"), instanceSpec)]
+-- fromList [(BoundText "test",Template {conditions = Nothing, description = Nothing, formatVersion = Nothing, mappings = Nothing, metadata = Nothing, outputs = Nothing, parameters = Nothing, resources = Resources {resourceList = []}})]
+templateMapFromInstanceSpecMap :: InstanceSpecMap env -> StackDeploy.NamedTemplateMap
+templateMapFromInstanceSpecMap map
+  = Map.fromList
+  $ (\InstanceSpec{..} -> (namedTemplate.name, namedTemplate.template)) <$> Map.elems map
 
-addTags :: [Stratosphere.Tag] -> InstanceSpec env -> InstanceSpec env
+-- | Add static tags to instance spec
+addTags :: [CFT.Tag] -> InstanceSpec env -> InstanceSpec env
 addTags tags InstanceSpec{..}
   = InstanceSpec
-  { template = addTemplateTags tags template
+  { namedTemplate = addNamedTemplateTags tags namedTemplate
   , ..
   }
 
-addTemplateTags :: [Stratosphere.Tag] -> Template.Template -> Template.Template
-addTemplateTags tags Template.Template{..}
-  = Template.Template
-  { stratosphere = addStratosphereTags tags stratosphere
+-- | Add static tags to named template tags
+addNamedTemplateTags :: [CFT.Tag] -> StackDeploy.NamedTemplate -> StackDeploy.NamedTemplate
+addNamedTemplateTags tags StackDeploy.NamedTemplate{..}
+  = StackDeploy.NamedTemplate
+  { template = addStratosphereTags tags template
   , ..
   }
 
-addStratosphereTags :: [Stratosphere.Tag] -> Stratosphere.Template -> Stratosphere.Template
-addStratosphereTags tags Stratosphere.Template{..}
-  = Stratosphere.Template
+-- | Add static tags to stratosphere template
+addStratosphereTags :: [CFT.Tag] -> CFT.Template -> CFT.Template
+addStratosphereTags tags CFT.Template{..}
+  = CFT.Template
   { resources = omap (addResourceTags tags) resources
   , ..
   }
 
-addResourceTags :: [Stratosphere.Tag] -> Stratosphere.Resource -> Stratosphere.Resource
-addResourceTags tags Stratosphere.Resource{..}
-  = Stratosphere.Resource
+-- | Add static tags to stratosphere resource
+addResourceTags :: [CFT.Tag] -> CFT.Resource -> CFT.Resource
+addResourceTags tags CFT.Resource{..}
+  = CFT.Resource
   { properties = addResourcePropertiesTags tags properties
   , ..
   }
 
+-- | Add static tags to stratosphere resource properties
+--
+-- This function will honor the special logic for aws auto scaling group and set tags to be propagated on launch.
 addResourcePropertiesTags
-  :: [Stratosphere.Tag]
-  -> Stratosphere.ResourceProperties
-  -> Stratosphere.ResourceProperties
-addResourcePropertiesTags tags Stratosphere.ResourceProperties{..}
-  = Stratosphere.ResourceProperties
+  :: [CFT.Tag]
+  -> CFT.ResourceProperties
+  -> CFT.ResourceProperties
+addResourcePropertiesTags tags CFT.ResourceProperties{..}
+  = CFT.ResourceProperties
   { properties = newProperties
   , ..
   }
@@ -148,3 +162,6 @@ addResourcePropertiesTags tags Stratosphere.ResourceProperties{..}
     mergeArray leftValue rightValue = case (leftValue, rightValue) of
       (JSON.Array leftItems, JSON.Array rightItems) -> JSON.Array $ leftItems <> rightItems
       other                                         -> error $ "invalid array merge:" <> show other
+
+instanceSpecMapTestTree :: InstanceSpecMap env -> Tasty.TestTree
+instanceSpecMapTestTree = StackDeploy.namedTemplateMapTestTree . templateMapFromInstanceSpecMap

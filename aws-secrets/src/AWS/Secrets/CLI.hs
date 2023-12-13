@@ -13,6 +13,7 @@ import qualified Options.Applicative   as CLI
 import qualified StackDeploy.CLI.Utils as StackDeploy.CLI
 import qualified StackDeploy.Stack     as StackDeploy
 import qualified System.Exit           as System
+import qualified UnliftIO.Exception    as UnliftIO
 
 parserInfo :: forall a env . (Env env, IsSecret a) => CLI.ParserInfo (MIO env System.ExitCode)
 parserInfo = CLI.info (CLI.helper <*> subcommands) CLI.idm
@@ -45,12 +46,15 @@ parserInfo = CLI.info (CLI.helper <*> subcommands) CLI.idm
     list  = traverse_ (liftIO . IO.putStrLn . snakeCase) (secrets @a)
 
     printStackSecret action =
-      evaluate <$> StackDeploy.CLI.instanceSpecNameOption <*> secretNameOption
+      evaluate <$> StackDeploy.CLI.instanceNameOption <*> secretNameOption
       where
-        evaluate instanceSpecName secret = do
-          stack <- StackDeploy.getExistingStack instanceSpecName
-          putStrLn =<< action stack secret
-          pure System.ExitSuccess
+        evaluate instanceName secret = do
+          maybe absent present =<< StackDeploy.readCloudFormationStack instanceName
+          where
+            absent = UnliftIO.throwString $ "Stack does not exist: " <> convertVia @Text instanceName
+            present stack = do
+              putStrLn =<< action stack secret
+              pure System.ExitSuccess
 
 putStrLn :: MonadIO m => Text -> m ()
 putStrLn = liftIO . IO.putStrLn

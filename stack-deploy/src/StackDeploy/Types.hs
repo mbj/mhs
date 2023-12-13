@@ -2,24 +2,31 @@ module StackDeploy.Types where
 
 import Data.Word (Word32)
 import StackDeploy.InstanceSpec
+import StackDeploy.Parameters
 import StackDeploy.Prelude
 
-import qualified Data.ByteString.Builder          as BS
-import qualified Data.ByteString.Lazy             as LBS
-import qualified Data.Text.Encoding               as Text
-import qualified System.Random                    as Random
+import qualified Amazonka.CloudFormation.Types as CF
+import qualified Data.ByteString.Builder       as BS
+import qualified Data.ByteString.Lazy          as LBS
+import qualified Data.Text.Encoding            as Text
+import qualified System.Random                 as Random
 
-newtype Id = Id Text
-  deriving (Conversion Text) via Text
+type StackId = BoundText "StackDeploy.StackId"
+
+data ExistingStack = ExistingStack
+  { outputs    :: [CF.Output]
+  , parameters :: [CF.Parameter]
+  , stackId    :: StackId
+  }
 
 data Operation env
-  = OpCreate (InstanceSpec env)
-  | OpDelete Id
-  | OpUpdate Id (InstanceSpec env)
+  = OpCreate (InstanceSpec env) ParameterMap
+  | OpDelete ExistingStack
+  | OpUpdate ExistingStack (InstanceSpec env) ParameterMap
 
 data RemoteOperation = RemoteOperation
-  { stackId   :: Id
-  , token     :: Token
+  { stackId :: StackId
+  , token   :: Token
   }
 
 data RemoteOperationResult = RemoteOperationFailure | RemoteOperationSuccess
@@ -29,9 +36,9 @@ newtype Token = Token Text
 
 verb :: Operation env -> Text
 verb = \case
-  (OpCreate     _instanceSpec) -> "create"
-  (OpDelete _id              ) -> "delete"
-  (OpUpdate _id _instanceSpec) -> "update"
+  OpCreate{} -> "create"
+  OpDelete{} -> "delete"
+  OpUpdate{} -> "update"
 
 newToken :: forall m . MonadIO m => m Token
 newToken = Token . text <$> bytes

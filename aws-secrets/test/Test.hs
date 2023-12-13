@@ -6,8 +6,8 @@ import AWS.Secrets.Prelude
 import qualified Devtools
 import qualified StackDeploy.Component              as StackDeploy
 import qualified StackDeploy.EnvSpec                as StackDeploy
-import qualified StackDeploy.Template               as StackDeploy
-import qualified StackDeploy.Utils                  as StackDeploy
+import qualified StackDeploy.NamedTemplate          as StackDeploy
+import qualified StackDeploy.Stratosphere           as CFT
 import qualified Stratosphere                       as CFT
 import qualified Stratosphere.IAM.Role              as IAM
 import qualified Stratosphere.Lambda.Function       as Lambda
@@ -43,7 +43,7 @@ main =
   liftIO . Tasty.defaultMain .
     Tasty.testGroup "aws-secrets" $
       [ Devtools.testTree $$(Devtools.readDependencies [Devtools.Target "aws-secrets"])
-      , StackDeploy.testTree
+      , StackDeploy.namedTemplateMapTestTree $ StackDeploy.namedTemplateMapFromList
           [ internalTemplate
           , internalTemplateNoExternal
           , externalTemplate @TestSecret
@@ -51,13 +51,13 @@ main =
       ]
   where
     internalTemplate
-      = StackDeploy.mkTemplate (fromType @"secrets-internal")
+      = StackDeploy.namedTemplateFromComponents (fromType @"secrets-internal")
         [ internalComponent @TestSecret
         , lambdaComponent
         ]
 
     internalTemplateNoExternal
-      = StackDeploy.mkTemplate (fromType @"secrets-internal-no-external")
+      = StackDeploy.namedTemplateFromComponents (fromType @"secrets-internal-no-external")
         [internalComponent @TestSecretNoExternal]
 
     lambdaComponent = mempty
@@ -65,13 +65,13 @@ main =
       where
         lambdaFunction
           = CFT.resource "TestLambdaFunction"
-          $ Lambda.mkFunction lambdaFunctionCode (StackDeploy.getAttArn lambdaRole)
+          $ Lambda.mkFunction lambdaFunctionCode (CFT.getAttArn lambdaRole)
           & CFT.set @"Environment"
-             (StackDeploy.lambdaEnvironment $ envSpecEntries [TestExternal, TestInternal])
+             (StackDeploy.envSpecLambdaEnvironment $ envSpec [TestExternal, TestInternal])
 
         lambdaRole
           = CFT.resource "TestLambdaRole"
-          $ IAM.mkRole (StackDeploy.assumeRole "lambda.amazonaws.com")
+          $ IAM.mkRole (CFT.assumeRole "lambda.amazonaws.com")
           & CFT.set @"Policies" [getSecretValuePolicy [TestExternal, TestInternal]]
 
         lambdaFunctionCode :: Lambda.CodeProperty

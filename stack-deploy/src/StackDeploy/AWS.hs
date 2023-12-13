@@ -1,16 +1,16 @@
-module StackDeploy.AWS (listResource) where
+module StackDeploy.AWS (nestedResourceC) where
 
 import Data.Conduit (ConduitT, (.|))
 import Data.Conduit.Combinators (concatMap)
--- import Network.AWS.Types as Exports
 import StackDeploy.Prelude
 
 import qualified Amazonka
 import qualified MIO.Amazonka as AWS
 
-listResource
+-- | Convert paginator with a nested list item into a paginator of that item
+nestedResourceC
   :: (AWS.Env env, Amazonka.AWSPager a, AWS.Transaction a)
   => a
   -> (Amazonka.AWSResponse a -> [b])
   -> ConduitT () b (MIO env) ()
-listResource action map = AWS.paginate action .| concatMap map
+nestedResourceC action map = AWS.paginate action .| concatMap map

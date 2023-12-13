@@ -5,7 +5,7 @@ module AWS.Secrets
   , IsSecret(..)
   , SecretConfig(..)
   , arnValue
-  , envSpecEntries
+  , envSpec
   , externalTemplate
   , fetchStackSecretArn
   , getSecretValuePolicy
@@ -29,9 +29,9 @@ import qualified Data.Text                              as Text
 import qualified MIO.Amazonka                           as AWS
 import qualified MIO.Log                                as Log
 import qualified StackDeploy.Component                  as StackDeploy
-import qualified StackDeploy.EnvSpec
-import qualified StackDeploy.Template                   as StackDeploy
-import qualified StackDeploy.Utils
+import qualified StackDeploy.EnvSpec                    as StackDeploy
+import qualified StackDeploy.NamedTemplate              as StackDeploy
+import qualified StackDeploy.Stack                      as StackDeploy
 import qualified Stratosphere                           as CFT
 import qualified Stratosphere.IAM.Role                  as IAM.Role
 import qualified Stratosphere.SecretsManager.Secret     as SecretsManager
@@ -70,18 +70,12 @@ internalComponent = mempty
 
 externalTemplate
   :: forall a . IsSecret a
-  => StackDeploy.Template
-externalTemplate =
-  StackDeploy.Template
-    { name = fromType @"secrets-external"
-    , ..
-    }
+  => StackDeploy.NamedTemplate
+externalTemplate
+  = StackDeploy.mkNamedTemplate (fromType @"secrets-external")
+  $ (CFT.mkTemplate . CFT.Resources $ mkSecretResource <$> externalSecrets)
+    { CFT.outputs = pure . CFT.Outputs $ mkExternalOutput <$> externalSecrets }
   where
-    stratosphere :: CFT.Template
-    stratosphere =
-      (CFT.mkTemplate . CFT.Resources $ mkSecretResource <$> externalSecrets)
-        { CFT.outputs = pure . CFT.Outputs $ mkExternalOutput <$> externalSecrets }
-
     mkExternalOutput :: a -> CFT.Output
     mkExternalOutput secret = (mkInternalOutput secret)
       { CFT.export
@@ -147,13 +141,14 @@ secretNameValue namespace name
 
 fetchStackSecretArn :: IsSecret a => CF.Stack -> a -> MIO env Text
 fetchStackSecretArn stack
-  = liftIO . StackDeploy.Utils.fetchOutput stack . mkInternalOutput
+  = liftIO . StackDeploy.fetchStackOutput stack . mkInternalOutput
 
 readStackSecretValue :: Env env => IsSecret a => CF.Stack -> a -> MIO env Text
 readStackSecretValue stack secret = readSecretsManagerSecret =<< fetchStackSecretArn stack secret
 
 readEnvSecretValue :: (Env env, IsSecret a) => a -> MIO env Text
-readEnvSecretValue = readSecretsManagerSecret . convert <=< Environment.getEnv . convert . envArnName
+readEnvSecretValue =
+  readSecretsManagerSecret . convert <=< Environment.getEnv . convertVia @Text . envSpecName
 
 readSecretsManagerSecret :: Env env => Text -> MIO env Text
 readSecretsManagerSecret arn = do
@@ -173,14 +168,14 @@ rdsGeneratePostgresqlPassword
   & CFT.set @"ExcludeCharacters" "/\"@"
   & CFT.set @"PasswordLength"    (CFT.Literal 48)
 
-envArnName :: IsSecret a => a -> Text
-envArnName = (<> "_ARN") . Text.toUpper . convert . JSON.camelTo2 '_' . show
+envSpecName :: IsSecret a => a -> StackDeploy.EnvSpecName
+envSpecName = convertImpure . (<> "_ARN") . Text.toUpper . convert . JSON.camelTo2 '_' . show
 
-envSpecEntries :: IsSecret a => [a] -> [StackDeploy.EnvSpec.Entry]
-envSpecEntries = fmap $ \secret ->
-  StackDeploy.EnvSpec.Entry
-  { envName  = envArnName secret
-  , envValue = StackDeploy.EnvSpec.StackOutput $ case secretConfig secret of
+envSpec :: IsSecret a => [a] -> [StackDeploy.EnvSpec]
+envSpec = fmap $ \secret ->
+  StackDeploy.EnvSpec
+  { name  = envSpecName secret
+  , value = StackDeploy.EnvSpecStackOutput $ case secretConfig secret of
       Internal{} -> mkInternalOutput secret
       External{} -> mkInternalExternalOutput secret
   }

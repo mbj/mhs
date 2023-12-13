@@ -1,6 +1,5 @@
 module StackDeploy.Wait (waitForAccept) where
 
-import Data.Set (Set)
 import StackDeploy.Events
 import StackDeploy.Prelude
 import StackDeploy.Types

@@ -1,7 +1,7 @@
 _common/package: !include "../common/package.yaml"
 
 name:        stack-deploy
-version:     0.0.9
+version:     0.1.0
 synopsis:    Utilities around cloudformation templates
 license:     BSD3
 
@@ -50,3 +50,14 @@ dependencies:
 tests:
   test:
     <<: *test
+    other-modules:  []
+  doctest:
+    dependencies:
+    - doctest-parallel
+    main: DocTest.hs
+    other-modules:  []
+    source-dirs: test
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -with-rtsopts=-N

@@ -10,7 +10,7 @@ extra-deps:
 - amazonka-sts-2.0
 - mprelude
 - github: mbj/stratosphere
-  commit: 7c462f2de4369a76df22d4b34b2f3a9e7754c731
+  commit: d1b638820ca9fd90f7d5afba535415da47252af5
   subdirs:
   - .
   - services/ecs

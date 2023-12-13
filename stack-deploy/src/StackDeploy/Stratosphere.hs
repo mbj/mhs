@@ -1,15 +1,13 @@
-module StackDeploy.Utils where
+module StackDeploy.Stratosphere where
 
 import StackDeploy.Prelude
 
-import qualified Amazonka.CloudFormation.Types as CF
-import qualified Data.Aeson                    as JSON
-import qualified Data.Foldable                 as Foldable
-import qualified Data.Vector                   as Vector
-import qualified Stratosphere                  as CFT
-import qualified Stratosphere.IAM.Role         as IAM
-import qualified Stratosphere.Logs.LogGroup    as Logs
-import qualified Stratosphere.S3.Bucket        as S3.Bucket
+import qualified Data.Aeson                 as JSON
+import qualified Data.Vector                as Vector
+import qualified Stratosphere               as CFT
+import qualified Stratosphere.IAM.Role      as IAM
+import qualified Stratosphere.Logs.LogGroup as Logs
+import qualified Stratosphere.S3.Bucket     as S3.Bucket
 
 mkName :: CFT.Value Text -> CFT.Value Text
 mkName name = CFT.Join "-" [CFT.awsStackName, name]
@@ -61,33 +59,6 @@ assumeRole service =
 dependencies :: [CFT.Resource] -> CFT.Resource -> CFT.Resource
 dependencies deps resource =
   resource { CFT.dependsOn = pure (CFT.itemName <$> deps) }
-
-fetchOutput
-  :: forall m . MonadFail m
-  => CF.Stack
-  -> CFT.Output
-  -> m Text
-fetchOutput stack stratosphereOutput =
-  maybe
-    (failOutputKey "missing")
-    (maybe (failOutputKey "has no value") pure . (.outputValue))
-    $ Foldable.find
-      ((==) (pure key) . (.outputKey))
-      (fromMaybe [] stack.outputs)
-  where
-    key :: Text
-    key = stratosphereOutput.name
-
-    failOutputKey :: Text -> m a
-    failOutputKey message
-      = failStack
-      $ "Output " <> convertText key <> " " <> message
-
-    failStack :: Text -> m a
-    failStack message
-      = fail
-      . convertText
-      $ "Stack: " <> stack.stackName <> " " <> message
 
 resolveSecretsmanagerSecret :: CFT.Value Text -> CFT.Value Text
 resolveSecretsmanagerSecret arn = wrap $ CFT.Join ":" ["resolve", "secretsmanager", arn]
