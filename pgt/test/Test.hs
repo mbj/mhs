@@ -1,5 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
-
 import Control.Monad (sequence)
 import PGT.Prelude
 import Prelude (error)

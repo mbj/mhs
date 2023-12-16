@@ -163,7 +163,7 @@ typed-process 0.2.11.1
 unbounded-delays 0.1.1.1
 uniplate 1.6.13
 unix 2.7.3
-unix-compat 0.7
+unix-compat 0.7.1
 unix-time 0.4.11
 unliftio 0.2.25.0
 unliftio-core 0.2.1.0
