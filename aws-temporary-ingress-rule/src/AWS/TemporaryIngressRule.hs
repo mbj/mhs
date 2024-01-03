@@ -42,10 +42,10 @@ import qualified Network.IP.Addr                            as Network
 import qualified Options.Applicative                        as CLI
 import qualified StackDeploy.CLI.Utils                      as StackDeploy.CLI
 import qualified StackDeploy.Component                      as StackDeploy
-import qualified StackDeploy.EnvSpec                        as EnvSpec
-import qualified StackDeploy.InstanceSpec
+import qualified StackDeploy.EnvSpec                        as StackDeploy
+import qualified StackDeploy.InstanceSpec                   as StackDeploy
 import qualified StackDeploy.Stack                          as StackDeploy
-import qualified StackDeploy.Utils
+import qualified StackDeploy.Stratosphere                   as CFT
 import qualified Stratosphere                               as CFT
 import qualified Stratosphere.Events.Rule                   as Events
 import qualified Stratosphere.IAM.Role                      as IAM
@@ -90,8 +90,8 @@ authorizeIngressRule IngressConfig{..} stack = do
     readRequest = do
       netAddr <- AWS.Checkip.readNetAddr
       now     <- liftIO Time.getCurrentTime
-      groupId <- liftIO (StackDeploy.Utils.fetchOutput stack securityGroupIdOutput)
-      port    <- read . convert <$> liftIO (StackDeploy.Utils.fetchOutput stack portOutput)
+      groupId <- liftIO (StackDeploy.fetchStackOutput stack securityGroupIdOutput)
+      port    <- read . convert <$> liftIO (StackDeploy.fetchStackOutput stack portOutput)
       pure Request{cidr = convert @Text @String $ Network.printNetAddr netAddr, ..}
 
 revokeExpiredIngressRules :: forall env . Env env => [Text] -> MIO env ()
@@ -291,35 +291,39 @@ parserInfo configs = CLI.info (CLI.helper <*> subcommands) CLI.idm
            "show configuration"
       <> mkCommand
            "authorize-all"
-           (runStack authorizeAll <$> StackDeploy.CLI.instanceSpecNameOption)
+           (withStack authorizeAll <$> StackDeploy.CLI.instanceNameOption)
            "authorize all ingress configurations"
       <> mkCommand
            "revoke-expired"
-           (runGroupIds revokeExpiredIngressRules <$> StackDeploy.CLI.instanceSpecNameOption)
+           (runGroupIds revokeExpiredIngressRules <$> StackDeploy.CLI.instanceNameOption)
            "revoke expired ingress rules"
       <> mkCommand
            "list-expired"
-           (runGroupIds listExpiredIngressRules <$> StackDeploy.CLI.instanceSpecNameOption)
+           (runGroupIds listExpiredIngressRules <$> StackDeploy.CLI.instanceNameOption)
            "list expired ingress rules"
 
     printIngressConfigurations  = traverse_ (liftIO . IO.putStrLn . convert . show) configs
 
-    runStack
+    withStack
       :: (CloudFormation.Stack -> MIO env ())
-      -> StackDeploy.InstanceSpec.Name
+      -> StackDeploy.InstanceName
       -> MIO env System.ExitCode
-    runStack action instanceSpecName = do
-      action =<< StackDeploy.getExistingStack instanceSpecName
-      pure System.ExitSuccess
+    withStack action instanceName = do
+      maybe absent present =<< StackDeploy.readCloudFormationStack instanceName
+      where
+        absent = UnliftIO.throwString $ "Stack does not exist: " <> convertVia @Text instanceName
+        present stack = do
+          action stack
+          pure System.ExitSuccess
 
     runGroupIds
       :: ([Text] -> MIO env ())
-      -> StackDeploy.InstanceSpec.Name
+      -> StackDeploy.InstanceName
       -> MIO env System.ExitCode
     runGroupIds action =
-      runStack $ \stack -> do
+      withStack $ \stack -> do
         groupIds <- traverse
-           (liftIO . StackDeploy.Utils.fetchOutput stack . (.securityGroupIdOutput)) configs
+           (liftIO . StackDeploy.fetchStackOutput stack . (.securityGroupIdOutput)) configs
         action groupIds
 
     authorizeAll :: CloudFormation.Stack ->  MIO env ()
@@ -380,7 +384,7 @@ instance AWS.HasResourceMap Environment where
 bootLambdaExpire :: [IngressConfig] -> IO ()
 bootLambdaExpire ingressConfigurations = do
   withEnvironment $ do
-    groupIds <- Text.split (== ',') <$> EnvSpec.loadEnv (groupIdsEnvSpec ingressConfigurations)
+    groupIds <- Text.split (== ',') <$> StackDeploy.readEnvSpecFromEnvironment (groupIdsEnvSpec ingressConfigurations)
     AWS.Lambda.Runtime.run (const $ revokeExpiredIngressRules groupIds $> JSON.Null)
 
 withEnvironment :: MIO Environment a -> IO a
@@ -403,12 +407,11 @@ withEnvironment action = do
       { Amazonka.logger = logger
       }
 
-groupIdsEnvSpec :: [IngressConfig] -> EnvSpec.Entry
+groupIdsEnvSpec :: [IngressConfig] -> StackDeploy.EnvSpec
 groupIdsEnvSpec ingressConfigurations
-  = EnvSpec.Entry
-  { envName  = "TEMPORARY_INGRESS_RULE_GROUP_IDS"
-  , envValue = EnvSpec.StackOutput $ mkGroupIdsOutput ingressConfigurations
-  }
+  = StackDeploy.EnvSpec
+    (fromType @"TEMPORARY_INGRESS_RULE_GROUP_IDS")
+    (StackDeploy.EnvSpecStackOutput $ mkGroupIdsOutput ingressConfigurations)
 
 mkGroupIdsOutput :: [IngressConfig] -> CFT.Output
 mkGroupIdsOutput ingressConfigurations
@@ -431,8 +434,8 @@ component StackConfig{..} ingressConfigurations = mempty
 
     lambdaFunction
       = CFT.resource (prefix <> "LambdaFunction")
-      $ Lambda.mkFunction lambdaCode (StackDeploy.Utils.getAttArn lambdaRole)
-      & CFT.set @"Environment"  (EnvSpec.lambdaEnvironment [groupIdsEnvSpec ingressConfigurations])
+      $ Lambda.mkFunction lambdaCode (CFT.getAttArn lambdaRole)
+      & CFT.set @"Environment"  (StackDeploy.envSpecLambdaEnvironment [groupIdsEnvSpec ingressConfigurations])
       & CFT.set @"FunctionName" lambdaFunctionName
       & CFT.set @"Handler"      lambdaFunctionHandler
       & CFT.set @"Runtime"      "provided.al2"
@@ -440,28 +443,28 @@ component StackConfig{..} ingressConfigurations = mempty
 
     lambdaLogGroup
       = CFT.resource (prefix <> "LogGroup")
-      $ StackDeploy.Utils.mkLambdaLogGroup lambdaFunctionName
+      $ CFT.mkLambdaLogGroup lambdaFunctionName
 
     lambdaRole
       = CFT.resource (prefix <> "LambdaRule")
-      $ IAM.mkRole (StackDeploy.Utils.assumeRole "lambda.amazonaws.com")
-      & CFT.set @"Policies" [StackDeploy.Utils.mkLambdaLogsPolicy lambdaFunctionName, ingressRulePolicy]
+      $ IAM.mkRole (CFT.assumeRole "lambda.amazonaws.com")
+      & CFT.set @"Policies" [CFT.mkLambdaLogsPolicy lambdaFunctionName, ingressRulePolicy]
 
     lambdaFunctionName :: CFT.Value Text
-    lambdaFunctionName = StackDeploy.Utils.mkName $ CFT.Literal prefix
+    lambdaFunctionName = CFT.mkName $ CFT.Literal prefix
 
     lambdaPermission :: CFT.Resource
     lambdaPermission
       = CFT.resource (prefix <> "LambdaPermission")
       $ Lambda.mkPermission "lambda:InvokeFunction" (CFT.toRef lambdaFunction) "events.amazonaws.com"
-      & CFT.set @"SourceArn" (StackDeploy.Utils.getAttArn eventsRule)
+      & CFT.set @"SourceArn" (CFT.getAttArn eventsRule)
 
     eventsRule :: CFT.Resource
     eventsRule
       = CFT.resource logicalName
       $ Events.mkRule
       & CFT.set @"Description"        (CFT.Literal ("Trigger rule for " <> prefix))
-      & CFT.set @"Name"               (StackDeploy.Utils.mkName (CFT.Literal logicalName))
+      & CFT.set @"Name"               (CFT.mkName (CFT.Literal logicalName))
       & CFT.set @"ScheduleExpression" (CFT.Literal "rate(1 minute)")
       & CFT.set @"State"              "ENABLED"
       & CFT.set @"Targets"            [lambdaTarget]
@@ -469,7 +472,7 @@ component StackConfig{..} ingressConfigurations = mempty
         logicalName = prefix <> "EventsRule"
 
         lambdaTarget =
-          Events.mkTargetProperty (StackDeploy.Utils.getAttArn lambdaFunction) (CFT.Literal logicalName)
+          Events.mkTargetProperty (CFT.getAttArn lambdaFunction) (CFT.Literal logicalName)
 
     ingressRulePolicy
       = IAM.mkPolicyProperty

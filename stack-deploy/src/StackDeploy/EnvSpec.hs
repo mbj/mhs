@@ -1,113 +1,194 @@
 module StackDeploy.EnvSpec
-  ( Entry(..)
-  , Value(..)
-  , ecsTaskDefinitionEnvironment
-  , lambdaEnvironment
-  , loadEnv
-  , loadStack
-  , posixEnv
+  ( EnvSpec(..)
+  , EnvSpecName
+  , EnvSpecValue(..)
+  , envSpecEcsTaskDefinitionEnvironment
+  , envSpecLambdaEnvironment
+  , envSpecPosixEnvironment
+  , readEnvSpecFromEnvironment
+  , readEnvSpecFromStack
   )
 where
 
-import Data.Map.Strict (Map)
 import StackDeploy.Prelude
-import StackDeploy.Utils
 
 import qualified Amazonka.CloudFormation.Types   as CF
 import qualified Data.Foldable                   as Foldable
 import qualified Data.List                       as List
+import qualified StackDeploy.Stack               as StackDeploy
+import qualified StackDeploy.Stratosphere        as CFT
 import qualified Stratosphere                    as CFT
 import qualified Stratosphere.ECS.TaskDefinition as ECS.TaskDefinition
 import qualified Stratosphere.Lambda.Function    as Lambda.Function
 import qualified UnliftIO.Environment            as Environment
 
-data Value
-  = StackId
-  | StackName
-  | StackOutput CFT.Output
-  | StackParameter CFT.Parameter
-  | StackPrefix Text
-  | Static Text
+-- $setup
+-- >>> import StackDeploy.Prelude
+-- >>> import qualified Data.Time.Clock               as Time
+-- >>> import qualified Data.Time.Clock.POSIX         as Time
+-- >>> import qualified Amazonka.CloudFormation.Types as CF
+-- >>> import qualified StackDeploy.EnvSpec           as StackDeploy
 
-data Entry = Entry
-  { envName  :: Text
-  , envValue :: Value
+-- | Specification of an environment variable that can be evaluated inside and outside of cloudformation defined resources.
+--
+-- Primary use case is to be able to run local operations CLI tooling in the same
+-- environment stack defined resources are running into.
+-- As long the stack defined resources are being defined via this data type its
+-- guaranteed an execution on a developers/operators machine can reproduc the same
+-- environment.
+--
+-- General useage is to export env spec values from components for subsystems,
+-- like modules that define lambas and ecs containers. Than for local ops tooling that
+-- needs the same environment run load these env spec values directly via functions like
+-- `readenvSpecFromStack` outside of AWS execution resources.
+data EnvSpec = EnvSpec
+  { name  :: EnvSpecName
+  , value :: EnvSpecValue
   }
 
-ecsTaskDefinitionEnvironment :: [Entry] -> [ECS.TaskDefinition.KeyValuePairProperty]
-ecsTaskDefinitionEnvironment entries = render <$> List.sortOn (.envName) entries
-  where
-    render (Entry key value) = mkPair key $ renderValue value
+type EnvSpecName = BoundText "StackDeploy.EnvSpec.Name"
 
-    mkPair :: Text -> CFT.Value Text -> ECS.TaskDefinition.KeyValuePairProperty
+data EnvSpecValue
+  = EnvSpecStackId
+  -- ^ Stack id env spec
+  -- CloudFormation: Expression that resolves to the stack id.
+  -- CLI: Reflects stack id
+  | EnvSpecStackName
+  -- ^ Stack name env spec
+  -- CloudFormation: Expression that resolves to the stack name.
+  -- CLI: Reflects stack name
+  | EnvSpecStackOutput CFT.Output
+  -- ^ Output value env spec
+  -- CloudFormation: Expression that resolves to the output value.
+  -- CLI: Reflects output value from stack
+  | EnvSpecStackParameter CFT.Parameter
+  -- ^ Parameter value env spec
+  -- CloudFormation: Expression that resolves to the parameter value.
+  -- CLI: Reflects parameter value from stack
+  | EnvSpecStackPrefix Text
+  -- ^ Static aws stack name prefixing env spec
+  -- CloudFormation: Expression that prefixes a string literal with the stack name.
+  -- CLI: Reflects stack name.
+  | EnvSpecStatic Text
+  -- ^ Static env spec.
+  -- CloudFormation: String literal
+  -- CLI: Constant return
+
+-- | Construct a ECS task definition environment key value property
+-- >>> let envSpecA = StackDeploy.EnvSpec (fromType @"Env-A") (StackDeploy.EnvSpecStatic "Value-A")
+-- >>> let envSpecB = StackDeploy.EnvSpec (fromType @"Env-B") StackDeploy.EnvSpecStackName
+-- >>> StackDeploy.envSpecEcsTaskDefinitionEnvironment [envSpecB, envSpecA]
+-- [KeyValuePairProperty {name = Just (Literal "Env-A"), value = Just (Literal "Value-A")},KeyValuePairProperty {name = Just (Literal "Env-B"), value = Just (Ref "AWS::StackName")}]
+envSpecEcsTaskDefinitionEnvironment :: [EnvSpec] -> [ECS.TaskDefinition.KeyValuePairProperty]
+envSpecEcsTaskDefinitionEnvironment entries = render <$> List.sortOn (.name) entries
+  where
+    render (EnvSpec key value) = mkPair key $ renderValue value
+
+    mkPair :: EnvSpecName -> CFT.Value Text -> ECS.TaskDefinition.KeyValuePairProperty
     mkPair key value
       = ECS.TaskDefinition.KeyValuePairProperty
-      { name  = pure (CFT.Literal key)
+      { name  = pure (CFT.Literal $ convert key)
       , value = pure value
       }
 
-lambdaEnvironment :: [Entry] -> Lambda.Function.EnvironmentProperty
-lambdaEnvironment entries
+-- | Construct a lambda environment
+-- >>> let envSpecA = StackDeploy.EnvSpec (fromType @"Env-A") (StackDeploy.EnvSpecStatic "Value-A")
+-- >>> let envSpecB = StackDeploy.EnvSpec (fromType @"Env-B") StackDeploy.EnvSpecStackName
+-- >>> StackDeploy.envSpecLambdaEnvironment [envSpecB, envSpecA]
+-- EnvironmentProperty {variables = Just (fromList [("Env-A",Literal "Value-A"),("Env-B",Ref "AWS::StackName")])}
+envSpecLambdaEnvironment :: [EnvSpec] -> Lambda.Function.EnvironmentProperty
+envSpecLambdaEnvironment entries
   = Lambda.Function.mkEnvironmentProperty
   { Lambda.Function.variables = pure variables
   }
   where
     variables :: Map Text (CFT.Value Text)
-    variables = fromList $ render <$> List.sortOn (.envName) entries
+    variables = fromList $ render <$> List.sortOn (.name) entries
 
-    render (Entry key value) = (key, renderValue value)
+    render (EnvSpec key value) = (convert @Text key, renderValue value)
 
-posixEnv :: CF.Stack -> [Entry] -> MIO env [(String, String)]
-posixEnv stack = traverse render . List.sortOn (.envName)
+-- | Construct a posix environment list
+--
+-- Only intent for running 3rd party binaries via exporting that environment list before
+-- spawning a new process.
+--
+-- If its planned to re-use an environment in the same HS process juse `readEnvSpecFromStack` to read the values as the CF stack would define them.
+--
+-- >>> let envSpecA = StackDeploy.EnvSpec (fromType @"Env-A") (StackDeploy.EnvSpecStatic "Value-A")
+-- >>> let envSpecB = StackDeploy.EnvSpec (fromType @"Env-B") StackDeploy.EnvSpecStackName
+-- >>> let epochTime = Time.posixSecondsToUTCTime 0
+-- >>> let stack = CF.newStack "test-stack" epochTime CF.StackStatus_UPDATE_COMPLETE
+-- >>> envSpec <- StackDeploy.envSpecPosixEnvironment stack [envSpecB, envSpecA]
+-- >>> envSpec
+-- [("Env-A","Value-A"),("Env-B","test-stack")]
+envSpecPosixEnvironment
+  :: forall m . MonadIO m
+  => CF.Stack
+  -> [EnvSpec]
+  -> m [(String, String)]
+envSpecPosixEnvironment stack = traverse render . List.sortOn (.name)
   where
-    render :: Entry -> MIO env (String, String)
-    render entry@Entry{..} = do
-      (convert envName,) . convert <$> loadStack stack entry
+    render :: EnvSpec -> m (String, String)
+    render entry@EnvSpec{..} = (convertVia @Text name,) . convert <$> readEnvSpecFromStack stack entry
 
-loadStack :: CF.Stack -> Entry -> MIO env Text
-loadStack stack Entry{..} = case envValue of
-  StackOutput output'  -> liftIO $ fetchOutput stack output'
-  StackParameter param -> fetchParam stack param
-  StackPrefix text     -> pure $ stack.stackName <> "-" <> text
-  StackId              -> maybe failAbsentStackId pure stack.stackId
-  StackName            -> pure $ stack.stackName
-  Static text          -> pure text
+-- | Read an env spec value as AWS resources would do
+--
+-- Primary use case is to initialize operations CLI to the same state an equivalent AWS resource would have.
+--
+-- >>> let envSpec = StackDeploy.EnvSpec (fromType @"STACK_NAME") StackDeploy.EnvSpecStackName
+-- >>> let epochTime = Time.posixSecondsToUTCTime 0
+-- >>> let stack = CF.newStack "test-stack" epochTime CF.StackStatus_UPDATE_COMPLETE
+-- >>> value <- StackDeploy.readEnvSpecFromStack stack envSpec
+-- >>> value
+-- "test-stack"
+readEnvSpecFromStack :: forall m . MonadIO m => CF.Stack -> EnvSpec -> m Text
+readEnvSpecFromStack stack EnvSpec{..} = case value of
+  EnvSpecStackId                  -> maybe failAbsentStackId pure stack.stackId
+  EnvSpecStackName                -> pure stack.stackName
+  EnvSpecStackOutput output       -> liftIO $ StackDeploy.fetchStackOutput stack output
+  EnvSpecStackParameter parameter -> fetchParameter stack parameter
+  EnvSpecStackPrefix text         -> pure $ stack.stackName <> "-" <> text
+  EnvSpecStatic text              -> pure text
   where
-    failAbsentStackId :: MIO env a
+    failAbsentStackId :: m a
     failAbsentStackId = throwString $ "Missing stack id: " <> show stack
 
-loadEnv :: Entry -> MIO env Text
-loadEnv Entry{..} = convert <$> Environment.getEnv (convert envName)
+-- | Read an env spec value from the environment
+--
+-- This function is intend to be run within lambda or ECS tasks reading the env value the cloud formation resource defined. For operations CLI use `readEnvSpecFromStack` instead.
+readEnvSpecFromEnvironment :: EnvSpec -> MIO env Text
+readEnvSpecFromEnvironment EnvSpec{..} = convert <$> Environment.getEnv (convertVia @Text name)
 
-renderValue :: Value -> CFT.Value Text
+renderValue :: EnvSpecValue -> CFT.Value Text
 renderValue = \case
-  StackId              -> CFT.awsStackId
-  StackName            -> CFT.awsStackName
-  StackOutput output'  -> (output'.value)
-  StackParameter param -> CFT.toRef param
-  StackPrefix value    -> mkName (CFT.Literal value)
-  Static text          -> CFT.Literal text
+  EnvSpecStackId                  -> CFT.awsStackId
+  EnvSpecStackName                -> CFT.awsStackName
+  EnvSpecStackOutput output       -> output.value
+  EnvSpecStackParameter parameter -> CFT.toRef parameter
+  EnvSpecStackPrefix value        -> CFT.mkName (CFT.Literal value)
+  EnvSpecStatic text              -> CFT.Literal text
 
-fetchParam
-  :: CF.Stack
+fetchParameter
+  :: forall m . MonadIO m
+  => CF.Stack
   -> CFT.Parameter
-  -> MIO env Text
-fetchParam stack stratosphereParameter =
+  -> m Text
+fetchParameter stack stratosphereParameter =
   maybe
-    (failOutputKey "missing")
-    (maybe (failOutputKey "has no value") pure . getField @"parameterValue")
+    (failParamemterKey "missing")
+    (maybe (failParamemterKey "has no value") pure . (.parameterValue))
     $ Foldable.find
-      ((==) (pure key) . getField @"parameterKey")
-      (fromMaybe [] $ getField @"parameters" stack)
+      ((==) (pure key) . (.parameterKey))
+      (fromMaybe [] stack.parameters)
   where
     key = stratosphereParameter.name
 
-    failOutputKey :: Text -> MIO env a
-    failOutputKey message
+    failParamemterKey :: Text -> m a
+    failParamemterKey message
       = failStack
       $ "Parameter " <> convertText key <> " " <> message
 
-    failStack :: Text -> MIO env a
+    failStack :: Text -> m a
     failStack message
       = throwString
       . convertText

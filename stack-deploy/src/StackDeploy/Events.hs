@@ -7,7 +7,6 @@ import Data.Conduit (ConduitT, (.|), await, runConduit, yield)
 import Data.Conduit.Combinators (find, iterM, takeWhile, yieldMany)
 import Data.Conduit.List (consume)
 import Data.Function (on)
-import StackDeploy.AWS
 import StackDeploy.Prelude
 import StackDeploy.Types
 
@@ -16,16 +15,17 @@ import qualified Amazonka.CloudFormation.Types               as CF
 import qualified Data.Foldable                               as Foldable
 import qualified Data.List                                   as List
 import qualified MIO.Amazonka                                as AWS
+import qualified StackDeploy.AWS                             as AWS
 
 data Poll = Poll
   { delay          :: forall m . MonadIO m => m ()
   , eventFilter    :: CF.StackEvent -> Bool
-  , stackId        :: Id
+  , stackId        :: StackId
   , startCondition :: CF.StackEvent -> Bool
   , stopCondition  :: CF.StackEvent -> Bool
   }
 
-defaultPoll :: Id -> Poll
+defaultPoll :: StackId -> Poll
 defaultPoll stackId = Poll
   { delay          = liftIO $ threadDelay 1_000_000  -- 1 second
   , eventFilter    = const True                      -- accept all events
@@ -96,9 +96,9 @@ allEvents Poll{..} =
 
 stackEvents
   :: AWS.Env env
-  => Id
+  => StackId
   -> ConduitT () CF.StackEvent (MIO env) ()
-stackEvents stackId = listResource request (fromMaybe [] . (.stackEvents))
+stackEvents stackId = AWS.nestedResourceC request (fromMaybe [] . (.stackEvents))
   where
     request = CF.newDescribeStackEvents & CF.describeStackEvents_stackName ?~ toText stackId
 

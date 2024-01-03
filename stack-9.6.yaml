@@ -12,7 +12,7 @@ extra-deps:
 - github: ndmitchell/hlint
   commit: 505a4d57b972f3ba605ad7a59721cef1f3d98a84
 - github: mbj/stratosphere
-  commit: 7c462f2de4369a76df22d4b34b2f3a9e7754c731
+  commit: d1b638820ca9fd90f7d5afba535415da47252af5
   subdirs:
   - .
   - services/ecs

@@ -1,26 +1,29 @@
-module StackDeploy.Template.Code (template) where
+module StackDeploy.Template.Code
+  ( bucketNameOutput
+  , namedTemplate
+  )
+where
 
+import StackDeploy.NamedTemplate
 import StackDeploy.Prelude
-import StackDeploy.Template
-import StackDeploy.Utils
-import Stratosphere hiding (Template)
+import StackDeploy.Stratosphere
 
+import qualified Stratosphere           as CFT
 import qualified Stratosphere.S3.Bucket as S3
 
-template :: Template
-template
-  = mk (fromType @"code")
-  $ Stratosphere.mkTemplate [codeBucket]
-  & set @"Outputs" outputs
-  where
-    outputs
-      = Outputs
-      [ mkOutput "CodeBucketName" (toRef codeBucket)
-      & set @"Export" (OutputExport "CodeBucketName")
-      ]
+namedTemplate :: NamedTemplate
+namedTemplate
+  = mkNamedTemplate (fromType @"code")
+  $ CFT.mkTemplate [codeBucket]
+  & CFT.set @"Outputs" [bucketNameOutput]
 
-codeBucket :: Resource
+codeBucket :: CFT.Resource
 codeBucket
-  = resource "CodeBucket"
+  = CFT.resource "CodeBucket"
   $ S3.mkBucket
-  & set @"PublicAccessBlockConfiguration" s3BucketBlockPublicAccess
+  & CFT.set @"PublicAccessBlockConfiguration" s3BucketBlockPublicAccess
+
+bucketNameOutput :: CFT.Output
+bucketNameOutput
+  = CFT.mkOutput "CodeBucketName" (CFT.toRef codeBucket)
+  & CFT.set @"Export" (CFT.OutputExport "CodeBucketName")
