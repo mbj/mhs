@@ -48,15 +48,16 @@ parserInfo instanceSpecMap = wrapHelper commands "stack commands"
 
     instanceCommands :: CLI.Parser (MIO env System.ExitCode)
     instanceCommands = CLI.hsubparser
-      $  mkCommand "cancel"   (cancel <$> instanceNameOption)                "cancel stack update"
-      <> mkCommand "create"   (create <$> instanceNameOption <*> parameters) "create stack"
-      <> mkCommand "delete"   (delete <$> instanceNameOption)                "delete stack"
-      <> mkCommand "events"   (events <$> instanceNameOption)                "list stack events"
-      <> mkCommand "outputs"  (outputs <$> instanceNameOption)               "list stack outputs"
-      <> mkCommand "sync"     (sync <$> instanceNameOption <*> parameters)   "sync stack with spec"
-      <> mkCommand "update"   (update <$> instanceNameOption <*> parameters) "update existing stack"
-      <> mkCommand "wait"     (wait <$> instanceNameOption <*> tokenParser)  "wait for stack operation"
-      <> mkCommand "watch"    (watch <$> instanceNameOption)                 "watch stack events"
+      $  mkCommand "cancel"     (cancel         <$> instanceNameOption)                  "cancel stack update"
+      <> mkCommand "create"     (create         <$> instanceNameOption <*> parameters)   "create stack"
+      <> mkCommand "delete"     (delete         <$> instanceNameOption)                  "delete stack"
+      <> mkCommand "events"     (events         <$> instanceNameOption)                  "list stack events"
+      <> mkCommand "outputs"    (outputs        <$> instanceNameOption)                  "list stack outputs"
+      <> mkCommand "parameters" (listParameters <$> instanceNameOption)                  "list stack parameters"
+      <> mkCommand "sync"       (sync           <$> instanceNameOption <*> parameters)   "sync stack with spec"
+      <> mkCommand "update"     (update         <$> instanceNameOption <*> parameters)   "update existing stack"
+      <> mkCommand "wait"       (wait           <$> instanceNameOption <*> tokenParser)  "wait for stack operation"
+      <> mkCommand "watch"      (watch          <$> instanceNameOption)                  "watch stack events"
 
     templateCommands :: CLI.Parser (MIO env System.ExitCode)
     templateCommands = CLI.hsubparser
@@ -71,45 +72,56 @@ parserInfo instanceSpecMap = wrapHelper commands "stack commands"
     tokenParser = Token <$> CLI.argument CLI.str (CLI.metavar "TOKEN")
 
     cancel :: StackDeploy.InstanceName -> MIO env System.ExitCode
-    cancel name = do
-      void . AWS.send . CF.newCancelUpdateStack $ toText name
+    cancel instanceName = do
+      void . AWS.send . CF.newCancelUpdateStack $ toText instanceName
       success
 
     create :: StackDeploy.InstanceName -> ParameterMap -> MIO env System.ExitCode
-    create name userParameterMap = do
-      withInstanceSpec name $ \instanceSpec ->
+    create instanceName userParameterMap = do
+      withInstanceSpec instanceName $ \instanceSpec ->
         exitCode =<< StackDeploy.performOperation (OpCreate instanceSpec userParameterMap)
 
     update :: StackDeploy.InstanceName -> ParameterMap -> MIO env System.ExitCode
-    update name userParameterMap = do
-      withInstanceSpec name $ \instanceSpec ->
-        withExistingStack name $ \existingStack ->
+    update instanceName userParameterMap = do
+      withInstanceSpec instanceName $ \instanceSpec ->
+        withExistingStack instanceName $ \existingStack ->
           exitCode =<< StackDeploy.performOperation (OpUpdate existingStack instanceSpec userParameterMap)
 
     sync :: StackDeploy.InstanceName -> ParameterMap -> MIO env System.ExitCode
-    sync name userParameterMap = do
-      withInstanceSpec name $ \instanceSpec -> do
+    sync instanceName userParameterMap = do
+      withInstanceSpec instanceName $ \instanceSpec -> do
         exitCode
           =<< StackDeploy.performOperation . maybe
                 (OpCreate instanceSpec userParameterMap)
                 (\existingStack -> OpUpdate existingStack instanceSpec userParameterMap)
-          =<< StackDeploy.readExistingStack name
+          =<< StackDeploy.readExistingStack instanceName
 
     wait :: StackDeploy.InstanceName -> Token -> MIO env System.ExitCode
-    wait name token
-      = withExistingStack name
+    wait instanceName token
+      = withExistingStack instanceName
       $ waitForOperation token . (.stackId)
 
     outputs :: StackDeploy.InstanceName -> MIO env System.ExitCode
-    outputs name = withExistingStack name $ \existingStack -> do
+    outputs instanceName = withExistingStack instanceName $ \existingStack -> do
       traverse_ printOutput existingStack.outputs
       success
       where
         printOutput :: CF.Output -> MIO env ()
         printOutput = liftIO . Text.putStrLn . convertText . show
 
+    listParameters :: StackDeploy.InstanceName -> MIO env System.ExitCode
+    listParameters instanceName = withExistingStack instanceName $ \existingStack -> do
+      traverse_ printParameter existingStack.parameters
+      success
+      where
+        printParameter :: CF.Parameter -> MIO env ()
+        printParameter parameter
+          = liftIO
+          . Text.putStrLn
+          $ fromMaybe "" parameter.parameterKey <> ": " <> fromMaybe "" (convert parameter.parameterValue)
+
     delete :: StackDeploy.InstanceName -> MIO env System.ExitCode
-    delete name = withExistingStack name $ exitCode <=< StackDeploy.performOperation . OpDelete
+    delete instanceName = withExistingStack instanceName $ exitCode <=< StackDeploy.performOperation . OpDelete
 
     listTemplates :: MIO env System.ExitCode
     listTemplates = do
@@ -122,14 +134,14 @@ parserInfo instanceSpecMap = wrapHelper commands "stack commands"
       success
 
     events :: StackDeploy.InstanceName -> MIO env System.ExitCode
-    events name = do
+    events instanceName = do
       runConduit $ AWS.nestedResourceC req (fromMaybe [] . (.stackEvents)) .| Conduit.mapM_ StackDeploy.printEvent
       success
       where
-        req = CF.newDescribeStackEvents & CF.describeStackEvents_stackName .~ pure (toText name)
+        req = CF.newDescribeStackEvents & CF.describeStackEvents_stackName .~ pure (toText instanceName)
 
     watch :: StackDeploy.InstanceName -> MIO env System.ExitCode
-    watch name = withExistingStack name $ \existingStack -> do
+    watch instanceName = withExistingStack instanceName $ \existingStack -> do
       void $ pollEvents (defaultPoll existingStack.stackId) StackDeploy.printEvent
       success
 
@@ -195,24 +207,24 @@ parserInfo instanceSpecMap = wrapHelper commands "stack commands"
     printList :: Conversion Text a => [a] -> MIO env ()
     printList = traverse_ say
 
-parameter :: CLI.Parser Parameter
-parameter = CLI.option
-  reader
-  (CLI.long "parameter" <> CLI.help "Set stack parameter")
-  where
-    reader = CLI.eitherReader (Text.parseOnly parser . convertText)
-
-    parser = do
-      name <- convertFail =<< Text.many1 (Text.satisfy allowChar)
-      Text.skip (== ':')
-      value <- convertFail =<< Text.many' Text.anyChar
-      void Text.endOfInput
-
-      pure $ Parameter name value
-
-    allowChar = \case
-      '-'  -> True
-      char -> Char.isDigit char || Char.isAlpha char
-
 parameters :: CLI.Parser ParameterMap
 parameters = fromList . fmap (\Parameter{..} -> (name, value)) <$> many parameter
+  where
+    parameter :: CLI.Parser Parameter
+    parameter = CLI.option
+      reader
+      (CLI.long "parameter" <> CLI.help "Set stack parameter")
+      where
+        reader = CLI.eitherReader (Text.parseOnly parser . convertText)
+
+        parser = do
+          instanceName <- convertFail =<< Text.many1 (Text.satisfy allowChar)
+          Text.skip (== ':')
+          value <- convertFail =<< Text.many' Text.anyChar
+          void Text.endOfInput
+
+          pure $ Parameter instanceName value
+
+        allowChar = \case
+          '-'  -> True
+          char -> Char.isDigit char || Char.isAlpha char
