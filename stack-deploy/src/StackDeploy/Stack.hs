@@ -14,7 +14,9 @@ import Control.Lens (Lens', set, view)
 import Data.Conduit ((.|))
 import StackDeploy.Prelude
 import StackDeploy.Types
+import UnliftIO.Exception (catchJust)
 
+import qualified Amazonka
 import qualified Amazonka.CloudFormation.DescribeStacks as CF
 import qualified Amazonka.CloudFormation.Types          as CF
 import qualified Data.Conduit                           as Conduit
@@ -88,14 +90,35 @@ readCloudFormationStack
   :: forall env . AWS.Env env
   => StackDeploy.InstanceName
   -> MIO env (Maybe CF.Stack)
-readCloudFormationStack name
-  = Conduit.runConduit
-  $  AWS.nestedResourceC describeSpecificStack (fromMaybe [] . (.stacks))
-  .| Conduit.find ((convert name ==) . (.stackName))
+readCloudFormationStack instanceName = catchJust handleNotFoundError read pure
   where
+    read
+      = Conduit.runConduit
+      $ AWS.nestedResourceC describeSpecificStack (fromMaybe [] . (.stacks))
+      .| Conduit.find ((instanceNameText ==) . (.stackName))
+
+    instanceNameText = convert instanceName
+
     describeSpecificStack :: CF.DescribeStacks
     describeSpecificStack =
-      set CF.describeStacks_stackName (pure $ convert name) CF.newDescribeStacks
+      set CF.describeStacks_stackName (pure instanceNameText) CF.newDescribeStacks
+
+    handleNotFoundError :: Amazonka.Error -> Maybe (Maybe CF.Stack)
+    handleNotFoundError
+      (Amazonka.ServiceError
+        Amazonka.ServiceError'
+        { code    = Amazonka.ErrorCode "ValidationError"
+        , message = Just actualMessage
+        }
+      )
+      = if actualMessage == expectedMessage
+        then pure empty
+        else empty
+    handleNotFoundError _error = empty
+
+    expectedMessage :: Amazonka.ErrorMessage
+    expectedMessage =
+      Amazonka.ErrorMessage $ "Stack with id " <> toText instanceNameText <> " does not exist"
 
 readCloudFormationStackPresent
   :: forall env . AWS.Env env
