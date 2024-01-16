@@ -1,5 +1,6 @@
 module StackDeploy.Operation
-  ( performOperation
+  ( allowNoUpdateError
+  , performOperation
   , printEvent
   )
 where
@@ -57,7 +58,7 @@ performOperation = \case
     successCallback effectiveInstanceSpec =<<
       runStackId
         existingStack.stackId
-        (update effectiveInstanceSpec existingStack.parameters userParameterMap)
+        (update effectiveInstanceSpec existingStack.parameterNames userParameterMap)
   where
     loadEffectiveInstanceSpec :: InstanceSpec env -> MIO env (InstanceSpec env)
     loadEffectiveInstanceSpec instanceSpec = instanceSpec.onLoad instanceSpec
@@ -113,12 +114,12 @@ performOperation = \case
 
     update
       :: InstanceSpec env
-      -> [CF.Parameter]
+      -> Set ParameterName
       -> ParameterMap
       -> RemoteOperation
       -> MIO env RemoteOperationResult
-    update instanceSpec previousParameters userParameterMap remoteOperation@RemoteOperation{..}
-      = either handleNoUpdateError (const $ waitFor remoteOperation) =<< doUpdate
+    update instanceSpec previousParameterNames userParameterMap remoteOperation@RemoteOperation{..}
+      = either (allowNoUpdateError RemoteOperationSuccess) (const $ waitFor remoteOperation) =<< doUpdate
       where
         doUpdate :: MIO env (Either Amazonka.Error CF.UpdateStackResponse)
         doUpdate =
@@ -130,18 +131,9 @@ performOperation = \case
             (CF.newUpdateStack $ convert stackId)
           >>= AWS.sendEither
 
-        handleNoUpdateError :: Amazonka.Error -> MIO env RemoteOperationResult
-        handleNoUpdateError = \case
-          ( Amazonka.ServiceError
-            Amazonka.ServiceError'
-            { code    = Amazonka.ErrorCode "ValidationError"
-            , message = Just (Amazonka.ErrorMessage "No updates are to be performed.")
-            }) -> pure RemoteOperationSuccess
-          other -> throwIO other
-
         operationFields = OperationFields
           { capabilitiesField  = CF.updateStack_capabilities
-          , parameterExpand    = ParameterExpandUpdate previousParameters
+          , parameterExpand    = ParameterExpandUpdate previousParameterNames
           , parametersField    = CF.updateStack_parameters
           , roleARNField       = CF.updateStack_roleARN
           , templateBodyField  = CF.updateStack_templateBody
@@ -219,8 +211,8 @@ prepareOperation
   userParameterMap
   token
   operation = do
-    effectiveParameters <- either (throwString . show) pure $
-      parameterMapTemplateExpand parameterExpand mergedParameterMap namedTemplate.template
+    effectiveParameters <- either throwString pure $
+      parameterMapExpand parameterExpand (StackDeploy.namedTemplateParameterNames namedTemplate) mergedParameterMap
     setTemplateBody
       . set     capabilitiesField (pure capabilities)
       . set     parametersField   (pure effectiveParameters)
@@ -269,3 +261,12 @@ prepareOperation
 
 setText :: (Applicative f, ToText b) => Lens' a (f Text) -> b -> a -> a
 setText field value = set field (pure $ convert value)
+
+allowNoUpdateError :: a -> Amazonka.Error -> MIO env a
+allowNoUpdateError value = \case
+  ( Amazonka.ServiceError
+    Amazonka.ServiceError'
+    { code    = Amazonka.ErrorCode "ValidationError"
+    , message = Just (Amazonka.ErrorMessage "No updates are to be performed.")
+    }) -> pure value
+  other -> throwIO other

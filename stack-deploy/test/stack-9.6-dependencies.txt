@@ -12,6 +12,7 @@ alex 3.4.0.1
 amazonka 2.0
 amazonka-cloudformation 2.0
 amazonka-core 2.0
+amazonka-lambda 2.0
 amazonka-s3 2.0
 amazonka-sso 2.0
 amazonka-sts 2.0
@@ -82,6 +83,8 @@ devtools 0.2.0
 directory 1.3.8.1
 distributive 0.6.2.1
 dlist 1.0
+doctest-exitcode-stdio 0.0
+doctest-lib 0.1.1
 doctest-parallel 0.3.1
 entropy 0.4.1.10
 erf 2.0.0.0
@@ -122,6 +125,7 @@ integer-logarithms 1.0.3.1
 invariant 0.6.2
 iproute 1.7.12
 kan-extensions 5.2.5
+lambda-runtime 0.0.2
 lens 5.2.3
 libyaml 0.1.2
 lifted-async 0.10.2.5
@@ -144,6 +148,7 @@ old-time 1.1.0.4
 optparse-applicative 0.18.1.0
 parallel 3.2.2.0
 parsec 3.1.16.1
+pathtype 0.8.1.2
 pem 0.2.4
 polyparse 1.13
 pretty 1.1.3.6
@@ -173,6 +178,7 @@ splitmix 0.1.0.5
 stack-deploy 0.1.0
 stm 2.5.1.0
 stratosphere 1.0.0
+stratosphere-cloudwatch 1.0.0
 stratosphere-ecs 1.0.0
 stratosphere-iam 1.0.0
 stratosphere-lambda 1.0.0
@@ -211,6 +217,7 @@ unliftio 0.2.25.0
 unliftio-core 0.2.1.0
 unordered-containers 0.2.20
 utf8-string 1.0.2
+utility-ht 0.0.17
 uuid 1.3.15
 uuid-types 1.0.5.1
 vector 0.13.1.0
@@ -221,5 +228,6 @@ witherable 0.4.2
 wl-pprint-annotated 0.1.0.1
 xml-conduit 1.9.1.3
 xml-types 0.3.8
+xray 0.0.4
 yaml 0.11.11.2
 zlib 0.6.3.0

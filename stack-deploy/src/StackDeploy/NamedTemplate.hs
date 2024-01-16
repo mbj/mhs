@@ -5,6 +5,7 @@ module StackDeploy.NamedTemplate
   , mkNamedTemplate
   , namedTemplateMapFromList
   , namedTemplateMapTestTree
+  , namedTemplateParameterNames
   , stratosphereTemplateEncodePretty
   )
 where
@@ -16,7 +17,9 @@ import System.FilePath ((<.>), (</>))
 import qualified Data.Aeson.Encode.Pretty as JSON
 import qualified Data.ByteString.Lazy     as LBS
 import qualified Data.Map.Strict          as Map
+import qualified Data.Set                 as Set
 import qualified Data.Text.Encoding       as Text
+import qualified StackDeploy.Parameters   as StackDeploy
 import qualified Stratosphere             as CFT
 import qualified Test.Tasty               as Tasty
 import qualified Test.Tasty.MGolden       as Tasty
@@ -60,6 +63,20 @@ mkNamedTemplate = NamedTemplate
 -- fromList [(BoundText "test",Template {conditions = Nothing, description = Nothing, formatVersion = Nothing, mappings = Nothing, metadata = Nothing, outputs = Nothing, parameters = Nothing, resources = Resources {resourceList = []}})]
 namedTemplateMapFromList :: [NamedTemplate] -> NamedTemplateMap
 namedTemplateMapFromList = Map.fromList . fmap (\NamedTemplate{..} -> (name, template))
+
+-- | Parameter names from named template
+-- >>> let cftParameterA = CFT.mkParameter "A" "String" & CFT.set @"Default" "A-Default"
+-- >>> let cftParameterB = CFT.mkParameter "B" "String"
+-- >>> let cftTemplate0  = CFT.mkTemplate []
+-- >>> let cftTemplate1  = CFT.mkTemplate [] & CFT.set @"Parameters" [cftParameterA, cftParameterB]
+-- >>> StackDeploy.namedTemplateParameterNames $ StackDeploy.mkNamedTemplate (fromType @"test") cftTemplate0
+-- fromList []
+-- >>> StackDeploy.namedTemplateParameterNames $ StackDeploy.mkNamedTemplate (fromType @"test") cftTemplate1
+-- fromList [BoundText "A",BoundText "B"]
+namedTemplateParameterNames :: NamedTemplate -> Set StackDeploy.ParameterName
+namedTemplateParameterNames namedTemplate
+  = Set.fromList
+  $ (\CFT.Parameter{..} -> convertImpure name) <$> maybe [] (.parameterList) namedTemplate.template.parameters
 
 namedTemplateMapTestTree :: NamedTemplateMap -> Tasty.TestTree
 namedTemplateMapTestTree map = Tasty.testGroup "template" (templateTest <$> Map.toList map)

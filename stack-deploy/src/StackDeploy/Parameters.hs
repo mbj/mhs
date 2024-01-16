@@ -7,8 +7,8 @@ module StackDeploy.Parameters
   , ParameterName
   , ParameterValue
   , parameterFromStratosphere
+  , parameterMapExpand
   , parameterMapFromList
-  , parameterMapTemplateExpand
   )
 where
 
@@ -56,36 +56,34 @@ parameterMapFromList = Map.fromList . fmap (\Parameter{..} -> (name, value))
 
 data ParameterExpand
   = ParameterExpandCreate
-  | ParameterExpandUpdate [CF.Parameter]
+  | ParameterExpandUpdate (Set ParameterName)
 
 -- | Expand parameter map to amazonka cloudformation parameters against a stratosphere template
 -- |
 -- | Explansion fails if unknown parameters are provided.
 -- | Missing parameters will not be detected. These are to be detected by the cloudformation API.
--- >>> let cfParameterA  = CF.newParameter & CF.parameter_parameterKey ?~ "A"
--- >>> let cfParameterB  = CF.newParameter & CF.parameter_parameterKey ?~ "B"
--- >>> let cftParameterA = CFT.mkParameter "A" "String" & CFT.set @"Default" "A-Default"
--- >>> let cftParameterB = CFT.mkParameter "B" "String"
--- >>> let cftTemplate   = CFT.mkTemplate [] & CFT.set @"Parameters" [cftParameterA, cftParameterB]
--- >>> let pairA         = (fromType @"A", fromType @"A-Value")
--- >>> let pairB         = (fromType @"B", fromType @"B-Value")
--- >>> let pairC         = (fromType @"C", fromType @"C-Value")
--- >>> StackDeploy.parameterMapTemplateExpand StackDeploy.ParameterExpandCreate [pairC] cftTemplate
+-- >>> parameterNameA         = fromType @"A"
+-- >>> parameterNameB         = fromType @"B"
+-- >>> templateParameterNames = [parameterNameA, parameterNameB]
+-- >>> let pairA              = (parameterNameA, fromType @"A-Value")
+-- >>> let pairB              = (parameterNameB, fromType @"B-Value")
+-- >>> let pairC              = (fromType @"C", fromType @"C-Value")
+-- >>> StackDeploy.parameterMapExpand StackDeploy.ParameterExpandCreate templateParameterNames [pairC]
 -- Left "Unknown parameters: C"
--- >>> StackDeploy.parameterMapTemplateExpand StackDeploy.ParameterExpandCreate [pairA] cftTemplate
+-- >>> StackDeploy.parameterMapExpand StackDeploy.ParameterExpandCreate templateParameterNames [pairA]
 -- Right [Parameter' {parameterKey = Just "A", parameterValue = Just "A-Value", resolvedValue = Nothing, usePreviousValue = Nothing}]
--- >>> StackDeploy.parameterMapTemplateExpand (StackDeploy.ParameterExpandUpdate [cfParameterA, cfParameterB]) [pairA] cftTemplate
+-- >>> StackDeploy.parameterMapExpand (StackDeploy.ParameterExpandUpdate [parameterNameA, parameterNameB]) templateParameterNames [pairA]
 -- Right [Parameter' {parameterKey = Just "A", parameterValue = Just "A-Value", resolvedValue = Nothing, usePreviousValue = Nothing},Parameter' {parameterKey = Just "B", parameterValue = Nothing, resolvedValue = Nothing, usePreviousValue = Just True}]
--- >>> StackDeploy.parameterMapTemplateExpand (StackDeploy.ParameterExpandUpdate [cfParameterA, cfParameterB]) [pairB] cftTemplate
+-- >>> StackDeploy.parameterMapExpand (StackDeploy.ParameterExpandUpdate [parameterNameA, parameterNameB]) templateParameterNames [pairB]
 -- Right [Parameter' {parameterKey = Just "A", parameterValue = Nothing, resolvedValue = Nothing, usePreviousValue = Just True},Parameter' {parameterKey = Just "B", parameterValue = Just "B-Value", resolvedValue = Nothing, usePreviousValue = Nothing}]
--- >>> StackDeploy.parameterMapTemplateExpand (StackDeploy.ParameterExpandUpdate [cfParameterB]) [pairB] cftTemplate
+-- >>> StackDeploy.parameterMapExpand (StackDeploy.ParameterExpandUpdate [parameterNameB]) templateParameterNames [pairB]
 -- Right [Parameter' {parameterKey = Just "B", parameterValue = Just "B-Value", resolvedValue = Nothing, usePreviousValue = Nothing}]
-parameterMapTemplateExpand
+parameterMapExpand
   :: ParameterExpand
+  -> Set ParameterName
   -> ParameterMap
-  -> CFT.Template
   -> Either String [CF.Parameter]
-parameterMapTemplateExpand operation parameterMap template
+parameterMapExpand operation templateParameterNames parameterMap
   = if not $ Set.null unknownParameterNames
       then Left $ "Unknown parameters: " <> join unknownParameterNames
       else pure $ Foldable.foldMap process $ Set.toList templateParameterNames
@@ -118,15 +116,9 @@ parameterMapTemplateExpand operation parameterMap template
     givenParameterNames :: Set ParameterName
     givenParameterNames = Map.keysSet parameterMap
 
-    templateParameterNames
-      = Set.fromList
-      $ convertImpure . (.name) <$> maybe [] (.parameterList) template.parameters
-
     previousParameterNames = case operation of
-      ParameterExpandCreate ->
-        []
-      (ParameterExpandUpdate cfPreviousParameters) ->
-        Set.fromList $ Foldable.foldMap (maybe [] (pure . convertImpure) . (.parameterKey)) cfPreviousParameters
+      ParameterExpandCreate                           -> []
+      (ParameterExpandUpdate previousParameterNames') -> previousParameterNames'
 
     join :: Set ParameterName -> String
     join = convert . Text.intercalate "," . fmap convert . Set.toList

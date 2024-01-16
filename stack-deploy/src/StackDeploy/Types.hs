@@ -12,11 +12,14 @@ import qualified Data.Text.Encoding            as Text
 import qualified System.Random                 as Random
 
 type StackId = BoundText "StackDeploy.StackId"
+type Token   = BoundText "StackDeploy.Token"
 
 data ExistingStack = ExistingStack
-  { outputs    :: [CF.Output]
-  , parameters :: [CF.Parameter]
-  , stackId    :: StackId
+  { outputs        :: [CF.Output]
+  , parameterNames :: Set ParameterName
+  , parameters     :: [CF.Parameter]
+  , stack          :: CF.Stack
+  , stackId        :: StackId
   }
 
 data Operation env
@@ -31,9 +34,6 @@ data RemoteOperation = RemoteOperation
 
 data RemoteOperationResult = RemoteOperationFailure | RemoteOperationSuccess
 
-newtype Token = Token Text
-  deriving (Conversion Text) via Text
-
 verb :: Operation env -> Text
 verb = \case
   OpCreate{} -> "create"
@@ -41,7 +41,7 @@ verb = \case
   OpUpdate{} -> "update"
 
 newToken :: forall m . MonadIO m => m Token
-newToken = Token . text <$> bytes
+newToken = convertImpure . text <$> bytes
   where
     text (wordA, wordB, wordC) = Text.decodeUtf8 . LBS.toStrict . BS.toLazyByteString
       $  "stack-deploy-"

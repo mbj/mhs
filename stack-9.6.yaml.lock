@@ -25,6 +25,19 @@ packages:
     subdir: .
     url: https://github.com/mbj/stratosphere/archive/d1b638820ca9fd90f7d5afba535415da47252af5.tar.gz
 - completed:
+    name: stratosphere-cloudwatch
+    pantry-tree:
+      sha256: bc872304641517499210bdbd2db774c4c450e54ccd15b66bcd593ee9cd629c60
+      size: 4353
+    sha256: 74ab541d3bfa92fac0c8cda380f3fe2de4cb37dafd78b5c9f2506744d53f36d3
+    size: 2937014
+    subdir: services/cloudwatch
+    url: https://github.com/mbj/stratosphere/archive/d1b638820ca9fd90f7d5afba535415da47252af5.tar.gz
+    version: 1.0.0
+  original:
+    subdir: services/cloudwatch
+    url: https://github.com/mbj/stratosphere/archive/d1b638820ca9fd90f7d5afba535415da47252af5.tar.gz
+- completed:
     name: stratosphere-ecs
     pantry-tree:
       sha256: 6dbadbe1590fc976c5cde85f0cb18e57e2a0bae958ff447d3e557018d099dfa8

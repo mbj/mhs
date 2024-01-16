@@ -4,6 +4,7 @@ extra-deps:
 - amazonka-cloudformation-2.0
 - amazonka-core-2.0
 - amazonka-ec2-2.0
+- amazonka-lambda-2.0
 - amazonka-s3-2.0
 - amazonka-secretsmanager-2.0
 - amazonka-sso-2.0
@@ -13,6 +14,7 @@ extra-deps:
   commit: d1b638820ca9fd90f7d5afba535415da47252af5
   subdirs:
   - .
+  - services/cloudwatch
   - services/ecs
   - services/events
   - services/iam
