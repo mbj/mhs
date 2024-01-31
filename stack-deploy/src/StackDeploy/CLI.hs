@@ -1,4 +1,4 @@
-module StackDeploy.CLI (parserInfo) where
+module StackDeploy.CLI (exitCode, parserInfo) where
 
 import CLI.Utils
 import Control.Applicative (many)
@@ -48,16 +48,16 @@ parserInfo instanceSpecMap = wrapHelper commands "stack commands"
 
     instanceCommands :: CLI.Parser (MIO env System.ExitCode)
     instanceCommands = CLI.hsubparser
-      $  mkCommand "cancel"     (cancel         <$> instanceNameOption)                  "cancel stack update"
-      <> mkCommand "create"     (create         <$> instanceNameOption <*> parameters)   "create stack"
-      <> mkCommand "delete"     (delete         <$> instanceNameOption)                  "delete stack"
-      <> mkCommand "events"     (events         <$> instanceNameOption)                  "list stack events"
-      <> mkCommand "outputs"    (outputs        <$> instanceNameOption)                  "list stack outputs"
-      <> mkCommand "parameters" (listParameters <$> instanceNameOption)                  "list stack parameters"
-      <> mkCommand "sync"       (sync           <$> instanceNameOption <*> parameters)   "sync stack with spec"
-      <> mkCommand "update"     (update         <$> instanceNameOption <*> parameters)   "update existing stack"
-      <> mkCommand "wait"       (wait           <$> instanceNameOption <*> tokenParser)  "wait for stack operation"
-      <> mkCommand "watch"      (watch          <$> instanceNameOption)                  "watch stack events"
+      $  mkCommand "cancel"     (cancel         <$> instanceNameOption)                 "cancel stack update"
+      <> mkCommand "create"     (create         <$> instanceNameOption <*> parameters)  "create stack"
+      <> mkCommand "delete"     (delete         <$> instanceNameOption)                 "delete stack"
+      <> mkCommand "events"     (events         <$> instanceNameOption)                 "list stack events"
+      <> mkCommand "outputs"    (outputs        <$> instanceNameOption)                 "list stack outputs"
+      <> mkCommand "parameters" (listParameters <$> instanceNameOption)                 "list stack parameters"
+      <> mkCommand "sync"       (sync           <$> instanceNameOption <*> parameters)  "sync stack with spec"
+      <> mkCommand "update"     (update         <$> instanceNameOption <*> parameters)  "update existing stack"
+      <> mkCommand "wait"       (wait           <$> instanceNameOption <*> tokenOption) "wait for stack operation"
+      <> mkCommand "watch"      (watch          <$> instanceNameOption)                 "watch stack events"
 
     templateCommands :: CLI.Parser (MIO env System.ExitCode)
     templateCommands = CLI.hsubparser
@@ -67,9 +67,6 @@ parserInfo instanceSpecMap = wrapHelper commands "stack commands"
     specCommands :: CLI.Parser (MIO env System.ExitCode)
     specCommands = CLI.hsubparser
       $  mkCommand "list"   (pure listSpecs) "list stack specifications"
-
-    tokenParser :: CLI.Parser Token
-    tokenParser = Token <$> CLI.argument CLI.str (CLI.metavar "TOKEN")
 
     cancel :: StackDeploy.InstanceName -> MIO env System.ExitCode
     cancel instanceName = do
@@ -168,18 +165,6 @@ parserInfo instanceSpecMap = wrapHelper commands "stack commands"
             . LBS.toStrict
             $ StackDeploy.stratosphereTemplateEncodePretty template
           pure System.ExitSuccess
-
-    success :: MIO env System.ExitCode
-    success = pure System.ExitSuccess
-
-    failure :: Text -> MIO env System.ExitCode
-    failure message = do
-      say message
-      pure $ System.ExitFailure 1
-
-    exitCode = \case
-      RemoteOperationSuccess -> success
-      RemoteOperationFailure -> failure "Stack operation failed"
 
     namedTemplateMap = StackDeploy.templateMapFromInstanceSpecMap instanceSpecMap
 

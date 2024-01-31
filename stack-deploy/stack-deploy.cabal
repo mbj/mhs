@@ -41,6 +41,7 @@ library
       StackDeploy.IO
       StackDeploy.NamedTemplate
       StackDeploy.Operation
+      StackDeploy.ParameterDeploy
       StackDeploy.Parameters
       StackDeploy.Prelude
       StackDeploy.S3
@@ -88,6 +89,7 @@ library
     , amazonka >=2.0
     , amazonka-cloudformation >=2.0
     , amazonka-core >=2.0
+    , amazonka-lambda >=2.0
     , amazonka-s3 >=2.0
     , attoparsec >=0.13
     , base
@@ -100,6 +102,7 @@ library
     , exceptions >=0.10
     , filepath >=1.4
     , http-types >=0.12
+    , lambda-runtime
     , lens
     , mio-amazonka
     , mio-core
@@ -110,6 +113,7 @@ library
     , random >=1.1
     , source-constraints >=0.0.1
     , stratosphere >=1.0
+    , stratosphere-cloudwatch >=1.0
     , stratosphere-ecs >=1.0
     , stratosphere-iam >=1.0
     , stratosphere-lambda >=1.0
@@ -171,6 +175,7 @@ test-suite doctest
     , amazonka >=2.0
     , amazonka-cloudformation >=2.0
     , amazonka-core >=2.0
+    , amazonka-lambda >=2.0
     , amazonka-s3 >=2.0
     , attoparsec >=0.13
     , base
@@ -184,6 +189,7 @@ test-suite doctest
     , exceptions >=0.10
     , filepath >=1.4
     , http-types >=0.12
+    , lambda-runtime
     , lens
     , mio-amazonka
     , mio-core
@@ -194,6 +200,7 @@ test-suite doctest
     , random >=1.1
     , source-constraints >=0.0.1
     , stratosphere >=1.0
+    , stratosphere-cloudwatch >=1.0
     , stratosphere-ecs >=1.0
     , stratosphere-iam >=1.0
     , stratosphere-lambda >=1.0
@@ -255,6 +262,7 @@ test-suite test
     , amazonka >=2.0
     , amazonka-cloudformation >=2.0
     , amazonka-core >=2.0
+    , amazonka-lambda >=2.0
     , amazonka-s3 >=2.0
     , attoparsec >=0.13
     , base
@@ -268,6 +276,7 @@ test-suite test
     , exceptions >=0.10
     , filepath >=1.4
     , http-types >=0.12
+    , lambda-runtime
     , lens
     , mio-amazonka
     , mio-core
@@ -278,6 +287,7 @@ test-suite test
     , random >=1.1
     , source-constraints >=0.0.1
     , stratosphere >=1.0
+    , stratosphere-cloudwatch >=1.0
     , stratosphere-ecs >=1.0
     , stratosphere-iam >=1.0
     , stratosphere-lambda >=1.0

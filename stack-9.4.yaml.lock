@@ -33,6 +33,13 @@ packages:
   original:
     hackage: amazonka-ec2-2.0
 - completed:
+    hackage: amazonka-lambda-2.0@sha256:aa74299380318b04429980eb76b7f0499a8241ff01de859042b0ff09bd7ef420,8281
+    pantry-tree:
+      sha256: da8f346de9d1eb0fb12afa91e44f8179ac05176043919346e2e72a7880b7a9e5
+      size: 21343
+  original:
+    hackage: amazonka-lambda-2.0
+- completed:
     hackage: amazonka-s3-2.0@sha256:e3143e11ab9e57ee0dfd9d1dd95a44c5b4a7d34af78c8f5b2e6c00afad118a02,13853
     pantry-tree:
       sha256: 49f801400582ef0ca290312243b55e6e3c540c0c94c1a3110735bc400386fefb
@@ -72,6 +79,19 @@ packages:
     version: 1.0.0
   original:
     subdir: .
+    url: https://github.com/mbj/stratosphere/archive/d1b638820ca9fd90f7d5afba535415da47252af5.tar.gz
+- completed:
+    name: stratosphere-cloudwatch
+    pantry-tree:
+      sha256: bc872304641517499210bdbd2db774c4c450e54ccd15b66bcd593ee9cd629c60
+      size: 4353
+    sha256: 74ab541d3bfa92fac0c8cda380f3fe2de4cb37dafd78b5c9f2506744d53f36d3
+    size: 2937014
+    subdir: services/cloudwatch
+    url: https://github.com/mbj/stratosphere/archive/d1b638820ca9fd90f7d5afba535415da47252af5.tar.gz
+    version: 1.0.0
+  original:
+    subdir: services/cloudwatch
     url: https://github.com/mbj/stratosphere/archive/d1b638820ca9fd90f7d5afba535415da47252af5.tar.gz
 - completed:
     name: stratosphere-ecs

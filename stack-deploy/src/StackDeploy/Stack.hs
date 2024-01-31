@@ -22,6 +22,7 @@ import qualified Amazonka.CloudFormation.Types          as CF
 import qualified Data.Conduit                           as Conduit
 import qualified Data.Conduit.Combinators               as Conduit
 import qualified Data.Foldable                          as Foldable
+import qualified Data.Set                               as Set
 import qualified MIO.Amazonka                           as AWS
 import qualified StackDeploy.AWS                        as AWS
 import qualified StackDeploy.InstanceSpec               as StackDeploy
@@ -76,8 +77,11 @@ readExistingStack name =
       pure ExistingStack
         { stackId    = stackId
         , outputs    = fromMaybe [] stack.outputs
-        , parameters = fromMaybe [] stack.parameters
+        , ..
         }
+      where
+        parameters     = fromMaybe [] stack.parameters
+        parameterNames = Set.fromList $ convertImpure . fromMaybe "" . (.parameterKey) <$> parameters
 
 readExistingStackPresent
   :: AWS.Env env

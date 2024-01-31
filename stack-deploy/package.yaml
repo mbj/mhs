@@ -13,6 +13,7 @@ dependencies:
 - amazonka                >= 2.0
 - amazonka-cloudformation >= 2.0
 - amazonka-core           >= 2.0
+- amazonka-lambda         >= 2.0
 - amazonka-s3             >= 2.0
 - attoparsec              >= 0.13
 - base
@@ -25,6 +26,7 @@ dependencies:
 - exceptions              >= 0.10
 - filepath                >= 1.4
 - http-types              >= 0.12
+- lambda-runtime
 - lens
 - mio-amazonka
 - mio-core
@@ -35,6 +37,7 @@ dependencies:
 - random                  >= 1.1
 - source-constraints      >= 0.0.1
 - stratosphere            >= 1.0
+- stratosphere-cloudwatch >= 1.0
 - stratosphere-ecs        >= 1.0
 - stratosphere-iam        >= 1.0
 - stratosphere-lambda     >= 1.0

@@ -6,6 +6,7 @@ extra-deps:
   commit: d1b638820ca9fd90f7d5afba535415da47252af5
   subdirs:
   - .
+  - services/cloudwatch
   - services/ecs
   - services/events
   - services/iam

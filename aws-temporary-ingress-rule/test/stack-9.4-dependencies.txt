@@ -12,6 +12,7 @@ amazonka 2.0
 amazonka-cloudformation 2.0
 amazonka-core 2.0
 amazonka-ec2 2.0
+amazonka-lambda 2.0
 amazonka-s3 2.0
 amazonka-sso 2.0
 amazonka-sts 2.0
@@ -181,6 +182,7 @@ splitmix 0.1.0.5
 stack-deploy 0.1.0
 stm 2.5.1.0
 stratosphere 1.0.0
+stratosphere-cloudwatch 1.0.0
 stratosphere-ecs 1.0.0
 stratosphere-events 1.0.0
 stratosphere-iam 1.0.0
