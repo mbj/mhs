@@ -43,29 +43,30 @@ library
       src
   default-extensions:
       AllowAmbiguousTypes
-      OverloadedStrings
-      OverloadedLists
+      ConstraintKinds
+      DataKinds
+      DeriveAnyClass
       DeriveFoldable
       DeriveFunctor
-      DeriveAnyClass
       DeriveGeneric
-      DerivingStrategies
       DeriveTraversable
+      DerivingStrategies
       DerivingVia
-      DataKinds
-      KindSignatures
       DuplicateRecordFields
-      ConstraintKinds
       EmptyCase
       FlexibleContexts
       GeneralizedNewtypeDeriving
+      KindSignatures
       LambdaCase
-      NoImplicitPrelude
       MonoLocalBinds
-      MultiWayIf
       MultiParamTypeClasses
+      MultiWayIf
+      NoImplicitPrelude
+      OverloadedLists
+      OverloadedStrings
       RecordWildCards
       ScopedTypeVariables
+      TemplateHaskell
       TypeApplications
       ViewPatterns
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wno-ambiguous-fields -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path
@@ -104,29 +105,30 @@ test-suite test
       test
   default-extensions:
       AllowAmbiguousTypes
-      OverloadedStrings
-      OverloadedLists
+      ConstraintKinds
+      DataKinds
+      DeriveAnyClass
       DeriveFoldable
       DeriveFunctor
-      DeriveAnyClass
       DeriveGeneric
-      DerivingStrategies
       DeriveTraversable
+      DerivingStrategies
       DerivingVia
-      DataKinds
-      KindSignatures
       DuplicateRecordFields
-      ConstraintKinds
       EmptyCase
       FlexibleContexts
       GeneralizedNewtypeDeriving
+      KindSignatures
       LambdaCase
-      NoImplicitPrelude
       MonoLocalBinds
-      MultiWayIf
       MultiParamTypeClasses
+      MultiWayIf
+      NoImplicitPrelude
+      OverloadedLists
+      OverloadedStrings
       RecordWildCards
       ScopedTypeVariables
+      TemplateHaskell
       TypeApplications
       ViewPatterns
   ghc-options: -Wall -Wcompat -Werror -Widentities -Wimplicit-prelude -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-deriving-strategies -Wmissing-local-signatures -Wmissing-signatures -Wmonomorphism-restriction -Wno-ambiguous-fields -Wredundant-constraints -fhide-source-paths -funbox-strict-fields -optP-Wno-nonportable-include-path -rtsopts -threaded -with-rtsopts=-N

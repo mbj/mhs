@@ -38,6 +38,7 @@ default-extensions:
 - OverloadedStrings
 - RecordWildCards
 - StrictData
+- TemplateHaskell
 
 tests:
   test:

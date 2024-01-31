@@ -28,9 +28,9 @@ default-extensions:
 - DerivingStrategies
 - DerivingVia
 - DuplicateRecordFields
+- ExistentialQuantification
 - FlexibleContexts
 - FlexibleInstances
-- ExistentialQuantification
 - KindSignatures
 - LambdaCase
 - MultiParamTypeClasses
@@ -42,6 +42,7 @@ default-extensions:
 - RecordWildCards
 - ScopedTypeVariables
 - StrictData
+- TemplateHaskell
 - TupleSections
 - TypeApplications
 - TypeFamilies

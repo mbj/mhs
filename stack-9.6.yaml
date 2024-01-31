@@ -1,16 +1,7 @@
-resolver: nightly-2023-11-08
+resolver: lts-22.8
 extra-deps:
-- amazonka-2.0
-- amazonka-cloudformation-2.0
-- amazonka-core-2.0
-- amazonka-ec2-2.0
-- amazonka-s3-2.0
-- amazonka-secretsmanager-2.0
-- amazonka-sso-2.0
-- amazonka-sts-2.0
+- amazonka-secretsmanager-2.0@sha256:de4b8b2e1d5d0743dda1eb85c8be96897ab6ccf5aa62494d2d6318d869a49d42,4473
 - mprelude
-- github: ndmitchell/hlint
-  commit: 505a4d57b972f3ba605ad7a59721cef1f3d98a84
 - github: mbj/stratosphere
   commit: d1b638820ca9fd90f7d5afba535415da47252af5
   subdirs:

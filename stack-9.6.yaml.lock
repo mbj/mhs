@@ -5,72 +5,12 @@
 
 packages:
 - completed:
-    hackage: amazonka-2.0@sha256:3481da2fda6b210d15d41c1db7a588adf68123cfb7ea3882797a6230003259db,3505
-    pantry-tree:
-      sha256: 01c7121bd5e4a3918a71ea6502412292c97facf20c9620f07af96e423d6437e2
-      size: 1528
-  original:
-    hackage: amazonka-2.0
-- completed:
-    hackage: amazonka-cloudformation-2.0@sha256:7a9618bf697cdaf0a51c2d7be557ad47820b926416d79f5138ff3befdbfcbafb,11870
-    pantry-tree:
-      sha256: 177fbc16ea2fa072a7fca9f4a3b1d64f4d5e8fc7cd493e4e841f337c572745bd
-      size: 27257
-  original:
-    hackage: amazonka-cloudformation-2.0
-- completed:
-    hackage: amazonka-core-2.0@sha256:d9f0533c272ac92bd7b18699077038b6b51b3552e91b65743af4ce646286b4f8,4383
-    pantry-tree:
-      sha256: 46e7e4de910b08ee2df98db9cda2becf388ce49510024018289a46c43e175ee0
-      size: 3222
-  original:
-    hackage: amazonka-core-2.0
-- completed:
-    hackage: amazonka-ec2-2.0@sha256:9344b87d8f8328fd91023b96565e79e7676aa5e7dd40b87b3f3f3a22a9da7736,74154
-    pantry-tree:
-      sha256: d1f2d4fce5b0664605d730d4232b25f26a5f49e3b7d07f4b282e8c36773e5ffd
-      size: 234434
-  original:
-    hackage: amazonka-ec2-2.0
-- completed:
-    hackage: amazonka-s3-2.0@sha256:e3143e11ab9e57ee0dfd9d1dd95a44c5b4a7d34af78c8f5b2e6c00afad118a02,13853
-    pantry-tree:
-      sha256: 49f801400582ef0ca290312243b55e6e3c540c0c94c1a3110735bc400386fefb
-      size: 38690
-  original:
-    hackage: amazonka-s3-2.0
-- completed:
     hackage: amazonka-secretsmanager-2.0@sha256:de4b8b2e1d5d0743dda1eb85c8be96897ab6ccf5aa62494d2d6318d869a49d42,4473
     pantry-tree:
       sha256: aa576fda0382f75e7f7e632a270754d875e41b5099851a1d8ab176cef56c7b50
       size: 7039
   original:
-    hackage: amazonka-secretsmanager-2.0
-- completed:
-    hackage: amazonka-sso-2.0@sha256:902be13b604e4a3b51a9b8e1adc6a32f42322ae11f738a72a8c737b2d0a91a5e,2995
-    pantry-tree:
-      sha256: f87dd959a78bf54295bd6f8c7da58f7f8f860251d5548ecb05ab758e03cba50b
-      size: 1817
-  original:
-    hackage: amazonka-sso-2.0
-- completed:
-    hackage: amazonka-sts-2.0@sha256:5c721083e8d80883a893176de6105c27bbbd8176f467c27ac5f8d548a5e726d8,3209
-    pantry-tree:
-      sha256: bde4691af7cac74e0a3705271b4d3ac05515863bfb6f668112e3f3950a27cb41
-      size: 2880
-  original:
-    hackage: amazonka-sts-2.0
-- completed:
-    name: hlint
-    pantry-tree:
-      sha256: 5cd3cabc21bce5fcc1bf70bf100f9c4da0e62def23efa5b17966c3624f8acbdd
-      size: 7474
-    sha256: 68051e6404e9f647c31273a6be705226d280474e406b3aa39fbc9554723f1386
-    size: 204987
-    url: https://github.com/ndmitchell/hlint/archive/505a4d57b972f3ba605ad7a59721cef1f3d98a84.tar.gz
-    version: 3.6.1
-  original:
-    url: https://github.com/ndmitchell/hlint/archive/505a4d57b972f3ba605ad7a59721cef1f3d98a84.tar.gz
+    hackage: amazonka-secretsmanager-2.0@sha256:de4b8b2e1d5d0743dda1eb85c8be96897ab6ccf5aa62494d2d6318d869a49d42,4473
 - completed:
     name: stratosphere
     pantry-tree:
@@ -177,7 +117,7 @@ packages:
     url: https://github.com/mbj/stratosphere/archive/d1b638820ca9fd90f7d5afba535415da47252af5.tar.gz
 snapshots:
 - completed:
-    sha256: c283c8c0be7ffb9d3a6624f367226b03c6a8d55a04b1a9037e02da81e506d1b7
-    size: 698106
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2023/11/8.yaml
-  original: nightly-2023-11-08
+    sha256: 56ef9e03804cb4827866e762dc9752eeb392adda8f4811690da110dd9a165b9e
+    size: 714105
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/22/8.yaml
+  original: lts-22.8

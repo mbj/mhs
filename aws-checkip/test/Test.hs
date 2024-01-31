@@ -1,3 +1,5 @@
+{-# LANGUAGE CPP #-}
+
 module Main (main) where
 
 import AWS.Checkip.Prelude
@@ -67,12 +69,15 @@ testHTTP request
     mkResponse status body
       = HTTP.Response
       { responseBody            = body
-      , responseHeaders         = []
       , responseClose'          = HTTP.ResponseClose $ pure ()
       , responseCookieJar       = HTTP.CJ []
+#if MIN_VERSION_http_client(0,7,16)
+      , responseEarlyHints      = []
+#endif
+      , responseHeaders         = []
+      , responseOriginalRequest = request
       , responseStatus          = status
       , responseVersion         = HTTP.http11
-      , responseOriginalRequest = request
       }
 
     mkSuccessResponse :: LBS.ByteString -> HTTP.Response LBS.ByteString

@@ -1,5 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
-
 import Data.Aeson.KeyMap (KeyMap)
 import Data.Maybe (mapMaybe)
 import OpenApi.Paths
