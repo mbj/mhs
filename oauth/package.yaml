@@ -32,29 +32,30 @@ dependencies:
 
 default-extensions:
 - AllowAmbiguousTypes
-- OverloadedStrings
-- OverloadedLists
+- ConstraintKinds
+- DataKinds
+- DeriveAnyClass
 - DeriveFoldable
 - DeriveFunctor
-- DeriveAnyClass
 - DeriveGeneric
-- DerivingStrategies
 - DeriveTraversable
+- DerivingStrategies
 - DerivingVia
-- DataKinds
-- KindSignatures
 - DuplicateRecordFields
-- ConstraintKinds
 - EmptyCase
 - FlexibleContexts
 - GeneralizedNewtypeDeriving
+- KindSignatures
 - LambdaCase
-- NoImplicitPrelude
 - MonoLocalBinds
-- MultiWayIf
 - MultiParamTypeClasses
+- MultiWayIf
+- NoImplicitPrelude
+- OverloadedLists
+- OverloadedStrings
 - RecordWildCards
 - ScopedTypeVariables
+- TemplateHaskell
 - TypeApplications
 - ViewPatterns
 

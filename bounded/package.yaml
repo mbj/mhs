@@ -13,10 +13,10 @@ default-extensions:
 - DataKinds
 - DerivingStrategies
 - DerivingVia
+- ExistentialQuantification
 - FlexibleContexts
 - FlexibleInstances
 - GeneralizedNewtypeDeriving
-- ExistentialQuantification
 - KindSignatures
 - LambdaCase
 - MultiParamTypeClasses
@@ -27,6 +27,7 @@ default-extensions:
 - RecordWildCards
 - ScopedTypeVariables
 - StrictData
+- TemplateHaskell
 - TypeApplications
 - TypeFamilies
 - TypeOperators

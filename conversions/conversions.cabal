@@ -43,9 +43,9 @@ library
       DerivingStrategies
       DerivingVia
       DuplicateRecordFields
+      ExistentialQuantification
       FlexibleContexts
       FlexibleInstances
-      ExistentialQuantification
       KindSignatures
       LambdaCase
       MultiParamTypeClasses
@@ -57,6 +57,7 @@ library
       RecordWildCards
       ScopedTypeVariables
       StrictData
+      TemplateHaskell
       TupleSections
       TypeApplications
       TypeFamilies
@@ -99,9 +100,9 @@ test-suite test
       DerivingStrategies
       DerivingVia
       DuplicateRecordFields
+      ExistentialQuantification
       FlexibleContexts
       FlexibleInstances
-      ExistentialQuantification
       KindSignatures
       LambdaCase
       MultiParamTypeClasses
@@ -113,6 +114,7 @@ test-suite test
       RecordWildCards
       ScopedTypeVariables
       StrictData
+      TemplateHaskell
       TupleSections
       TypeApplications
       TypeFamilies
