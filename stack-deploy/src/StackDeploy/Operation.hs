@@ -251,7 +251,7 @@ prepareOperation
       $ fail
       $ "Template is bigger than "
       <> show maxBytes
-      <> " cloudformation requires to read the template via an S3 object but the environment specifies none"
+      <> " bytes, cloudformation requires to read the template via an S3 object but the environment specifies none"
 
     maxBytes :: Int
     maxBytes = 51200
