@@ -1,9 +1,9 @@
 module StackDeploy.ParameterDeploy
   ( ParameterDeployConfig(..)
+  , parameterDeployClientPolicies
   , parameterDeployComponent
   , parameterDeployLambdaFunctionObjectKey
   , parameterDeployLambdaInvoke
-  , parameterDeployLambdaInvokeFunctionPolicy
   , parameterDeployLambdaMain
   , parameterDeployParserInfo
   )
@@ -107,13 +107,24 @@ parameterDeployLambdaMain config = do
     token <- parameterDeploy config instanceName =<< either throwString pure (JSON.parseEither JSON.parseJSON body)
     pure . JSON.toJSON $ ParameterDeployLambdaResponse{..}
 
-parameterDeployLambdaInvokeFunctionPolicy :: ParameterDeployConfig -> IAM.PolicyProperty
-parameterDeployLambdaInvokeFunctionPolicy config =
-  CFT.allowResourcePolicy
-    IAM.mkPolicyProperty
-    (CFT.getAttArn $ function config)
-    "parameter-deploy-invoke"
-    ["lambda:InvokeFunction"]
+parameterDeployClientPolicies :: ParameterDeployConfig -> [IAM.PolicyProperty]
+parameterDeployClientPolicies config = [lambdaInvokeFunctionPolicy, describeStackPolicy]
+  where
+    lambdaInvokeFunctionPolicy =
+      CFT.allowResourcePolicy
+        IAM.mkPolicyProperty
+        (CFT.getAttArn $ function config)
+        "parameter-deploy-lambda-invoke-function"
+        ["lambda:InvokeFunction"]
+
+    describeStackPolicy =
+      CFT.allowResourcePolicy
+        IAM.mkPolicyProperty
+        CFT.awsStackId
+        "parameter-deploy-cloudformation-describe-stack"
+        [ "cloudformation:DescribeStackEvents"
+        , "cloudformation:DescribeStacks"
+        ]
 
 stackNameEnvSpec :: StackDeploy.EnvSpec
 stackNameEnvSpec = StackDeploy.EnvSpec (fromType @"STACK_NAME") StackDeploy.EnvSpecStackName

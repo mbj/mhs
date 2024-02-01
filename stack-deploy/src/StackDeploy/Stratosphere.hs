@@ -1,4 +1,20 @@
-module StackDeploy.Stratosphere where
+module StackDeploy.Stratosphere
+  ( allowResourcePolicy
+  , assumeRole
+  , dependencies
+  , getAtt
+  , getAttArn
+  , mkLambdaLogGroup
+  , mkLambdaLogsPolicy
+  , mkName
+  , mkResourceListOutputExport
+  , mkResourceOutputExport
+  , mkStackImport
+  , mkStackListImport
+  , resolveSecretsmanagerSecret
+  , s3BucketBlockPublicAccess
+  )
+where
 
 import StackDeploy.Prelude
 
@@ -94,3 +110,34 @@ mkLambdaLogsPolicy lambdaFunctionName = IAM.mkPolicyProperty [("Statement", poli
         , CFT.Join "/" ["/aws/lambda", lambdaFunctionName]
         , "*"
         ]
+
+mkResourceListOutputExport :: CFT.Resources -> Text -> (CFT.Resource -> CFT.Value Text) -> CFT.Output
+mkResourceListOutputExport resources outputName mkValue
+  = mkOutputExport outputName (CFT.Join listDelimiter . CFT.ValueList $ mkValue <$> resources.resourceList)
+
+mkResourceOutputExport :: CFT.Resource -> Text -> (CFT.Resource -> CFT.Value Text) -> CFT.Output
+mkResourceOutputExport resource' attribute mkValue
+  = mkOutputExport outputName (mkValue resource')
+  where
+    outputName :: Text
+    outputName = resource'.logicalName <> attribute
+
+mkOutputExport :: Text -> CFT.Value Text -> CFT.Output
+mkOutputExport outputName outputValue
+  = CFT.mkOutput outputName outputValue
+  & CFT.set @"Export" (CFT.OutputExport $ mkOutputExportName outputName)
+
+mkStackImport :: CFT.Value Text -> CFT.Output -> CFT.Value Text
+mkStackImport stackName output = CFT.ImportValue $ mkStackOutputExportName stackName output.name
+
+mkStackListImport :: CFT.Value Text -> CFT.Output -> CFT.ValueList Text
+mkStackListImport stackName = CFT.Split listDelimiter . mkStackImport stackName
+
+mkStackOutputExportName :: CFT.Value Text -> Text -> CFT.Value Text
+mkStackOutputExportName stackName name = CFT.Join ":" [stackName, CFT.Literal name]
+
+mkOutputExportName :: Text -> CFT.Value Text
+mkOutputExportName = mkStackOutputExportName CFT.awsStackName
+
+listDelimiter :: Text
+listDelimiter = ","

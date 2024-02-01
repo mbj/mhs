@@ -37,6 +37,7 @@ library
       StackDeploy.Env
       StackDeploy.EnvSpec
       StackDeploy.Events
+      StackDeploy.GithubActions
       StackDeploy.InstanceSpec
       StackDeploy.IO
       StackDeploy.NamedTemplate
