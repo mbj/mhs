@@ -130,7 +130,7 @@ packages:
     url: https://github.com/mbj/stratosphere/archive/d1b638820ca9fd90f7d5afba535415da47252af5.tar.gz
 snapshots:
 - completed:
-    sha256: 56ef9e03804cb4827866e762dc9752eeb392adda8f4811690da110dd9a165b9e
-    size: 714105
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/22/8.yaml
-  original: lts-22.8
+    sha256: 2fdd7d3e54540062ef75ca0a73ca3a804c527dbf8a4cadafabf340e66ac4af40
+    size: 712469
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/22/11.yaml
+  original: lts-22.11

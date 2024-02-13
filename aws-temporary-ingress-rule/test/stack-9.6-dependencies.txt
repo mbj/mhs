@@ -68,7 +68,7 @@ cpphs 1.20.9.1
 cryptohash-md5 0.11.101.0
 cryptohash-sha1 0.11.101.0
 crypton 0.34
-crypton-connection 0.3.1
+crypton-connection 0.3.2
 crypton-x509 1.7.6
 crypton-x509-store 1.6.9
 crypton-x509-system 1.6.7
@@ -158,7 +158,7 @@ optparse-applicative 0.18.1.0
 parallel 3.2.2.0
 parsec 3.1.16.1
 parsers 0.12.11
-pathtype 0.8.1.2
+pathtype 0.8.1.3
 pem 0.2.4
 polyparse 1.13
 pretty 1.1.3.6
@@ -168,7 +168,7 @@ prettyprinter-ansi-terminal 1.1.3
 primitive 0.8.0.0
 process 1.6.17.0
 profunctors 5.6.2
-random 1.2.1.1
+random 1.2.1.2
 refact 0.3.0.2
 reflection 2.1.7
 regex-base 0.94.0.2
@@ -226,12 +226,12 @@ typed-process 0.2.11.1
 unbounded-delays 0.1.1.1
 uniplate 1.6.13
 unix 2.8.4.0
-unix-time 0.4.11
+unix-time 0.4.12
 unliftio 0.2.25.0
 unliftio-core 0.2.1.0
 unordered-containers 0.2.20
 utf8-string 1.0.2
-utility-ht 0.0.17
+utility-ht 0.0.17.1
 uuid 1.3.15
 uuid-types 1.0.5.1
 vector 0.13.1.0
