@@ -31,8 +31,8 @@ import qualified Stratosphere                  as CFT
 -- import qualified Stratosphere                  as CFT
 -- :}
 
-type ParameterName  = BoundText "StackDeploy.Parameter.Name"
-type ParameterValue = BoundText "StackDeploy.Parameter.Value"
+type ParameterName  = BoundText' "StackDeploy.Parameter.Name" '(1, 255)
+type ParameterValue = BoundText' "StackDeploy.Parameter.Value" '(0, 4096)
 
 data Parameter = Parameter
   { name  :: ParameterName
