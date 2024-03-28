@@ -1,6 +1,7 @@
 module StackDeploy.Stratosphere
   ( allowResourcePolicy
   , assumeRole
+  , assumeRolePolicyDocument
   , dependencies
   , getAtt
   , getAttArn
@@ -62,6 +63,18 @@ allowResourcePolicy constructor resources name actions
 
 assumeRole :: Text -> JSON.Object
 assumeRole service =
+  [ ("Version", JSON.String "2012-10-17")
+  , ("Statement"
+    , JSON.object
+      [ ("Action",   "sts:AssumeRole")
+      , ("Effect",   "Allow")
+      , ("Principal", JSON.object [("Service", JSON.toJSON service)])
+      ]
+    )
+  ]
+
+assumeRolePolicyDocument :: CFT.Value Text -> JSON.Object
+assumeRolePolicyDocument service =
   [ ("Version", JSON.String "2012-10-17")
   , ("Statement"
     , JSON.object
