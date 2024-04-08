@@ -188,7 +188,6 @@ parserInfo instanceSpecMap = wrapHelper commands "stack commands"
         action
         (Map.lookup instanceName instanceSpecMap)
 
-
     printList :: Conversion Text a => [a] -> MIO env ()
     printList = traverse_ say
 
