@@ -5,39 +5,42 @@ module StackDeploy.CLI.Utils
   , success
   , templateNameOption
   , tokenOption
+  , withExistingStack
   )
 where
 
 import GHC.TypeLits (KnownSymbol)
-import Options.Applicative
 import StackDeploy.IO
 import StackDeploy.Prelude
 import StackDeploy.Types
 
+import qualified MIO.Amazonka              as AWS
+import qualified Options.Applicative       as CLI
 import qualified StackDeploy.InstanceSpec  as StackDeploy
 import qualified StackDeploy.NamedTemplate as StackDeploy
+import qualified StackDeploy.Stack         as StackDeploy
 import qualified System.Exit               as System
 
-instanceNameOption :: Parser StackDeploy.InstanceName
+instanceNameOption :: CLI.Parser StackDeploy.InstanceName
 instanceNameOption =
-  option
+  CLI.option
     reader
-    (long "instance" <> metavar "INSTANCE" <> help "Stack instance name")
+    (CLI.long "instance" <> CLI.metavar "INSTANCE" <> CLI.help "Stack instance name")
 
-templateNameOption :: Parser StackDeploy.TemplateName
+templateNameOption :: CLI.Parser StackDeploy.TemplateName
 templateNameOption =
-  option
+  CLI.option
     reader
-    (long "template" <> metavar "TEMPLATE_NAME" <> help "Template name")
+    (CLI.long "template" <> CLI.metavar "TEMPLATE_NAME" <> CLI.help "Template name")
 
-tokenOption :: Parser Token
+tokenOption :: CLI.Parser Token
 tokenOption =
-  option
+  CLI.option
     reader
-    (long "token" <> metavar "TOKEN" <> help "Stack update token")
+    (CLI.long "token" <> CLI.metavar "TOKEN" <> CLI.help "Stack update token")
 
-reader :: KnownSymbol a => ReadM (BoundText a)
-reader = maybeReader (convertMaybe . convert @Text)
+reader :: KnownSymbol a => CLI.ReadM (BoundText a)
+reader = CLI.maybeReader (convertMaybe . convert @Text)
 
 {- HLINT ignore "Unnecessarily monadic" -}
 success :: MIO env System.ExitCode
@@ -52,3 +55,14 @@ exitCode :: RemoteOperationResult -> MIO env System.ExitCode
 exitCode = \case
   RemoteOperationSuccess -> success
   RemoteOperationFailure -> failure "Stack operation failed"
+
+withExistingStack
+  :: AWS.Env env
+  => StackDeploy.InstanceName
+  -> (ExistingStack -> MIO env System.ExitCode)
+  -> MIO env System.ExitCode
+withExistingStack instanceName action =
+  StackDeploy.readExistingStack instanceName >>=
+    maybe
+      (failure $ "Stack does not exist: " <> convert instanceName)
+      action
