@@ -121,13 +121,11 @@ library
     , vector
   default-language: Haskell2010
   if flag(development)
-    ghc-options: -Werror
-  else
-    ghc-options: -Wwarn
-  if impl(ghc < 9.5)
-    ghc-options: -fplugin=SourceConstraints
+    ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
         source-constraints
+  else
+    ghc-options: -Wwarn
 
 executable pgt
   main-is: Main.hs
@@ -193,13 +191,11 @@ executable pgt
     , vector
   default-language: Haskell2010
   if flag(development)
-    ghc-options: -Werror
-  else
-    ghc-options: -Wwarn
-  if impl(ghc < 9.5)
-    ghc-options: -fplugin=SourceConstraints
+    ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
         source-constraints
+  else
+    ghc-options: -Wwarn
   if flag(build-executable)
     buildable: True
   else
@@ -273,10 +269,8 @@ test-suite test
     , vector
   default-language: Haskell2010
   if flag(development)
-    ghc-options: -Werror
-  else
-    ghc-options: -Wwarn
-  if impl(ghc < 9.5)
-    ghc-options: -fplugin=SourceConstraints
+    ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
         source-constraints
+  else
+    ghc-options: -Wwarn

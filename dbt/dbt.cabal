@@ -98,13 +98,11 @@ library
     , unliftio-core >=0.2
   default-language: Haskell2010
   if flag(development)
-    ghc-options: -Werror
-  else
-    ghc-options: -Wwarn
-  if impl(ghc < 9.5)
-    ghc-options: -fplugin=SourceConstraints
+    ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
         source-constraints
+  else
+    ghc-options: -Wwarn
 
 executable dbt
   main-is: Main.hs
@@ -170,13 +168,11 @@ executable dbt
     , unliftio-core >=0.2
   default-language: Haskell2010
   if flag(development)
-    ghc-options: -Werror
-  else
-    ghc-options: -Wwarn
-  if impl(ghc < 9.5)
-    ghc-options: -fplugin=SourceConstraints
+    ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
         source-constraints
+  else
+    ghc-options: -Wwarn
   if flag(development)
     buildable: True
   else
@@ -251,10 +247,8 @@ test-suite test
     , unliftio-core >=0.2
   default-language: Haskell2010
   if flag(development)
-    ghc-options: -Werror
-  else
-    ghc-options: -Wwarn
-  if impl(ghc < 9.5)
-    ghc-options: -fplugin=SourceConstraints
+    ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
         source-constraints
+  else
+    ghc-options: -Wwarn

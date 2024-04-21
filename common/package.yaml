@@ -13,15 +13,13 @@
   when:
   - condition: flag(development)
     then:
-      ghc-options: -Werror
+      dependencies:
+      - source-constraints
+      ghc-options:
+      - -Werror
+      - -fplugin=SourceConstraints
     else:
       ghc-options: -Wwarn
-
-  # GHC 9.6 currently doesn't play nice with plugins when stack
-  # https://github.com/commercialhaskell/stack/issues/6251
-  - condition: impl(ghc < 9.5)
-    ghc-options: -fplugin=SourceConstraints
-    dependencies: source-constraints
 
   ghc-options:
   - -Wall
