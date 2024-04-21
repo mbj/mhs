@@ -87,13 +87,11 @@ library
     , xray
   default-language: Haskell2010
   if flag(development)
-    ghc-options: -Werror
-  else
-    ghc-options: -Wwarn
-  if impl(ghc < 9.5)
-    ghc-options: -fplugin=SourceConstraints
+    ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
         source-constraints
+  else
+    ghc-options: -Wwarn
 
 test-suite test
   type: exitcode-stdio-1.0
@@ -148,10 +146,8 @@ test-suite test
     , xray
   default-language: Haskell2010
   if flag(development)
-    ghc-options: -Werror
-  else
-    ghc-options: -Wwarn
-  if impl(ghc < 9.5)
-    ghc-options: -fplugin=SourceConstraints
+    ghc-options: -Werror -fplugin=SourceConstraints
     build-depends:
         source-constraints
+  else
+    ghc-options: -Wwarn
