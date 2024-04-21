@@ -168,16 +168,6 @@ parserInfo instanceSpecMap = wrapHelper commands "stack commands"
 
     namedTemplateMap = StackDeploy.templateMapFromInstanceSpecMap instanceSpecMap
 
-    withExistingStack
-      :: StackDeploy.InstanceName
-      -> (ExistingStack -> MIO env System.ExitCode)
-      -> MIO env System.ExitCode
-    withExistingStack instanceName action =
-      StackDeploy.readExistingStack instanceName >>=
-        maybe
-          (failure $ "Stack does not exist: " <> convert instanceName)
-          action
-
     withInstanceSpec
       :: StackDeploy.InstanceName
       -> (StackDeploy.InstanceSpec env -> MIO env System.ExitCode)
@@ -187,7 +177,6 @@ parserInfo instanceSpecMap = wrapHelper commands "stack commands"
         (failure $ "Instance spec does not exist: " <> convert instanceName)
         action
         (Map.lookup instanceName instanceSpecMap)
-
 
     printList :: Conversion Text a => [a] -> MIO env ()
     printList = traverse_ say
