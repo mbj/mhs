@@ -122,7 +122,7 @@ integer-gmp 1.1
 integer-logarithms 1.0.3.1
 invariant 0.6.3
 iproute 1.7.12
-kan-extensions 5.2.5
+kan-extensions 5.2.6
 lambda-runtime 0.0.2
 lens 5.2.3
 libyaml 0.1.4
@@ -161,7 +161,7 @@ process 1.6.19.0
 profunctors 5.6.2
 random 1.2.1.2
 refact 0.3.0.2
-reflection 2.1.7
+reflection 2.1.8
 regex-base 0.94.0.2
 regex-posix 0.96.0.1
 resourcet 1.3.0
@@ -170,7 +170,7 @@ rts 1.0.2
 safe-exceptions 0.1.7.4
 scientific 0.3.7.0
 semialign 1.3
-semigroupoids 6.0.0.1
+semigroupoids 6.0.1
 semigroups 0.20
 socks 0.6.1
 source-constraints 0.0.5
