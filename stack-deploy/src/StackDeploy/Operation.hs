@@ -21,6 +21,7 @@ import qualified Amazonka.CloudFormation.DeleteStack    as CF
 import qualified Amazonka.CloudFormation.Types          as CF
 import qualified Amazonka.CloudFormation.UpdateStack    as CF
 import qualified Amazonka.S3.Types                      as S3
+import qualified Data.Aeson                             as JSON
 import qualified Data.ByteString                        as BS
 import qualified Data.ByteString.Lazy                   as LBS
 import qualified Data.Map.Strict                        as Map
@@ -257,7 +258,7 @@ prepareOperation
     maxBytes = 51200
 
     templateBody   = Text.decodeUtf8 templateBodyBS
-    templateBodyBS = LBS.toStrict $ StackDeploy.stratosphereTemplateEncodePretty namedTemplate.template
+    templateBodyBS = LBS.toStrict $ JSON.encode namedTemplate.template
 
 setText :: (Applicative f, ToText b) => Lens' a (f Text) -> b -> a -> a
 setText field value = set field (pure $ convert value)
