@@ -63,6 +63,8 @@ flags:
     development: true
   tasty-mgolden:
     development: true
+  work-pool:
+    development: true
   xray:
     development: true
 packages:
@@ -89,4 +91,5 @@ packages:
 - source-constraints
 - stack-deploy
 - tasty-mgolden
+- work-pool
 - xray

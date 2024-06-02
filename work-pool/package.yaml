@@ -1,0 +1,25 @@
+_common/package: !include "../common/package.yaml"
+
+name:     work-pool
+synopsis: Simple work pool with max queue size, dynamic resupply and explicit worker boot.
+homepage: https://github.com/mbj/mhs#readme
+github:   mbj/mhs
+version:  0.0.1
+
+<<: *defaults
+
+dependencies:
+- base
+- containers
+- mprelude
+- text
+- unliftio
+
+tests:
+  test:
+    <<: *test
+    dependencies:
+    - devtools
+    - tasty
+    - tasty-hunit
+    - work-pool
