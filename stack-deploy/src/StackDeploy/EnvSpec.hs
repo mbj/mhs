@@ -5,8 +5,10 @@ module StackDeploy.EnvSpec
   , envSpecEcsTaskDefinitionEnvironment
   , envSpecLambdaEnvironment
   , envSpecPosixEnvironment
+  , envSpecValue
   , readEnvSpecFromEnvironment
   , readEnvSpecFromStack
+  , readEnvSpecValueFromStack
   )
 where
 
@@ -82,7 +84,7 @@ data EnvSpecValue
 envSpecEcsTaskDefinitionEnvironment :: [EnvSpec] -> [ECS.TaskDefinition.KeyValuePairProperty]
 envSpecEcsTaskDefinitionEnvironment entries = render <$> List.sortOn (.name) entries
   where
-    render (EnvSpec key value) = mkPair key $ renderValue value
+    render (EnvSpec key value) = mkPair key $ envSpecValue value
 
     mkPair :: EnvSpecName -> CFT.Value Text -> ECS.TaskDefinition.KeyValuePairProperty
     mkPair key value
@@ -105,7 +107,7 @@ envSpecLambdaEnvironment entries
     variables :: Map Text (CFT.Value Text)
     variables = fromList $ render <$> List.sortOn (.name) entries
 
-    render (EnvSpec key value) = (convert @Text key, renderValue value)
+    render (EnvSpec key value) = (convert @Text key, envSpecValue value)
 
 -- | Construct a posix environment list
 --
@@ -142,7 +144,20 @@ envSpecPosixEnvironment stack = traverse render . List.sortOn (.name)
 -- >>> value
 -- "test-stack"
 readEnvSpecFromStack :: forall m . MonadIO m => CF.Stack -> EnvSpec -> m Text
-readEnvSpecFromStack stack EnvSpec{..} = case value of
+readEnvSpecFromStack stack EnvSpec{..} = readEnvSpecValueFromStack stack value
+
+-- | Read an env spec value as AWS resources would do
+--
+-- Primary use case is to initialize operations CLI to the same state an equivalent AWS resource would have.
+--
+-- >>> let envSpecValue = StackDeploy.EnvSpecStackName
+-- >>> let epochTime = Time.posixSecondsToUTCTime 0
+-- >>> let stack = CF.newStack "test-stack" epochTime CF.StackStatus_UPDATE_COMPLETE
+-- >>> value <- StackDeploy.readEnvSpecValueFromStack stack envSpecValue
+-- >>> value
+-- "test-stack"
+readEnvSpecValueFromStack :: forall m . MonadIO m => CF.Stack -> EnvSpecValue -> m Text
+readEnvSpecValueFromStack stack = \case
   EnvSpecStackId                  -> maybe failAbsentStackId pure stack.stackId
   EnvSpecStackName                -> pure stack.stackName
   EnvSpecStackOutput output       -> liftIO $ StackDeploy.fetchStackOutput stack output
@@ -159,8 +174,9 @@ readEnvSpecFromStack stack EnvSpec{..} = case value of
 readEnvSpecFromEnvironment :: EnvSpec -> MIO env Text
 readEnvSpecFromEnvironment EnvSpec{..} = convert <$> Environment.getEnv (convertVia @Text name)
 
-renderValue :: EnvSpecValue -> CFT.Value Text
-renderValue = \case
+-- | Render env spec value to stratosphere expression
+envSpecValue :: EnvSpecValue -> CFT.Value Text
+envSpecValue = \case
   EnvSpecStackId                  -> CFT.awsStackId
   EnvSpecStackName                -> CFT.awsStackName
   EnvSpecStackOutput output       -> output.value
