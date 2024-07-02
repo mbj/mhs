@@ -5,6 +5,7 @@ module StackDeploy.EnvSpec
   , envSpecEcsTaskDefinitionEnvironment
   , envSpecLambdaEnvironment
   , envSpecPosixEnvironment
+  , envSpecValue
   , readEnvSpecFromEnvironment
   , readEnvSpecFromStack
   )
@@ -82,7 +83,7 @@ data EnvSpecValue
 envSpecEcsTaskDefinitionEnvironment :: [EnvSpec] -> [ECS.TaskDefinition.KeyValuePairProperty]
 envSpecEcsTaskDefinitionEnvironment entries = render <$> List.sortOn (.name) entries
   where
-    render (EnvSpec key value) = mkPair key $ renderValue value
+    render (EnvSpec key value) = mkPair key $ envSpecValue value
 
     mkPair :: EnvSpecName -> CFT.Value Text -> ECS.TaskDefinition.KeyValuePairProperty
     mkPair key value
@@ -105,7 +106,7 @@ envSpecLambdaEnvironment entries
     variables :: Map Text (CFT.Value Text)
     variables = fromList $ render <$> List.sortOn (.name) entries
 
-    render (EnvSpec key value) = (convert @Text key, renderValue value)
+    render (EnvSpec key value) = (convert @Text key, envSpecValue value)
 
 -- | Construct a posix environment list
 --
@@ -159,8 +160,9 @@ readEnvSpecFromStack stack EnvSpec{..} = case value of
 readEnvSpecFromEnvironment :: EnvSpec -> MIO env Text
 readEnvSpecFromEnvironment EnvSpec{..} = convert <$> Environment.getEnv (convertVia @Text name)
 
-renderValue :: EnvSpecValue -> CFT.Value Text
-renderValue = \case
+-- | Render env spec value to stratosphere expression
+envSpecValue :: EnvSpecValue -> CFT.Value Text
+envSpecValue = \case
   EnvSpecStackId                  -> CFT.awsStackId
   EnvSpecStackName                -> CFT.awsStackName
   EnvSpecStackOutput output       -> output.value
