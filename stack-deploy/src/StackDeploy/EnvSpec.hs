@@ -8,6 +8,7 @@ module StackDeploy.EnvSpec
   , envSpecValue
   , readEnvSpecFromEnvironment
   , readEnvSpecFromStack
+  , readEnvSpecValueFromStack
   )
 where
 
@@ -143,7 +144,20 @@ envSpecPosixEnvironment stack = traverse render . List.sortOn (.name)
 -- >>> value
 -- "test-stack"
 readEnvSpecFromStack :: forall m . MonadIO m => CF.Stack -> EnvSpec -> m Text
-readEnvSpecFromStack stack EnvSpec{..} = case value of
+readEnvSpecFromStack stack EnvSpec{..} = readEnvSpecValueFromStack stack value
+
+-- | Read an env spec value as AWS resources would do
+--
+-- Primary use case is to initialize operations CLI to the same state an equivalent AWS resource would have.
+--
+-- >>> let envSpecValue = StackDeploy.EnvSpecStackName
+-- >>> let epochTime = Time.posixSecondsToUTCTime 0
+-- >>> let stack = CF.newStack "test-stack" epochTime CF.StackStatus_UPDATE_COMPLETE
+-- >>> value <- StackDeploy.readEnvSpecValueFromStack stack envSpecValue
+-- >>> value
+-- "test-stack"
+readEnvSpecValueFromStack :: forall m . MonadIO m => CF.Stack -> EnvSpecValue -> m Text
+readEnvSpecValueFromStack stack = \case
   EnvSpecStackId                  -> maybe failAbsentStackId pure stack.stackId
   EnvSpecStackName                -> pure stack.stackName
   EnvSpecStackOutput output       -> liftIO $ StackDeploy.fetchStackOutput stack output
