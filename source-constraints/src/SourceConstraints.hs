@@ -186,6 +186,9 @@ mkWarnMsg :: DiagOpts -> SrcSpan -> PrintUnqualified -> SDoc -> Message
 mkWarnMsg diagOpts srcSpan printUnqualified sdoc
   = MsgEnvelope
   { errMsgContext    = printUnqualified
+#if MIN_VERSION_base(4,19,0)
+  , errMsgReason     = ResolvedDiagnosticReason WarningWithoutFlag
+#endif
   , errMsgDiagnostic = ghcUnknownMessage $ mkPlainDiagnostic WarningWithoutFlag [] sdoc
   , errMsgSeverity   = (diagReasonSeverity diagOpts WarningWithoutFlag)
   , errMsgSpan       = srcSpan

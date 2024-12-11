@@ -4,7 +4,6 @@ module MIO.Amazonka
   ( Env
   , HasResourceMap(..)
   , ResourceMap
-  , Transaction
   , paginate
   , paginateEither
   , send
@@ -22,15 +21,12 @@ import Data.Conduit (ConduitT)
 import Data.Either (Either)
 import Data.Function (($), (.))
 import Data.IORef (IORef)
-import Data.Typeable (Typeable)
 import GHC.Records (HasField)
 import MIO.Core
 
 import qualified Amazonka
 
 type ResourceMap = IORef ReleaseMap
-
-type Transaction a = (Typeable a, Typeable (Amazonka.AWSResponse a))
 
 class HasResourceMap env where
   resourceMap :: env -> ResourceMap
@@ -45,7 +41,7 @@ type Env env =
   )
 
 paginate
-  :: (Amazonka.AWSPager a, Env env, Transaction a)
+  :: (Amazonka.AWSPager a, Env env)
   => a
   -> ConduitT () (Amazonka.AWSResponse a) (MIO env) ()
 paginate pager = do
@@ -53,7 +49,7 @@ paginate pager = do
   Amazonka.paginate env pager
 
 paginateEither
-  :: (Amazonka.AWSPager a, Env env, Transaction a)
+  :: (Amazonka.AWSPager a, Env env)
   => a
   -> ConduitT () (Amazonka.AWSResponse a) (MIO env) (Either Amazonka.Error ())
 paginateEither pager = do
@@ -61,7 +57,7 @@ paginateEither pager = do
   Amazonka.paginateEither env pager
 
 send
-  :: (Amazonka.AWSRequest a, Env env, Transaction a)
+  :: (Amazonka.AWSRequest a, Env env)
   => a
   -> MIO env (Amazonka.AWSResponse a)
 send request = do
@@ -69,7 +65,7 @@ send request = do
   Amazonka.send env request
 
 sendEither
-  :: (Amazonka.AWSRequest a, Env env, Transaction a)
+  :: (Amazonka.AWSRequest a, Env env)
   => a
   -> MIO env (Either Amazonka.Error (Amazonka.AWSResponse a))
 sendEither request = do

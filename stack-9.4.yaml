@@ -1,14 +1,5 @@
 resolver: lts-21.25
 extra-deps:
-- amazonka-2.0
-- amazonka-cloudformation-2.0
-- amazonka-core-2.0
-- amazonka-ec2-2.0
-- amazonka-lambda-2.0
-- amazonka-s3-2.0
-- amazonka-secretsmanager-2.0
-- amazonka-sso-2.0
-- amazonka-sts-2.0
 - mprelude
 - github: mbj/stratosphere
   commit: d1b638820ca9fd90f7d5afba535415da47252af5
@@ -22,6 +13,18 @@ extra-deps:
   - services/logs
   - services/s3
   - services/secretsmanager
+- github: brendanhay/amazonka
+  commit: 30b200d487bccd2568de1257a812a464270d0096
+  subdirs:
+  - lib/amazonka
+  - lib/amazonka-core
+  - lib/services/amazonka-cloudformation
+  - lib/services/amazonka-ec2
+  - lib/services/amazonka-lambda
+  - lib/services/amazonka-s3
+  - lib/services/amazonka-secretsmanager
+  - lib/services/amazonka-sso
+  - lib/services/amazonka-sts
 flags:
   aws-checkip:
     development: true

@@ -1,0 +1,7 @@
+resolver: lts-23.0
+setup-info:
+  ghc:
+    linux64-lht:
+      9.8.4:
+        url: https://downloads.haskell.org/~ghc/9.8.4/ghc-9.8.4-x86_64-alpine3_12-linux-static-int_native.tar.xz
+        sha256: c890632553dac8ec9a0a6187d7fdea6ebb7c5e796cd34e41ebb1c3c5f96a4a49

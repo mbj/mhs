@@ -9,7 +9,7 @@ import qualified MIO.Amazonka as AWS
 
 -- | Convert paginator with a nested list item into a paginator of that item
 nestedResourceC
-  :: (AWS.Env env, Amazonka.AWSPager a, AWS.Transaction a)
+  :: (AWS.Env env, Amazonka.AWSPager a)
   => a
   -> (Amazonka.AWSResponse a -> [b])
   -> ConduitT () b (MIO env) ()
