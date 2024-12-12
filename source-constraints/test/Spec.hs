@@ -116,7 +116,9 @@ getWarnings file = runGhc (pure libdir) $ do
     render sDocContext warning = do
       caretDiagnostic <- liftIO $
         getCaretDiagnostic
-#if MIN_VERSION_base(4,18,0)
+#if MIN_VERSION_base(4,19,0)
+            (MCDiagnostic (errMsgSeverity warning) (ResolvedDiagnosticReason WarningWithoutFlag) Nothing)
+#elif MIN_VERSION_base(4,18,0)
             (MCDiagnostic (errMsgSeverity warning) WarningWithoutFlag Nothing)
 #else
             (MCDiagnostic (errMsgSeverity warning) WarningWithoutFlag)
@@ -126,7 +128,11 @@ getWarnings file = runGhc (pure libdir) $ do
 
       pure $ renderWithContext
         sDocContext
-#if MIN_VERSION_base(4,18,0)
+#if MIN_VERSION_base(4,19,0)
+          (formatBulleted
+            (diagnosticMessage (defaultDiagnosticOpts @GhcMessage) $ errMsgDiagnostic warning) $+$ caretDiagnostic
+          )
+#elif MIN_VERSION_base(4,18,0)
           (formatBulleted
             sDocContext
             (diagnosticMessage (defaultDiagnosticOpts @GhcMessage) $ errMsgDiagnostic warning) $+$ caretDiagnostic
