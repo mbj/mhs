@@ -130,13 +130,19 @@ locatedWarnings context node
     sortedMultipleDeriving :: HsDecl GhcPs -> Maybe Message
     sortedMultipleDeriving = \case
       (TyClD _xIE DataDecl{tcdDataDefn = HsDataDefn {..}}) ->
+#if MIN_VERSION_base(4,20,0)
+        sortedLocated "deriving clauses" context (render context) (reLoc <$> dd_derivs)
+#else
         sortedLocated "deriving clauses" context (render context) (mkLocated <$> dd_derivs)
+#endif
       _ -> Nothing
       where
+#if !MIN_VERSION_base(4,20,0)
         mkLocated
           :: GenLocated (SrcAnn NoEpAnns) (HsDerivingClause GhcPs)
           -> Located (HsDerivingClause GhcPs)
         mkLocated value = L (locA $ getLoc value) (unLoc value)
+#endif
 
     sortedIEs :: [LIE GhcPs] -> Maybe Message
     sortedIEs lie =
@@ -149,7 +155,11 @@ locatedWarnings context node
     sortedIEThingWith :: IE GhcPs -> Maybe Message
     sortedIEThingWith =
       \case
+#if MIN_VERSION_base(4,20,0)
+        (IEThingWith _xIE _name _ieWildcard ieWith _) ->
+#else
         (IEThingWith _xIE _name _ieWildcard ieWith) ->
+#endif
           sortedLocated
             "import/export item with list"
             context
@@ -163,12 +173,21 @@ locatedWarnings context node
 
     ieClass :: IE GhcPs -> IEClass
     ieClass = \case
+#if MIN_VERSION_base(4,20,0)
+      (IEVar _xIE name _)            -> mkClass classify name
+      (IEThingAbs _xIE name _)       -> mkClass Type name
+      (IEThingAll _xIE name _)       -> mkClass Type name
+      (IEModuleContents _xIE name)   -> mkClass Module name
+      (IEThingWith _xIE name _ieWildcard _ieFieldLabels _) ->
+        mkClass Type name
+#else
       (IEVar _xIE name)            -> mkClass classify name
       (IEThingAbs _xIE name)       -> mkClass Type name
       (IEThingAll _xIE name)       -> mkClass Type name
       (IEModuleContents _xIE name) -> mkClass Module name
       (IEThingWith _xIE name _ieWildcard _ieFieldLabels) ->
         mkClass Type name
+#endif
       ie -> error $ "Unsupported: " ++ gshow ie
       where
         mkClass

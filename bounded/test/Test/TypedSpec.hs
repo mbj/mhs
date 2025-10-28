@@ -10,7 +10,6 @@ import Test.TypeSpec.Core
 
 newtype TypeSpecTasty expectation = TypeSpecTasty (TypeSpec expectation)
   deriving newtype Show
-  deriving stock Typeable
 
 instance (PrettyTypeSpec a, Typeable (TypeSpecTasty a)) => IsTest (TypeSpecTasty a) where
   run _ (TypeSpecTasty assertion) _ = pure $ case assertion of

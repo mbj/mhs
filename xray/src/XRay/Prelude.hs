@@ -1,5 +1,6 @@
+{-# LANGUAGE PackageImports #-}
 module XRay.Prelude (module Exports) where
 
-import Control.Arrow as Exports (left)
-import Data.Bounded  as Exports
-import MPrelude      as Exports
+import "bounded" Data.Bounded as Exports
+import Control.Arrow          as Exports (left)
+import MPrelude               as Exports
