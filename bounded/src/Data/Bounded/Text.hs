@@ -23,7 +23,7 @@ type BoundText (label :: Symbol) = BoundText' label '(1, 128)
 newtype BoundText' (a :: k) (range :: (Nat, Nat)) = BoundText Text
   deriving (Conversion Text) via Text
   deriving newtype (JSON.FromJSONKey, JSON.ToJSON, JSON.ToJSONKey)
-  deriving stock (Eq, Ord, Show, TH.Lift, Typeable)
+  deriving stock (Eq, Ord, Show, TH.Lift)
 
 data BoundTextError = BoundTextError
   { actual :: Natural

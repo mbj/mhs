@@ -32,7 +32,6 @@ instance Show.Show (BoundError a b) where
 instance (Typeable a, Typeable b) => Exception (BoundError a b)
 
 data UserBoundError a b = UserBoundError a b b
-  deriving stock (Typeable)
 
 instance (Show a, Show b) => Show.Show (UserBoundError a b) where
   show (UserBoundError value min max) = boundError value min max

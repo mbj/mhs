@@ -9,6 +9,9 @@
   tested-with:
   - GHC == 9.4
   - GHC == 9.6
+  - GHC == 9.8
+  - GHC == 9.10
+  - GHC == 9.12
 
   when:
   - condition: flag(development)

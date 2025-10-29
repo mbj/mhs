@@ -18,7 +18,6 @@ import Control.Applicative (empty)
 import Data.Foldable (traverse_)
 import Data.Proxy (Proxy(..))
 import Data.Text (Text)
-import Data.Typeable (Typeable)
 import Prelude hiding (print, putStrLn)
 import Test.Tasty
 import Test.Tasty.Options
@@ -35,7 +34,7 @@ import qualified System.IO.Error     as Error
 data Mode
   = RunTest         -- ^ Run the tests, error (with diff) on actual vs expectation mismatch
   | UpdateExpected  -- ^ Run the tests, update the expectation on actual vs expectation mismatch
-  deriving stock (Eq, Ord, Typeable, Show)
+  deriving stock (Eq, Ord, Show)
 
 instance IsOption Mode where
   defaultValue = RunTest
@@ -52,14 +51,12 @@ data Golden = Golden
   { action       :: IO Text
   , expectedPath :: FilePath
   }
-  deriving stock Typeable
 
 instance IsTest Golden where
   run options golden _callback = runGolden golden options
   testOptions = pure . pure $ Option (Proxy :: Proxy Mode)
 
 newtype DiffTest = DiffTest (IO (Text, Text))
-  deriving stock Typeable
 
 instance IsTest DiffTest where
   run options test _callback = runDiffTest test options

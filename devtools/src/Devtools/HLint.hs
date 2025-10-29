@@ -3,7 +3,6 @@ module Devtools.HLint (testTree) where
 import Control.Applicative (empty, pure)
 import Data.Function (($), (.), const)
 import Data.Functor (void)
-import Data.Typeable (Typeable)
 import System.IO
 
 import qualified Data.Foldable                      as Foldable
@@ -14,7 +13,6 @@ import qualified Test.Tasty.Providers               as Tasty
 import qualified Test.Tasty.Providers.ConsoleFormat as Tasty
 
 data HLintTest = HLintTest
-  deriving stock Typeable
 
 instance Tasty.IsTest HLintTest where
   run _options HLintTest _callback = runHLintTest

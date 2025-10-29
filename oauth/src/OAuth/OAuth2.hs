@@ -1,3 +1,4 @@
+{-# LANGUAGE PackageImports #-}
 {-# LANGUAGE TupleSections #-}
 
 module OAuth.OAuth2
@@ -15,9 +16,9 @@ module OAuth.OAuth2
   )
 where
 
+import "bounded" Data.Bounded
 import Control.Monad (replicateM)
 import Data.Bifunctor (second)
-import Data.Bounded
 import Data.ByteString (ByteString)
 import Data.Word (Word8)
 import OAuth.Prelude

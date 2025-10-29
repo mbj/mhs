@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 module DBT.Connection
   ( toSettings
   , withConnection
@@ -14,6 +15,10 @@ import qualified Data.Maybe         as Maybe
 import qualified Data.Text          as Text
 import qualified Data.Text.Encoding as Text
 import qualified Hasql.Connection   as Hasql
+#if MIN_VERSION_hasql(1,9,0)
+import qualified Hasql.Connection.Setting as HasqlSetting
+import qualified Hasql.Connection.Setting.Connection as HasqlConnection
+#endif
 import qualified Hasql.Session      as Hasql
 import qualified UnliftIO.Exception as Exception
 
@@ -49,9 +54,28 @@ withConnectionSession config session
   = withConnection config
   $ either Exception.throwIO pure <=< (liftIO . Hasql.run session)
 
-toSettings :: ClientConfig -> Hasql.Settings
+#if MIN_VERSION_hasql(1,9,0)
+toSettings :: ClientConfig -> [HasqlSetting.Setting]
 toSettings config@ClientConfig{..}
-  = render
+  = [HasqlSetting.connection $ HasqlConnection.string $ Text.decodeUtf8 $ renderToByteString
+      [ required "dbname"      databaseName
+      , required "host"        hostName
+      , required "port"        (effectiveHostPort config)
+      , required "user"        userName
+      , optional "password"    password
+      , optional "sslmode"     sslMode
+      , optional "sslrootcert" sslRootCert
+      ]]
+  where
+    required :: ToText a => Text -> a -> Maybe Parameter
+    required name = pure . Parameter name . toText
+
+    optional :: ToText a => Text -> Maybe a -> Maybe Parameter
+    optional name value = Parameter name . toText <$> value
+#else
+toSettings :: ClientConfig -> BS.ByteString
+toSettings config@ClientConfig{..}
+  = renderToByteString
   [ required "dbname"      databaseName
   , required "host"        hostName
   , required "port"        (effectiveHostPort config)
@@ -66,9 +90,10 @@ toSettings config@ClientConfig{..}
 
     optional :: ToText a => Text -> Maybe a -> Maybe Parameter
     optional name value = Parameter name . toText <$> value
+#endif
 
-render :: [Maybe Parameter] -> BS.ByteString
-render parameters
+renderToByteString :: [Maybe Parameter] -> BS.ByteString
+renderToByteString parameters
   = Text.encodeUtf8
   . Text.intercalate " "
   $ renderParameter <$> Maybe.catMaybes parameters

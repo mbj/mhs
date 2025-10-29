@@ -18,7 +18,7 @@ import qualified Language.Haskell.TH.Syntax as TH
 newtype BoundNumber' (integral :: Type) (label :: Symbol) (range :: (Nat, Nat))
   = BoundNumber { unBoundNumber :: integral }
   deriving newtype (JSON.ToJSON)
-  deriving stock (Eq, Ord, Show, TH.Lift, Typeable)
+  deriving stock (Eq, Ord, Show, TH.Lift)
 
 type BoundNumber = BoundNumber' Natural
 
